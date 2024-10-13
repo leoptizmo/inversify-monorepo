@@ -11,6 +11,7 @@
     "@commitlint/prompt-cli": "19.5.0",
     "@inversifyjs/foundation-prettier-config": "workspace:*",
     "@inversifyjs/foundation-eslint-config": "workspace:*",
+    "@inversifyjs/foundation-typescript-config": "workspace:*",
     "husky": "9.1.6",
     "lint-staged": "15.2.10",
     "turbo": "2.1.3"
