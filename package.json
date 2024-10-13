@@ -1,0 +1,29 @@
+{
+  "author": "Remo H. Jansen",
+  "bugs": {
+    "url": "https://github.com/inversify/monorepo/issues"
+  },
+  "description": "A powerful and lightweight inversion of control container for JavaScript & Node.js apps powered by TypeScript",
+  "devDependencies": {
+    "@changesets/cli": "2.27.9",
+    "@commitlint/cli": "19.5.0",
+    "@commitlint/config-conventional": "19.5.0",
+    "@commitlint/prompt-cli": "19.5.0",
+    "husky": "9.1.6",
+    "lint-staged": "15.2.10",
+    "turbo": "2.1.3"
+  },
+  "homepage": "https://github.com/inversify/monorepo#readme",
+  "keywords": [],
+  "license": "MIT",
+  "name": "root",
+  "packageManager": "pnpm@9.12.1",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inversify/monorepo.git"
+  },
+  "scripts": {
+    "prepare": "husky"
+  }
+}
