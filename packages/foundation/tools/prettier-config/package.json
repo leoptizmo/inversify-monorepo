@@ -1,7 +1,7 @@
 {
   "author": "Roberto Pintos López",
   "name": "@inversifyjs/foundation-prettier-config",
-  "description": "common prettier config for inversify monorepo packages",
+  "description": "Common prettier config for inversify monorepo packages",
   "exports": {
     ".": {
       "import": "./esm/index.js",
