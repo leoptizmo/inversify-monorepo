@@ -1,0 +1,53 @@
+{
+  "author": "Remo H. Jansen",
+  "bugs": {
+    "url": "https://github.com/inversify/monorepo/issues"
+  },
+  "description": "InversifyJs common utils",
+  "devDependencies": {
+    "@eslint/js": "9.12.0",
+    "@typescript-eslint/eslint-plugin": "8.8.1",
+    "@typescript-eslint/parser": "8.8.1",
+    "prettier": "3.3.3",
+    "rimraf": "6.0.1",
+    "typescript": "5.6.3"
+  },
+  "devEngines": {
+    "node": "^20.18.0",
+    "pnpm": "^9.12.1"
+  },
+  "homepage": "http://inversify.io",
+  "keywords": [
+    "dependency injection",
+    "dependency inversion",
+    "di",
+    "inversion of control container",
+    "ioc",
+    "javascript",
+    "node",
+    "typescript"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "name": "@inversifyjs/common",
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inversify/monorepo.git"
+  },
+  "scripts": {
+    "build": "tsc --build tsconfig.json",
+    "build:clean": "rimraf lib",
+    "format": "prettier --write ./src/**/*.ts",
+    "lint": "eslint ./src",
+    "prebuild": "pnpm run build:clean"
+  },
+  "sideEffects": false,
+  "version": "1.0.0"
+}
