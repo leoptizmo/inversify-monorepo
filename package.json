@@ -12,6 +12,7 @@
     "@inversifyjs/foundation-prettier-config": "workspace:*",
     "@inversifyjs/foundation-eslint-config": "workspace:*",
     "@inversifyjs/foundation-jest-config": "workspace:*",
+    "@inversifyjs/foundation-scripts": "workspace:*",
     "@inversifyjs/foundation-typescript-config": "workspace:*",
     "husky": "9.1.6",
     "lint-staged": "15.2.10",
