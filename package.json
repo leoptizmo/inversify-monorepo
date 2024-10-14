@@ -17,7 +17,7 @@
     "lint-staged": "15.2.10",
     "turbo": "2.1.3"
   },
-  "homepage": "https://github.com/inversify/monorepo#readme",
+  "homepage": "http://inversify.io",
   "keywords": [],
   "license": "MIT",
   "name": "root",
@@ -28,6 +28,16 @@
     "url": "git+https://github.com/inversify/monorepo.git"
   },
   "scripts": {
-    "prepare": "husky"
+    "build": "turbo run build",
+    "format": "turbo run format",
+    "lint": "turbo run lint",
+    "prepare": "husky",
+    "test:integration:js": "turbo test:integration:js",
+    "test:js": "turbo run test:js",
+    "test:js:coverage": "turbo run test:js:coverage",
+    "test:mutation": "turbo run test:mutation --concurrency=25%",
+    "test:uncommitted": "turbo run test:uncommitted --filter [HEAD]",
+    "test:unit:js": "turbo run test:unit:js",
+    "test": "turbo run test"
   }
 }
