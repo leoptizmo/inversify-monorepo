@@ -1,0 +1,55 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**/*.{cts,mts,ts}"],
+      "outputs": [
+        "dist/**",
+        "lib/**"
+      ]
+    },
+    "format": {
+      "inputs": ["src/**/*.ts"],
+      "outputs": ["src/**/*.ts"]
+    },
+    "lint": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**/*.ts"]
+    },
+    "test": {
+      "inputs": ["src/**/*.ts"],
+      "outputs": []
+    },
+    "test:integration:js": {
+      "dependsOn": ["build"],
+      "inputs": ["dist/**", "lib/**"],
+      "outputs": []
+    },
+    "test:js": {
+      "dependsOn": ["build"],
+      "inputs": ["dist/**", "lib/**"],
+      "outputs": []
+    },
+    "test:js:coverage": {
+      "dependsOn": ["build"],
+      "inputs": ["dist/**", "lib/**"],
+      "outputs": ["coverage/**"]
+    },
+    "test:mutation": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**/*.ts"],
+      "outputs": ["reports/**"]
+    },
+    "test:uncommitted": {
+      "inputs": ["src/**/*.ts"],
+      "outputs": []
+    },
+    "test:unit:js": {
+      "dependsOn": ["build"],
+      "inputs": ["dist/**", "lib/**"],
+      "outputs": []
+    }
+  },
+  "ui": "tui"
+}
