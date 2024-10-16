@@ -3,6 +3,9 @@
 
 /tsconfig.tsbuildinfo
 
+# Test coverage report
+/coverage
+
 # node modules
 /node_modules/
 
