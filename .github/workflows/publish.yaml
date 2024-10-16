@@ -1,0 +1,37 @@
+name: publish
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+on:
+  workflow_dispatch:
+    secrets:
+      NPM_TOKEN:
+        required: false
+jobs:
+  publish:
+    name: Bump package versions and publish to npm.
+    environment: CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - id: create_token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ vars.GH_APP_ID }}
+          private_key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+      - name: Create Release Pull or publish changes
+        uses: changesets/action@v1
+        with:
+          commit: "chore: bump package versions"
+          publish: pnpm run release
+          title: "[Changesets] Bump package versions"
+        env:
+          GITHUB_TOKEN: ${{ steps.create_token.outputs.token }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
