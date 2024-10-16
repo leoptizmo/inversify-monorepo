@@ -2,5 +2,6 @@
 
 Welcome to the developer docs.
 
-- [Testing docs](./testing/index.md).
+- [Release docs](./release.md).
 - [Setup docs](./setup.md).
+- [Testing docs](./testing/index.md).
