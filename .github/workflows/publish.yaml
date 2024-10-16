@@ -4,9 +4,10 @@ concurrency:
   cancel-in-progress: true
 on:
   workflow_dispatch:
-    secrets:
-      NPM_TOKEN:
-        required: true
+    inputs:
+      npm-token:
+        description: npm token to be used to publish npm packages
+        required: false
 permissions:
   actions: read
   contents: write
@@ -33,4 +34,4 @@ jobs:
           title: "[Changesets] Bump package versions"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ inputs.npm-token }}
