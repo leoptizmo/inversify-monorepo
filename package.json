@@ -30,6 +30,7 @@
   },
   "scripts": {
     "build": "turbo run build",
+    "commit": "commit",
     "format": "turbo run format",
     "lint": "turbo run lint",
     "prepare": "husky",
