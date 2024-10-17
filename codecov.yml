@@ -1,0 +1,12 @@
+coverage:
+  status:
+    project:
+      default: false
+      '@inversifyjs/common':
+        flags:
+          - '@inversifyjs/common'
+
+flags:
+  '@inversifyjs/common':
+    paths:
+      - packages/container/libraries/common/
