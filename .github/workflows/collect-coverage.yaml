@@ -56,7 +56,7 @@ jobs:
             ts-build-${{ steps.get-git-commit-hash.outputs.gitCommitHash }}
 
       - name: Build on cache miss
-        run: pnpm run build --filter ${{ join(matrix.packages, ' --filter ') }}
+        run: pnpm run build --filter ${{ matrix.package }}
         if: ${{ !steps.ts-build-cache.outputs.cache-hit }}
 
       - name: Launch Unit Tests and generate coverage report
