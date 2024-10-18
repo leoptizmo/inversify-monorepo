@@ -33,7 +33,7 @@
     "commit": "commit",
     "format": "turbo run format",
     "lint": "turbo run lint",
-    "prepare": "husky",
+    "prepare": "husky && turbo telemetry disable",
     "prerelease": "pnpm run build",
     "release": "changeset publish",
     "test:integration:js": "turbo test:integration:js",

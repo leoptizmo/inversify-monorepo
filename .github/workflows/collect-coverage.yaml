@@ -66,8 +66,8 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           flags: ${{ matrix.package }}
-          override_branch: main
           token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
 
   test-coverage:
     name: Test with coverage
