@@ -10,7 +10,7 @@
   "exports": "./lib/index.js",
   "homepage": "https://github.com/inversify/monorepo#readme",
   "license": "MIT",
-  "name": "@cornie-js/backend-stryker-config",
+  "name": "@inversifyjs/foundation-stryker-config",
   "private": true,
   "repository": {
     "type": "git",

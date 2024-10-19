@@ -7,6 +7,9 @@
   "devDependencies": {
     "@eslint/js": "9.13.0",
     "@jest/globals": "29.7.0",
+    "@stryker-mutator/core": "8.6.0",
+    "@stryker-mutator/jest-runner": "8.6.0",
+    "@stryker-mutator/typescript-checker": "8.6.0",
     "@types/node": "20.16.13",
     "@typescript-eslint/eslint-plugin": "8.10.0",
     "@typescript-eslint/parser": "8.10.0",
@@ -56,6 +59,7 @@
     "test:integration:js": "pnpm run test:js --selectProjects Integration",
     "test:js": "jest --config=jest.js.config.mjs --runInBand",
     "test:js:coverage": "pnpm run test:unit:js --coverage",
+    "test:mutation": "stryker run",
     "test:uncommitted": "pnpm run test --changedSince=HEAD",
     "test:unit:js": "pnpm run test:js --selectProjects Unit"
   },
