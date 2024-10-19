@@ -13,15 +13,7 @@ export default {
     enableFindRelatedTests: true,
     projectType: 'custom',
   },
-  mutate: [
-    'src/**/*.ts',
-    '!src/**/*.spec.ts',
-    '!src/**/*{Fixtures,Mocks}.ts',
-    '!src/**/adapter/nest/modules/*.ts',
-    '!src/**/adapter/typeorm/migrations/*.ts',
-    '!src/**/adapter/typeorm/scripts/*.ts',
-    '!src/**/application/controllers/*.ts',
-  ],
+  mutate: ['src/**/*.ts', '!src/**/*.spec.ts', '!src/**/*{Fixtures,Mocks}.ts'],
   packageManager: 'pnpm',
   plugins: [
     '@stryker-mutator/jest-runner',
