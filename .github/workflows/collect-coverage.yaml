@@ -26,6 +26,7 @@ jobs:
 
   test-coverage-package:
     name: Test with coverage
+    environment: CI
     needs: build
     runs-on: ubuntu-latest
     if: ${{ needs.build.outputs.affectedPackages != '[]' }}
