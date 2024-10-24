@@ -45,6 +45,7 @@ jobs:
         with:
           path: |
             ./packages/container/libraries/*
+            ./packages/foundation/libraries/*
             ./packages/foundation/tools/*
           key: ts-build-${{ steps.get-git-commit-hash.outputs.gitCommitHash }}
           restore-keys: |
@@ -77,6 +78,7 @@ jobs:
         with:
           path: |
             ./packages/container/libraries/*
+            ./packages/foundation/libraries/*
             ./packages/foundation/tools/*
           key: ts-build-${{ steps.get-git-commit-hash.outputs.gitCommitHash }}
           restore-keys: |
