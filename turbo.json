@@ -4,50 +4,47 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["src/**/*.{cts,mts,ts}"],
-      "outputs": [
-        "dist/**",
-        "lib/**"
-      ]
+      "outputs": ["dist/**", "lib/**"]
     },
     "format": {
-      "inputs": ["src/**/*.ts"],
-      "outputs": ["src/**/*.ts"]
+      "inputs": ["src/**/*.{cts,mts,ts}"],
+      "outputs": ["src/**/*.{cts,mts,ts}"]
     },
     "lint": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**/*.ts"]
+      "inputs": ["src/**/*.{cts,mts,ts}"]
     },
     "test": {
-      "inputs": ["src/**/*.ts"],
+      "inputs": ["src/**/*.{cts,mts,ts}"],
       "outputs": []
     },
     "test:integration:js": {
       "dependsOn": ["build"],
-      "inputs": ["dist/**", "lib/**"],
+      "inputs": ["{dist,lib}/**/*.{cjs,mjs,js}"],
       "outputs": []
     },
     "test:js": {
       "dependsOn": ["build"],
-      "inputs": ["dist/**", "lib/**"],
+      "inputs": ["{dist,lib}/**/*.{cjs,mjs,js}"],
       "outputs": []
     },
     "test:js:coverage": {
       "dependsOn": ["build"],
-      "inputs": ["dist/**", "lib/**"],
+      "inputs": ["{dist,lib}/**/*.{cjs,mjs,js}"],
       "outputs": ["coverage/**"]
     },
     "test:mutation": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**/*.ts"],
+      "inputs": ["src/**/*.{cts,mts,ts}"],
       "outputs": ["reports/**"]
     },
     "test:uncommitted": {
-      "inputs": ["src/**/*.ts"],
+      "inputs": ["src/**/*.{cts,mts,ts}"],
       "outputs": []
     },
     "test:unit:js": {
       "dependsOn": ["build"],
-      "inputs": ["dist/**", "lib/**"],
+      "inputs": ["{dist,lib}/**/*.{cjs,mjs,js}"],
       "outputs": []
     }
   },
