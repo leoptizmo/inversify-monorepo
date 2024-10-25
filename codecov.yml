@@ -5,6 +5,9 @@ coverage:
       '@inversifyjs/common':
         flags:
           - '@inversifyjs/common'
+      '@inversifyjs/core':
+        flags:
+          - '@inversifyjs/core'
       '@inversifyjs/reflect-metadata-utils':
         flags:
           - '@inversifyjs/reflect-metadata-utils'
@@ -12,6 +15,9 @@ flags:
   '@inversifyjs/common':
     paths:
       - packages/container/libraries/common/
+  '@inversifyjs/core':
+    paths:
+      - packages/container/libraries/core/
   '@inversifyjs/reflect-metadata-utils':
     paths:
       - packages/foundation/libraries/reflect-metadata-utils
