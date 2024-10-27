@@ -1,4 +1,4 @@
-import { ClassElementMetadata } from './ManagedClassElementMetadata';
+import { ClassElementMetadata } from './ClassElementMetadata';
 
 export interface ClassMetadata {
   constructorArguments: ClassElementMetadata[];
