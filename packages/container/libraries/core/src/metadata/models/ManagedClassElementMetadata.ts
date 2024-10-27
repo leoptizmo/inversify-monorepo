@@ -1,4 +1,4 @@
-import { ServiceIdentifier } from '@inversifyjs/common';
+import { LazyServiceIdentifier, ServiceIdentifier } from '@inversifyjs/common';
 
 import { BaseClassElementMetadata } from './BaseClassElementMetadata';
 import { ClassElementMetadataKind } from './ClassElementMetadataKind';
@@ -11,7 +11,7 @@ export interface ManagedClassElementMetadata
     | ClassElementMetadataKind.singleInjection
     | ClassElementMetadataKind.multipleInjection
   > {
-  value: ServiceIdentifier;
+  value: ServiceIdentifier | LazyServiceIdentifier;
   name: MetadataName | undefined;
   optional: boolean;
   tags: Map<MetadataTag, unknown>;
