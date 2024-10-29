@@ -3,6 +3,7 @@ import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { TAGGED_PROP } from '../../reflectMetadata/data/keys';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
+import { LegacyMetadata } from '../models/LegacyMetadata';
 import { LegacyMetadataMap } from '../models/LegacyMetadataMap';
 import { getClassElementMetadataFromLegacyMetadata } from './getClassElementMetadataFromLegacyMetadata';
 
@@ -16,9 +17,10 @@ export function getClassMetadataProperties<TInstance, TArgs extends unknown[]>(
     new Map();
 
   if (propertiesLegacyMetadata !== undefined) {
-    for (const [property, legacyMetadata] of Object.entries(
-      propertiesLegacyMetadata,
-    )) {
+    for (const property of Reflect.ownKeys(propertiesLegacyMetadata)) {
+      const legacyMetadata: LegacyMetadata[] = propertiesLegacyMetadata[
+        property
+      ] as LegacyMetadata[];
       propertiesMetadata.set(
         property,
         getClassElementMetadataFromLegacyMetadata(legacyMetadata),

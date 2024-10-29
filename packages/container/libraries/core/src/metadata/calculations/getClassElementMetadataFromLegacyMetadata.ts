@@ -1,4 +1,4 @@
-import { ServiceIdentifier } from '@inversifyjs/common';
+import { LazyServiceIdentifier, ServiceIdentifier } from '@inversifyjs/common';
 
 import {
   INJECT_TAG,
@@ -16,6 +16,7 @@ import { ManagedClassElementMetadata } from '../models/ManagedClassElementMetada
 import { MetadataName } from '../models/MetadataName';
 import { MetadataTag } from '../models/MetadataTag';
 import { MetadataTargetName } from '../models/MetadataTargetName';
+import { UnmanagedClassElementMetadata } from '../models/UnmanagedClassElementMetadata';
 
 export function getClassElementMetadataFromLegacyMetadata(
   metadataList: LegacyMetadata[],
@@ -31,13 +32,14 @@ export function getClassElementMetadataFromLegacyMetadata(
   );
 
   if (unmanagedMetadata !== undefined) {
-    return {
-      kind: ClassElementMetadataKind.unmanaged,
-    };
+    return getUnmanagedClassElementMetadata(
+      injectMetadata,
+      multiInjectMetadata,
+    );
   }
 
   if (multiInjectMetadata === undefined && injectMetadata === undefined) {
-    throw new Error();
+    throw new Error('Expected @inject, @multiInject or @unmanaged metadata');
   }
 
   const nameMetadata: LegacyMetadata | undefined = metadataList.find(
@@ -74,9 +76,26 @@ export function getClassElementMetadataFromLegacyMetadata(
     targetName: targetNameMetadata?.value as MetadataTargetName | undefined,
     value:
       injectMetadata === undefined
-        ? (multiInjectMetadata?.value as ServiceIdentifier)
-        : (injectMetadata.value as ServiceIdentifier),
+        ? (multiInjectMetadata?.value as
+            | ServiceIdentifier
+            | LazyServiceIdentifier)
+        : (injectMetadata.value as ServiceIdentifier | LazyServiceIdentifier),
   };
 
   return managedClassElementMetadata;
+}
+
+function getUnmanagedClassElementMetadata(
+  injectMetadata: LegacyMetadata | undefined,
+  multiInjectMetadata: LegacyMetadata | undefined,
+): UnmanagedClassElementMetadata {
+  if (multiInjectMetadata !== undefined || injectMetadata !== undefined) {
+    throw new Error(
+      'Expected a single @inject, @multiInject or @unmanaged metadata',
+    );
+  }
+
+  return {
+    kind: ClassElementMetadataKind.unmanaged,
+  };
 }
