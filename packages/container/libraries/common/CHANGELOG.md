@@ -1,5 +1,11 @@
 # @inversifyjs/common
 
+## 1.2.1
+
+### Patch Changes
+
+- cb8882f: Updated LazyServiceIdentifier.is to support nullish values
+
 ## 1.2.0
 
 ### Minor Changes
