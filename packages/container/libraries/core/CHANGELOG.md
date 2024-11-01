@@ -1,5 +1,12 @@
 # @inversifyjs/core
 
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies [cb8882f]
+  - @inversifyjs/common@1.2.1
+
 ## 1.1.0
 
 ### Minor Changes
