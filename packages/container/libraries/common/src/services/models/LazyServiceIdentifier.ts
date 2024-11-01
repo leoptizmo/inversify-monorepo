@@ -18,6 +18,8 @@ export class LazyServiceIdentifier<TInstance = unknown> {
     value: unknown,
   ): value is LazyServiceIdentifier<TInstance> {
     return (
+      typeof value === 'object' &&
+      value !== null &&
       (value as Partial<LazyServiceIdentifier>)[
         islazyServiceIdentifierSymbol
       ] === true

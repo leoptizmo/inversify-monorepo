@@ -15,6 +15,46 @@ describe(LazyServiceIdentifier.name, () => {
   });
 
   describe('.is', () => {
+    describe('having a non object', () => {
+      let valueFixture: unknown;
+
+      beforeAll(() => {
+        valueFixture = Symbol();
+      });
+
+      describe('when called', () => {
+        let result: unknown;
+
+        beforeAll(() => {
+          result = LazyServiceIdentifier.is(valueFixture);
+        });
+
+        it('should return false', () => {
+          expect(result).toBe(false);
+        });
+      });
+    });
+
+    describe('having a null object', () => {
+      let valueFixture: null;
+
+      beforeAll(() => {
+        valueFixture = null;
+      });
+
+      describe('when called', () => {
+        let result: unknown;
+
+        beforeAll(() => {
+          result = LazyServiceIdentifier.is(valueFixture);
+        });
+
+        it('should return false', () => {
+          expect(result).toBe(false);
+        });
+      });
+    });
+
     describe('having an object with islazyServiceIdentifierSymbol property', () => {
       let valueFixture: LazyServiceIdentifier;
 
