@@ -7,6 +7,9 @@ import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 jest.mock('./getClassMetadataConstructorArguments');
 jest.mock('./getClassMetadataProperties');
 
+import { Newable } from '@inversifyjs/common';
+
+import { POST_CONSTRUCT, PRE_DESTROY } from '../../reflectMetadata/data/keys';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
 import { ClassElementMetadataKind } from '../models/ClassElementMetadataKind';
 import { ClassMetadata } from '../models/ClassMetadata';
@@ -21,6 +24,8 @@ describe(getClassMetadata.name, () => {
     let propertiesMetadataFixture: Map<string | symbol, ClassElementMetadata>;
     let postConstructMetadataFixture: LegacyMetadata;
     let preDestroyMetadataFixture: LegacyMetadata;
+
+    let typeFixture: Newable;
 
     let result: unknown;
 
@@ -55,6 +60,8 @@ describe(getClassMetadata.name, () => {
         value: 'pre-destroy-value-fixture',
       };
 
+      typeFixture = class {};
+
       (
         getClassMetadataConstructorArguments as jest.Mock<
           typeof getClassMetadataConstructorArguments
@@ -71,11 +78,37 @@ describe(getClassMetadata.name, () => {
         .mockReturnValueOnce(postConstructMetadataFixture)
         .mockReturnValueOnce(preDestroyMetadataFixture);
 
-      result = getClassMetadata(class {});
+      result = getClassMetadata(typeFixture);
     });
 
     afterAll(() => {
       jest.clearAllMocks();
+    });
+
+    it('should call getReflectMetadata()', () => {
+      expect(getReflectMetadata).toHaveBeenCalledTimes(2);
+      expect(getReflectMetadata).toHaveBeenNthCalledWith(
+        1,
+        typeFixture,
+        POST_CONSTRUCT,
+      );
+      expect(getReflectMetadata).toHaveBeenNthCalledWith(
+        2,
+        typeFixture,
+        PRE_DESTROY,
+      );
+    });
+
+    it('should call getClassMetadataConstructorArguments()', () => {
+      expect(getClassMetadataConstructorArguments).toHaveBeenCalledTimes(1);
+      expect(getClassMetadataConstructorArguments).toHaveBeenCalledWith(
+        typeFixture,
+      );
+    });
+
+    it('should call getClassMetadataProperties()', () => {
+      expect(getClassMetadataProperties).toHaveBeenCalledTimes(1);
+      expect(getClassMetadataProperties).toHaveBeenCalledWith(typeFixture);
     });
 
     it('should return ClassMetadata', () => {

@@ -111,7 +111,7 @@ describe(getClassMetadataProperties.name, () => {
       );
     });
 
-    it('should return an empty Map', () => {
+    it('should return a Map', () => {
       const expected: Map<string | symbol, ClassElementMetadata> = new Map([
         [legacyMetadataMapPropertyFixture, classElementMetadataFixture],
       ]);
@@ -185,7 +185,7 @@ describe(getClassMetadataProperties.name, () => {
       );
     });
 
-    it('should return an empty Map', () => {
+    it('should return a Map', () => {
       const expected: Map<string | symbol, ClassElementMetadata> = new Map([
         [legacyMetadataMapPropertyFixture, classElementMetadataFixture],
       ]);
