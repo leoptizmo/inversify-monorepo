@@ -1,5 +1,11 @@
 # @inversifyjs/common
 
+## 1.3.0
+
+### Minor Changes
+
+- 611f75f: Updated `ServiceIdentifier` to allow `Function`
+
 ## 1.2.1
 
 ### Patch Changes
