@@ -1,4 +1,5 @@
 import { getClassMetadata } from './metadata/calculations/getClassMetadata';
+import { getClassMetadataFromMetadataReader } from './metadata/calculations/getClassMetadataFromMetadataReader';
 import { ClassElementMetadata } from './metadata/models/ClassElementMetadata';
 import { ClassElementMetadataKind } from './metadata/models/ClassElementMetadataKind';
 import { ClassMetadata } from './metadata/models/ClassMetadata';
@@ -20,4 +21,8 @@ export type {
   UnmanagedClassElementMetadata,
 };
 
-export { ClassElementMetadataKind, getClassMetadata };
+export {
+  ClassElementMetadataKind,
+  getClassMetadata,
+  getClassMetadataFromMetadataReader,
+};

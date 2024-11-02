@@ -1,58 +1,26 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
-jest.mock('@inversifyjs/reflect-metadata-utils');
-
-import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
-
 jest.mock('./getClassElementMetadataFromLegacyMetadata');
 
 import { Newable } from '@inversifyjs/common';
 
-import { TAGGED_PROP } from '../../reflectMetadata/data/keys';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
 import { ClassElementMetadataKind } from '../models/ClassElementMetadataKind';
 import { LegacyMetadata } from '../models/LegacyMetadata';
 import { LegacyMetadataMap } from '../models/LegacyMetadataMap';
+import { LegacyMetadataReader } from '../models/LegacyMetadataReader';
 import { getClassElementMetadataFromLegacyMetadata } from './getClassElementMetadataFromLegacyMetadata';
-import { getClassMetadataProperties } from './getClassMetadataProperties';
+import { getClassMetadataPropertiesFromMetadataReader } from './getClassMetadataPropertiesFromMetadataReader';
 
-describe(getClassMetadataProperties.name, () => {
-  describe('when called, and getReflectMetadata returns undefined', () => {
-    let typeFixture: Newable;
-
-    let result: unknown;
-
-    beforeAll(() => {
-      typeFixture = class {};
-
-      (
-        getReflectMetadata as jest.Mock<typeof getReflectMetadata>
-      ).mockReturnValueOnce(undefined);
-
-      result = getClassMetadataProperties(typeFixture);
-    });
-
-    afterAll(() => {
-      jest.clearAllMocks();
-    });
-
-    it('should call getReflectMetadata()', () => {
-      expect(getReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(getReflectMetadata).toHaveBeenCalledWith(typeFixture, TAGGED_PROP);
-    });
-
-    it('should return an empty Map', () => {
-      expect(result).toStrictEqual(new Map());
-    });
-  });
-
-  describe('when called, and getReflectMetadata returns LegacyMetadataMap with a symbol property', () => {
+describe(getClassMetadataPropertiesFromMetadataReader.name, () => {
+  describe('when called, and metadataReader.getPropertiesMetadata() returns LegacyMetadataMap with a symbol property', () => {
     let legacyMetadataMapPropertyFixture: string | symbol;
     let legacyMetadataListFixture: LegacyMetadata[];
 
     let classElementMetadataFixture: ClassElementMetadata;
 
     let typeFixture: Newable;
+    let metadataReaderMock: jest.Mocked<LegacyMetadataReader>;
 
     let result: unknown;
 
@@ -76,13 +44,18 @@ describe(getClassMetadataProperties.name, () => {
 
       typeFixture = class {};
 
+      metadataReaderMock = {
+        getConstructorMetadata: jest.fn(),
+        getPropertiesMetadata: jest.fn(),
+      };
+
       const legacyMetadataMap: LegacyMetadataMap = {
         [legacyMetadataMapPropertyFixture]: legacyMetadataListFixture,
       };
 
-      (
-        getReflectMetadata as jest.Mock<typeof getReflectMetadata>
-      ).mockReturnValueOnce(legacyMetadataMap);
+      metadataReaderMock.getPropertiesMetadata.mockReturnValueOnce(
+        legacyMetadataMap,
+      );
 
       (
         getClassElementMetadataFromLegacyMetadata as jest.Mock<
@@ -90,16 +63,21 @@ describe(getClassMetadataProperties.name, () => {
         >
       ).mockReturnValueOnce(classElementMetadataFixture);
 
-      result = getClassMetadataProperties(typeFixture);
+      result = getClassMetadataPropertiesFromMetadataReader(
+        typeFixture,
+        metadataReaderMock,
+      );
     });
 
     afterAll(() => {
       jest.clearAllMocks();
     });
 
-    it('should call getReflectMetadata()', () => {
-      expect(getReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(getReflectMetadata).toHaveBeenCalledWith(typeFixture, TAGGED_PROP);
+    it('should call metadataReader.getPropertiesMetadata()', () => {
+      expect(metadataReaderMock.getPropertiesMetadata).toHaveBeenCalledTimes(1);
+      expect(metadataReaderMock.getPropertiesMetadata).toHaveBeenCalledWith(
+        typeFixture,
+      );
     });
 
     it('should call getClassElementMetadataFromLegacyMetadata()', () => {
@@ -120,13 +98,14 @@ describe(getClassMetadataProperties.name, () => {
     });
   });
 
-  describe('when called, and getReflectMetadata returns LegacyMetadataMap with a string property', () => {
+  describe('when called, and metadataReader.getPropertiesMetadata() returns LegacyMetadataMap with a string property', () => {
     let legacyMetadataMapPropertyFixture: string | symbol;
     let legacyMetadataListFixture: LegacyMetadata[];
 
     let classElementMetadataFixture: ClassElementMetadata;
 
     let typeFixture: Newable;
+    let metadataReaderMock: jest.Mocked<LegacyMetadataReader>;
 
     let result: unknown;
 
@@ -149,14 +128,18 @@ describe(getClassMetadataProperties.name, () => {
       };
 
       typeFixture = class {};
+      metadataReaderMock = {
+        getConstructorMetadata: jest.fn(),
+        getPropertiesMetadata: jest.fn(),
+      };
 
       const legacyMetadataMap: LegacyMetadataMap = {
         [legacyMetadataMapPropertyFixture]: legacyMetadataListFixture,
       };
 
-      (
-        getReflectMetadata as jest.Mock<typeof getReflectMetadata>
-      ).mockReturnValueOnce(legacyMetadataMap);
+      metadataReaderMock.getPropertiesMetadata.mockReturnValueOnce(
+        legacyMetadataMap,
+      );
 
       (
         getClassElementMetadataFromLegacyMetadata as jest.Mock<
@@ -164,16 +147,21 @@ describe(getClassMetadataProperties.name, () => {
         >
       ).mockReturnValueOnce(classElementMetadataFixture);
 
-      result = getClassMetadataProperties(typeFixture);
+      result = getClassMetadataPropertiesFromMetadataReader(
+        typeFixture,
+        metadataReaderMock,
+      );
     });
 
     afterAll(() => {
       jest.clearAllMocks();
     });
 
-    it('should call getReflectMetadata()', () => {
-      expect(getReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(getReflectMetadata).toHaveBeenCalledWith(typeFixture, TAGGED_PROP);
+    it('should call metadataReader.getPropertiesMetadata()', () => {
+      expect(metadataReaderMock.getPropertiesMetadata).toHaveBeenCalledTimes(1);
+      expect(metadataReaderMock.getPropertiesMetadata).toHaveBeenCalledWith(
+        typeFixture,
+      );
     });
 
     it('should call getClassElementMetadataFromLegacyMetadata()', () => {

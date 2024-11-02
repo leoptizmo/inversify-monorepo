@@ -4,8 +4,8 @@ jest.mock('@inversifyjs/reflect-metadata-utils');
 
 import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
-jest.mock('./getClassMetadataConstructorArguments');
-jest.mock('./getClassMetadataProperties');
+jest.mock('./getClassMetadataConstructorArgumentsFromMetadataReader');
+jest.mock('./getClassMetadataPropertiesFromMetadataReader');
 
 import { Newable } from '@inversifyjs/common';
 
@@ -14,11 +14,12 @@ import { ClassElementMetadata } from '../models/ClassElementMetadata';
 import { ClassElementMetadataKind } from '../models/ClassElementMetadataKind';
 import { ClassMetadata } from '../models/ClassMetadata';
 import { LegacyMetadata } from '../models/LegacyMetadata';
-import { getClassMetadata } from './getClassMetadata';
-import { getClassMetadataConstructorArguments } from './getClassMetadataConstructorArguments';
-import { getClassMetadataProperties } from './getClassMetadataProperties';
+import { LegacyMetadataReader } from '../models/LegacyMetadataReader';
+import { getClassMetadataConstructorArgumentsFromMetadataReader } from './getClassMetadataConstructorArgumentsFromMetadataReader';
+import { getClassMetadataFromMetadataReader } from './getClassMetadataFromMetadataReader';
+import { getClassMetadataPropertiesFromMetadataReader } from './getClassMetadataPropertiesFromMetadataReader';
 
-describe(getClassMetadata.name, () => {
+describe(getClassMetadataFromMetadataReader.name, () => {
   describe('when called, and getReflectMetadata() returns LegacyMetadata', () => {
     let constructorArgumentsMetadataFixture: ClassElementMetadata[];
     let propertiesMetadataFixture: Map<string | symbol, ClassElementMetadata>;
@@ -26,6 +27,7 @@ describe(getClassMetadata.name, () => {
     let preDestroyMetadataFixture: LegacyMetadata;
 
     let typeFixture: Newable;
+    let metadataReaderFixture: LegacyMetadataReader;
 
     let result: unknown;
 
@@ -61,16 +63,17 @@ describe(getClassMetadata.name, () => {
       };
 
       typeFixture = class {};
+      metadataReaderFixture = Symbol() as unknown as LegacyMetadataReader;
 
       (
-        getClassMetadataConstructorArguments as jest.Mock<
-          typeof getClassMetadataConstructorArguments
+        getClassMetadataConstructorArgumentsFromMetadataReader as jest.Mock<
+          typeof getClassMetadataConstructorArgumentsFromMetadataReader
         >
       ).mockReturnValueOnce(constructorArgumentsMetadataFixture);
 
       (
-        getClassMetadataProperties as jest.Mock<
-          typeof getClassMetadataProperties
+        getClassMetadataPropertiesFromMetadataReader as jest.Mock<
+          typeof getClassMetadataPropertiesFromMetadataReader
         >
       ).mockReturnValueOnce(propertiesMetadataFixture);
 
@@ -78,7 +81,10 @@ describe(getClassMetadata.name, () => {
         .mockReturnValueOnce(postConstructMetadataFixture)
         .mockReturnValueOnce(preDestroyMetadataFixture);
 
-      result = getClassMetadata(typeFixture);
+      result = getClassMetadataFromMetadataReader(
+        typeFixture,
+        metadataReaderFixture,
+      );
     });
 
     afterAll(() => {
@@ -99,16 +105,23 @@ describe(getClassMetadata.name, () => {
       );
     });
 
-    it('should call getClassMetadataConstructorArguments()', () => {
-      expect(getClassMetadataConstructorArguments).toHaveBeenCalledTimes(1);
-      expect(getClassMetadataConstructorArguments).toHaveBeenCalledWith(
-        typeFixture,
-      );
+    it('should call getClassMetadataConstructorArgumentsFromMetadataReader()', () => {
+      expect(
+        getClassMetadataConstructorArgumentsFromMetadataReader,
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        getClassMetadataConstructorArgumentsFromMetadataReader,
+      ).toHaveBeenCalledWith(typeFixture, metadataReaderFixture);
     });
 
-    it('should call getClassMetadataProperties()', () => {
-      expect(getClassMetadataProperties).toHaveBeenCalledTimes(1);
-      expect(getClassMetadataProperties).toHaveBeenCalledWith(typeFixture);
+    it('should call getClassMetadataPropertiesFromMetadataReader()', () => {
+      expect(
+        getClassMetadataPropertiesFromMetadataReader,
+      ).toHaveBeenCalledTimes(1);
+      expect(getClassMetadataPropertiesFromMetadataReader).toHaveBeenCalledWith(
+        typeFixture,
+        metadataReaderFixture,
+      );
     });
 
     it('should return ClassMetadata', () => {
