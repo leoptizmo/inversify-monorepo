@@ -1,4 +1,4 @@
-export interface LegacyMetadata {
+export interface LegacyMetadata<TValue = unknown> {
   key: string | number | symbol;
-  value: unknown;
+  value: TValue;
 }

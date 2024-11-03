@@ -1,7 +1,6 @@
 // Used for named bindings
 export const NAMED_TAG: string = 'named';
 
-// The name of the target at design time
 export const NAME_TAG: string = 'name';
 
 // The for unmanaged injections (in base classes when using inheritance)
