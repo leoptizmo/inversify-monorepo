@@ -7,9 +7,7 @@ import { LegacyMetadata } from '../models/LegacyMetadata';
 import { getClassMetadataConstructorArguments } from './getClassMetadataConstructorArguments';
 import { getClassMetadataProperties } from './getClassMetadataProperties';
 
-export function getClassMetadata<TInstance, TArgs extends unknown[]>(
-  type: Newable<TInstance, TArgs>,
-): ClassMetadata {
+export function getClassMetadata(type: Newable): ClassMetadata {
   const postConstructMetadata: LegacyMetadata | undefined =
     getReflectMetadata<LegacyMetadata>(type, POST_CONSTRUCT);
   const preDestroyMetadata: LegacyMetadata | undefined =

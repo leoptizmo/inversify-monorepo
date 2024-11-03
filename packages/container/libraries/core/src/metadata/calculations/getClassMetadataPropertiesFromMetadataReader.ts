@@ -6,11 +6,8 @@ import { LegacyMetadataMap } from '../models/LegacyMetadataMap';
 import { LegacyMetadataReader } from '../models/LegacyMetadataReader';
 import { getClassElementMetadataFromLegacyMetadata } from './getClassElementMetadataFromLegacyMetadata';
 
-export function getClassMetadataPropertiesFromMetadataReader<
-  TInstance,
-  TArgs extends unknown[],
->(
-  type: Newable<TInstance, TArgs>,
+export function getClassMetadataPropertiesFromMetadataReader(
+  type: Newable,
   metadataReader: LegacyMetadataReader,
 ): Map<string | symbol, ClassElementMetadata> {
   const propertiesLegacyMetadata: LegacyMetadataMap =

@@ -7,8 +7,8 @@ import { LegacyMetadata } from '../models/LegacyMetadata';
 import { LegacyMetadataMap } from '../models/LegacyMetadataMap';
 import { getClassElementMetadataFromLegacyMetadata } from './getClassElementMetadataFromLegacyMetadata';
 
-export function getClassMetadataProperties<TInstance, TArgs extends unknown[]>(
-  type: Newable<TInstance, TArgs>,
+export function getClassMetadataProperties(
+  type: Newable,
 ): Map<string | symbol, ClassElementMetadata> {
   const propertiesLegacyMetadata: LegacyMetadataMap | undefined =
     getReflectMetadata(type, TAGGED_PROP);
