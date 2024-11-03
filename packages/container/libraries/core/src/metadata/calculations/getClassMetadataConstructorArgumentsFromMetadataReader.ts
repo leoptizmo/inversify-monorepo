@@ -6,11 +6,8 @@ import { LegacyMetadataReader } from '../models/LegacyMetadataReader';
 import { getClassElementMetadataFromLegacyMetadata } from './getClassElementMetadataFromLegacyMetadata';
 import { getClassElementMetadataFromNewable } from './getClassElementMetadataFromNewable';
 
-export function getClassMetadataConstructorArgumentsFromMetadataReader<
-  TInstance,
-  TArgs extends unknown[],
->(
-  type: Newable<TInstance, TArgs>,
+export function getClassMetadataConstructorArgumentsFromMetadataReader(
+  type: Newable,
   metadataReader: LegacyMetadataReader,
 ): ClassElementMetadata[] {
   const legacyConstructorMetadata: LegacyConstructorMetadata =

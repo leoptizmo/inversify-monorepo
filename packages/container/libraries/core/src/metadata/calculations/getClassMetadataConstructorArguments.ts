@@ -7,10 +7,9 @@ import { LegacyMetadataMap } from '../models/LegacyMetadataMap';
 import { getClassElementMetadataFromLegacyMetadata } from './getClassElementMetadataFromLegacyMetadata';
 import { getClassElementMetadataFromNewable } from './getClassElementMetadataFromNewable';
 
-export function getClassMetadataConstructorArguments<
-  TInstance,
-  TArgs extends unknown[],
->(type: Newable<TInstance, TArgs>): ClassElementMetadata[] {
+export function getClassMetadataConstructorArguments(
+  type: Newable,
+): ClassElementMetadata[] {
   const typescriptMetadataList: Newable[] | undefined = getReflectMetadata(
     type,
     DESIGN_PARAM_TYPES,
