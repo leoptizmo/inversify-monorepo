@@ -4,8 +4,8 @@ import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 import { DESIGN_PARAM_TYPES, TAGGED } from '../../reflectMetadata/data/keys';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
 import { LegacyMetadataMap } from '../models/LegacyMetadataMap';
-import { getClassElementMetadataFromLegacyMetadata } from './getClassElementMetadataFromLegacyMetadata';
 import { getClassElementMetadataFromNewable } from './getClassElementMetadataFromNewable';
+import { getConstructorArgumentMetadataFromLegacyMetadata } from './getConstructorArgumentMetadataFromLegacyMetadata';
 
 export function getClassMetadataConstructorArguments(
   type: Newable,
@@ -27,7 +27,11 @@ export function getClassMetadataConstructorArguments(
       const index: number = parseInt(stringifiedIndex);
 
       constructorArgumentsMetadata[index] =
-        getClassElementMetadataFromLegacyMetadata(metadataList);
+        getConstructorArgumentMetadataFromLegacyMetadata(
+          type,
+          index,
+          metadataList,
+        );
     }
   }
 

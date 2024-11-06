@@ -4,7 +4,7 @@ import { ClassElementMetadata } from '../models/ClassElementMetadata';
 import { LegacyMetadata } from '../models/LegacyMetadata';
 import { LegacyMetadataMap } from '../models/LegacyMetadataMap';
 import { LegacyMetadataReader } from '../models/LegacyMetadataReader';
-import { getClassElementMetadataFromLegacyMetadata } from './getClassElementMetadataFromLegacyMetadata';
+import { getPropertyMetadataFromLegacyMetadata } from './getPropertyMetadataFromLegacyMetadata';
 
 export function getClassMetadataPropertiesFromMetadataReader(
   type: Newable,
@@ -22,7 +22,7 @@ export function getClassMetadataPropertiesFromMetadataReader(
     ] as LegacyMetadata[];
     propertiesMetadata.set(
       property,
-      getClassElementMetadataFromLegacyMetadata(legacyMetadata),
+      getPropertyMetadataFromLegacyMetadata(type, property, legacyMetadata),
     );
   }
 

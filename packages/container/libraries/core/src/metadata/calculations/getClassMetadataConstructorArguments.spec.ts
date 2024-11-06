@@ -5,17 +5,17 @@ jest.mock('@inversifyjs/reflect-metadata-utils');
 import { Newable } from '@inversifyjs/common';
 import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
-jest.mock('./getClassElementMetadataFromLegacyMetadata');
 jest.mock('./getClassElementMetadataFromNewable');
+jest.mock('./getConstructorArgumentMetadataFromLegacyMetadata');
 
 import { DESIGN_PARAM_TYPES, TAGGED } from '../../reflectMetadata/data/keys';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
 import { ClassElementMetadataKind } from '../models/ClassElementMetadataKind';
 import { LegacyMetadata } from '../models/LegacyMetadata';
 import { LegacyMetadataMap } from '../models/LegacyMetadataMap';
-import { getClassElementMetadataFromLegacyMetadata } from './getClassElementMetadataFromLegacyMetadata';
 import { getClassElementMetadataFromNewable } from './getClassElementMetadataFromNewable';
 import { getClassMetadataConstructorArguments } from './getClassMetadataConstructorArguments';
+import { getConstructorArgumentMetadataFromLegacyMetadata } from './getConstructorArgumentMetadataFromLegacyMetadata';
 
 describe(getClassMetadataConstructorArguments.name, () => {
   describe('when called, and getReflectMetadata() provides typescript metadata', () => {
@@ -112,8 +112,8 @@ describe(getClassMetadataConstructorArguments.name, () => {
         .mockReturnValueOnce(legacyMetadataMap);
 
       (
-        getClassElementMetadataFromLegacyMetadata as jest.Mock<
-          typeof getClassElementMetadataFromLegacyMetadata
+        getConstructorArgumentMetadataFromLegacyMetadata as jest.Mock<
+          typeof getConstructorArgumentMetadataFromLegacyMetadata
         >
       ).mockReturnValueOnce(classElementMetadataFixture);
 
@@ -138,13 +138,13 @@ describe(getClassMetadataConstructorArguments.name, () => {
       );
     });
 
-    it('should call getClassElementMetadataFromLegacyMetadata()', () => {
-      expect(getClassElementMetadataFromLegacyMetadata).toHaveBeenCalledTimes(
-        1,
-      );
-      expect(getClassElementMetadataFromLegacyMetadata).toHaveBeenCalledWith(
-        legacyMetadataListFixture,
-      );
+    it('should call getConstructorArgumentMetadataFromLegacyMetadata()', () => {
+      expect(
+        getConstructorArgumentMetadataFromLegacyMetadata,
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        getConstructorArgumentMetadataFromLegacyMetadata,
+      ).toHaveBeenCalledWith(typeFixture, 0, legacyMetadataListFixture);
     });
 
     it('should return ClassElementMetadata[]', () => {
@@ -190,8 +190,8 @@ describe(getClassMetadataConstructorArguments.name, () => {
         .mockReturnValueOnce(legacyMetadataMap);
 
       (
-        getClassElementMetadataFromLegacyMetadata as jest.Mock<
-          typeof getClassElementMetadataFromLegacyMetadata
+        getConstructorArgumentMetadataFromLegacyMetadata as jest.Mock<
+          typeof getConstructorArgumentMetadataFromLegacyMetadata
         >
       ).mockReturnValueOnce(classElementMetadataFixture);
 
@@ -216,13 +216,13 @@ describe(getClassMetadataConstructorArguments.name, () => {
       );
     });
 
-    it('should call getClassElementMetadataFromLegacyMetadata()', () => {
-      expect(getClassElementMetadataFromLegacyMetadata).toHaveBeenCalledTimes(
-        1,
-      );
-      expect(getClassElementMetadataFromLegacyMetadata).toHaveBeenCalledWith(
-        legacyMetadataListFixture,
-      );
+    it('should call getConstructorArgumentMetadataFromLegacyMetadata()', () => {
+      expect(
+        getConstructorArgumentMetadataFromLegacyMetadata,
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        getConstructorArgumentMetadataFromLegacyMetadata,
+      ).toHaveBeenCalledWith(typeFixture, 0, legacyMetadataListFixture);
     });
 
     it('should not call getClassElementMetadataFromNewable()', () => {
