@@ -3,8 +3,8 @@ import { Newable } from '@inversifyjs/common';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
 import { LegacyConstructorMetadata } from '../models/LegacyConstructorMetadata';
 import { LegacyMetadataReader } from '../models/LegacyMetadataReader';
-import { getClassElementMetadataFromLegacyMetadata } from './getClassElementMetadataFromLegacyMetadata';
 import { getClassElementMetadataFromNewable } from './getClassElementMetadataFromNewable';
+import { getConstructorArgumentMetadataFromLegacyMetadata } from './getConstructorArgumentMetadataFromLegacyMetadata';
 
 export function getClassMetadataConstructorArgumentsFromMetadataReader(
   type: Newable,
@@ -21,7 +21,11 @@ export function getClassMetadataConstructorArgumentsFromMetadataReader(
     const index: number = parseInt(stringifiedIndex);
 
     constructorArgumentsMetadata[index] =
-      getClassElementMetadataFromLegacyMetadata(metadataList);
+      getConstructorArgumentMetadataFromLegacyMetadata(
+        type,
+        index,
+        metadataList,
+      );
   }
 
   if (legacyConstructorMetadata.compilerGeneratedMetadata !== undefined) {

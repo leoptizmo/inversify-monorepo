@@ -1,4 +1,4 @@
-import { LazyServiceIdentifier, ServiceIdentifier } from '@inversifyjs/common';
+import { ServiceIdentifier } from '@inversifyjs/common';
 
 import { LegacyMetadata } from '../../metadata/models/LegacyMetadata';
 import { MetadataName } from '../../metadata/models/MetadataName';
@@ -8,7 +8,7 @@ import { LegacyTargetType } from './LegacyTargetType';
 
 export interface LegacyTarget {
   id: number;
-  serviceIdentifier: ServiceIdentifier | LazyServiceIdentifier;
+  serviceIdentifier: ServiceIdentifier;
   type: LegacyTargetType;
   name: LegacyQueryableString;
   identifier: string | symbol;

@@ -5,7 +5,7 @@ import { TAGGED_PROP } from '../../reflectMetadata/data/keys';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
 import { LegacyMetadata } from '../models/LegacyMetadata';
 import { LegacyMetadataMap } from '../models/LegacyMetadataMap';
-import { getClassElementMetadataFromLegacyMetadata } from './getClassElementMetadataFromLegacyMetadata';
+import { getPropertyMetadataFromLegacyMetadata } from './getPropertyMetadataFromLegacyMetadata';
 
 export function getClassMetadataProperties(
   type: Newable,
@@ -23,7 +23,7 @@ export function getClassMetadataProperties(
       ] as LegacyMetadata[];
       propertiesMetadata.set(
         property,
-        getClassElementMetadataFromLegacyMetadata(legacyMetadata),
+        getPropertyMetadataFromLegacyMetadata(type, property, legacyMetadata),
       );
     }
   }

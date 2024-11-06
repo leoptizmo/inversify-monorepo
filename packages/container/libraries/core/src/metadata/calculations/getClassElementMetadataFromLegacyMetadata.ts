@@ -1,5 +1,7 @@
 import { LazyServiceIdentifier, ServiceIdentifier } from '@inversifyjs/common';
 
+import { InversifyCoreError } from '../../error/models/InversifyCoreError';
+import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
 import {
   INJECT_TAG,
   MULTI_INJECT_TAG,
@@ -39,11 +41,14 @@ export function getClassElementMetadataFromLegacyMetadata(
   }
 
   if (multiInjectMetadata === undefined && injectMetadata === undefined) {
-    throw new Error('Expected @inject, @multiInject or @unmanaged metadata');
+    throw new InversifyCoreError(
+      InversifyCoreErrorKind.missingInjectionDecorator,
+      'Expected @inject, @multiInject or @unmanaged metadata',
+    );
   }
 
   const nameMetadata: LegacyMetadata | undefined = metadataList.find(
-    (metadata: LegacyMetadata): boolean => metadata.key === NAME_TAG,
+    (metadata: LegacyMetadata): boolean => metadata.key === NAMED_TAG,
   );
 
   const optionalMetadata: LegacyMetadata | undefined = metadataList.find(
@@ -51,7 +56,7 @@ export function getClassElementMetadataFromLegacyMetadata(
   );
 
   const targetNameMetadata: LegacyMetadata | undefined = metadataList.find(
-    (metadata: LegacyMetadata): boolean => metadata.key === NAMED_TAG,
+    (metadata: LegacyMetadata): boolean => metadata.key === NAME_TAG,
   );
 
   const managedClassElementMetadata: ManagedClassElementMetadata = {
@@ -90,7 +95,8 @@ function getUnmanagedClassElementMetadata(
   multiInjectMetadata: LegacyMetadata | undefined,
 ): UnmanagedClassElementMetadata {
   if (multiInjectMetadata !== undefined || injectMetadata !== undefined) {
-    throw new Error(
+    throw new InversifyCoreError(
+      InversifyCoreErrorKind.missingInjectionDecorator,
       'Expected a single @inject, @multiInject or @unmanaged metadata',
     );
   }
