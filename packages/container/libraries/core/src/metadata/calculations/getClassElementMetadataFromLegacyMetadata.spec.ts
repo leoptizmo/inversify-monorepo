@@ -2,6 +2,8 @@ import { beforeAll, describe, expect, it } from '@jest/globals';
 
 import { ServiceIdentifier } from '@inversifyjs/common';
 
+import { InversifyCoreError } from '../../error/models/InversifyCoreError';
+import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
 import {
   INJECT_TAG,
   MULTI_INJECT_TAG,
@@ -38,11 +40,12 @@ describe(getClassElementMetadataFromLegacyMetadata.name, () => {
       });
 
       it('should throw an Error', () => {
-        const expectedErrorProperties: Partial<Error> = {
+        const expectedErrorProperties: Partial<InversifyCoreError> = {
+          kind: InversifyCoreErrorKind.missingInjectionDecorator,
           message: 'Expected @inject, @multiInject or @unmanaged metadata',
         };
 
-        expect(result).toBeInstanceOf(Error);
+        expect(result).toBeInstanceOf(InversifyCoreError);
         expect(result).toStrictEqual(
           expect.objectContaining(expectedErrorProperties),
         );
@@ -121,12 +124,13 @@ describe(getClassElementMetadataFromLegacyMetadata.name, () => {
         });
 
         it('should throw an Error', () => {
-          const expectedErrorProperties: Partial<Error> = {
+          const expectedErrorProperties: Partial<InversifyCoreError> = {
+            kind: InversifyCoreErrorKind.missingInjectionDecorator,
             message:
               'Expected a single @inject, @multiInject or @unmanaged metadata',
           };
 
-          expect(result).toBeInstanceOf(Error);
+          expect(result).toBeInstanceOf(InversifyCoreError);
           expect(result).toStrictEqual(
             expect.objectContaining(expectedErrorProperties),
           );
@@ -225,7 +229,7 @@ describe(getClassElementMetadataFromLegacyMetadata.name, () => {
           value: 'customTagValue',
         };
         nameMetadataFixture = {
-          key: NAME_TAG,
+          key: NAMED_TAG,
           value: 'name-fixture',
         };
         optionalMetadataFixture = {
@@ -233,7 +237,7 @@ describe(getClassElementMetadataFromLegacyMetadata.name, () => {
           value: true,
         };
         targetNameMetadataFixture = {
-          key: NAMED_TAG,
+          key: NAME_TAG,
           value: 'target-name-fixture',
         };
         metadataListFixture = [
