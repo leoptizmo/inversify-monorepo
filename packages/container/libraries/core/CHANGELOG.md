@@ -1,5 +1,17 @@
 # @inversifyjs/core
 
+## 1.2.0
+
+### Minor Changes
+
+- fca62ce: Added `LegacyTarget` model.
+- fca62ce: Added `getTargets`.
+- c588a5a: Added `getClassMetadataFromMetadataReader`.
+
+### Patch Changes
+
+- 6469c67: Updated `getClassMetadata` to correctly fetch name and target names
+
 ## 1.1.2
 
 ### Patch Changes
