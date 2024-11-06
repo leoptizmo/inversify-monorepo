@@ -64,8 +64,12 @@ export class LegacyTargetImpl implements LegacyTarget {
     return this.#type;
   }
 
-  public get serviceIdentifier(): ServiceIdentifier | LazyServiceIdentifier {
-    return this.#metadata.value;
+  public get serviceIdentifier(): ServiceIdentifier {
+    if (LazyServiceIdentifier.is(this.#metadata.value)) {
+      return this.#metadata.value.unwrap();
+    } else {
+      return this.#metadata.value;
+    }
   }
 
   public getCustomTags(): LegacyMetadata[] | null {

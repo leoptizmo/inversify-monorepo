@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 jest.mock('../../metadata/calculations/getLegacyMetadata');
 jest.mock('../calculations/getTargetId');
 
-import { ServiceIdentifier } from '@inversifyjs/common';
+import { LazyServiceIdentifier, ServiceIdentifier } from '@inversifyjs/common';
 
 import { getLegacyMetadata } from '../../metadata/calculations/getLegacyMetadata';
 import { ClassElementMetadataKind } from '../../metadata/models/ClassElementMetadataKind';
@@ -156,15 +156,83 @@ describe(LegacyTargetImpl.name, () => {
   });
 
   describe('.serviceIdentifier', () => {
-    describe('when called', () => {
-      let result: unknown;
+    describe('having a LegacyTargetImpl with class element metadata with serviceIdentifier', () => {
+      let serviceIdentifierFixture: ServiceIdentifier;
+      let legacyTargetImpl: LegacyTargetImpl;
 
       beforeAll(() => {
-        result = legacyTargetImpl.serviceIdentifier;
+        serviceIdentifierFixture = 'service-id-fixture';
+        const identifierFixture: string | symbol = 'identifier-fixture';
+
+        const managedClassElementMetadataFixture: ManagedClassElementMetadata =
+          {
+            kind: ClassElementMetadataKind.multipleInjection,
+            name: 'name-fixture',
+            optional: false,
+            tags: new Map(),
+            targetName: undefined,
+            value: serviceIdentifierFixture,
+          };
+
+        const legacyTargetTypeFixture: LegacyTargetType = 'ClassProperty';
+
+        legacyTargetImpl = new LegacyTargetImpl(
+          identifierFixture,
+          managedClassElementMetadataFixture,
+          legacyTargetTypeFixture,
+        );
       });
 
-      it('should return target serviceIdentifier', () => {
-        expect(result).toBe(managedClassElementMetadataFixture.value);
+      describe('when called', () => {
+        let result: unknown;
+
+        beforeAll(() => {
+          result = legacyTargetImpl.serviceIdentifier;
+        });
+
+        it('should return service identifier', () => {
+          expect(result).toBe(serviceIdentifierFixture);
+        });
+      });
+    });
+
+    describe('having a LegacyTargetImpl with class element metadata with lazy service identifier', () => {
+      let serviceIdentifierFixture: ServiceIdentifier;
+      let legacyTargetImpl: LegacyTargetImpl;
+
+      beforeAll(() => {
+        serviceIdentifierFixture = 'service-id-fixture';
+        const identifierFixture: string | symbol = 'identifier-fixture';
+
+        const managedClassElementMetadataFixture: ManagedClassElementMetadata =
+          {
+            kind: ClassElementMetadataKind.multipleInjection,
+            name: undefined,
+            optional: false,
+            tags: new Map(),
+            targetName: undefined,
+            value: new LazyServiceIdentifier(() => serviceIdentifierFixture),
+          };
+
+        const legacyTargetTypeFixture: LegacyTargetType = 'ClassProperty';
+
+        legacyTargetImpl = new LegacyTargetImpl(
+          identifierFixture,
+          managedClassElementMetadataFixture,
+          legacyTargetTypeFixture,
+        );
+      });
+
+      describe('when called', () => {
+        let result: unknown;
+
+        beforeAll(() => {
+          result = legacyTargetImpl.serviceIdentifier;
+        });
+
+        it('should return null', () => {
+          expect(result).toBe(serviceIdentifierFixture);
+        });
       });
     });
   });
