@@ -37,15 +37,25 @@ export function getTargetsFromMetadataProviders(
 
     for (const constructorArgument of classMetadata.constructorArguments) {
       if (constructorArgument.kind !== ClassElementMetadataKind.unmanaged) {
+        const targetName: string = constructorArgument.targetName ?? '';
+
         targets.push(
-          new LegacyTargetImpl('', constructorArgument, 'ConstructorArgument'),
+          new LegacyTargetImpl(
+            targetName,
+            constructorArgument,
+            'ConstructorArgument',
+          ),
         );
       }
     }
 
     for (const [property, metadata] of classMetadata.properties) {
       if (metadata.kind !== ClassElementMetadataKind.unmanaged) {
-        targets.push(new LegacyTargetImpl(property, metadata, 'ClassProperty'));
+        const targetName: string | symbol = metadata.targetName ?? property;
+
+        targets.push(
+          new LegacyTargetImpl(targetName, metadata, 'ClassProperty'),
+        );
       }
     }
 
