@@ -46,10 +46,6 @@
     }
   },
   "name": "@inversifyjs/core",
-  "os": [
-    "darwin",
-    "linux"
-  ],
   "publishConfig": {
     "access": "public"
   },
