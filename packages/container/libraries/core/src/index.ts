@@ -1,6 +1,8 @@
 import { getTargets } from './legacyTarget/calculations/getTargets';
 import { LegacyTarget } from './legacyTarget/models/LegacyTarget';
+import { LegacyTargetImpl } from './legacyTarget/models/LegacyTargetImpl';
 import { LegacyTargetType } from './legacyTarget/models/LegacyTargetType';
+import { getClassElementMetadataFromLegacyMetadata } from './metadata/calculations/getClassElementMetadataFromLegacyMetadata';
 import { getClassMetadata } from './metadata/calculations/getClassMetadata';
 import { getClassMetadataFromMetadataReader } from './metadata/calculations/getClassMetadataFromMetadataReader';
 import { ClassElementMetadata } from './metadata/models/ClassElementMetadata';
@@ -36,7 +38,9 @@ export type {
 
 export {
   ClassElementMetadataKind,
+  getClassElementMetadataFromLegacyMetadata,
   getClassMetadata,
   getClassMetadataFromMetadataReader,
   getTargets,
+  LegacyTargetImpl,
 };
