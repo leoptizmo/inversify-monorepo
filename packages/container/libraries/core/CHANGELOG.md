@@ -1,5 +1,14 @@
 # @inversifyjs/core
 
+## 1.3.1
+
+### Patch Changes
+
+- 46b2569: Removed wrong dev engines constraint.
+- Updated dependencies [46b2569]
+  - @inversifyjs/reflect-metadata-utils@0.2.1
+  - @inversifyjs/common@1.3.1
+
 ## 1.3.0
 
 ### Minor Changes

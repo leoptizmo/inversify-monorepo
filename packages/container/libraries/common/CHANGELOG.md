@@ -1,5 +1,11 @@
 # @inversifyjs/common
 
+## 1.3.1
+
+### Patch Changes
+
+- 46b2569: Removed wrong dev engines constraint.
+
 ## 1.3.0
 
 ### Minor Changes
