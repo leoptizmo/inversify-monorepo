@@ -1,5 +1,11 @@
 # @inversifyjs/reflect-metadata-utils
 
+## 0.2.2
+
+### Patch Changes
+
+- 2b629d6: Removed wrong os constraint.
+
 ## 0.2.1
 
 ### Patch Changes
