@@ -1,5 +1,14 @@
 # @inversifyjs/core
 
+## 1.3.2
+
+### Patch Changes
+
+- 2b629d6: Removed wrong os constraint.
+- Updated dependencies [2b629d6]
+  - @inversifyjs/reflect-metadata-utils@0.2.2
+  - @inversifyjs/common@1.3.2
+
 ## 1.3.1
 
 ### Patch Changes
