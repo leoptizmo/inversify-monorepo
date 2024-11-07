@@ -1,5 +1,12 @@
 # @inversifyjs/core
 
+## 1.3.0
+
+### Minor Changes
+
+- 3b6344c: Added `LegacyTargetImpl`.
+- 3b6344c: Added `getClassElementMetadataFromLegacyMetadata`.
+
 ## 1.2.0
 
 ### Minor Changes
