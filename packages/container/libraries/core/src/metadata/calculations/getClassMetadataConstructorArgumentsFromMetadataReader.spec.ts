@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
 import { Newable } from '@inversifyjs/common';
 
+jest.mock('./assertConstructorMetadataArrayFilled');
 jest.mock('./getClassElementMetadataFromNewable');
 jest.mock('./getConstructorArgumentMetadataFromLegacyMetadata');
 
@@ -10,6 +11,7 @@ import { ClassElementMetadataKind } from '../models/ClassElementMetadataKind';
 import { LegacyMetadata } from '../models/LegacyMetadata';
 import { LegacyMetadataMap } from '../models/LegacyMetadataMap';
 import { LegacyMetadataReader } from '../models/LegacyMetadataReader';
+import { assertConstructorMetadataArrayFilled } from './assertConstructorMetadataArrayFilled';
 import { getClassElementMetadataFromNewable } from './getClassElementMetadataFromNewable';
 import { getClassMetadataConstructorArgumentsFromMetadataReader } from './getClassMetadataConstructorArgumentsFromMetadataReader';
 import { getConstructorArgumentMetadataFromLegacyMetadata } from './getConstructorArgumentMetadataFromLegacyMetadata';
@@ -72,6 +74,14 @@ describe(getClassMetadataConstructorArgumentsFromMetadataReader.name, () => {
       expect(getClassElementMetadataFromNewable).toHaveBeenCalledTimes(1);
       expect(getClassElementMetadataFromNewable).toHaveBeenCalledWith(
         typescriptTypeFixture,
+      );
+    });
+
+    it('should call assertConstructorMetadataArrayFilled()', () => {
+      expect(assertConstructorMetadataArrayFilled).toHaveBeenCalledTimes(1);
+      expect(assertConstructorMetadataArrayFilled).toHaveBeenCalledWith(
+        typeFixture,
+        [classElementMetadataFixture],
       );
     });
 
@@ -151,6 +161,14 @@ describe(getClassMetadataConstructorArgumentsFromMetadataReader.name, () => {
       expect(
         getConstructorArgumentMetadataFromLegacyMetadata,
       ).toHaveBeenCalledWith(typeFixture, 0, legacyMetadataListFixture);
+    });
+
+    it('should call assertConstructorMetadataArrayFilled()', () => {
+      expect(assertConstructorMetadataArrayFilled).toHaveBeenCalledTimes(1);
+      expect(assertConstructorMetadataArrayFilled).toHaveBeenCalledWith(
+        typeFixture,
+        [classElementMetadataFixture],
+      );
     });
 
     it('should return ClassElementMetadata[]', () => {
@@ -237,6 +255,14 @@ describe(getClassMetadataConstructorArgumentsFromMetadataReader.name, () => {
 
     it('should not call getClassElementMetadataFromNewable()', () => {
       expect(getClassElementMetadataFromNewable).not.toHaveBeenCalled();
+    });
+
+    it('should call assertConstructorMetadataArrayFilled()', () => {
+      expect(assertConstructorMetadataArrayFilled).toHaveBeenCalledTimes(1);
+      expect(assertConstructorMetadataArrayFilled).toHaveBeenCalledWith(
+        typeFixture,
+        [classElementMetadataFixture],
+      );
     });
 
     it('should return ClassElementMetadata[]', () => {
