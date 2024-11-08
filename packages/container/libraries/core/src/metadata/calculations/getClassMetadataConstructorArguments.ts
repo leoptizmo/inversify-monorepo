@@ -4,6 +4,7 @@ import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 import { DESIGN_PARAM_TYPES, TAGGED } from '../../reflectMetadata/data/keys';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
 import { LegacyMetadataMap } from '../models/LegacyMetadataMap';
+import { assertConstructorMetadataArrayFilled } from './assertConstructorMetadataArrayFilled';
 import { getClassElementMetadataFromNewable } from './getClassElementMetadataFromNewable';
 import { getConstructorArgumentMetadataFromLegacyMetadata } from './getConstructorArgumentMetadataFromLegacyMetadata';
 
@@ -18,7 +19,7 @@ export function getClassMetadataConstructorArguments(
   const constructorParametersLegacyMetadata: LegacyMetadataMap | undefined =
     getReflectMetadata(type, TAGGED);
 
-  const constructorArgumentsMetadata: ClassElementMetadata[] = [];
+  const constructorArgumentsMetadata: (ClassElementMetadata | undefined)[] = [];
 
   if (constructorParametersLegacyMetadata !== undefined) {
     for (const [stringifiedIndex, metadataList] of Object.entries(
@@ -47,6 +48,8 @@ export function getClassMetadataConstructorArguments(
       }
     }
   }
+
+  assertConstructorMetadataArrayFilled(type, constructorArgumentsMetadata);
 
   return constructorArgumentsMetadata;
 }

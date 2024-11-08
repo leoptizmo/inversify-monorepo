@@ -3,6 +3,7 @@ import { Newable } from '@inversifyjs/common';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
 import { LegacyConstructorMetadata } from '../models/LegacyConstructorMetadata';
 import { LegacyMetadataReader } from '../models/LegacyMetadataReader';
+import { assertConstructorMetadataArrayFilled } from './assertConstructorMetadataArrayFilled';
 import { getClassElementMetadataFromNewable } from './getClassElementMetadataFromNewable';
 import { getConstructorArgumentMetadataFromLegacyMetadata } from './getConstructorArgumentMetadataFromLegacyMetadata';
 
@@ -13,7 +14,7 @@ export function getClassMetadataConstructorArgumentsFromMetadataReader(
   const legacyConstructorMetadata: LegacyConstructorMetadata =
     metadataReader.getConstructorMetadata(type);
 
-  const constructorArgumentsMetadata: ClassElementMetadata[] = [];
+  const constructorArgumentsMetadata: (ClassElementMetadata | undefined)[] = [];
 
   for (const [stringifiedIndex, metadataList] of Object.entries(
     legacyConstructorMetadata.userGeneratedMetadata,
@@ -43,6 +44,8 @@ export function getClassMetadataConstructorArgumentsFromMetadataReader(
       }
     }
   }
+
+  assertConstructorMetadataArrayFilled(type, constructorArgumentsMetadata);
 
   return constructorArgumentsMetadata;
 }

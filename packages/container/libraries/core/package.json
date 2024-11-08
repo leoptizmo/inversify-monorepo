@@ -36,6 +36,10 @@
     "node",
     "typescript"
   ],
+  "devEngines": {
+    "node": "^20.18.0",
+    "pnpm": "^9.12.1"
+  },
   "license": "MIT",
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
