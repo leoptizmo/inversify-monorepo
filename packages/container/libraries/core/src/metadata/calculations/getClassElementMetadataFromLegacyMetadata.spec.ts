@@ -139,7 +139,16 @@ describe(getClassElementMetadataFromLegacyMetadata.name, () => {
     },
   );
 
-  describe.each<[string, ClassElementMetadataKind, LegacyMetadata]>([
+  describe.each<
+    [
+      string,
+      (
+        | ClassElementMetadataKind.multipleInjection
+        | ClassElementMetadataKind.singleInjection
+      ),
+      LegacyMetadata,
+    ]
+  >([
     [
       'inject',
       ClassElementMetadataKind.singleInjection,
@@ -160,7 +169,9 @@ describe(getClassElementMetadataFromLegacyMetadata.name, () => {
     'having a metadata list with % metadata',
     (
       _: string,
-      classElementMetadataKind: ClassElementMetadataKind,
+      classElementMetadataKind:
+        | ClassElementMetadataKind.multipleInjection
+        | ClassElementMetadataKind.singleInjection,
       metadata: LegacyMetadata,
     ) => {
       let metadataListFixture: LegacyMetadata[];
@@ -193,7 +204,16 @@ describe(getClassElementMetadataFromLegacyMetadata.name, () => {
     },
   );
 
-  describe.each<[string, ClassElementMetadataKind, LegacyMetadata]>([
+  describe.each<
+    [
+      string,
+      (
+        | ClassElementMetadataKind.multipleInjection
+        | ClassElementMetadataKind.singleInjection
+      ),
+      LegacyMetadata,
+    ]
+  >([
     [
       'inject',
       ClassElementMetadataKind.singleInjection,
@@ -214,7 +234,9 @@ describe(getClassElementMetadataFromLegacyMetadata.name, () => {
     'having a metadata list with % metadata',
     (
       _: string,
-      classElementMetadataKind: ClassElementMetadataKind,
+      classElementMetadataKind:
+        | ClassElementMetadataKind.multipleInjection
+        | ClassElementMetadataKind.singleInjection,
       metadata: LegacyMetadata,
     ) => {
       let customTagMetadataFixture: LegacyMetadata;
