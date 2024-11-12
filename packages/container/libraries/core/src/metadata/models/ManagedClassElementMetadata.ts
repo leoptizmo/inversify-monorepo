@@ -11,9 +11,9 @@ export interface ManagedClassElementMetadata
     | ClassElementMetadataKind.singleInjection
     | ClassElementMetadataKind.multipleInjection
   > {
-  value: ServiceIdentifier | LazyServiceIdentifier;
   name: MetadataName | undefined;
   optional: boolean;
   tags: Map<MetadataTag, unknown>;
   targetName: MetadataTargetName | undefined;
+  value: ServiceIdentifier | LazyServiceIdentifier;
 }
