@@ -1,5 +1,14 @@
 # @inversifyjs/core
 
+## 1.3.4
+
+### Patch Changes
+
+- 535ad85: Updated ESM build to be compatible with both bundler and NodeJS module resolution algorithms
+- Updated dependencies [535ad85]
+  - @inversifyjs/reflect-metadata-utils@0.2.3
+  - @inversifyjs/common@1.3.3
+
 ## 1.3.3
 
 ### Patch Changes
