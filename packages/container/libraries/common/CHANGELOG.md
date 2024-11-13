@@ -1,5 +1,11 @@
 # @inversifyjs/common
 
+## 1.3.3
+
+### Patch Changes
+
+- 535ad85: Updated ESM build to be compatible with both bundler and NodeJS module resolution algorithms
+
 ## 1.3.2
 
 ### Patch Changes
