@@ -15,6 +15,7 @@
     "@inversifyjs/foundation-scripts": "workspace:*",
     "@inversifyjs/foundation-stryker-config": "workspace:*",
     "@inversifyjs/foundation-typescript-config": "workspace:*",
+    "@inversifyjs/foundation-webpack-config": "workspace:*",
     "husky": "9.1.6",
     "lint-staged": "15.2.10",
     "turbo": "2.2.3"
