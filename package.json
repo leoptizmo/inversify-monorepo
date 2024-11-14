@@ -24,7 +24,7 @@
   "keywords": [],
   "license": "MIT",
   "name": "root",
-  "packageManager": "pnpm@9.13.0",
+  "packageManager": "pnpm@9.13.1",
   "private": true,
   "repository": {
     "type": "git",
