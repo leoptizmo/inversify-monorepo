@@ -1,0 +1,17 @@
+**/*.spec.js
+**/*.spec.js.map
+**/*.ts
+!lib/**/*.d.ts
+lib/**/*.spec.d.ts
+
+.lintstagedrc.json
+eslint.config.mjs
+jest.config.mjs
+jest.config.stryker.mjs
+jest.js.config.mjs
+prettier.config.mjs
+stryker.config.mjs
+tsconfig.json
+tsconfig.cjs.json
+tsconfig.esm.json
+tsconfig.tsbuildinfo
