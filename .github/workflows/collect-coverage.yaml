@@ -65,7 +65,7 @@ jobs:
         run: pnpm run test:js:coverage --filter ${{ matrix.package }} --only
 
       - name: Upload coverage to Codecov (branch)
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           flags: ${{ matrix.package }}
           token: ${{ secrets.CODECOV_TOKEN }}
