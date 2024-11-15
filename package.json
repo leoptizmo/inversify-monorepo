@@ -18,7 +18,7 @@
     "@inversifyjs/foundation-webpack-config": "workspace:*",
     "husky": "9.1.6",
     "lint-staged": "15.2.10",
-    "turbo": "2.2.3"
+    "turbo": "2.3.0"
   },
   "homepage": "https://inversify.io",
   "keywords": [],
