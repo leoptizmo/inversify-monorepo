@@ -3,9 +3,11 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 jest.mock(
   '../calculations/buildUnmanagedMetadataFromMaybeClassElementMetadata',
 );
+jest.mock('../calculations/handleInjectionError');
 jest.mock('./injectBase');
 
 import { buildUnmanagedMetadataFromMaybeClassElementMetadata } from '../calculations/buildUnmanagedMetadataFromMaybeClassElementMetadata';
+import { handleInjectionError } from '../calculations/handleInjectionError';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
 import { MaybeClassElementMetadata } from '../models/MaybeClassElementMetadata';
 import { injectBase } from './injectBase';
@@ -88,9 +90,88 @@ describe(unmanaged.name, () => {
         expect(result).toBeUndefined();
       });
     });
+
+    describe('when called, and injectBase throws an Error', () => {
+      let errorFixture: Error;
+      let updateMetadataMock: jest.Mock<
+        (
+          classElementMetadata: MaybeClassElementMetadata | undefined,
+        ) => ClassElementMetadata
+      >;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        errorFixture = new Error('message-error-fixture');
+        updateMetadataMock = jest.fn();
+
+        (
+          buildUnmanagedMetadataFromMaybeClassElementMetadata as jest.Mock<
+            typeof buildUnmanagedMetadataFromMaybeClassElementMetadata
+          >
+        ).mockReturnValueOnce(updateMetadataMock);
+
+        (injectBase as jest.Mock<typeof injectBase>).mockImplementation(
+          (): never => {
+            throw errorFixture;
+          },
+        );
+
+        (
+          handleInjectionError as jest.Mock<typeof handleInjectionError>
+        ).mockImplementation(
+          (
+            _target: object,
+            _propertyKey: string | symbol | undefined,
+            _parameterIndex: number | undefined,
+            error: unknown,
+          ): never => {
+            throw error;
+          },
+        );
+
+        try {
+          unmanaged()(targetFixture, propertyKeyFixture);
+        } catch (error: unknown) {
+          result = error;
+        }
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call buildUnmanagedMetadataFromMaybeClassElementMetadata()', () => {
+        expect(
+          buildUnmanagedMetadataFromMaybeClassElementMetadata,
+        ).toHaveBeenCalledTimes(1);
+        expect(
+          buildUnmanagedMetadataFromMaybeClassElementMetadata,
+        ).toHaveBeenCalledWith();
+      });
+
+      it('should call injectBase()', () => {
+        expect(injectBase).toHaveBeenCalledTimes(1);
+        expect(injectBase).toHaveBeenCalledWith(updateMetadataMock);
+      });
+
+      it('should throw handleInjectionError()', () => {
+        expect(handleInjectionError).toHaveBeenCalledTimes(1);
+        expect(handleInjectionError).toHaveBeenCalledWith(
+          targetFixture,
+          propertyKeyFixture,
+          undefined,
+          errorFixture,
+        );
+      });
+
+      it('should throw an Error', () => {
+        expect(result).toBe(errorFixture);
+      });
+    });
   });
 
-  describe('having a undefined propertyKey and an non undefined parameterIndex', () => {
+  describe('having an undefined propertyKey and an non undefined parameterIndex', () => {
     let targetFixture: object;
     let paramIndexFixture: number;
 
@@ -165,6 +246,85 @@ describe(unmanaged.name, () => {
 
       it('should return undefined', () => {
         expect(result).toBeUndefined();
+      });
+    });
+
+    describe('when called, and injectBase throws an Error', () => {
+      let errorFixture: Error;
+      let updateMetadataMock: jest.Mock<
+        (
+          classElementMetadata: MaybeClassElementMetadata | undefined,
+        ) => ClassElementMetadata
+      >;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        errorFixture = new Error('message-error-fixture');
+        updateMetadataMock = jest.fn();
+
+        (
+          buildUnmanagedMetadataFromMaybeClassElementMetadata as jest.Mock<
+            typeof buildUnmanagedMetadataFromMaybeClassElementMetadata
+          >
+        ).mockReturnValueOnce(updateMetadataMock);
+
+        (injectBase as jest.Mock<typeof injectBase>).mockImplementation(
+          (): never => {
+            throw errorFixture;
+          },
+        );
+
+        (
+          handleInjectionError as jest.Mock<typeof handleInjectionError>
+        ).mockImplementation(
+          (
+            _target: object,
+            _propertyKey: string | symbol | undefined,
+            _parameterIndex: number | undefined,
+            error: unknown,
+          ): never => {
+            throw error;
+          },
+        );
+
+        try {
+          unmanaged()(targetFixture, undefined, paramIndexFixture);
+        } catch (error: unknown) {
+          result = error;
+        }
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call buildUnmanagedMetadataFromMaybeClassElementMetadata()', () => {
+        expect(
+          buildUnmanagedMetadataFromMaybeClassElementMetadata,
+        ).toHaveBeenCalledTimes(1);
+        expect(
+          buildUnmanagedMetadataFromMaybeClassElementMetadata,
+        ).toHaveBeenCalledWith();
+      });
+
+      it('should call injectBase()', () => {
+        expect(injectBase).toHaveBeenCalledTimes(1);
+        expect(injectBase).toHaveBeenCalledWith(updateMetadataMock);
+      });
+
+      it('should throw handleInjectionError()', () => {
+        expect(handleInjectionError).toHaveBeenCalledTimes(1);
+        expect(handleInjectionError).toHaveBeenCalledWith(
+          targetFixture,
+          undefined,
+          paramIndexFixture,
+          errorFixture,
+        );
+      });
+
+      it('should throw an Error', () => {
+        expect(result).toBe(errorFixture);
       });
     });
   });
