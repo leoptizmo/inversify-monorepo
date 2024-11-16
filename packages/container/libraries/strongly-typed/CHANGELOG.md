@@ -1,0 +1,1 @@
+# @inversifyjs/strongly-typed
