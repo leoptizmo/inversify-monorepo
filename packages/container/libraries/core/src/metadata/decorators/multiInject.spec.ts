@@ -1,24 +1,27 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
-jest.mock(
-  '../calculations/buildUnmanagedMetadataFromMaybeClassElementMetadata',
-);
+import { ServiceIdentifier } from '@inversifyjs/common';
+
+jest.mock('../calculations/buildManagedMetadataFromMaybeClassElementMetadata');
 jest.mock('../calculations/handleInjectionError');
 jest.mock('./injectBase');
 
-import { buildUnmanagedMetadataFromMaybeClassElementMetadata } from '../calculations/buildUnmanagedMetadataFromMaybeClassElementMetadata';
+import { buildManagedMetadataFromMaybeClassElementMetadata } from '../calculations/buildManagedMetadataFromMaybeClassElementMetadata';
 import { handleInjectionError } from '../calculations/handleInjectionError';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
+import { ClassElementMetadataKind } from '../models/ClassElementMetadataKind';
 import { MaybeClassElementMetadata } from '../models/MaybeClassElementMetadata';
 import { injectBase } from './injectBase';
-import { unmanaged } from './unmanaged';
+import { multiInject } from './multiInject';
 
-describe(unmanaged.name, () => {
+describe(multiInject.name, () => {
   describe('having a non undefined propertyKey and an undefined parameterIndex', () => {
+    let serviceIdentifierFixture: ServiceIdentifier;
     let targetFixture: object;
     let propertyKeyFixture: string | symbol;
 
     beforeAll(() => {
+      serviceIdentifierFixture = 'service-id-fixture';
       targetFixture = class {};
       propertyKeyFixture = 'property-key';
     });
@@ -48,8 +51,8 @@ describe(unmanaged.name, () => {
         updateMetadataMock = jest.fn();
 
         (
-          buildUnmanagedMetadataFromMaybeClassElementMetadata as jest.Mock<
-            typeof buildUnmanagedMetadataFromMaybeClassElementMetadata
+          buildManagedMetadataFromMaybeClassElementMetadata as jest.Mock<
+            typeof buildManagedMetadataFromMaybeClassElementMetadata
           >
         ).mockReturnValueOnce(updateMetadataMock);
 
@@ -57,20 +60,26 @@ describe(unmanaged.name, () => {
           injectBaseDecoratorMock,
         );
 
-        result = unmanaged()(targetFixture, propertyKeyFixture);
+        result = multiInject(serviceIdentifierFixture)(
+          targetFixture,
+          propertyKeyFixture,
+        );
       });
 
       afterAll(() => {
         jest.clearAllMocks();
       });
 
-      it('should call buildUnmanagedMetadataFromMaybeClassElementMetadata()', () => {
+      it('should call buildManagedMetadataFromMaybeClassElementMetadata()', () => {
         expect(
-          buildUnmanagedMetadataFromMaybeClassElementMetadata,
+          buildManagedMetadataFromMaybeClassElementMetadata,
         ).toHaveBeenCalledTimes(1);
         expect(
-          buildUnmanagedMetadataFromMaybeClassElementMetadata,
-        ).toHaveBeenCalledWith();
+          buildManagedMetadataFromMaybeClassElementMetadata,
+        ).toHaveBeenCalledWith(
+          ClassElementMetadataKind.multipleInjection,
+          serviceIdentifierFixture,
+        );
       });
 
       it('should call injectBase()', () => {
@@ -106,8 +115,8 @@ describe(unmanaged.name, () => {
         updateMetadataMock = jest.fn();
 
         (
-          buildUnmanagedMetadataFromMaybeClassElementMetadata as jest.Mock<
-            typeof buildUnmanagedMetadataFromMaybeClassElementMetadata
+          buildManagedMetadataFromMaybeClassElementMetadata as jest.Mock<
+            typeof buildManagedMetadataFromMaybeClassElementMetadata
           >
         ).mockReturnValueOnce(updateMetadataMock);
 
@@ -131,7 +140,10 @@ describe(unmanaged.name, () => {
         );
 
         try {
-          unmanaged()(targetFixture, propertyKeyFixture);
+          multiInject(serviceIdentifierFixture)(
+            targetFixture,
+            propertyKeyFixture,
+          );
         } catch (error: unknown) {
           result = error;
         }
@@ -141,13 +153,16 @@ describe(unmanaged.name, () => {
         jest.clearAllMocks();
       });
 
-      it('should call buildUnmanagedMetadataFromMaybeClassElementMetadata()', () => {
+      it('should call buildManagedMetadataFromMaybeClassElementMetadata()', () => {
         expect(
-          buildUnmanagedMetadataFromMaybeClassElementMetadata,
+          buildManagedMetadataFromMaybeClassElementMetadata,
         ).toHaveBeenCalledTimes(1);
         expect(
-          buildUnmanagedMetadataFromMaybeClassElementMetadata,
-        ).toHaveBeenCalledWith();
+          buildManagedMetadataFromMaybeClassElementMetadata,
+        ).toHaveBeenCalledWith(
+          ClassElementMetadataKind.multipleInjection,
+          serviceIdentifierFixture,
+        );
       });
 
       it('should call injectBase()', () => {
@@ -171,11 +186,13 @@ describe(unmanaged.name, () => {
     });
   });
 
-  describe('having an undefined propertyKey and an non undefined parameterIndex', () => {
+  describe('having a undefined propertyKey and an non undefined parameterIndex', () => {
+    let serviceIdentifierFixture: ServiceIdentifier;
     let targetFixture: object;
     let paramIndexFixture: number;
 
     beforeAll(() => {
+      serviceIdentifierFixture = 'service-id-fixture';
       targetFixture = class {};
       paramIndexFixture = 0;
     });
@@ -205,8 +222,8 @@ describe(unmanaged.name, () => {
         updateMetadataMock = jest.fn();
 
         (
-          buildUnmanagedMetadataFromMaybeClassElementMetadata as jest.Mock<
-            typeof buildUnmanagedMetadataFromMaybeClassElementMetadata
+          buildManagedMetadataFromMaybeClassElementMetadata as jest.Mock<
+            typeof buildManagedMetadataFromMaybeClassElementMetadata
           >
         ).mockReturnValueOnce(updateMetadataMock);
 
@@ -214,20 +231,27 @@ describe(unmanaged.name, () => {
           injectBaseDecoratorMock,
         );
 
-        result = unmanaged()(targetFixture, undefined, paramIndexFixture);
+        result = multiInject(serviceIdentifierFixture)(
+          targetFixture,
+          undefined,
+          paramIndexFixture,
+        );
       });
 
       afterAll(() => {
         jest.clearAllMocks();
       });
 
-      it('should call buildUnmanagedMetadataFromMaybeClassElementMetadata()', () => {
+      it('should call buildManagedMetadataFromMaybeClassElementMetadata()', () => {
         expect(
-          buildUnmanagedMetadataFromMaybeClassElementMetadata,
+          buildManagedMetadataFromMaybeClassElementMetadata,
         ).toHaveBeenCalledTimes(1);
         expect(
-          buildUnmanagedMetadataFromMaybeClassElementMetadata,
-        ).toHaveBeenCalledWith();
+          buildManagedMetadataFromMaybeClassElementMetadata,
+        ).toHaveBeenCalledWith(
+          ClassElementMetadataKind.multipleInjection,
+          serviceIdentifierFixture,
+        );
       });
 
       it('should call injectBase()', () => {
@@ -264,8 +288,8 @@ describe(unmanaged.name, () => {
         updateMetadataMock = jest.fn();
 
         (
-          buildUnmanagedMetadataFromMaybeClassElementMetadata as jest.Mock<
-            typeof buildUnmanagedMetadataFromMaybeClassElementMetadata
+          buildManagedMetadataFromMaybeClassElementMetadata as jest.Mock<
+            typeof buildManagedMetadataFromMaybeClassElementMetadata
           >
         ).mockReturnValueOnce(updateMetadataMock);
 
@@ -289,7 +313,11 @@ describe(unmanaged.name, () => {
         );
 
         try {
-          unmanaged()(targetFixture, undefined, paramIndexFixture);
+          multiInject(serviceIdentifierFixture)(
+            targetFixture,
+            undefined,
+            paramIndexFixture,
+          );
         } catch (error: unknown) {
           result = error;
         }
@@ -299,13 +327,16 @@ describe(unmanaged.name, () => {
         jest.clearAllMocks();
       });
 
-      it('should call buildUnmanagedMetadataFromMaybeClassElementMetadata()', () => {
+      it('should call buildManagedMetadataFromMaybeClassElementMetadata()', () => {
         expect(
-          buildUnmanagedMetadataFromMaybeClassElementMetadata,
+          buildManagedMetadataFromMaybeClassElementMetadata,
         ).toHaveBeenCalledTimes(1);
         expect(
-          buildUnmanagedMetadataFromMaybeClassElementMetadata,
-        ).toHaveBeenCalledWith();
+          buildManagedMetadataFromMaybeClassElementMetadata,
+        ).toHaveBeenCalledWith(
+          ClassElementMetadataKind.multipleInjection,
+          serviceIdentifierFixture,
+        );
       });
 
       it('should call injectBase()', () => {
