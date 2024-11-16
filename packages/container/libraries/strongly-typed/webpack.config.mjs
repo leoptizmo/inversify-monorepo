@@ -9,4 +9,5 @@ const outputPath = path.resolve(import.meta.dirname, 'lib/esm');
 /** @type {!import("webpack").Configuration} */
 export default {
   ...buildWebpackConfig(outputPath),
+  externals: ['inversify'],
 };
