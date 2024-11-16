@@ -12,6 +12,12 @@
   "ignoreDeps": [],
   "packageRules": [
     {
+      "enabled": false,
+      "matchDepTypes": [
+        "peerDependencies"
+      ]
+    },
+    {
       "groupName": "auto merge on patch or minor",
       "automerge": true,
       "matchUpdateTypes": ["patch", "minor"],
