@@ -22,7 +22,6 @@ import { updateMaybeClassMetadataConstructorArgument } from '../actions/updateMa
 import { updateMaybeClassMetadataProperty } from '../actions/updateMaybeClassMetadataProperty';
 import { getDefaultClassMetadata } from '../calculations/getDefaultClassMetadata';
 import { ClassMetadata } from '../models/ClassMetadata';
-import { ManagedClassElementMetadata } from '../models/ManagedClassElementMetadata';
 import { MaybeClassElementMetadata } from '../models/MaybeClassElementMetadata';
 import { MaybeClassMetadata } from '../models/MaybeClassMetadata';
 import { injectBase } from './injectBase';
@@ -30,16 +29,16 @@ import { injectBase } from './injectBase';
 describe(injectBase.name, () => {
   let updateMetadataMock: jest.Mock<
     (
-      classMetadata: MaybeClassElementMetadata | undefined,
-    ) => ManagedClassElementMetadata
+      metadata: MaybeClassElementMetadata | undefined,
+    ) => MaybeClassElementMetadata
   >;
 
   beforeAll(() => {
     updateMetadataMock =
       jest.fn<
         (
-          classMetadata: MaybeClassElementMetadata | undefined,
-        ) => ManagedClassElementMetadata
+          metadata: MaybeClassElementMetadata | undefined,
+        ) => MaybeClassElementMetadata
       >();
   });
 
