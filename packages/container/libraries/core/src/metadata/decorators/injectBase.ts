@@ -4,13 +4,12 @@ import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadat
 import { updateMaybeClassMetadataConstructorArgument } from '../actions/updateMaybeClassMetadataConstructorArgument';
 import { updateMaybeClassMetadataProperty } from '../actions/updateMaybeClassMetadataProperty';
 import { getDefaultClassMetadata } from '../calculations/getDefaultClassMetadata';
-import { ManagedClassElementMetadata } from '../models/ManagedClassElementMetadata';
 import { MaybeClassElementMetadata } from '../models/MaybeClassElementMetadata';
 
 export function injectBase(
   updateMetadata: (
-    classMetadata: MaybeClassElementMetadata | undefined,
-  ) => ManagedClassElementMetadata,
+    metadata: MaybeClassElementMetadata | undefined,
+  ) => MaybeClassElementMetadata,
 ): ParameterDecorator & PropertyDecorator {
   const decorator: ParameterDecorator & PropertyDecorator = (
     target: object,
@@ -29,8 +28,8 @@ export function injectBase(
 
 function injectParameter(
   updateMetadata: (
-    classMetadata: MaybeClassElementMetadata | undefined,
-  ) => ManagedClassElementMetadata,
+    metadata: MaybeClassElementMetadata | undefined,
+  ) => MaybeClassElementMetadata,
 ): ParameterDecorator {
   return (
     target: object,
@@ -60,8 +59,8 @@ Found @inject decorator at method "${
 
 function injectProperty(
   updateMetadata: (
-    classMetadata: MaybeClassElementMetadata | undefined,
-  ) => ManagedClassElementMetadata,
+    metadata: MaybeClassElementMetadata | undefined,
+  ) => MaybeClassElementMetadata,
 ): PropertyDecorator {
   return (target: object, propertyKey: string | symbol): void => {
     updateReflectMetadata(
