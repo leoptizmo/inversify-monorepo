@@ -1,11 +1,13 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
+jest.mock('../actions/updateMetadataName');
 jest.mock(
   '../calculations/buildMaybeClassElementMetadataFromMaybeClassElementMetadata',
 );
 jest.mock('../calculations/handleInjectionError');
 jest.mock('./injectBase');
 
+import { updateMetadataName } from '../actions/updateMetadataName';
 import { buildMaybeClassElementMetadataFromMaybeClassElementMetadata } from '../calculations/buildMaybeClassElementMetadataFromMaybeClassElementMetadata';
 import { handleInjectionError } from '../calculations/handleInjectionError';
 import { ManagedClassElementMetadata } from '../models/ManagedClassElementMetadata';
@@ -15,6 +17,20 @@ import { injectBase } from './injectBase';
 import { named } from './named';
 
 describe(named.name, () => {
+  let updateMetadataNameResultMock: jest.Mock<
+    (
+      metadata: ManagedClassElementMetadata | MaybeManagedClassElementMetadata,
+    ) => ManagedClassElementMetadata | MaybeManagedClassElementMetadata
+  >;
+
+  beforeAll(() => {
+    updateMetadataNameResultMock = jest.fn();
+
+    (
+      updateMetadataName as jest.Mock<typeof updateMetadataName>
+    ).mockReturnValue(updateMetadataNameResultMock);
+  });
+
   describe('having a non undefined propertyKey and an undefined parameterIndex', () => {
     let targetFixture: object;
     let propertyKeyFixture: string | symbol;
@@ -73,7 +89,7 @@ describe(named.name, () => {
         ).toHaveBeenCalledTimes(1);
         expect(
           buildMaybeClassElementMetadataFromMaybeClassElementMetadata,
-        ).toHaveBeenCalledWith({ name: nameFixture });
+        ).toHaveBeenCalledWith(expect.any(Function));
       });
 
       it('should call injectBase()', () => {
@@ -152,7 +168,7 @@ describe(named.name, () => {
         ).toHaveBeenCalledTimes(1);
         expect(
           buildMaybeClassElementMetadataFromMaybeClassElementMetadata,
-        ).toHaveBeenCalledWith({ name: nameFixture });
+        ).toHaveBeenCalledWith(expect.any(Function));
       });
 
       it('should call injectBase()', () => {
@@ -238,7 +254,7 @@ describe(named.name, () => {
         ).toHaveBeenCalledTimes(1);
         expect(
           buildMaybeClassElementMetadataFromMaybeClassElementMetadata,
-        ).toHaveBeenCalledWith({ name: nameFixture });
+        ).toHaveBeenCalledWith(expect.any(Function));
       });
 
       it('should call injectBase()', () => {
@@ -318,7 +334,7 @@ describe(named.name, () => {
         ).toHaveBeenCalledTimes(1);
         expect(
           buildMaybeClassElementMetadataFromMaybeClassElementMetadata,
-        ).toHaveBeenCalledWith({ name: nameFixture });
+        ).toHaveBeenCalledWith(expect.any(Function));
       });
 
       it('should call injectBase()', () => {

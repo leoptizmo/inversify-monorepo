@@ -1,3 +1,4 @@
+import { updateMetadataName } from '../actions/updateMetadataName';
 import { buildMaybeClassElementMetadataFromMaybeClassElementMetadata } from '../calculations/buildMaybeClassElementMetadataFromMaybeClassElementMetadata';
 import { handleInjectionError } from '../calculations/handleInjectionError';
 import { ManagedClassElementMetadata } from '../models/ManagedClassElementMetadata';
@@ -17,9 +18,9 @@ export function named(
     const updateMetadata: (
       metadata: MaybeClassElementMetadata | undefined,
     ) => ManagedClassElementMetadata | MaybeManagedClassElementMetadata =
-      buildMaybeClassElementMetadataFromMaybeClassElementMetadata({
-        name,
-      });
+      buildMaybeClassElementMetadataFromMaybeClassElementMetadata(
+        updateMetadataName(name),
+      );
 
     try {
       if (parameterIndex === undefined) {

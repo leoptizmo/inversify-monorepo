@@ -7,7 +7,9 @@ import { MaybeManagedClassElementMetadata } from '../models/MaybeManagedClassEle
 import { buildDefaultMaybeClassElementMetadata } from './buildDefaultMaybeClassElementMetadata';
 
 export function buildMaybeClassElementMetadataFromMaybeClassElementMetadata(
-  metadataPartial: Partial<MaybeManagedClassElementMetadata>,
+  updateMetadata: (
+    metadata: ManagedClassElementMetadata | MaybeManagedClassElementMetadata,
+  ) => ManagedClassElementMetadata | MaybeManagedClassElementMetadata,
 ): (
   metadata: MaybeClassElementMetadata | undefined,
 ) => ManagedClassElementMetadata | MaybeManagedClassElementMetadata {
@@ -24,25 +26,7 @@ export function buildMaybeClassElementMetadataFromMaybeClassElementMetadata(
           'Unexpected injection found. Found @unmanaged injection with additional @named, @optional, @tagged or @targetName injections',
         );
       default:
-        return buildMergedMetadata(definedMetadata, metadataPartial);
+        return updateMetadata(definedMetadata);
     }
   };
-}
-
-function buildMergedMetadata(
-  metadata: ManagedClassElementMetadata | MaybeManagedClassElementMetadata,
-  metadataPartial: Partial<MaybeManagedClassElementMetadata>,
-): ManagedClassElementMetadata | MaybeManagedClassElementMetadata {
-  const mergedMetadata:
-    | ManagedClassElementMetadata
-    | MaybeManagedClassElementMetadata = {
-    ...metadata,
-    ...metadataPartial,
-  };
-
-  if (metadataPartial.tags !== undefined) {
-    mergedMetadata.tags = new Map([...metadata.tags, ...metadataPartial.tags]);
-  }
-
-  return mergedMetadata;
 }
