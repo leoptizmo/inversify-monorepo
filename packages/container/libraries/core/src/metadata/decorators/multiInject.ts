@@ -10,19 +10,18 @@ import { injectBase } from './injectBase';
 export function multiInject(
   serviceIdentifier: ServiceIdentifier | LazyServiceIdentifier,
 ): ParameterDecorator & PropertyDecorator {
+  const updateMetadata: (
+    classElementMetadata: MaybeClassElementMetadata | undefined,
+  ) => ClassElementMetadata = buildManagedMetadataFromMaybeClassElementMetadata(
+    ClassElementMetadataKind.multipleInjection,
+    serviceIdentifier,
+  );
+
   return (
     target: object,
     propertyKey: string | symbol | undefined,
     parameterIndex?: number,
   ): void => {
-    const updateMetadata: (
-      classElementMetadata: MaybeClassElementMetadata | undefined,
-    ) => ClassElementMetadata =
-      buildManagedMetadataFromMaybeClassElementMetadata(
-        ClassElementMetadataKind.multipleInjection,
-        serviceIdentifier,
-      );
-
     try {
       if (parameterIndex === undefined) {
         injectBase(updateMetadata)(target, propertyKey as string | symbol);

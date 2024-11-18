@@ -10,19 +10,18 @@ import { injectBase } from './injectBase';
 export function inject(
   serviceIdentifier: ServiceIdentifier | LazyServiceIdentifier,
 ): ParameterDecorator & PropertyDecorator {
+  const updateMetadata: (
+    classElementMetadata: MaybeClassElementMetadata | undefined,
+  ) => ClassElementMetadata = buildManagedMetadataFromMaybeClassElementMetadata(
+    ClassElementMetadataKind.singleInjection,
+    serviceIdentifier,
+  );
+
   return (
     target: object,
     propertyKey: string | symbol | undefined,
     parameterIndex?: number,
   ): void => {
-    const updateMetadata: (
-      classElementMetadata: MaybeClassElementMetadata | undefined,
-    ) => ClassElementMetadata =
-      buildManagedMetadataFromMaybeClassElementMetadata(
-        ClassElementMetadataKind.singleInjection,
-        serviceIdentifier,
-      );
-
     try {
       if (parameterIndex === undefined) {
         injectBase(updateMetadata)(target, propertyKey as string | symbol);

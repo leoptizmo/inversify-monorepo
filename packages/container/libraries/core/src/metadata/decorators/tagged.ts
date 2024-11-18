@@ -11,18 +11,18 @@ export function tagged(
   key: MetadataTag,
   value: unknown,
 ): ParameterDecorator & PropertyDecorator {
+  const updateMetadata: (
+    metadata: MaybeClassElementMetadata | undefined,
+  ) => ManagedClassElementMetadata | MaybeManagedClassElementMetadata =
+    buildMaybeClassElementMetadataFromMaybeClassElementMetadata(
+      updateMetadataTag(key, value),
+    );
+
   return (
     target: object,
     propertyKey: string | symbol | undefined,
     parameterIndex?: number,
   ): void => {
-    const updateMetadata: (
-      metadata: MaybeClassElementMetadata | undefined,
-    ) => ManagedClassElementMetadata | MaybeManagedClassElementMetadata =
-      buildMaybeClassElementMetadataFromMaybeClassElementMetadata(
-        updateMetadataTag(key, value),
-      );
-
     try {
       if (parameterIndex === undefined) {
         injectBase(updateMetadata)(target, propertyKey as string | symbol);
