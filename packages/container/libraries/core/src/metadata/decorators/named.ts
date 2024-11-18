@@ -10,18 +10,18 @@ import { injectBase } from './injectBase';
 export function named(
   name: MetadataName,
 ): ParameterDecorator & PropertyDecorator {
+  const updateMetadata: (
+    metadata: MaybeClassElementMetadata | undefined,
+  ) => ManagedClassElementMetadata | MaybeManagedClassElementMetadata =
+    buildMaybeClassElementMetadataFromMaybeClassElementMetadata(
+      updateMetadataName(name),
+    );
+
   return (
     target: object,
     propertyKey: string | symbol | undefined,
     parameterIndex?: number,
   ): void => {
-    const updateMetadata: (
-      metadata: MaybeClassElementMetadata | undefined,
-    ) => ManagedClassElementMetadata | MaybeManagedClassElementMetadata =
-      buildMaybeClassElementMetadataFromMaybeClassElementMetadata(
-        updateMetadataName(name),
-      );
-
     try {
       if (parameterIndex === undefined) {
         injectBase(updateMetadata)(target, propertyKey as string | symbol);

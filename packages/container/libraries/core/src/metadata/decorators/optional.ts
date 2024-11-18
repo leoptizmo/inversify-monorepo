@@ -7,18 +7,18 @@ import { MaybeManagedClassElementMetadata } from '../models/MaybeManagedClassEle
 import { injectBase } from './injectBase';
 
 export function optional(): ParameterDecorator & PropertyDecorator {
+  const updateMetadata: (
+    metadata: MaybeClassElementMetadata | undefined,
+  ) => ManagedClassElementMetadata | MaybeManagedClassElementMetadata =
+    buildMaybeClassElementMetadataFromMaybeClassElementMetadata(
+      updateMetadataOptional,
+    );
+
   return (
     target: object,
     propertyKey: string | symbol | undefined,
     parameterIndex?: number,
   ): void => {
-    const updateMetadata: (
-      metadata: MaybeClassElementMetadata | undefined,
-    ) => ManagedClassElementMetadata | MaybeManagedClassElementMetadata =
-      buildMaybeClassElementMetadataFromMaybeClassElementMetadata(
-        updateMetadataOptional,
-      );
-
     try {
       if (parameterIndex === undefined) {
         injectBase(updateMetadata)(target, propertyKey as string | symbol);

@@ -1,4 +1,4 @@
 export interface ClassMetadataLifecycle {
-  postConstructMethodName: string | undefined;
-  preDestroyMethodName: string | undefined;
+  postConstructMethodName: string | symbol | undefined;
+  preDestroyMethodName: string | symbol | undefined;
 }
