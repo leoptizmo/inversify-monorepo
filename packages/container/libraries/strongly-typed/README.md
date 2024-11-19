@@ -60,6 +60,44 @@ const container = new Container() as TypedContainer<BindingMap>;
 ```
 
 
+## Injection
+
+The library also exposes a `TypedInject` type that will leverage the `BindingMap` you've used to strongly type your `Container`.
+
+You'll need to re-export the `inject` decorator with a type assertion:
+
+```ts
+import { inject } from 'inversify';
+import type { TypedInject } from '@inversifyjs/strongly-typed';
+
+export const $inject = inject as TypedInject<BindingMap>;
+```
+
+You can now use this to strongly type injected constructor parameters, or **public** properties:
+
+```ts
+@injectable()
+class B {
+  public constructor(
+    @$inject('foo') // ok
+    foo: Foo,
+
+    @$inject('foo') // compilation error
+    bar: Bar,
+  ) {}
+}
+
+@injectable()
+class A {
+  @$inject('foo') // ok
+  public foo: Foo;
+
+  @$inject('foo') // compilation error
+  public bar: Bar;
+}
+```
+
+
 ## Advanced usage
 
 ### `Promise` bindings
@@ -108,3 +146,39 @@ const parent = new TypedContainer<{foo: Foo}>();
 const child = parent.createChild<{foo: Bar}>();
 const resolved: Bar = child.get('foo');
 ```
+
+
+## Known issues / limitations
+
+### Strongly-typing `private` properties
+
+Note that because the decorator types can't "see" `private` properties, we can't strongly type them:
+
+```ts
+@injectable()
+class A {
+  @$inject('foo')
+  private foo: Foo; // fails :'(
+}
+```
+
+Work around this by either:
+
+  1. Making the property `public` (and perhaps prefixing it with an underscore to remind consumers it should be private)
+  2. Using the weakly-typed `@inject()` directly from `'inversify'`
+
+
+### Confusing compiler errors for constructor injection
+
+There's no custom compiler errors for TypeScript, so we can't signal particularly usefully that a constructor parameter is wrong, apart from the fact that the compilation fails.
+
+The error will look something like:
+
+```
+Unable to resolve signature of parameter decorator when called as an expression.
+  Argument of type '2' is not assignable to parameter of type 'undefined'. (ts1239)
+```
+
+This actually means something like this:
+
+> The injected constructor parameter at index `2` is of the wrong type.
