@@ -5,7 +5,7 @@
   },
   "description": "A powerful and lightweight inversion of control container for JavaScript & Node.js apps powered by TypeScript",
   "devDependencies": {
-    "@changesets/cli": "2.27.9",
+    "@changesets/cli": "2.27.10",
     "@commitlint/cli": "19.6.0",
     "@commitlint/config-conventional": "19.6.0",
     "@commitlint/prompt-cli": "19.6.0",
