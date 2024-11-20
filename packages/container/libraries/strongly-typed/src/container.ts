@@ -5,7 +5,7 @@ import { Container, type interfaces } from 'inversify';
 type IfAny<T, TYes, TNo> = 0 extends 1 & T ? TYes : TNo;
 
 type BindingMapProperty = string | symbol;
-type BindingMap = Record<BindingMapProperty, any>;
+export type BindingMap = Record<BindingMapProperty, any>;
 type MappedServiceIdentifier<T extends BindingMap> = IfAny<
   T,
   interfaces.ServiceIdentifier,
