@@ -5,4 +5,4 @@
 ### Minor Changes
 
 - 3d499a6: Added `TypedInject`
-- 5ad2d2f: Added `TypedContainer`.
+- 5ad2d2f: Added `TypedContainer`
