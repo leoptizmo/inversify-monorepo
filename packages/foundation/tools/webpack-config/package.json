@@ -5,7 +5,7 @@
   },
   "description": "Common webpack config for inversify monorepo packages",
   "devDependencies": {
-    "prettier": "3.3.3",
+    "prettier": "3.4.0",
     "webpack": "5.96.1"
   },
   "exports": "./lib/index.js",
