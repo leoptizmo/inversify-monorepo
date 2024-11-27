@@ -5,6 +5,7 @@ import { BindingMetadata } from '../../binding/models/BindingMetadata';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
+import { Writable } from '../../common/models/Writable';
 import { ClassElementMetadata } from '../../metadata/models/ClassElementMetadata';
 import { ClassElementMetadataKind } from '../../metadata/models/ClassElementMetadataKind';
 import { ClassMetadata } from '../../metadata/models/ClassMetadata';
@@ -42,13 +43,15 @@ export function plan(params: PlanParams): PlanResult {
       binding.isSatisfiedBy(bindingMetadata),
   );
 
+  const serviceNodeBindings: PlanBindingNode[] = [];
+
   const serviceNode: PlanServiceNode = {
-    bindings: [],
+    bindings: serviceNodeBindings,
     parent: undefined,
     serviceIdentifier: params.rootConstraints.serviceIdentifier,
   };
 
-  serviceNode.bindings.push(
+  serviceNodeBindings.push(
     ...buildServiceNodeBindings(
       params,
       bindingMetadata,
@@ -59,6 +62,10 @@ export function plan(params: PlanParams): PlanResult {
 
   if (!params.rootConstraints.isMultiple) {
     checkServiceNodeSingleInjectionBindings(serviceNode, false);
+
+    const [planBindingNode]: PlanBindingNode[] = serviceNodeBindings;
+
+    (serviceNode as Writable<PlanServiceNode>).bindings = planBindingNode;
   }
 
   return {
@@ -122,13 +129,15 @@ function buildPlanServiceNodeFromClassElementMetadata(
       binding.isSatisfiedBy(bindingMetadata),
   );
 
+  const serviceNodeBindings: PlanBindingNode[] = [];
+
   const serviceNode: PlanServiceNode = {
-    bindings: [],
+    bindings: serviceNodeBindings,
     parent: params.node,
     serviceIdentifier,
   };
 
-  serviceNode.bindings.push(
+  serviceNodeBindings.push(
     ...buildServiceNodeBindings(
       params,
       bindingMetadata,
@@ -142,6 +151,10 @@ function buildPlanServiceNodeFromClassElementMetadata(
       serviceNode,
       elementMetadata.optional,
     );
+
+    const [planBindingNode]: PlanBindingNode[] = serviceNodeBindings;
+
+    (serviceNode as Writable<PlanServiceNode>).bindings = planBindingNode;
   }
 
   return serviceNode;

@@ -19,7 +19,149 @@ import { isPlanServiceRedirectionBindingNode } from './isPlanServiceRedirectionB
 import { throwErrorWhenUnexpectedBindingsAmountFound } from './throwErrorWhenUnexpectedBindingsAmountFound';
 
 describe(throwErrorWhenUnexpectedBindingsAmountFound.name, () => {
-  describe('having bindings empty and isOptional false and node PlanServiceRedirectionBindingNode', () => {
+  describe('having undefined bindings and isOptional false and node PlanServiceNode', () => {
+    let bindingsFixture: undefined;
+    let isOptionalFixture: false;
+    let nodeFixture: PlanServiceNode;
+
+    beforeAll(() => {
+      bindingsFixture = undefined;
+      isOptionalFixture = false;
+      nodeFixture = {
+        bindings: [],
+        parent: undefined,
+        serviceIdentifier: 'service-identifier',
+      };
+    });
+
+    describe('when called, and isPlanServiceRedirectionBindingNode() returns true', () => {
+      let stringifiedServiceIdentifier: string;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        stringifiedServiceIdentifier = 'stringified-service-id';
+
+        (
+          isPlanServiceRedirectionBindingNode as unknown as jest.Mock<
+            typeof isPlanServiceRedirectionBindingNode
+          >
+        ).mockReturnValueOnce(false);
+
+        (
+          stringifyServiceIdentifier as jest.Mock<
+            typeof stringifyServiceIdentifier
+          >
+        )
+          .mockReturnValueOnce(stringifiedServiceIdentifier)
+          .mockReturnValueOnce(stringifiedServiceIdentifier);
+
+        try {
+          throwErrorWhenUnexpectedBindingsAmountFound(
+            bindingsFixture,
+            isOptionalFixture,
+            nodeFixture,
+          );
+        } catch (error) {
+          result = error;
+        }
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should throw InversifyCoreError', () => {
+        const expectedErrorProperties: Partial<InversifyCoreError> = {
+          kind: InversifyCoreErrorKind.planning,
+          message: `No bindings found for service: "${stringifiedServiceIdentifier}".
+
+Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".`,
+        };
+
+        expect(result).toBeInstanceOf(InversifyCoreError);
+        expect(result).toStrictEqual(
+          expect.objectContaining(expectedErrorProperties),
+        );
+      });
+    });
+  });
+
+  describe('having single binding and isOptional false and node PlanServiceNode', () => {
+    let bindingsFixture: PlanBindingNode;
+    let isOptionalFixture: false;
+    let nodeFixture: PlanServiceNode;
+
+    beforeAll(() => {
+      const parentNode: PlanServiceNode = {
+        bindings: [],
+        parent: undefined,
+        serviceIdentifier: 'target-service-id',
+      };
+
+      bindingsFixture = {
+        binding: {
+          cache: {
+            isRight: true,
+            value: Symbol(),
+          },
+          id: 0,
+          isSatisfiedBy: () => true,
+          moduleId: undefined,
+          onActivation: {
+            isRight: false,
+            value: undefined,
+          },
+          onDeactivation: {
+            isRight: false,
+            value: undefined,
+          },
+          scope: bindingScopeValues.Singleton,
+          serviceIdentifier: 'target-service-id',
+          type: bindingTypeValues.ConstantValue,
+        },
+        parent: parentNode,
+      };
+      isOptionalFixture = false;
+      nodeFixture = {
+        bindings: [],
+        parent: undefined,
+        serviceIdentifier: 'service-identifier',
+      };
+    });
+
+    describe('when called, and isPlanServiceRedirectionBindingNode() returns false', () => {
+      let stringifiedServiceIdentifier: string;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        stringifiedServiceIdentifier = 'stringified-service-id';
+
+        (
+          isPlanServiceRedirectionBindingNode as unknown as jest.Mock<
+            typeof isPlanServiceRedirectionBindingNode
+          >
+        ).mockReturnValueOnce(false);
+
+        result = throwErrorWhenUnexpectedBindingsAmountFound(
+          bindingsFixture,
+          isOptionalFixture,
+          nodeFixture,
+        );
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe('having bindings empty array and isOptional false and node PlanServiceRedirectionBindingNode', () => {
     let bindingsFixture: [];
     let isOptionalFixture: false;
     let nodeFixture: PlanServiceRedirectionBindingNode;
@@ -66,8 +208,8 @@ describe(throwErrorWhenUnexpectedBindingsAmountFound.name, () => {
             typeof stringifyServiceIdentifier
           >
         )
-          .mockReturnValueOnce(stringifiedServiceIdentifier)
-          .mockReturnValueOnce(stringifiedTargetServiceIdentifier);
+          .mockReturnValueOnce(stringifiedTargetServiceIdentifier)
+          .mockReturnValueOnce(stringifiedServiceIdentifier);
 
         try {
           result = throwErrorWhenUnexpectedBindingsAmountFound(
@@ -100,7 +242,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier}".`,
     });
   });
 
-  describe('having bindings empty and isOptional false and node PlanServiceNode', () => {
+  describe('having bindings empty array and isOptional false and node PlanServiceNode', () => {
     let bindingsFixture: [];
     let isOptionalFixture: false;
     let nodeFixture: PlanServiceNode;
@@ -168,7 +310,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
     });
   });
 
-  describe('having bindings empty and isOptional true and node PlanServiceNode', () => {
+  describe('having bindings empty array and isOptional true and node PlanServiceNode', () => {
     let bindingsFixture: [];
     let isOptionalFixture: true;
     let nodeFixture: PlanServiceNode;
@@ -315,8 +457,8 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
             typeof stringifyServiceIdentifier
           >
         )
-          .mockReturnValueOnce(stringifiedServiceIdentifierFixture)
-          .mockReturnValueOnce(stringifiedTargetServiceIdentifierFixture);
+          .mockReturnValueOnce(stringifiedTargetServiceIdentifierFixture)
+          .mockReturnValueOnce(stringifiedServiceIdentifierFixture);
 
         (stringifyBinding as jest.Mock<typeof stringifyBinding>)
           .mockReturnValueOnce(stringifiedBindingFixture)

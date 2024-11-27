@@ -15,6 +15,7 @@ import { ProviderBinding } from '../../binding/models/ProviderBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
 import { BindingService } from '../../binding/services/BindingService';
 import { BindingServiceImplementation } from '../../binding/services/BindingServiceImplementation';
+import { Writable } from '../../common/models/Writable';
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
 import { getDefaultClassMetadata } from '../../metadata/calculations/getDefaultClassMetadata';
@@ -68,10 +69,10 @@ function buildLeafBindingPlanResult(
     },
   };
 
-  planServiceNode.bindings.push({
+  (planServiceNode as Writable<PlanServiceNode>).bindings = {
     binding: binding,
     parent: planServiceNode,
-  });
+  };
 
   return planResult;
 }
@@ -113,10 +114,10 @@ function buildSimpleInstancePlanResult(
     serviceIdentifier: constructorParameterBinding.serviceIdentifier,
   };
 
-  constructorParamServiceNode.bindings.push({
+  (constructorParamServiceNode as Writable<PlanServiceNode>).bindings = {
     binding: constructorParameterBinding,
     parent: constructorParamServiceNode,
-  });
+  };
 
   instanceBindingNode.constructorParams.push(constructorParamServiceNode);
 
@@ -136,14 +137,14 @@ function buildSimpleInstancePlanResult(
     serviceIdentifier: propertyKeyBinding.serviceIdentifier,
   };
 
-  propertyServiceNode.bindings.push({
+  (propertyServiceNode as Writable<PlanServiceNode>).bindings = {
     binding: propertyKeyBinding,
     parent: propertyServiceNode,
-  });
+  };
 
   instanceBindingNode.propertyParams.set(propertyKey, propertyServiceNode);
 
-  planServiceNode.bindings.push(instanceBindingNode);
+  (planServiceNode as Writable<PlanServiceNode>).bindings = instanceBindingNode;
 
   const planResult: PlanResult = {
     tree: {
@@ -185,7 +186,8 @@ function buildServiceRedirectionToLeafBindingPlanResult(
     parent: serviceRedirectionBindingNode,
   });
 
-  planServiceNode.bindings.push(serviceRedirectionBindingNode);
+  (planServiceNode as Writable<PlanServiceNode>).bindings =
+    serviceRedirectionBindingNode;
 
   return planResult;
 }

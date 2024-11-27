@@ -10,19 +10,21 @@ export function checkServiceNodeSingleInjectionBindings(
   serviceNode: PlanServiceNode,
   isOptional: boolean,
 ): void {
-  if (serviceNode.bindings.length === SINGLE_INJECTION_BINDINGS) {
-    const [planBindingNode]: [PlanBindingNode] = serviceNode.bindings as [
-      PlanBindingNode,
-    ];
+  if (Array.isArray(serviceNode.bindings)) {
+    if (serviceNode.bindings.length === SINGLE_INJECTION_BINDINGS) {
+      const [planBindingNode]: [PlanBindingNode] = serviceNode.bindings as [
+        PlanBindingNode,
+      ];
 
-    if (isPlanServiceRedirectionBindingNode(planBindingNode)) {
-      checkPlanServiceRedirectionBindingNodeSingleInjectionBindings(
-        planBindingNode,
-        isOptional,
-      );
+      if (isPlanServiceRedirectionBindingNode(planBindingNode)) {
+        checkPlanServiceRedirectionBindingNodeSingleInjectionBindings(
+          planBindingNode,
+          isOptional,
+        );
+      }
+
+      return;
     }
-
-    return;
   }
 
   throwErrorWhenUnexpectedBindingsAmountFound(
