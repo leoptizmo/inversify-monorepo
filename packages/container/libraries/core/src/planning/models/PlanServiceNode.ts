@@ -4,7 +4,7 @@ import { PlanBindingNode } from './PlanBindingNode';
 import { PlanServiceNodeParent } from './PlanServiceNodeParent';
 
 export interface PlanServiceNode {
-  readonly bindings: PlanBindingNode[];
+  readonly bindings: PlanBindingNode | PlanBindingNode[] | undefined;
   readonly parent: PlanServiceNodeParent | undefined;
   readonly serviceIdentifier: ServiceIdentifier;
 }

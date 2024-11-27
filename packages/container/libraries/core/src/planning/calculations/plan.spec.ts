@@ -10,6 +10,7 @@ import { bindingTypeValues } from '../../binding/models/BindingType';
 import { ConstantValueBinding } from '../../binding/models/ConstantValueBinding';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
+import { Writable } from '../../common/models/Writable';
 import { ClassElementMetadataKind } from '../../metadata/models/ClassElementMetadataKind';
 import { ClassMetadata } from '../../metadata/models/ClassMetadata';
 import { ManagedClassElementMetadata } from '../../metadata/models/ManagedClassElementMetadata';
@@ -105,8 +106,10 @@ describe(plan.name, () => {
       });
 
       it('should return expected PlanResult', () => {
+        const planServiceNodeBindings: PlanBindingNode[] = [];
+
         const planServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: planServiceNodeBindings,
           parent: undefined,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
         };
@@ -117,7 +120,7 @@ describe(plan.name, () => {
           },
         };
 
-        planServiceNode.bindings.push({
+        planServiceNodeBindings.push({
           binding: constantValueBinding,
           parent: planServiceNode,
         });
@@ -231,8 +234,10 @@ describe(plan.name, () => {
       });
 
       it('should return expected PlanResult', () => {
+        const planServiceNodeBindings: PlanBindingNode[] = [];
+
         const planServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: planServiceNodeBindings,
           parent: undefined,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
         };
@@ -243,7 +248,7 @@ describe(plan.name, () => {
           },
         };
 
-        planServiceNode.bindings.push({
+        planServiceNodeBindings.push({
           binding: constantValueBinding,
           parent: planServiceNode,
         });
@@ -323,8 +328,10 @@ describe(plan.name, () => {
       });
 
       it('should return expected PlanResult', () => {
+        const planServiceNodeBindings: PlanBindingNode[] = [];
+
         const planServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: planServiceNodeBindings,
           parent: undefined,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
         };
@@ -343,7 +350,7 @@ describe(plan.name, () => {
           propertyParams: new Map(),
         };
 
-        planServiceNode.bindings.push(instanceBindingNode);
+        planServiceNodeBindings.push(instanceBindingNode);
 
         expect(result).toStrictEqual(expected);
       });
@@ -471,8 +478,10 @@ describe(plan.name, () => {
       });
 
       it('should return expected PlanResult', () => {
+        const planServiceNodeBindings: PlanBindingNode[] = [];
+
         const planServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: planServiceNodeBindings,
           parent: undefined,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
         };
@@ -491,26 +500,30 @@ describe(plan.name, () => {
           propertyParams: new Map(),
         };
 
+        const constructorParamsPlanServiceNodeBindings: PlanBindingNode[] = [];
+
         const constructorParamsPlanServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: constructorParamsPlanServiceNodeBindings,
           parent: instanceBindingNode,
           serviceIdentifier:
             constructorArgumentMetadata.value as ServiceIdentifier,
         };
 
-        constructorParamsPlanServiceNode.bindings.push({
+        constructorParamsPlanServiceNodeBindings.push({
           binding: constantValueBinding,
           parent: constructorParamsPlanServiceNode,
         });
 
+        const propertyParamsPlanServiceNodeBindings: PlanBindingNode[] = [];
+
         const propertyParamsPlanServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: propertyParamsPlanServiceNodeBindings,
           parent: instanceBindingNode,
           serviceIdentifier:
             propertyArgumentMetadata.value as ServiceIdentifier,
         };
 
-        propertyParamsPlanServiceNode.bindings.push({
+        propertyParamsPlanServiceNodeBindings.push({
           binding: constantValueBinding,
           parent: propertyParamsPlanServiceNode,
         });
@@ -524,7 +537,7 @@ describe(plan.name, () => {
           propertyParamsPlanServiceNode,
         );
 
-        planServiceNode.bindings.push(instanceBindingNode);
+        planServiceNodeBindings.push(instanceBindingNode);
 
         expect(result).toStrictEqual(expected);
       });
@@ -654,8 +667,10 @@ describe(plan.name, () => {
       });
 
       it('should return expected PlanResult', () => {
+        const planServiceNodeBindings: PlanBindingNode[] = [];
+
         const planServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: planServiceNodeBindings,
           parent: undefined,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
         };
@@ -674,28 +689,32 @@ describe(plan.name, () => {
           propertyParams: new Map(),
         };
 
+        const constructorParamsPlanServiceNodeBindings: PlanBindingNode[] = [];
+
         const constructorParamsPlanServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: constructorParamsPlanServiceNodeBindings,
           parent: instanceBindingNode,
           serviceIdentifier: (
             constructorArgumentMetadata.value as LazyServiceIdentifier
           ).unwrap(),
         };
 
-        constructorParamsPlanServiceNode.bindings.push({
+        constructorParamsPlanServiceNodeBindings.push({
           binding: constantValueBinding,
           parent: constructorParamsPlanServiceNode,
         });
 
+        const propertyParamsPlanServiceNodeBindings: PlanBindingNode[] = [];
+
         const propertyParamsPlanServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: propertyParamsPlanServiceNodeBindings,
           parent: instanceBindingNode,
           serviceIdentifier: (
             propertyArgumentMetadata.value as LazyServiceIdentifier
           ).unwrap(),
         };
 
-        propertyParamsPlanServiceNode.bindings.push({
+        propertyParamsPlanServiceNodeBindings.push({
           binding: constantValueBinding,
           parent: propertyParamsPlanServiceNode,
         });
@@ -709,7 +728,7 @@ describe(plan.name, () => {
           propertyParamsPlanServiceNode,
         );
 
-        planServiceNode.bindings.push(instanceBindingNode);
+        planServiceNodeBindings.push(instanceBindingNode);
 
         expect(result).toStrictEqual(expected);
       });
@@ -826,14 +845,14 @@ describe(plan.name, () => {
 
       it('should call checkServiceNodeSingleInjectionBindings()', () => {
         const constructorParamsPlanServiceNode: PlanServiceNode = {
-          bindings: expect.any(Array) as unknown as PlanBindingNode[],
+          bindings: expect.any(Object) as unknown as PlanBindingNode,
           parent: expect.any(Object) as unknown as PlanServiceNodeParent,
           serviceIdentifier:
             constructorArgumentMetadata.value as ServiceIdentifier,
         };
 
         const propertyParamsPlanServiceNode: PlanServiceNode = {
-          bindings: expect.any(Array) as unknown as PlanBindingNode[],
+          bindings: expect.any(Object) as unknown as PlanBindingNode,
           parent: expect.any(Object) as unknown as PlanServiceNodeParent,
           serviceIdentifier:
             propertyArgumentMetadata.value as ServiceIdentifier,
@@ -867,8 +886,10 @@ describe(plan.name, () => {
       });
 
       it('should return expected PlanResult', () => {
+        const planServiceNodeBindings: PlanBindingNode[] = [];
+
         const planServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: planServiceNodeBindings,
           parent: undefined,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
         };
@@ -888,28 +909,31 @@ describe(plan.name, () => {
         };
 
         const constructorParamsPlanServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: undefined,
           parent: instanceBindingNode,
           serviceIdentifier:
             constructorArgumentMetadata.value as ServiceIdentifier,
         };
 
-        constructorParamsPlanServiceNode.bindings.push({
+        (
+          constructorParamsPlanServiceNode as Writable<PlanServiceNode>
+        ).bindings = {
           binding: constantValueBinding,
           parent: constructorParamsPlanServiceNode,
-        });
+        };
 
         const propertyParamsPlanServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: undefined,
           parent: instanceBindingNode,
           serviceIdentifier:
             propertyArgumentMetadata.value as ServiceIdentifier,
         };
 
-        propertyParamsPlanServiceNode.bindings.push({
-          binding: constantValueBinding,
-          parent: propertyParamsPlanServiceNode,
-        });
+        (propertyParamsPlanServiceNode as Writable<PlanServiceNode>).bindings =
+          {
+            binding: constantValueBinding,
+            parent: propertyParamsPlanServiceNode,
+          };
 
         instanceBindingNode.constructorParams.push(
           constructorParamsPlanServiceNode,
@@ -920,7 +944,7 @@ describe(plan.name, () => {
           propertyParamsPlanServiceNode,
         );
 
-        planServiceNode.bindings.push(instanceBindingNode);
+        planServiceNodeBindings.push(instanceBindingNode);
 
         expect(result).toStrictEqual(expected);
       });
@@ -1007,8 +1031,10 @@ describe(plan.name, () => {
       });
 
       it('should return expected PlanResult', () => {
+        const planServiceNodeBindings: PlanBindingNode[] = [];
+
         const planServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: planServiceNodeBindings,
           parent: undefined,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
         };
@@ -1027,7 +1053,7 @@ describe(plan.name, () => {
           propertyParams: new Map(),
         };
 
-        planServiceNode.bindings.push(instanceBindingNode);
+        planServiceNodeBindings.push(instanceBindingNode);
 
         expect(result).toStrictEqual(expected);
       });
@@ -1085,8 +1111,10 @@ describe(plan.name, () => {
       });
 
       it('should return expected PlanResult', () => {
+        const planServiceNodeBindings: PlanBindingNode[] = [];
+
         const planServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: planServiceNodeBindings,
           parent: undefined,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
         };
@@ -1106,7 +1134,7 @@ describe(plan.name, () => {
 
         serviceRedirectionBindingNode.redirections.push();
 
-        planServiceNode.bindings.push(serviceRedirectionBindingNode);
+        planServiceNodeBindings.push(serviceRedirectionBindingNode);
 
         expect(result).toStrictEqual(expected);
       });
@@ -1198,8 +1226,10 @@ describe(plan.name, () => {
       });
 
       it('should return expected PlanResult', () => {
+        const planServiceNodeBindings: PlanBindingNode[] = [];
+
         const planServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: planServiceNodeBindings,
           parent: undefined,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
         };
@@ -1222,7 +1252,7 @@ describe(plan.name, () => {
           parent: serviceRedirectionBindingNode,
         });
 
-        planServiceNode.bindings.push(serviceRedirectionBindingNode);
+        planServiceNodeBindings.push(serviceRedirectionBindingNode);
 
         expect(result).toStrictEqual(expected);
       });
@@ -1264,7 +1294,7 @@ describe(plan.name, () => {
 
       it('should call checkServiceNodeSingleInjectionBindings()', () => {
         const expectedServiceNode: PlanServiceNode = {
-          bindings: [],
+          bindings: undefined,
           parent: undefined,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
         };
@@ -1282,7 +1312,7 @@ describe(plan.name, () => {
         const expected: PlanResult = {
           tree: {
             root: {
-              bindings: [],
+              bindings: undefined,
               parent: undefined,
               serviceIdentifier:
                 planParamsMock.rootConstraints.serviceIdentifier,
