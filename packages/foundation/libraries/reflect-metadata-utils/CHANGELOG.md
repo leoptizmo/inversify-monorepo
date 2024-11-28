@@ -1,5 +1,11 @@
 # @inversifyjs/reflect-metadata-utils
 
+## 0.2.4
+
+### Patch Changes
+
+- 2cbb782: Updated ESM build to provide proper types regardless of the ts resolution module strategy in the userland.
+
 ## 0.2.3
 
 ### Patch Changes
