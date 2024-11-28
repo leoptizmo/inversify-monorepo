@@ -9,7 +9,7 @@
 
 ### Patch Changes
 
-- 2cbb782: Updated ESM build to provide proper types regardless of the ts resolution module strategy in the userland
+- 2cbb782: Updated ESM build to provide proper types regardless of the ts resolution module strategy in the userland.
 
 ## 1.3.3
 
