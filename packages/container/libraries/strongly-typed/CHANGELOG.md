@@ -1,5 +1,11 @@
 # @inversifyjs/strongly-typed
 
+## 1.1.1
+
+### Patch Changes
+
+- 2cbb782: Updated ESM build to provide proper types regardless of the ts resolution module strategy in the userland
+
 ## 1.1.0
 
 ### Minor Changes

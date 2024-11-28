@@ -1,5 +1,16 @@
 # @inversifyjs/common
 
+## 1.4.0
+
+### Minor Changes
+
+- da1a1c4: Added `stringifyServiceIdentifier`.
+- da1a1c4: Added `Either`.
+
+### Patch Changes
+
+- 2cbb782: Updated ESM build to provide proper types regardless of the ts resolution module strategy in the userland
+
 ## 1.3.3
 
 ### Patch Changes

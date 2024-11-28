@@ -1,5 +1,16 @@
 # @inversifyjs/core
 
+## 1.3.5
+
+### Patch Changes
+
+- 2cbb782: Updated ESM build to provide proper types regardless of the ts resolution module strategy in the userland
+- Updated dependencies [2cbb782]
+- Updated dependencies [da1a1c4]
+- Updated dependencies [da1a1c4]
+  - @inversifyjs/reflect-metadata-utils@0.2.4
+  - @inversifyjs/common@1.4.0
+
 ## 1.3.4
 
 ### Patch Changes
