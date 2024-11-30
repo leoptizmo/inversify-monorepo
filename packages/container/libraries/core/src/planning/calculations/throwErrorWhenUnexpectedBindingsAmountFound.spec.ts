@@ -108,14 +108,8 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
           id: 0,
           isSatisfiedBy: () => true,
           moduleId: undefined,
-          onActivation: {
-            isRight: false,
-            value: undefined,
-          },
-          onDeactivation: {
-            isRight: false,
-            value: undefined,
-          },
+          onActivation: undefined,
+          onDeactivation: undefined,
           scope: bindingScopeValues.Singleton,
           serviceIdentifier: 'target-service-id',
           type: bindingTypeValues.ConstantValue,
@@ -131,13 +125,9 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
     });
 
     describe('when called, and isPlanServiceRedirectionBindingNode() returns false', () => {
-      let stringifiedServiceIdentifier: string;
-
       let result: unknown;
 
       beforeAll(() => {
-        stringifiedServiceIdentifier = 'stringified-service-id';
-
         (
           isPlanServiceRedirectionBindingNode as unknown as jest.Mock<
             typeof isPlanServiceRedirectionBindingNode
@@ -374,14 +364,8 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
             id: 0,
             isSatisfiedBy: () => true,
             moduleId: undefined,
-            onActivation: {
-              isRight: false,
-              value: undefined,
-            },
-            onDeactivation: {
-              isRight: false,
-              value: undefined,
-            },
+            onActivation: undefined,
+            onDeactivation: undefined,
             scope: bindingScopeValues.Singleton,
             serviceIdentifier: 'target-service-id',
             type: bindingTypeValues.ConstantValue,
@@ -397,14 +381,8 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
             id: 0,
             isSatisfiedBy: () => true,
             moduleId: undefined,
-            onActivation: {
-              isRight: false,
-              value: undefined,
-            },
-            onDeactivation: {
-              isRight: false,
-              value: undefined,
-            },
+            onActivation: undefined,
+            onDeactivation: undefined,
             scope: bindingScopeValues.Singleton,
             serviceIdentifier: 'target-service-id',
             type: bindingTypeValues.ConstantValue,

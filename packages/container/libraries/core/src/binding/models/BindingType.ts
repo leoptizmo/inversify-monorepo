@@ -1,6 +1,5 @@
 export type BindingType =
   | 'ConstantValue'
-  | 'Constructor'
   | 'DynamicValue'
   | 'Factory'
   | 'Instance'
@@ -9,7 +8,6 @@ export type BindingType =
 
 export const bindingTypeValues: { [TKey in BindingType]: TKey } = {
   ConstantValue: 'ConstantValue',
-  Constructor: 'Constructor',
   DynamicValue: 'DynamicValue',
   Factory: 'Factory',
   Instance: 'Instance',

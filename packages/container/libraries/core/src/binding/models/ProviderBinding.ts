@@ -7,7 +7,7 @@ export interface ProviderBinding<TActivated>
   extends ScopedBinding<
     typeof bindingTypeValues.Provider,
     typeof bindingScopeValues.Singleton,
-    TActivated
+    Provider<TActivated>
   > {
   readonly provider: () => Provider<TActivated>;
 }

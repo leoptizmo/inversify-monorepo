@@ -82,14 +82,8 @@ describe(
                 id: 1,
                 isSatisfiedBy: () => true,
                 moduleId: undefined,
-                onActivation: {
-                  isRight: false,
-                  value: undefined,
-                },
-                onDeactivation: {
-                  isRight: false,
-                  value: undefined,
-                },
+                onActivation: undefined,
+                onDeactivation: undefined,
                 scope: bindingScopeValues.Singleton,
                 serviceIdentifier: 'service-id',
                 type: bindingTypeValues.ConstantValue,

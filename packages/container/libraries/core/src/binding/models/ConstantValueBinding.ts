@@ -5,5 +5,5 @@ import { ScopedBinding } from './ScopedBinding';
 export type ConstantValueBinding<TActivated> = ScopedBinding<
   typeof bindingTypeValues.ConstantValue,
   typeof bindingScopeValues.Singleton,
-  TActivated
+  TActivated | Promise<TActivated>
 >;
