@@ -11,8 +11,8 @@ export interface ScopedBinding<
   TScope extends BindingScope,
   TActivated,
 > extends BaseBinding<TType, TActivated> {
-  readonly cache: Either<undefined, TActivated | Promise<TActivated>>;
-  readonly onActivation: Either<undefined, BindingActivation<TActivated>>;
-  readonly onDeactivation: Either<undefined, BindingDeactivation<TActivated>>;
+  cache: Either<undefined, TActivated>;
+  readonly onActivation: BindingActivation<TActivated> | undefined;
+  readonly onDeactivation: BindingDeactivation<TActivated> | undefined;
   readonly scope: TScope;
 }

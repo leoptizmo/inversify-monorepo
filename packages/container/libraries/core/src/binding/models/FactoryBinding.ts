@@ -7,7 +7,7 @@ export interface FactoryBinding<TActivated>
   extends ScopedBinding<
     typeof bindingTypeValues.Factory,
     typeof bindingScopeValues.Singleton,
-    TActivated
+    Factory<TActivated>
   > {
   readonly factory: () => Factory<TActivated>;
 }

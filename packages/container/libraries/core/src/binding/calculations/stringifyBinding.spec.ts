@@ -15,14 +15,8 @@ describe(stringifyBinding.name, () => {
         implementationType: class Foo {},
         isSatisfiedBy: () => true,
         moduleId: undefined,
-        onActivation: {
-          isRight: false,
-          value: undefined,
-        },
-        onDeactivation: {
-          isRight: false,
-          value: undefined,
-        },
+        onActivation: undefined,
+        onDeactivation: undefined,
         scope: bindingScopeValues.Singleton,
         serviceIdentifier: 'service-id',
         type: bindingTypeValues.Instance,
@@ -48,14 +42,8 @@ describe(stringifyBinding.name, () => {
         id: 0,
         isSatisfiedBy: () => true,
         moduleId: undefined,
-        onActivation: {
-          isRight: false,
-          value: undefined,
-        },
-        onDeactivation: {
-          isRight: false,
-          value: undefined,
-        },
+        onActivation: undefined,
+        onDeactivation: undefined,
         scope: bindingScopeValues.Singleton,
         serviceIdentifier: 'service-id',
         type: bindingTypeValues.ConstantValue,
