@@ -1,3 +1,4 @@
+import { ResolutionContext } from '../../resolution/models/ResolutionContext';
 import { bindingScopeValues } from './BindingScope';
 import { bindingTypeValues } from './BindingType';
 import { Provider } from './Provider';
@@ -9,5 +10,5 @@ export interface ProviderBinding<TActivated>
     typeof bindingScopeValues.Singleton,
     Provider<TActivated>
   > {
-  readonly provider: () => Provider<TActivated>;
+  readonly provider: (context: ResolutionContext) => Provider<TActivated>;
 }

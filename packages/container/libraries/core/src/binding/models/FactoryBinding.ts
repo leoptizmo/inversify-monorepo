@@ -1,3 +1,4 @@
+import { ResolutionContext } from '../../resolution/models/ResolutionContext';
 import { bindingScopeValues } from './BindingScope';
 import { bindingTypeValues } from './BindingType';
 import { Factory } from './Factory';
@@ -9,5 +10,5 @@ export interface FactoryBinding<TActivated>
     typeof bindingScopeValues.Singleton,
     Factory<TActivated>
   > {
-  readonly factory: () => Factory<TActivated>;
+  readonly factory: (context: ResolutionContext) => Factory<TActivated>;
 }

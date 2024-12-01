@@ -1,6 +1,6 @@
 import { BindingScope } from './BindingScope';
 import { bindingTypeValues } from './BindingType';
-import { DynamicValue } from './DynamicValue';
+import { DynamicValueBuilder } from './DynamicValueBuilder';
 import { ScopedBinding } from './ScopedBinding';
 
 export interface DynamicValueBinding<TActivated>
@@ -9,5 +9,5 @@ export interface DynamicValueBinding<TActivated>
     BindingScope,
     TActivated | Promise<TActivated>
   > {
-  readonly value: DynamicValue<TActivated>;
+  readonly value: DynamicValueBuilder<TActivated>;
 }
