@@ -61,7 +61,10 @@ export function plan(params: PlanParams): PlanResult {
   );
 
   if (!params.rootConstraints.isMultiple) {
-    checkServiceNodeSingleInjectionBindings(serviceNode, false);
+    checkServiceNodeSingleInjectionBindings(
+      serviceNode,
+      params.rootConstraints.isOptional ?? false,
+    );
 
     const [planBindingNode]: PlanBindingNode[] = serviceNodeBindings;
 
