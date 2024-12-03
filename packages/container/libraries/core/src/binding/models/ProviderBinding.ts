@@ -4,11 +4,11 @@ import { bindingTypeValues } from './BindingType';
 import { Provider } from './Provider';
 import { ScopedBinding } from './ScopedBinding';
 
-export interface ProviderBinding<TActivated>
+export interface ProviderBinding<TActivated extends Provider<unknown>>
   extends ScopedBinding<
     typeof bindingTypeValues.Provider,
     typeof bindingScopeValues.Singleton,
-    Provider<TActivated>
+    TActivated
   > {
-  readonly provider: (context: ResolutionContext) => Provider<TActivated>;
+  readonly provider: (context: ResolutionContext) => TActivated;
 }

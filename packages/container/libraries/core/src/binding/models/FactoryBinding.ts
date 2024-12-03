@@ -4,11 +4,11 @@ import { bindingTypeValues } from './BindingType';
 import { Factory } from './Factory';
 import { ScopedBinding } from './ScopedBinding';
 
-export interface FactoryBinding<TActivated>
+export interface FactoryBinding<TActivated extends Factory<unknown>>
   extends ScopedBinding<
     typeof bindingTypeValues.Factory,
     typeof bindingScopeValues.Singleton,
-    Factory<TActivated>
+    TActivated
   > {
-  readonly factory: (context: ResolutionContext) => Factory<TActivated>;
+  readonly factory: (context: ResolutionContext) => TActivated;
 }

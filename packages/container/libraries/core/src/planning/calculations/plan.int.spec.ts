@@ -9,8 +9,10 @@ import { bindingScopeValues } from '../../binding/models/BindingScope';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { ConstantValueBinding } from '../../binding/models/ConstantValueBinding';
 import { DynamicValueBinding } from '../../binding/models/DynamicValueBinding';
+import { Factory } from '../../binding/models/Factory';
 import { FactoryBinding } from '../../binding/models/FactoryBinding';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
+import { Provider } from '../../binding/models/Provider';
 import { ProviderBinding } from '../../binding/models/ProviderBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
 import { BindingService } from '../../binding/services/BindingService';
@@ -54,8 +56,8 @@ function buildLeafBindingPlanResult(
   binding:
     | ConstantValueBinding<unknown>
     | DynamicValueBinding<unknown>
-    | FactoryBinding<unknown>
-    | ProviderBinding<unknown>,
+    | FactoryBinding<Factory<unknown>>
+    | ProviderBinding<Provider<unknown>>,
 ): PlanResult {
   const planServiceNode: PlanServiceNode = {
     bindings: [],
@@ -81,15 +83,15 @@ function buildSimpleInstancePlanResult(
   constructorParameterBinding:
     | ConstantValueBinding<unknown>
     | DynamicValueBinding<unknown>
-    | FactoryBinding<unknown>
-    | ProviderBinding<unknown>,
+    | FactoryBinding<Factory<unknown>>
+    | ProviderBinding<Provider<unknown>>,
   propertyKeyBindingPair: [
     string | symbol,
     (
       | ConstantValueBinding<unknown>
       | DynamicValueBinding<unknown>
-      | FactoryBinding<unknown>
-      | ProviderBinding<unknown>
+      | FactoryBinding<Factory<unknown>>
+      | ProviderBinding<Provider<unknown>>
     ),
   ],
   instanceBinding: InstanceBinding<unknown>,
@@ -126,8 +128,8 @@ function buildSimpleInstancePlanResult(
     (
       | ConstantValueBinding<unknown>
       | DynamicValueBinding<unknown>
-      | FactoryBinding<unknown>
-      | ProviderBinding<unknown>
+      | FactoryBinding<Factory<unknown>>
+      | ProviderBinding<Provider<unknown>>
     ),
   ] = propertyKeyBindingPair;
 
@@ -159,8 +161,8 @@ function buildServiceRedirectionToLeafBindingPlanResult(
   leafBinding:
     | ConstantValueBinding<unknown>
     | DynamicValueBinding<unknown>
-    | FactoryBinding<unknown>
-    | ProviderBinding<unknown>,
+    | FactoryBinding<Factory<unknown>>
+    | ProviderBinding<Provider<unknown>>,
   serviceRedirectionBinding: ServiceRedirectionBinding<unknown>,
 ): PlanResult {
   const planServiceNode: PlanServiceNode = {
@@ -195,9 +197,9 @@ function buildServiceRedirectionToLeafBindingPlanResult(
 describe(plan.name, () => {
   let constantValueBinding: ConstantValueBinding<unknown>;
   let dynamicValueBinding: DynamicValueBinding<unknown>;
-  let factoryBinding: FactoryBinding<unknown>;
+  let factoryBinding: FactoryBinding<Factory<unknown>>;
   let instanceBinding: InstanceBinding<unknown>;
-  let providerBinding: ProviderBinding<unknown>;
+  let providerBinding: ProviderBinding<Provider<unknown>>;
   let serviceRedirectionBinding: ServiceRedirectionBinding<unknown>;
   let serviceRedirectionToNonExistentBinding: ServiceRedirectionBinding<unknown>;
 
