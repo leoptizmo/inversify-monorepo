@@ -5,6 +5,7 @@ import {
 import { BindingType } from '../../binding/models/BindingType';
 import { ScopedBinding } from '../../binding/models/ScopedBinding';
 import { ResolutionParams } from '../models/ResolutionParams';
+import { Resolved } from '../models/Resolved';
 
 export function resolveScoped<
   TActivated,
@@ -14,9 +15,9 @@ export function resolveScoped<
   TBinding extends ScopedBinding<TType, BindingScope, TActivated>,
 >(
   getBinding: (arg: TArg) => TBinding,
-  resolve: (params: ResolutionParams, arg: TArg) => TActivated,
-): (params: ResolutionParams, arg: TArg) => TActivated {
-  return (params: ResolutionParams, arg: TArg): TActivated => {
+  resolve: (params: ResolutionParams, arg: TArg) => Resolved<TActivated>,
+): (params: ResolutionParams, arg: TArg) => Resolved<TActivated> {
+  return (params: ResolutionParams, arg: TArg): Resolved<TActivated> => {
     const binding: TBinding = getBinding(arg);
 
     switch (binding.scope) {
@@ -25,7 +26,7 @@ export function resolveScoped<
           return binding.cache.value;
         }
 
-        const resolvedValue: TActivated = resolve(params, arg);
+        const resolvedValue: Resolved<TActivated> = resolve(params, arg);
 
         binding.cache = {
           isRight: true,
@@ -36,10 +37,12 @@ export function resolveScoped<
       }
       case bindingScopeValues.Request: {
         if (params.requestScopeCache.has(binding.id)) {
-          return params.requestScopeCache.get(binding.id) as TActivated;
+          return params.requestScopeCache.get(
+            binding.id,
+          ) as Resolved<TActivated>;
         }
 
-        const resolvedValue: TActivated = resolve(params, arg);
+        const resolvedValue: Resolved<TActivated> = resolve(params, arg);
 
         params.requestScopeCache.set(binding.id, resolvedValue);
 

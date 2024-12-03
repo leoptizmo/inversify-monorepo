@@ -2,6 +2,7 @@ import { beforeAll, describe, expect, it, jest } from '@jest/globals';
 
 import { bindingScopeValues } from '../../binding/models/BindingScope';
 import { bindingTypeValues } from '../../binding/models/BindingType';
+import { Factory } from '../../binding/models/Factory';
 import { FactoryBinding } from '../../binding/models/FactoryBinding';
 import { ResolutionParams } from '../models/ResolutionParams';
 import { resolveFactoryBindingCallback } from './resolveFactoryBindingCallback';
@@ -9,7 +10,7 @@ import { resolveFactoryBindingCallback } from './resolveFactoryBindingCallback';
 describe(resolveFactoryBindingCallback.name, () => {
   let resolutionParamsFixture: ResolutionParams;
 
-  let factoryValueBindingMock: jest.Mocked<FactoryBinding<unknown>>;
+  let factoryValueBindingMock: jest.Mocked<FactoryBinding<Factory<unknown>>>;
 
   beforeAll(() => {
     resolutionParamsFixture = {

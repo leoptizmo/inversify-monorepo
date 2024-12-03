@@ -10,7 +10,7 @@ import { resolveProviderBindingCallback } from './resolveProviderBindingCallback
 describe(resolveProviderBindingCallback.name, () => {
   let resolutionParamsFixture: ResolutionParams;
 
-  let providerBindingMock: jest.Mocked<ProviderBinding<unknown>>;
+  let providerBindingMock: jest.Mocked<ProviderBinding<Provider<unknown>>>;
 
   beforeAll(() => {
     resolutionParamsFixture = {
