@@ -4,9 +4,9 @@ import { describe, it } from '@jest/globals';
 
 import 'reflect-metadata';
 
-import { inject, injectable } from 'inversify';
+import { inject, injectable, multiInject } from 'inversify';
 
-import type { TypedInject } from './inject';
+import type { TypedInject, TypedMultiInject } from './inject';
 
 describe('@inject', () => {
   @injectable()
@@ -71,5 +71,56 @@ describe('@inject', () => {
       ) {}
     }
     Test;
+  });
+
+  describe('multiInject', () => {
+    const $multiInject: TypedMultiInject<BindingMap> =
+      multiInject as TypedMultiInject<BindingMap>;
+
+    it('strongly types injected properties', () => {
+      class Test {
+        @$multiInject('foo')
+        public foo!: Foo[];
+
+        @$multiInject('bar')
+        public readonly bar!: Bar[];
+
+        @$multiInject('asyncNumber')
+        public num!: number[];
+
+        // @ts-expect-error :: expects type Bar
+        @$multiInject('foo')
+        public badFoo!: Bar[];
+
+        // @ts-expect-error :: unknown binding
+        @$multiInject('unknown')
+        public unknown!: unknown[];
+      }
+      Test;
+    });
+
+    it('strongly types injected constructor parameters', () => {
+      class Test {
+        constructor(
+          @$multiInject('foo')
+          _foo: Foo[],
+
+          @$multiInject('bar')
+          private readonly _bar: Bar[],
+
+          @$multiInject('asyncNumber')
+          _num: number[],
+
+          // @ts-expect-error :: expects type Bar
+          @$multiInject('foo')
+          _badFoo: Bar[],
+
+          // @ts-expect-error :: unknown binding
+          @$multiInject('unknown')
+          _unknown: unknown[],
+        ) {}
+      }
+      Test;
+    });
   });
 });
