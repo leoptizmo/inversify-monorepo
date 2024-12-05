@@ -22,3 +22,9 @@ export type TypedInject<TBindingMap extends BindingMap> = <
 >(
   identifier: TKey,
 ) => TypedDecorator<Awaited<TBindingMap[TKey]>>;
+
+export type TypedMultiInject<TBindingMap extends BindingMap> = <
+  TKey extends keyof TBindingMap,
+>(
+  identifier: TKey,
+) => TypedDecorator<Array<Awaited<TBindingMap[TKey]>>>;

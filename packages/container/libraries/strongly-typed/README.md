@@ -67,10 +67,11 @@ The library also exposes a `TypedInject` type that will leverage the `BindingMap
 You'll need to re-export the `inject` decorator with a type assertion:
 
 ```ts
-import { inject } from 'inversify';
-import type { TypedInject } from '@inversifyjs/strongly-typed';
+import { inject, multiInject } from 'inversify';
+import type { TypedInject, TypedMultiInject } from '@inversifyjs/strongly-typed';
 
 export const $inject = inject as TypedInject<BindingMap>;
+export const $multiInject = multiInject as TypedMultiInject<BindingMap>;
 ```
 
 You can now use this to strongly type injected constructor parameters, or **public** properties:
