@@ -1,5 +1,11 @@
 # @inversifyjs/strongly-typed
 
+## 1.2.0
+
+### Minor Changes
+
+- e505894: Added `TypedMultiInject`
+
 ## 1.1.1
 
 ### Patch Changes
