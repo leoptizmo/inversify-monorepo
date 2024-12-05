@@ -73,6 +73,70 @@ describe(ActivationsService.name, () => {
     });
   });
 
+  describe('.get', () => {
+    let serviceIdFixture: ServiceIdentifier;
+
+    beforeAll(() => {
+      serviceIdFixture = 'service-identifier';
+    });
+
+    describe('when called, and activationMaps.get() returns undefined', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        result = activationsService.get(serviceIdFixture);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call activationMaps.get()', () => {
+        expect(activationMapsMock.get).toHaveBeenCalledTimes(1);
+        expect(activationMapsMock.get).toHaveBeenCalledWith(
+          'serviceId',
+          serviceIdFixture,
+        );
+      });
+
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
+      });
+    });
+
+    describe('when called, and activationMaps.get() returns Iterable', () => {
+      let bindingActivationFixture: BindingActivation;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        bindingActivationFixture = Symbol() as unknown as BindingActivation;
+
+        activationMapsMock.get.mockReturnValueOnce(
+          [bindingActivationFixture].values(),
+        );
+
+        result = activationsService.get(serviceIdFixture);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call activationMaps.get()', () => {
+        expect(activationMapsMock.get).toHaveBeenCalledTimes(1);
+        expect(activationMapsMock.get).toHaveBeenCalledWith(
+          'serviceId',
+          serviceIdFixture,
+        );
+      });
+
+      it('should return BindingActivation[]', () => {
+        expect(result).toStrictEqual([bindingActivationFixture]);
+      });
+    });
+  });
+
   describe('.removeAllByModule', () => {
     let moduleIdFixture: number;
 

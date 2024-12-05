@@ -40,6 +40,22 @@ export class ActivationsService {
     this.#activationMaps.set(activation, relation);
   }
 
+  public get(
+    serviceIdentifier: ServiceIdentifier,
+  ): BindingActivation[] | undefined {
+    const bindings: Iterable<BindingActivation> | undefined =
+      this.#activationMaps.get(
+        ActivationRelationKind.serviceId,
+        serviceIdentifier,
+      );
+
+    if (bindings === undefined) {
+      return undefined;
+    }
+
+    return [...bindings];
+  }
+
   public removeAllByModuleId(moduleId: number): void {
     this.#activationMaps.removeByRelation(
       ActivationRelationKind.moduleId,

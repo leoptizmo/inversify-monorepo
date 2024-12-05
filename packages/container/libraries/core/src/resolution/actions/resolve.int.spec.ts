@@ -5,6 +5,7 @@ import 'reflect-metadata';
 import { Newable, Right, ServiceIdentifier } from '@inversifyjs/common';
 import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
+import { BindingActivation } from '../../binding/models/BindingActivation';
 import { bindingScopeValues } from '../../binding/models/BindingScope';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { ConstantValueBinding } from '../../binding/models/ConstantValueBinding';
@@ -15,6 +16,7 @@ import { InstanceBinding } from '../../binding/models/InstanceBinding';
 import { Provider } from '../../binding/models/Provider';
 import { ProviderBinding } from '../../binding/models/ProviderBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
+import { ActivationsService } from '../../binding/services/ActivationsService';
 import { BindingService } from '../../binding/services/BindingService';
 import { BindingServiceImplementation } from '../../binding/services/BindingServiceImplementation';
 import { isPromise } from '../../common/calculations/isPromise';
@@ -65,6 +67,7 @@ describe(resolve.name, () => {
   let serviceRedirectionBinding: ServiceRedirectionBinding<unknown>;
   let serviceRedirectionToNonExistentBinding: ServiceRedirectionBinding<unknown>;
 
+  let activationService: ActivationsService;
   let bindingService: BindingService;
   let getClassMetadataFunction: (type: Newable) => ClassMetadata;
 
@@ -172,6 +175,7 @@ describe(resolve.name, () => {
       type: bindingTypeValues.ServiceRedirection,
     };
 
+    activationService = new ActivationsService();
     bindingService = new BindingServiceImplementation();
 
     bindingService.set(constantValueBinding);
@@ -247,6 +251,12 @@ describe(resolve.name, () => {
 
       return resolve({
         context: resolutionContext,
+        getActivations: <TActivated>(
+          serviceIdentifier: ServiceIdentifier,
+        ): BindingActivation<TActivated>[] | undefined =>
+          activationService.get(serviceIdentifier) as
+            | BindingActivation<TActivated>[]
+            | undefined,
         planResult,
         requestScopeCache: new Map(),
       }) as TMultiple extends false
@@ -420,6 +430,12 @@ describe(resolve.name, () => {
 
           result = resolve({
             context: resolutionContext,
+            getActivations: <TActivated>(
+              serviceIdentifier: ServiceIdentifier,
+            ): BindingActivation<TActivated>[] | undefined =>
+              activationService.get(serviceIdentifier) as
+                | BindingActivation<TActivated>[]
+                | undefined,
             planResult,
             requestScopeCache: new Map(),
           });
