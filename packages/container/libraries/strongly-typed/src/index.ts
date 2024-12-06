@@ -1,2 +1,2 @@
 export { TypedContainer } from './container';
-export type { TypedInject } from './inject';
+export type { TypedInject, TypedMultiInject } from './inject';
