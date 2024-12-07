@@ -1,5 +1,11 @@
 # @inversifyjs/strongly-typed
 
+## 1.2.1
+
+### Patch Changes
+
+- 8c43d6c: Fix `TypedMultiInject` export
+
 ## 1.2.0
 
 ### Minor Changes
