@@ -1,15 +1,20 @@
-import projectRoot from './projectRoot.js';
+import getProjectRoot from './getProjectRoot.js';
 
 /**
  * @param { !string } projectName Jest project's name
+ * @param { !boolean } isTargetingSource True if test are under the source folder
  * @param { !Array<string> } testMatch Expressions to match to test file paths
  * @param { !Array<string> } testPathIgnorePatterns Expressions to match to ignored file paths by jest
  * @returns { !import("@jest/types").Config.InitialProjectOptions } Jest config
  */
-function getJestProjectConfig(projectName, testMatch, testPathIgnorePatterns) {
+function getJestProjectConfig(
+  projectName,
+  isTargetingSource,
+  testMatch,
+  testPathIgnorePatterns,
+) {
   /** @type { !import("@jest/types").Config.InitialProjectOptions } */
   const projectConfig = {
-    displayName: projectName,
     coveragePathIgnorePatterns: ['/fixtures/', '/node_modules/'],
     coverageThreshold: {
       global: {
@@ -19,9 +24,10 @@ function getJestProjectConfig(projectName, testMatch, testPathIgnorePatterns) {
         statements: 70,
       },
     },
+    displayName: projectName,
     moduleFileExtensions: ['ts', 'js', 'json'],
     rootDir: '.',
-    roots: [projectRoot],
+    roots: [getProjectRoot(isTargetingSource)],
     testEnvironment: 'node',
     testMatch: testMatch,
     testPathIgnorePatterns: testPathIgnorePatterns,
