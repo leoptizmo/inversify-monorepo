@@ -65,6 +65,7 @@ describe(resolveServiceRedirectionBindingNode.name, () => {
           scope: bindingScopeValues.Singleton,
           serviceIdentifier: 'service-id',
           type: bindingTypeValues.ConstantValue,
+          value: Symbol(),
         },
         parent: nodeRedirectionFixture,
       };

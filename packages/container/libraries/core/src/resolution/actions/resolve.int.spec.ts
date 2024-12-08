@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from '@jest/globals';
 
 import 'reflect-metadata';
 
-import { Newable, Right, ServiceIdentifier } from '@inversifyjs/common';
+import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { BindingActivation } from '../../binding/models/BindingActivation';
@@ -39,6 +39,7 @@ import { resolve } from './resolve';
 
 enum ServiceIds {
   constantValue = 'constant-value-service-id',
+  constantValueWithActivation = 'constant-value-with-activation-service-id',
   dynamicValue = 'dynamic-value-service-id',
   factory = 'factory-service-id',
   instance = 'instance-service-id',
@@ -59,7 +60,10 @@ class Foo {
 }
 
 describe(resolve.name, () => {
+  let activatedResolvedResult: unknown;
+
   let constantValueBinding: ConstantValueBinding<unknown>;
+  let constantValueBindingWithActivation: ConstantValueBinding<unknown>;
   let dynamicValueBinding: DynamicValueBinding<unknown>;
   let factoryBinding: FactoryBinding<Factory<unknown>>;
   let instanceBinding: InstanceBinding<unknown>;
@@ -74,10 +78,12 @@ describe(resolve.name, () => {
   let resolutionContext: ResolutionContext;
 
   beforeAll(() => {
+    activatedResolvedResult = { foo: 'bar' };
+
     constantValueBinding = {
       cache: {
-        isRight: true,
-        value: Symbol(),
+        isRight: false,
+        value: undefined,
       },
       id: 0,
       isSatisfiedBy: () => true,
@@ -87,6 +93,23 @@ describe(resolve.name, () => {
       scope: bindingScopeValues.Singleton,
       serviceIdentifier: ServiceIds.constantValue,
       type: bindingTypeValues.ConstantValue,
+      value: Symbol(),
+    };
+
+    constantValueBindingWithActivation = {
+      cache: {
+        isRight: false,
+        value: undefined,
+      },
+      id: 0,
+      isSatisfiedBy: () => true,
+      moduleId: undefined,
+      onActivation: () => activatedResolvedResult,
+      onDeactivation: undefined,
+      scope: bindingScopeValues.Singleton,
+      serviceIdentifier: ServiceIds.constantValueWithActivation,
+      type: bindingTypeValues.ConstantValue,
+      value: Symbol(),
     };
 
     dynamicValueBinding = {
@@ -178,7 +201,15 @@ describe(resolve.name, () => {
     activationService = new ActivationsService();
     bindingService = new BindingServiceImplementation();
 
+    activationService.add(
+      constantValueBindingWithActivation.onActivation as BindingActivation,
+      {
+        serviceId: constantValueBindingWithActivation.serviceIdentifier,
+      },
+    );
+
     bindingService.set(constantValueBinding);
+    bindingService.set(constantValueBindingWithActivation);
     bindingService.set(dynamicValueBinding);
     bindingService.set(factoryBinding);
     bindingService.set(instanceBinding);
@@ -353,7 +384,15 @@ describe(resolve.name, () => {
         isMultiple: false,
         serviceIdentifier: constantValueBinding.serviceIdentifier,
       }),
-      () => (constantValueBinding.cache as Right<unknown>).value,
+      () => constantValueBinding.value,
+    ],
+    [
+      'with constant value bound service with activation',
+      (): PlanParamsConstraint => ({
+        isMultiple: false,
+        serviceIdentifier: constantValueBindingWithActivation.serviceIdentifier,
+      }),
+      () => activatedResolvedResult,
     ],
     [
       'with dynamic value bound service',
@@ -387,9 +426,7 @@ describe(resolve.name, () => {
       }),
       () =>
         ((): Foo => {
-          const instance: Foo = new Foo(
-            (constantValueBinding.cache as Right<symbol>).value,
-          );
+          const instance: Foo = new Foo(constantValueBinding.value as symbol);
 
           (instance as Writable<Foo>).property = dynamicValueBinding.value(
             resolutionContext,
@@ -404,7 +441,7 @@ describe(resolve.name, () => {
         isMultiple: false,
         serviceIdentifier: serviceRedirectionBinding.serviceIdentifier,
       }),
-      () => (constantValueBinding.cache as Right<unknown>).value,
+      () => constantValueBinding.value,
     ],
   ])(
     'having plan params %s',

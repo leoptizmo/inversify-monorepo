@@ -1,5 +1,7 @@
 import { beforeAll, describe, expect, it, jest } from '@jest/globals';
 
+jest.mock('./resolveBindingActivations');
+
 import { Right } from '@inversifyjs/common';
 
 import { bindingScopeValues } from '../../binding/models/BindingScope';
@@ -9,6 +11,7 @@ import {
 } from '../../binding/models/BindingType';
 import { ScopedBinding } from '../../binding/models/ScopedBinding';
 import { ResolutionParams } from '../models/ResolutionParams';
+import { resolveBindingActivations } from './resolveBindingActivations';
 import { resolveSingletonScopedBinding } from './resolveSingletonScopedBinding';
 
 describe(resolveSingletonScopedBinding.name, () => {
@@ -108,13 +111,20 @@ describe(resolveSingletonScopedBinding.name, () => {
 
     describe('when called', () => {
       let resolveResult: unknown;
+      let activatedResolveResult: unknown;
 
       let result: unknown;
 
       beforeAll(() => {
         resolveResult = Symbol();
+        activatedResolveResult = Symbol();
 
         resolveMock.mockReturnValueOnce(resolveResult);
+        (
+          resolveBindingActivations as jest.Mock<
+            typeof resolveBindingActivations
+          >
+        ).mockReturnValueOnce(activatedResolveResult);
 
         result = resolveSingletonScopedBinding(resolveMock)(
           resolutionParamsFixture,
@@ -130,17 +140,26 @@ describe(resolveSingletonScopedBinding.name, () => {
         );
       });
 
+      it('should call resolveBindingActivations()', () => {
+        expect(resolveBindingActivations).toHaveBeenCalledTimes(1);
+        expect(resolveBindingActivations).toHaveBeenCalledWith(
+          resolutionParamsFixture,
+          bindingFixture.serviceIdentifier,
+          resolveResult,
+        );
+      });
+
       it('should cache value', () => {
         const expectedCache: Right<unknown> = {
           isRight: true,
-          value: resolveResult,
+          value: activatedResolveResult,
         };
 
         expect(bindingFixture.cache).toStrictEqual(expectedCache);
       });
 
       it('should return cached value', () => {
-        expect(result).toBe(resolveResult);
+        expect(result).toBe(activatedResolveResult);
       });
     });
   });

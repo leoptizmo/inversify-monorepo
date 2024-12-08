@@ -113,6 +113,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
           scope: bindingScopeValues.Singleton,
           serviceIdentifier: 'target-service-id',
           type: bindingTypeValues.ConstantValue,
+          value: Symbol(),
         },
         parent: parentNode,
       };
@@ -369,6 +370,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
             scope: bindingScopeValues.Singleton,
             serviceIdentifier: 'target-service-id',
             type: bindingTypeValues.ConstantValue,
+            value: Symbol(),
           },
           parent: parentNode,
         },
@@ -386,6 +388,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
             scope: bindingScopeValues.Singleton,
             serviceIdentifier: 'target-service-id',
             type: bindingTypeValues.ConstantValue,
+            value: Symbol(),
           },
           parent: parentNode,
         },

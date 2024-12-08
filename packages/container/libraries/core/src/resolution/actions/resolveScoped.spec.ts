@@ -2,6 +2,8 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
 import { Right } from '@inversifyjs/common';
 
+jest.mock('./resolveBindingActivations');
+
 import {
   BindingScope,
   bindingScopeValues,
@@ -12,6 +14,7 @@ import {
 } from '../../binding/models/BindingType';
 import { ScopedBinding } from '../../binding/models/ScopedBinding';
 import { ResolutionParams } from '../models/ResolutionParams';
+import { resolveBindingActivations } from './resolveBindingActivations';
 import { resolveScoped } from './resolveScoped';
 
 describe(resolveScoped.name, () => {
@@ -100,6 +103,7 @@ describe(resolveScoped.name, () => {
     >;
 
     let resolveResult: unknown;
+    let activatedResolveResult: unknown;
 
     let result: unknown;
 
@@ -120,10 +124,14 @@ describe(resolveScoped.name, () => {
       };
 
       resolveResult = Symbol();
+      activatedResolveResult = Symbol();
 
       getBindingMock.mockReturnValueOnce(bindingFixture);
 
       resolveMock.mockReturnValueOnce(resolveResult);
+      (
+        resolveBindingActivations as jest.Mock<typeof resolveBindingActivations>
+      ).mockReturnValueOnce(activatedResolveResult);
 
       result = resolveScoped(getBindingMock, resolveMock)(
         paramsMock,
@@ -145,17 +153,26 @@ describe(resolveScoped.name, () => {
       expect(resolveMock).toHaveBeenCalledWith(paramsMock, argFixture);
     });
 
+    it('should call resolveBindingActivations()', () => {
+      expect(resolveBindingActivations).toHaveBeenCalledTimes(1);
+      expect(resolveBindingActivations).toHaveBeenCalledWith(
+        paramsMock,
+        bindingFixture.serviceIdentifier,
+        resolveResult,
+      );
+    });
+
     it('should cache value', () => {
       const expectedCache: Right<unknown> = {
         isRight: true,
-        value: resolveResult,
+        value: activatedResolveResult,
       };
 
       expect(bindingFixture.cache).toStrictEqual(expectedCache);
     });
 
     it('should return expected result', () => {
-      expect(result).toBe(resolveResult);
+      expect(result).toBe(activatedResolveResult);
     });
   });
 
@@ -235,6 +252,7 @@ describe(resolveScoped.name, () => {
     >;
 
     let resolveResult: unknown;
+    let activatedResolveResult: unknown;
 
     let result: unknown;
 
@@ -255,10 +273,14 @@ describe(resolveScoped.name, () => {
       };
 
       resolveResult = Symbol();
+      activatedResolveResult = Symbol();
 
       getBindingMock.mockReturnValueOnce(bindingFixture);
 
       resolveMock.mockReturnValueOnce(resolveResult);
+      (
+        resolveBindingActivations as jest.Mock<typeof resolveBindingActivations>
+      ).mockReturnValueOnce(activatedResolveResult);
 
       paramsMock.requestScopeCache.has.mockReturnValueOnce(false);
 
@@ -289,16 +311,25 @@ describe(resolveScoped.name, () => {
       expect(resolveMock).toHaveBeenCalledWith(paramsMock, argFixture);
     });
 
-    it('should call params.requestScopeCache.set()', () => {
-      expect(paramsMock.requestScopeCache.set).toHaveBeenCalledTimes(1);
-      expect(paramsMock.requestScopeCache.set).toHaveBeenCalledWith(
-        bindingFixture.id,
+    it('should call resolveBindingActivations()', () => {
+      expect(resolveBindingActivations).toHaveBeenCalledTimes(1);
+      expect(resolveBindingActivations).toHaveBeenCalledWith(
+        paramsMock,
+        bindingFixture.serviceIdentifier,
         resolveResult,
       );
     });
 
+    it('should call params.requestScopeCache.set()', () => {
+      expect(paramsMock.requestScopeCache.set).toHaveBeenCalledTimes(1);
+      expect(paramsMock.requestScopeCache.set).toHaveBeenCalledWith(
+        bindingFixture.id,
+        activatedResolveResult,
+      );
+    });
+
     it('should return expected result', () => {
-      expect(result).toBe(resolveResult);
+      expect(result).toBe(activatedResolveResult);
     });
   });
 
@@ -310,6 +341,7 @@ describe(resolveScoped.name, () => {
     >;
 
     let resolveResult: unknown;
+    let activatedResolveResult: unknown;
 
     let result: unknown;
 
@@ -330,10 +362,14 @@ describe(resolveScoped.name, () => {
       };
 
       resolveResult = Symbol();
+      activatedResolveResult = Symbol();
 
       getBindingMock.mockReturnValueOnce(bindingFixture);
 
       resolveMock.mockReturnValueOnce(resolveResult);
+      (
+        resolveBindingActivations as jest.Mock<typeof resolveBindingActivations>
+      ).mockReturnValueOnce(activatedResolveResult);
 
       result = resolveScoped(getBindingMock, resolveMock)(
         paramsMock,
@@ -355,8 +391,17 @@ describe(resolveScoped.name, () => {
       expect(resolveMock).toHaveBeenCalledWith(paramsMock, argFixture);
     });
 
+    it('should call resolveBindingActivations()', () => {
+      expect(resolveBindingActivations).toHaveBeenCalledTimes(1);
+      expect(resolveBindingActivations).toHaveBeenCalledWith(
+        paramsMock,
+        bindingFixture.serviceIdentifier,
+        resolveResult,
+      );
+    });
+
     it('should return expected result', () => {
-      expect(result).toBe(resolveResult);
+      expect(result).toBe(activatedResolveResult);
     });
   });
 });

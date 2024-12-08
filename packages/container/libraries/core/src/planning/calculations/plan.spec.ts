@@ -64,6 +64,7 @@ describe(plan.name, () => {
           scope: bindingScopeValues.Singleton,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
           type: bindingTypeValues.ConstantValue,
+          value: Symbol(),
         };
 
         planParamsMock.getBindings.mockReturnValueOnce([constantValueBinding]);
@@ -191,6 +192,7 @@ describe(plan.name, () => {
           scope: bindingScopeValues.Singleton,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
           type: bindingTypeValues.ConstantValue,
+          value: Symbol(),
         };
 
         planParamsMock.getBindings.mockReturnValueOnce([constantValueBinding]);
@@ -361,6 +363,7 @@ describe(plan.name, () => {
           scope: bindingScopeValues.Singleton,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
           type: bindingTypeValues.ConstantValue,
+          value: Symbol(),
         };
         constructorArgumentMetadata = {
           kind: ClassElementMetadataKind.multipleInjection,
@@ -536,6 +539,7 @@ describe(plan.name, () => {
           scope: bindingScopeValues.Singleton,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
           type: bindingTypeValues.ConstantValue,
+          value: Symbol(),
         };
         constructorArgumentMetadata = {
           kind: ClassElementMetadataKind.multipleInjection,
@@ -715,6 +719,7 @@ describe(plan.name, () => {
           scope: bindingScopeValues.Singleton,
           serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
           type: bindingTypeValues.ConstantValue,
+          value: Symbol(),
         };
         constructorArgumentMetadata = {
           kind: ClassElementMetadataKind.singleInjection,
@@ -1108,6 +1113,7 @@ describe(plan.name, () => {
           scope: bindingScopeValues.Singleton,
           serviceIdentifier: serviceRedirectionBinding.targetServiceIdentifier,
           type: bindingTypeValues.ConstantValue,
+          value: Symbol(),
         };
 
         planParamsMock.getBindings

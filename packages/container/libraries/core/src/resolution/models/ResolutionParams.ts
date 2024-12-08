@@ -8,7 +8,7 @@ export interface ResolutionParams {
   context: ResolutionContext;
   getActivations: <TActivated>(
     serviceIdentifier: ServiceIdentifier<TActivated>,
-  ) => BindingActivation<TActivated>[] | undefined;
+  ) => Iterable<BindingActivation<TActivated>> | undefined;
   planResult: PlanResult;
   requestScopeCache: Map<number, unknown>;
 }

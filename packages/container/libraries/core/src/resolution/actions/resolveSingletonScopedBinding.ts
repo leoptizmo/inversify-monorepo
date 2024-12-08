@@ -3,6 +3,7 @@ import { BindingType } from '../../binding/models/BindingType';
 import { ScopedBinding } from '../../binding/models/ScopedBinding';
 import { ResolutionParams } from '../models/ResolutionParams';
 import { Resolved } from '../models/Resolved';
+import { resolveBindingActivations } from './resolveBindingActivations';
 
 export function resolveSingletonScopedBinding<
   TActivated,
@@ -26,7 +27,11 @@ export function resolveSingletonScopedBinding<
       return binding.cache.value;
     }
 
-    const resolvedValue: Resolved<TActivated> = resolve(params, binding);
+    const resolvedValue: Resolved<TActivated> = resolveBindingActivations(
+      params,
+      binding.serviceIdentifier,
+      resolve(params, binding),
+    );
 
     binding.cache = {
       isRight: true,
