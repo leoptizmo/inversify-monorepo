@@ -164,6 +164,7 @@ describe(resolve.name, () => {
         scope: bindingScopeValues.Singleton,
         serviceIdentifier: 'service-id',
         type: bindingTypeValues.ConstantValue,
+        value: Symbol(),
       };
 
       const bindingNode: PlanBindingNode = {
@@ -241,6 +242,7 @@ describe(resolve.name, () => {
         scope: bindingScopeValues.Singleton,
         serviceIdentifier: 'service-id',
         type: bindingTypeValues.ConstantValue,
+        value: Symbol(),
       };
 
       const bindingNode: PlanBindingNode = {

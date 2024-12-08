@@ -1,3 +1,5 @@
+import { ServiceIdentifier } from '@inversifyjs/common';
+
 import {
   BindingScope,
   bindingScopeValues,
@@ -6,6 +8,7 @@ import { BindingType } from '../../binding/models/BindingType';
 import { ScopedBinding } from '../../binding/models/ScopedBinding';
 import { ResolutionParams } from '../models/ResolutionParams';
 import { Resolved } from '../models/Resolved';
+import { resolveBindingActivations } from './resolveBindingActivations';
 
 export function resolveScoped<
   TActivated,
@@ -26,7 +29,12 @@ export function resolveScoped<
           return binding.cache.value;
         }
 
-        const resolvedValue: Resolved<TActivated> = resolve(params, arg);
+        const resolvedValue: Resolved<TActivated> = resolveAndActivate(
+          params,
+          arg,
+          binding.serviceIdentifier,
+          resolve,
+        );
 
         binding.cache = {
           isRight: true,
@@ -42,14 +50,37 @@ export function resolveScoped<
           ) as Resolved<TActivated>;
         }
 
-        const resolvedValue: Resolved<TActivated> = resolve(params, arg);
+        const resolvedValue: Resolved<TActivated> = resolveAndActivate(
+          params,
+          arg,
+          binding.serviceIdentifier,
+          resolve,
+        );
 
         params.requestScopeCache.set(binding.id, resolvedValue);
 
         return resolvedValue;
       }
       case bindingScopeValues.Transient:
-        return resolve(params, arg);
+        return resolveAndActivate(
+          params,
+          arg,
+          binding.serviceIdentifier,
+          resolve,
+        );
     }
   };
+}
+
+function resolveAndActivate<TActivated, TArg>(
+  params: ResolutionParams,
+  arg: TArg,
+  serviceIdentifier: ServiceIdentifier,
+  resolve: (params: ResolutionParams, arg: TArg) => Resolved<TActivated>,
+): Resolved<TActivated> {
+  return resolveBindingActivations<TActivated>(
+    params,
+    serviceIdentifier,
+    resolve(params, arg),
+  );
 }

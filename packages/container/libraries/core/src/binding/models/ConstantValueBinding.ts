@@ -1,9 +1,13 @@
+import { Resolved } from '../../resolution/models/Resolved';
 import { bindingScopeValues } from './BindingScope';
 import { bindingTypeValues } from './BindingType';
 import { ScopedBinding } from './ScopedBinding';
 
-export type ConstantValueBinding<TActivated> = ScopedBinding<
-  typeof bindingTypeValues.ConstantValue,
-  typeof bindingScopeValues.Singleton,
-  TActivated | Promise<TActivated>
->;
+export interface ConstantValueBinding<TActivated>
+  extends ScopedBinding<
+    typeof bindingTypeValues.ConstantValue,
+    typeof bindingScopeValues.Singleton,
+    TActivated | Promise<TActivated>
+  > {
+  readonly value: Resolved<TActivated>;
+}

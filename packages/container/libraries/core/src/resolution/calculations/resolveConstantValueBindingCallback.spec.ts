@@ -1,31 +1,49 @@
 import { beforeAll, describe, expect, it } from '@jest/globals';
 
-import { InversifyCoreError } from '../../error/models/InversifyCoreError';
-import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
+import { bindingScopeValues } from '../../binding/models/BindingScope';
+import { bindingTypeValues } from '../../binding/models/BindingType';
+import { ConstantValueBinding } from '../../binding/models/ConstantValueBinding';
+import { ResolutionParams } from '../models/ResolutionParams';
 import { resolveConstantValueBindingCallback } from './resolveConstantValueBindingCallback';
 
 describe(resolveConstantValueBindingCallback.name, () => {
+  let resolutionParamsFixture: ResolutionParams;
+  let constantValueBindingFixture: ConstantValueBinding<unknown>;
+
+  beforeAll(() => {
+    resolutionParamsFixture = {
+      context: Symbol() as unknown,
+    } as Partial<ResolutionParams> as ResolutionParams;
+
+    constantValueBindingFixture = {
+      cache: {
+        isRight: false,
+        value: undefined,
+      },
+      id: 1,
+      isSatisfiedBy: () => true,
+      moduleId: undefined,
+      onActivation: undefined,
+      onDeactivation: undefined,
+      scope: bindingScopeValues.Singleton,
+      serviceIdentifier: 'service-id',
+      type: bindingTypeValues.ConstantValue,
+      value: Symbol(),
+    };
+  });
+
   describe('when called', () => {
     let result: unknown;
 
     beforeAll(() => {
-      try {
-        resolveConstantValueBindingCallback();
-      } catch (error: unknown) {
-        result = error;
-      }
+      result = resolveConstantValueBindingCallback(
+        resolutionParamsFixture,
+        constantValueBindingFixture,
+      );
     });
 
-    it('should throw an InversifyCoreError', () => {
-      const expectedErrorProperties: Partial<InversifyCoreError> = {
-        kind: InversifyCoreErrorKind.unknown,
-        message: 'Expected constant value binding with value, none found',
-      };
-
-      expect(result).toBeInstanceOf(InversifyCoreError);
-      expect(result).toStrictEqual(
-        expect.objectContaining(expectedErrorProperties),
-      );
+    it('should return expected value', () => {
+      expect(result).toBe(constantValueBindingFixture.value);
     });
   });
 });

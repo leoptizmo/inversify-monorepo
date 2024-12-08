@@ -23,6 +23,7 @@ describe(BindingServiceImplementation.name, () => {
         scope: bindingScopeValues.Singleton,
         serviceIdentifier: 'service-identifier-fixture',
         type: bindingTypeValues.ConstantValue,
+        value: Symbol(),
       };
     });
 
@@ -82,6 +83,7 @@ describe(BindingServiceImplementation.name, () => {
         scope: bindingScopeValues.Singleton,
         serviceIdentifier: Symbol(),
         type: bindingTypeValues.ConstantValue,
+        value: Symbol(),
       };
     });
 
@@ -128,6 +130,7 @@ describe(BindingServiceImplementation.name, () => {
         scope: bindingScopeValues.Singleton,
         serviceIdentifier: Symbol(),
         type: bindingTypeValues.ConstantValue,
+        value: Symbol(),
       };
     });
 

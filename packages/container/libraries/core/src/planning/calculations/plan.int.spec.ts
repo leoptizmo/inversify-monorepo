@@ -220,6 +220,7 @@ describe(plan.name, () => {
       scope: bindingScopeValues.Singleton,
       serviceIdentifier: ServiceIds.constantValue,
       type: bindingTypeValues.ConstantValue,
+      value: Symbol(),
     };
 
     dynamicValueBinding = {

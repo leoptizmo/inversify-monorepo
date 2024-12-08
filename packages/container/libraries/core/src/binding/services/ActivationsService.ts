@@ -42,7 +42,7 @@ export class ActivationsService {
 
   public get(
     serviceIdentifier: ServiceIdentifier,
-  ): BindingActivation[] | undefined {
+  ): Iterable<BindingActivation> | undefined {
     const bindings: Iterable<BindingActivation> | undefined =
       this.#activationMaps.get(
         ActivationRelationKind.serviceId,
@@ -53,7 +53,7 @@ export class ActivationsService {
       return undefined;
     }
 
-    return [...bindings];
+    return bindings;
   }
 
   public removeAllByModuleId(moduleId: number): void {

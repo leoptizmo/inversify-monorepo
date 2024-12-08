@@ -47,6 +47,7 @@ describe(stringifyBinding.name, () => {
         scope: bindingScopeValues.Singleton,
         serviceIdentifier: 'service-id',
         type: bindingTypeValues.ConstantValue,
+        value: Symbol(),
       },
       `[ type: "${bindingTypeValues.ConstantValue}", serviceIdentifier: "service-id", scope: "${bindingScopeValues.Singleton}" ]`,
     ],

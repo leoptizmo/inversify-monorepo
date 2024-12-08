@@ -87,6 +87,7 @@ describe(
                 scope: bindingScopeValues.Singleton,
                 serviceIdentifier: 'service-id',
                 type: bindingTypeValues.ConstantValue,
+                value: Symbol(),
               },
               parent: Symbol() as unknown as BindingNodeParent,
             },

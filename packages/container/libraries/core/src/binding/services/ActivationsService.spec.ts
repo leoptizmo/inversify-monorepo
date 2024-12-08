@@ -112,9 +112,7 @@ describe(ActivationsService.name, () => {
       beforeAll(() => {
         bindingActivationFixture = Symbol() as unknown as BindingActivation;
 
-        activationMapsMock.get.mockReturnValueOnce(
-          [bindingActivationFixture].values(),
-        );
+        activationMapsMock.get.mockReturnValueOnce([bindingActivationFixture]);
 
         result = activationsService.get(serviceIdFixture);
       });
