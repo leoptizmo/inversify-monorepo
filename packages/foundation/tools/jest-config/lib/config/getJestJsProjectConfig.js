@@ -14,7 +14,12 @@ function getJestJsProjectConfig(
 ) {
   const testMatch = getTestMatch(extension, false);
 
-  return getJestProjectConfig(projectName, testMatch, testPathIgnorePatterns);
+  return getJestProjectConfig(
+    projectName,
+    false,
+    testMatch,
+    testPathIgnorePatterns,
+  );
 }
 
 export default getJestJsProjectConfig;

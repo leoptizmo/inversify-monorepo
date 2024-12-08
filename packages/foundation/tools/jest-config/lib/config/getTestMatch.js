@@ -1,4 +1,4 @@
-import projectRoot from './projectRoot.js';
+import getProjectRoot from './getProjectRoot.js';
 
 /**
  * @param { !string } testExtension Test extension files
@@ -6,18 +6,9 @@ import projectRoot from './projectRoot.js';
  * @returns { !Array.<string> }
  */
 function getTestMatch(testExtension, isTargetingSource) {
-  let testMatch;
+  const projectRoot = getProjectRoot(isTargetingSource);
 
-  if (isTargetingSource) {
-    testMatch = [`${projectRoot}/src/**/*${testExtension}`];
-  } else {
-    testMatch = [
-      `${projectRoot}/{dist,lib}/*${testExtension}`,
-      `${projectRoot}/{dist,lib}/!(esm)/**/*${testExtension}`,
-    ];
-  }
-
-  return testMatch;
+  return [`${projectRoot}/**/*${testExtension}`];
 }
 
 export default getTestMatch;

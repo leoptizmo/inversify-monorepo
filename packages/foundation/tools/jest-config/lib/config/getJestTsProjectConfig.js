@@ -15,7 +15,12 @@ function getJestTsProjectConfig(
   const testMatch = getTestMatch(extension, true);
 
   return {
-    ...getJestProjectConfig(projectName, testMatch, testPathIgnorePatterns),
+    ...getJestProjectConfig(
+      projectName,
+      true,
+      testMatch,
+      testPathIgnorePatterns,
+    ),
     transform: {
       '^.+\\.ts?$': 'ts-jest',
     },
