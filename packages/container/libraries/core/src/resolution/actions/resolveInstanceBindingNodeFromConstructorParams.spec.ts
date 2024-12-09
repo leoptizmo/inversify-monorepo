@@ -1,5 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
+jest.mock('./resolvePostConstruct');
+
 import { bindingScopeValues } from '../../binding/models/BindingScope';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
@@ -8,7 +10,9 @@ import { BindingNodeParent } from '../../planning/models/BindingNodeParent';
 import { InstanceBindingNode } from '../../planning/models/InstanceBindingNode';
 import { PlanServiceNode } from '../../planning/models/PlanServiceNode';
 import { ResolutionParams } from '../models/ResolutionParams';
+import { Resolved, SyncResolved } from '../models/Resolved';
 import { resolveInstanceBindingNodeFromConstructorParams } from './resolveInstanceBindingNodeFromConstructorParams';
+import { resolvePostConstruct } from './resolvePostConstruct';
 
 describe(resolveInstanceBindingNodeFromConstructorParams.name, () => {
   let setInstancePropertiesMock: jest.Mock<
@@ -44,13 +48,27 @@ describe(resolveInstanceBindingNodeFromConstructorParams.name, () => {
         serviceIdentifier: 'service-id',
         type: bindingTypeValues.Instance,
       },
-      classMetadata: Symbol() as unknown as jest.Mocked<ClassMetadata>,
+      classMetadata: {
+        constructorArguments: [],
+        lifecycle: {
+          postConstructMethodName: 'post-construct-method-name',
+          preDestroyMethodName: undefined,
+        },
+      } as Partial<jest.Mocked<ClassMetadata>> as jest.Mocked<ClassMetadata>,
       constructorParams: [],
       parent: Symbol() as unknown as jest.Mocked<BindingNodeParent>,
       propertyParams: new Map() as jest.Mocked<
         Map<string | symbol, PlanServiceNode>
       >,
     };
+
+    (
+      resolvePostConstruct as jest.Mock<typeof resolvePostConstruct>
+    ).mockImplementation(
+      <TActivated>(
+        instance: SyncResolved<TActivated> & Record<string | symbol, unknown>,
+      ): Resolved<TActivated> => instance,
+    );
   });
 
   describe('when called, and setInstanceProperties() returns undefined', () => {
@@ -93,6 +111,15 @@ describe(resolveInstanceBindingNodeFromConstructorParams.name, () => {
         paramsFixture,
         expect.any(Object),
         nodeMock,
+      );
+    });
+
+    it('should call resolvePostConstructor()', () => {
+      expect(resolvePostConstruct).toHaveBeenCalledTimes(1);
+      expect(resolvePostConstruct).toHaveBeenCalledWith(
+        expect.any(Object),
+        nodeMock.binding,
+        nodeMock.classMetadata.lifecycle.postConstructMethodName,
       );
     });
 
@@ -147,6 +174,15 @@ describe(resolveInstanceBindingNodeFromConstructorParams.name, () => {
         paramsFixture,
         expect.any(Object),
         nodeMock,
+      );
+    });
+
+    it('should call resolvePostConstructor()', () => {
+      expect(resolvePostConstruct).toHaveBeenCalledTimes(1);
+      expect(resolvePostConstruct).toHaveBeenCalledWith(
+        expect.any(Object),
+        nodeMock.binding,
+        nodeMock.classMetadata.lifecycle.postConstructMethodName,
       );
     });
 
