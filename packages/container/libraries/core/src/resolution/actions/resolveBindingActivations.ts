@@ -3,7 +3,7 @@ import { ServiceIdentifier } from '@inversifyjs/common';
 import { BindingActivation } from '../../binding/models/BindingActivation';
 import { isPromise } from '../../common/calculations/isPromise';
 import { ResolutionParams } from '../models/ResolutionParams';
-import { Resolved } from '../models/Resolved';
+import { Resolved, SyncResolved } from '../models/Resolved';
 
 export function resolveBindingActivations<TActivated>(
   params: ResolutionParams,
@@ -13,28 +13,28 @@ export function resolveBindingActivations<TActivated>(
   const activations: Iterable<BindingActivation<TActivated>> | undefined =
     params.getActivations(serviceIdentifier);
 
-  if (activations !== undefined) {
-    if (isPromise(value)) {
-      return resolveBindingActivationsFromIteratorAsync(
-        value,
-        activations[Symbol.iterator](),
-      );
-    } else {
-      return resolveBindingActivationsFromIterator(
-        value,
-        activations[Symbol.iterator](),
-      );
-    }
+  if (activations === undefined) {
+    return value;
   }
 
-  return value;
+  if (isPromise(value)) {
+    return resolveBindingActivationsFromIteratorAsync(
+      value,
+      activations[Symbol.iterator](),
+    );
+  }
+
+  return resolveBindingActivationsFromIterator(
+    value,
+    activations[Symbol.iterator](),
+  );
 }
 
 function resolveBindingActivationsFromIterator<TActivated>(
-  value: Awaited<TActivated>,
+  value: SyncResolved<TActivated>,
   activationsIterator: Iterator<BindingActivation<TActivated>>,
 ): Resolved<TActivated> {
-  let activatedValue: Awaited<TActivated> = value;
+  let activatedValue: SyncResolved<TActivated> = value;
 
   let activationIteratorResult: IteratorResult<BindingActivation<TActivated>> =
     activationsIterator.next();
@@ -61,8 +61,8 @@ function resolveBindingActivationsFromIterator<TActivated>(
 async function resolveBindingActivationsFromIteratorAsync<TActivated>(
   value: Promise<TActivated>,
   activationsIterator: Iterator<BindingActivation<TActivated>>,
-): Promise<Awaited<TActivated>> {
-  let activatedValue: Awaited<TActivated> = await value;
+): Promise<SyncResolved<TActivated>> {
+  let activatedValue: SyncResolved<TActivated> = await value;
 
   let activationIteratorResult: IteratorResult<BindingActivation<TActivated>> =
     activationsIterator.next();

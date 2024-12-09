@@ -3,6 +3,7 @@ import { isPromise } from '../../common/calculations/isPromise';
 import { InstanceBindingNode } from '../../planning/models/InstanceBindingNode';
 import { ResolutionParams } from '../models/ResolutionParams';
 import { Resolved, SyncResolved } from '../models/Resolved';
+import { resolvePostConstruct } from './resolvePostConstruct';
 
 export function resolveInstanceBindingNodeFromConstructorParams<
   TActivated,
@@ -32,9 +33,20 @@ export function resolveInstanceBindingNodeFromConstructorParams<
       setInstanceProperties(params, instance, node);
 
     if (isPromise(propertiesAssignmentResult)) {
-      return propertiesAssignmentResult.then(() => instance);
-    } else {
-      return instance;
+      return propertiesAssignmentResult.then(
+        (): Resolved<TActivated> =>
+          resolvePostConstruct(
+            instance,
+            node.binding,
+            node.classMetadata.lifecycle.postConstructMethodName,
+          ),
+      );
     }
+
+    return resolvePostConstruct(
+      instance,
+      node.binding,
+      node.classMetadata.lifecycle.postConstructMethodName,
+    );
   };
 }
