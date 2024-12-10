@@ -18,7 +18,6 @@ import { ProviderBinding } from '../../binding/models/ProviderBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
 import { ActivationsService } from '../../binding/services/ActivationsService';
 import { BindingService } from '../../binding/services/BindingService';
-import { BindingServiceImplementation } from '../../binding/services/BindingServiceImplementation';
 import { isPromise } from '../../common/calculations/isPromise';
 import { Writable } from '../../common/models/Writable';
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
@@ -199,7 +198,7 @@ describe(resolve.name, () => {
     };
 
     activationService = new ActivationsService();
-    bindingService = new BindingServiceImplementation();
+    bindingService = new BindingService();
 
     activationService.add(
       constantValueBindingWithActivation.onActivation as BindingActivation,

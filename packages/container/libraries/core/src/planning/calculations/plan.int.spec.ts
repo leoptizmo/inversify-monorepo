@@ -16,7 +16,6 @@ import { Provider } from '../../binding/models/Provider';
 import { ProviderBinding } from '../../binding/models/ProviderBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
 import { BindingService } from '../../binding/services/BindingService';
-import { BindingServiceImplementation } from '../../binding/services/BindingServiceImplementation';
 import { Writable } from '../../common/models/Writable';
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
@@ -305,7 +304,7 @@ describe(plan.name, () => {
       type: bindingTypeValues.ServiceRedirection,
     };
 
-    bindingService = new BindingServiceImplementation();
+    bindingService = new BindingService();
 
     bindingService.set(constantValueBinding);
     bindingService.set(dynamicValueBinding);
