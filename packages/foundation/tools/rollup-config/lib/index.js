@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import path from 'node:path';
 
 import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
@@ -15,23 +16,47 @@ if (!pathExists(PACKAGE_JSON_PATH)) {
 const packageJsonObject = JSON.parse(await fs.readFile(PACKAGE_JSON_PATH));
 const packageDependencies = Object.keys(packageJsonObject.dependencies ?? {});
 
+/**
+ * @param { !string } input
+ * @param { !string } output
+ * @returns {!import("rollup").MergedRollupOptions[]}
+ */
+function buildBundleConfig(inputFile, outputDir) {
+  const filePath = path.parse(inputFile);
+
+  const declarationFilePath = path.join(
+    outputDir,
+    `${filePath.name}.d${filePath.ext}`,
+  );
+
+  return [
+    {
+      input: inputFile,
+      external: packageDependencies,
+      output: [
+        {
+          dir: outputDir,
+          format: 'esm',
+          sourcemap: true,
+          sourcemapPathTransform: (relativeSourcePath) => {
+            // Rollup seems to generate source maps pointing to the wrong directory. Ugly patch to fix it
+            if (relativeSourcePath.startsWith('../')) {
+              return relativeSourcePath.slice(3);
+            } else {
+              return relativeSourcePath;
+            }
+          },
+        },
+      ],
+      plugins: [typescript(), terser()],
+    },
+    {
+      input: declarationFilePath,
+      output: [{ file: declarationFilePath, format: 'es' }],
+      plugins: [dts()],
+    },
+  ];
+}
+
 /** @type {!import("rollup").MergedRollupOptions[]} */
-export default [
-  {
-    input: './src/index.ts',
-    external: packageDependencies,
-    output: [
-      {
-        dir: './lib/esm',
-        format: 'esm',
-        sourcemap: true,
-      },
-    ],
-    plugins: [typescript(), terser()],
-  },
-  {
-    input: 'lib/esm/index.d.ts',
-    output: [{ file: 'lib/esm/index.d.ts', format: 'es' }],
-    plugins: [dts()],
-  },
-];
+export default buildBundleConfig('./src/index.ts', './lib/esm');
