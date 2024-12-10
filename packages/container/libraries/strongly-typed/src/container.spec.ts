@@ -120,10 +120,13 @@ describe('interfaces', () => {
         });
 
         it('gets a promise', async () => {
-          // @ts-expect-error :: can't call get() to get Promise
-          expect(() => container.get('asyncNumber')).toThrow(
-            'it has asynchronous dependencies',
-          );
+          expect(() => {
+            const num = container.get('asyncNumber');
+            /* eslint-disable @typescript-eslint/no-unused-expressions */
+            // @ts-expect-error :: num is never
+            num.then;
+            /* eslint-enable @typescript-eslint/no-unused-expressions */
+          }).toThrow('it has asynchronous dependencies');
           const n: Promise<number> = container.getAsync('asyncNumber');
           expect(await n).toBe(1);
         });
@@ -199,6 +202,29 @@ describe('interfaces', () => {
           container.bind('foo').to(Foo);
           // @ts-expect-error :: can't bind Bar to Foo
           container.bind('foo').to(Bar);
+        });
+      });
+
+      describe('generics', () => {
+        beforeEach(() => {
+          container.bind('foo').to(Foo);
+        });
+
+        it('can be used in a generic function', () => {
+          function test<T extends BindingMap>(
+            container: TypedContainer<T>,
+          ): void {
+            const foo: Foo = container.get('foo');
+            // @ts-expect-error :: can't assign Foo to Bar
+            const bar: Bar = container.get('foo');
+
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+            foo;
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+            bar;
+          }
+
+          test(container);
         });
       });
     });

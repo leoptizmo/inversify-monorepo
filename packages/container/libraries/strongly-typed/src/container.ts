@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unnecessary-type-parameters */
+
 import { Container, type interfaces } from 'inversify';
 
 type IfAny<T, TYes, TNo> = 0 extends 1 & T ? TYes : TNo;
@@ -23,11 +23,7 @@ type ContainerBinding<
       ? any
       : never;
 
-type Synchronous<T extends BindingMap> = IfAny<
-  T,
-  any,
-  { [K in keyof T as T[K] extends Promise<any> ? never : K]: T[K] }
->;
+type NeverPromise<T> = T extends Promise<any> ? never : T;
 
 type First<T extends any[]> = T extends [infer TFirst, ...any[]]
   ? TFirst
@@ -44,47 +40,47 @@ interface ContainerOverrides<
   parent: ContainerOverrides<First<TAncestors>, AllButFirst<TAncestors>> | null;
   bind: Bind<T>;
   get: <
-    TBound extends ContainerBinding<Synchronous<T>, TKey>,
-    TKey extends MappedServiceIdentifier<Synchronous<T>> = any,
+    TBound extends ContainerBinding<T, TKey>,
+    TKey extends MappedServiceIdentifier<T> = any,
   >(
     serviceIdentifier: TKey,
-  ) => TBound;
+  ) => NeverPromise<TBound>;
   getNamed: <
-    TBound extends ContainerBinding<Synchronous<T>, TKey>,
-    TKey extends MappedServiceIdentifier<Synchronous<T>> = any,
+    TBound extends ContainerBinding<T, TKey>,
+    TKey extends MappedServiceIdentifier<T> = any,
   >(
     serviceIdentifier: TKey,
     named: PropertyKey,
-  ) => TBound;
+  ) => NeverPromise<TBound>;
   getTagged: <
-    TBound extends ContainerBinding<Synchronous<T>, TKey>,
-    TKey extends MappedServiceIdentifier<Synchronous<T>> = any,
+    TBound extends ContainerBinding<T, TKey>,
+    TKey extends MappedServiceIdentifier<T> = any,
   >(
     serviceIdentifier: TKey,
     key: PropertyKey,
     value: unknown,
-  ) => TBound;
+  ) => NeverPromise<TBound>;
   getAll: <
-    TBound extends ContainerBinding<Synchronous<T>, TKey>,
-    TKey extends MappedServiceIdentifier<Synchronous<T>> = any,
+    TBound extends ContainerBinding<T, TKey>,
+    TKey extends MappedServiceIdentifier<T> = any,
   >(
     serviceIdentifier: TKey,
-  ) => TBound[];
+  ) => NeverPromise<TBound[]>;
   getAllTagged: <
-    TBound extends ContainerBinding<Synchronous<T>, TKey>,
-    TKey extends MappedServiceIdentifier<Synchronous<T>> = any,
+    TBound extends ContainerBinding<T, TKey>,
+    TKey extends MappedServiceIdentifier<T> = any,
   >(
     serviceIdentifier: TKey,
     key: PropertyKey,
     value: unknown,
-  ) => TBound[];
+  ) => NeverPromise<TBound[]>;
   getAllNamed: <
-    TBound extends ContainerBinding<Synchronous<T>, TKey>,
-    TKey extends MappedServiceIdentifier<Synchronous<T>> = any,
+    TBound extends ContainerBinding<T, TKey>,
+    TKey extends MappedServiceIdentifier<T> = any,
   >(
     serviceIdentifier: TKey,
     named: PropertyKey,
-  ) => TBound[];
+  ) => NeverPromise<TBound[]>;
   getAsync: <
     TBound extends ContainerBinding<T, TKey>,
     TKey extends MappedServiceIdentifier<T> = any,
