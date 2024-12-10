@@ -55,7 +55,9 @@ import { PlanServiceNode } from './planning/models/PlanServiceNode';
 import { PlanServiceNodeParent } from './planning/models/PlanServiceNodeParent';
 import { PlanServiceRedirectionBindingNode } from './planning/models/PlanServiceRedirectionBindingNode';
 import { PlanTree } from './planning/models/PlanTree';
+import { resolve } from './resolution/actions/resolve';
 import { ResolutionContext } from './resolution/models/ResolutionContext';
+import { ResolutionParams } from './resolution/models/ResolutionParams';
 import { LegacyQueryableString } from './string/models/LegacyQueryableString';
 
 export type {
@@ -101,6 +103,7 @@ export type {
   Provider,
   ProviderBinding,
   ResolutionContext,
+  ResolutionParams,
   ScopedBinding,
   ServiceRedirectionBinding,
   UnmanagedClassElementMetadata,
@@ -118,4 +121,5 @@ export {
   getTargets,
   LegacyTargetImpl,
   plan,
+  resolve,
 };

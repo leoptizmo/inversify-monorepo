@@ -5,4 +5,4 @@
 "@inversifyjs/reflect-metadata-utils": patch
 ---
 
-Updated rollup config to provide right source map file paths
+Updated rollup config to provide right source map file paths.
