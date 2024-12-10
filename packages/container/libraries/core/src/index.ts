@@ -42,11 +42,26 @@ import { MetadataName } from './metadata/models/MetadataName';
 import { MetadataTag } from './metadata/models/MetadataTag';
 import { MetadataTargetName } from './metadata/models/MetadataTargetName';
 import { UnmanagedClassElementMetadata } from './metadata/models/UnmanagedClassElementMetadata';
+import { plan } from './planning/calculations/plan';
+import { BaseBindingNode } from './planning/models/BaseBindingNode';
+import { BasePlanParams } from './planning/models/BasePlanParams';
+import { LeafBindingNode } from './planning/models/LeafBindingNode';
+import { PlanBindingNode } from './planning/models/PlanBindingNode';
+import { PlanParams } from './planning/models/PlanParams';
+import { PlanParamsConstraint } from './planning/models/PlanParamsConstraint';
+import { PlanParamsTagConstraint } from './planning/models/PlanParamsTagConstraint';
+import { PlanResult } from './planning/models/PlanResult';
+import { PlanServiceNode } from './planning/models/PlanServiceNode';
+import { PlanServiceNodeParent } from './planning/models/PlanServiceNodeParent';
+import { PlanServiceRedirectionBindingNode } from './planning/models/PlanServiceRedirectionBindingNode';
+import { PlanTree } from './planning/models/PlanTree';
 import { ResolutionContext } from './resolution/models/ResolutionContext';
 import { LegacyQueryableString } from './string/models/LegacyQueryableString';
 
 export type {
   BaseBinding,
+  BaseBindingNode,
+  BasePlanParams,
   Binding,
   BindingActivation,
   BindingActivationRelation,
@@ -63,6 +78,7 @@ export type {
   Factory,
   FactoryBinding,
   InstanceBinding,
+  LeafBindingNode,
   LegacyMetadata,
   LegacyMetadataMap,
   LegacyMetadataReader,
@@ -73,6 +89,15 @@ export type {
   MetadataName,
   MetadataTag,
   MetadataTargetName,
+  PlanBindingNode,
+  PlanParams,
+  PlanParamsConstraint,
+  PlanParamsTagConstraint,
+  PlanResult,
+  PlanServiceNode,
+  PlanServiceNodeParent,
+  PlanServiceRedirectionBindingNode,
+  PlanTree,
   Provider,
   ProviderBinding,
   ResolutionContext,
@@ -92,4 +117,5 @@ export {
   getClassMetadataFromMetadataReader,
   getTargets,
   LegacyTargetImpl,
+  plan,
 };
