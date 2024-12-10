@@ -1,5 +1,11 @@
 # @inversifyjs/strongly-typed
 
+## 1.2.2
+
+### Patch Changes
+
+- 1564a20: Fixed types to allow use of generic helper functions
+
 ## 1.2.1
 
 ### Patch Changes
