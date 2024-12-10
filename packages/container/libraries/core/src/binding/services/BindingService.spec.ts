@@ -3,9 +3,9 @@ import { beforeAll, describe, expect, it } from '@jest/globals';
 import { Binding } from '../models/Binding';
 import { bindingScopeValues } from '../models/BindingScope';
 import { bindingTypeValues } from '../models/BindingType';
-import { BindingServiceImplementation } from './BindingServiceImplementation';
+import { BindingService } from './BindingService';
 
-describe(BindingServiceImplementation.name, () => {
+describe(BindingService.name, () => {
   describe('.get', () => {
     let bindingFixture: Binding<unknown>;
 
@@ -28,12 +28,12 @@ describe(BindingServiceImplementation.name, () => {
     });
 
     describe('when called, with existing bindings', () => {
-      let bindingServiceImplementation: BindingServiceImplementation;
+      let bindingServiceImplementation: BindingService;
 
       let result: unknown;
 
       beforeAll(() => {
-        bindingServiceImplementation = new BindingServiceImplementation();
+        bindingServiceImplementation = new BindingService();
 
         bindingServiceImplementation.set(bindingFixture);
 
@@ -48,12 +48,12 @@ describe(BindingServiceImplementation.name, () => {
     });
 
     describe('when called, with non existing bindings', () => {
-      let bindingServiceImplementation: BindingServiceImplementation;
+      let bindingServiceImplementation: BindingService;
 
       let result: unknown;
 
       beforeAll(() => {
-        bindingServiceImplementation = new BindingServiceImplementation();
+        bindingServiceImplementation = new BindingService();
 
         result = bindingServiceImplementation.get(
           bindingFixture.serviceIdentifier,
@@ -88,10 +88,10 @@ describe(BindingServiceImplementation.name, () => {
     });
 
     describe('when called, with existing bindings', () => {
-      let bindingServiceImplementation: BindingServiceImplementation;
+      let bindingServiceImplementation: BindingService;
 
       beforeAll(() => {
-        bindingServiceImplementation = new BindingServiceImplementation();
+        bindingServiceImplementation = new BindingService();
 
         bindingServiceImplementation.set(bindingFixture);
         bindingServiceImplementation.remove(bindingFixture.serviceIdentifier);
@@ -135,10 +135,10 @@ describe(BindingServiceImplementation.name, () => {
     });
 
     describe('when called, with existing bindings', () => {
-      let bindingServiceImplementation: BindingServiceImplementation;
+      let bindingServiceImplementation: BindingService;
 
       beforeAll(() => {
-        bindingServiceImplementation = new BindingServiceImplementation();
+        bindingServiceImplementation = new BindingService();
 
         bindingServiceImplementation.set(bindingFixture);
         bindingServiceImplementation.removeByModule(
