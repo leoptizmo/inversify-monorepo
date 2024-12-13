@@ -58,6 +58,7 @@ import { PlanTree } from './planning/models/PlanTree';
 import { resolve } from './resolution/actions/resolve';
 import { ResolutionContext } from './resolution/models/ResolutionContext';
 import { ResolutionParams } from './resolution/models/ResolutionParams';
+import { Resolved } from './resolution/models/Resolved';
 import { LegacyQueryableString } from './string/models/LegacyQueryableString';
 
 export type {
@@ -104,6 +105,7 @@ export type {
   ProviderBinding,
   ResolutionContext,
   ResolutionParams,
+  Resolved,
   ScopedBinding,
   ServiceRedirectionBinding,
   UnmanagedClassElementMetadata,

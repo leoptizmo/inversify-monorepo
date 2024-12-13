@@ -7,7 +7,7 @@ export interface DynamicValueBinding<TActivated>
   extends ScopedBinding<
     typeof bindingTypeValues.DynamicValue,
     BindingScope,
-    TActivated | Promise<TActivated>
+    TActivated
   > {
   readonly value: DynamicValueBuilder<TActivated>;
 }
