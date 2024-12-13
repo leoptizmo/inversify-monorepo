@@ -1,10 +1,11 @@
 import { LazyServiceIdentifier, ServiceIdentifier } from '@inversifyjs/common';
 
 import { Binding } from '../../binding/models/Binding';
-import { BindingMetadata } from '../../binding/models/BindingMetadata';
+import { InternalBindingMetadata } from '../../binding/models/BindingMetadataImplementation';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
+import { SingleInmutableLinkedList } from '../../common/models/SingleInmutableLinkedList';
 import { Writable } from '../../common/models/Writable';
 import { ClassElementMetadata } from '../../metadata/models/ClassElementMetadata';
 import { ClassElementMetadataKind } from '../../metadata/models/ClassElementMetadataKind';
@@ -20,28 +21,29 @@ import { PlanResult } from '../models/PlanResult';
 import { PlanServiceNode } from '../models/PlanServiceNode';
 import { PlanServiceRedirectionBindingNode } from '../models/PlanServiceRedirectionBindingNode';
 import { SubplanParams } from '../models/SubplanParams';
+import { buildFilteredServiceBindings } from './buildFilteredServiceBindings';
 import { checkServiceNodeSingleInjectionBindings } from './checkServiceNodeSingleInjectionBindings';
 import { isPlanServiceRedirectionBindingNode } from './isPlanServiceRedirectionBindingNode';
 
 export function plan(params: PlanParams): PlanResult {
-  const serviceBindings: Binding<unknown>[] =
-    params.getBindings(params.rootConstraints.serviceIdentifier) ?? [];
-
   const tags: Map<MetadataTag, unknown> = new Map();
 
   if (params.rootConstraints.tag !== undefined) {
     tags.set(params.rootConstraints.tag.key, params.rootConstraints.tag.value);
   }
 
-  const bindingMetadata: BindingMetadata = {
-    name: params.rootConstraints.name,
-    tags,
-  };
+  const bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
+    new SingleInmutableLinkedList({
+      elem: {
+        name: params.rootConstraints.name,
+        serviceIdentifier: params.rootConstraints.serviceIdentifier,
+        tags,
+      },
+      previous: undefined,
+    });
 
-  const filteredServiceBindings: Binding<unknown>[] = serviceBindings.filter(
-    (binding: Binding<unknown>): boolean =>
-      binding.isSatisfiedBy(bindingMetadata),
-  );
+  const filteredServiceBindings: Binding<unknown>[] =
+    buildFilteredServiceBindings(params, bindingMetadataList);
 
   const serviceNodeBindings: PlanBindingNode[] = [];
 
@@ -54,7 +56,7 @@ export function plan(params: PlanParams): PlanResult {
   serviceNodeBindings.push(
     ...buildServiceNodeBindings(
       params,
-      bindingMetadata,
+      bindingMetadataList,
       filteredServiceBindings,
       serviceNode,
     ),
@@ -81,6 +83,7 @@ export function plan(params: PlanParams): PlanResult {
 function buildInstancePlanBindingNode(
   params: BasePlanParams,
   binding: InstanceBinding<unknown>,
+  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
   parentNode: BindingNodeParent,
 ): PlanBindingNode {
   const classMetadata: ClassMetadata = params.getClassMetadata(
@@ -102,11 +105,12 @@ function buildInstancePlanBindingNode(
     servicesBranch: params.servicesBranch,
   };
 
-  return subplan(subplanParams);
+  return subplan(subplanParams, bindingMetadataList);
 }
 
 function buildPlanServiceNodeFromClassElementMetadata(
   params: SubplanParams,
+  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
   elementMetadata: ClassElementMetadata,
 ): PlanServiceNode | undefined {
   if (elementMetadata.kind === ClassElementMetadataKind.unmanaged) {
@@ -119,18 +123,15 @@ function buildPlanServiceNodeFromClassElementMetadata(
     ? elementMetadata.value.unwrap()
     : elementMetadata.value;
 
-  const serviceBindings: Binding<unknown>[] =
-    params.getBindings(serviceIdentifier) ?? [];
+  const updatedBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
+    bindingMetadataList.concat({
+      name: elementMetadata.name,
+      serviceIdentifier,
+      tags: elementMetadata.tags,
+    });
 
-  const bindingMetadata: BindingMetadata = {
-    name: elementMetadata.name,
-    tags: elementMetadata.tags,
-  };
-
-  const filteredServiceBindings: Binding<unknown>[] = serviceBindings.filter(
-    (binding: Binding<unknown>): boolean =>
-      binding.isSatisfiedBy(bindingMetadata),
-  );
+  const filteredServiceBindings: Binding<unknown>[] =
+    buildFilteredServiceBindings(params, updatedBindingMetadataList);
 
   const serviceNodeBindings: PlanBindingNode[] = [];
 
@@ -143,7 +144,7 @@ function buildPlanServiceNodeFromClassElementMetadata(
   serviceNodeBindings.push(
     ...buildServiceNodeBindings(
       params,
-      bindingMetadata,
+      updatedBindingMetadataList,
       filteredServiceBindings,
       serviceNode,
     ),
@@ -165,7 +166,7 @@ function buildPlanServiceNodeFromClassElementMetadata(
 
 function buildServiceNodeBindings(
   params: BasePlanParams,
-  bindingMetadata: BindingMetadata,
+  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
   serviceBindings: Binding<unknown>[],
   parentNode: BindingNodeParent,
 ): PlanBindingNode[] {
@@ -182,7 +183,12 @@ function buildServiceNodeBindings(
     switch (binding.type) {
       case bindingTypeValues.Instance: {
         planBindingNodes.push(
-          buildInstancePlanBindingNode(params, binding, parentNode),
+          buildInstancePlanBindingNode(
+            params,
+            binding,
+            bindingMetadataList,
+            parentNode,
+          ),
         );
         break;
       }
@@ -190,7 +196,7 @@ function buildServiceNodeBindings(
         const planBindingNode: PlanBindingNode | undefined =
           buildServiceRedirectionPlanBindingNode(
             params,
-            bindingMetadata,
+            bindingMetadataList,
             binding,
             parentNode,
           );
@@ -214,7 +220,7 @@ function buildServiceNodeBindings(
 
 function buildServiceRedirectionPlanBindingNode(
   params: BasePlanParams,
-  bindingMetadata: BindingMetadata,
+  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
   binding: ServiceRedirectionBinding<unknown>,
   parentNode: BindingNodeParent,
 ): PlanBindingNode {
@@ -224,18 +230,15 @@ function buildServiceRedirectionPlanBindingNode(
     redirections: [],
   };
 
-  const serviceBindings: Binding<unknown>[] =
-    params.getBindings(binding.targetServiceIdentifier) ?? [];
-
-  const filteredServiceBindings: Binding<unknown>[] = serviceBindings.filter(
-    (binding: Binding<unknown>): boolean =>
-      binding.isSatisfiedBy(bindingMetadata),
-  );
+  const filteredServiceBindings: Binding<unknown>[] =
+    buildFilteredServiceBindings(params, bindingMetadataList, {
+      customServiceIdentifier: binding.targetServiceIdentifier,
+    });
 
   childNode.redirections.push(
     ...buildServiceNodeBindings(
       params,
-      bindingMetadata,
+      bindingMetadataList,
       filteredServiceBindings,
       childNode,
     ),
@@ -244,7 +247,10 @@ function buildServiceRedirectionPlanBindingNode(
   return childNode;
 }
 
-function subplan(params: SubplanParams): PlanBindingNode {
+function subplan(
+  params: SubplanParams,
+  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
+): PlanBindingNode {
   const classMetadata: ClassMetadata = params.node.classMetadata;
 
   for (const [
@@ -252,12 +258,20 @@ function subplan(params: SubplanParams): PlanBindingNode {
     elementMetadata,
   ] of classMetadata.constructorArguments.entries()) {
     params.node.constructorParams[index] =
-      buildPlanServiceNodeFromClassElementMetadata(params, elementMetadata);
+      buildPlanServiceNodeFromClassElementMetadata(
+        params,
+        bindingMetadataList,
+        elementMetadata,
+      );
   }
 
   for (const [propertyKey, elementMetadata] of classMetadata.properties) {
     const planServiceNode: PlanServiceNode | undefined =
-      buildPlanServiceNodeFromClassElementMetadata(params, elementMetadata);
+      buildPlanServiceNodeFromClassElementMetadata(
+        params,
+        bindingMetadataList,
+        elementMetadata,
+      );
 
     if (planServiceNode !== undefined) {
       params.node.propertyParams.set(propertyKey, planServiceNode);
