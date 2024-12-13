@@ -15,6 +15,9 @@ if (!pathExists(PACKAGE_JSON_PATH)) {
 
 const packageJsonObject = JSON.parse(await fs.readFile(PACKAGE_JSON_PATH));
 const packageDependencies = Object.keys(packageJsonObject.dependencies ?? {});
+const packagePeerDependencies = Object.keys(
+  packageJsonObject.peerDependencies ?? {},
+);
 
 /**
  * @param { !string } input
@@ -32,7 +35,7 @@ function buildBundleConfig(inputFile, outputDir) {
   return [
     {
       input: inputFile,
-      external: packageDependencies,
+      external: [...packageDependencies, ...packagePeerDependencies],
       output: [
         {
           dir: outputDir,
@@ -48,12 +51,21 @@ function buildBundleConfig(inputFile, outputDir) {
           },
         },
       ],
-      plugins: [typescript(), terser()],
+      plugins: [
+        typescript({
+          tsconfig: './tsconfig.esm.json',
+        }),
+        terser(),
+      ],
     },
     {
       input: declarationFilePath,
       output: [{ file: declarationFilePath, format: 'es' }],
-      plugins: [dts()],
+      plugins: [
+        dts({
+          tsconfig: './tsconfig.esm.json',
+        }),
+      ],
     },
   ];
 }
