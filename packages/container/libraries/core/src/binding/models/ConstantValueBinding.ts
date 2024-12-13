@@ -7,7 +7,7 @@ export interface ConstantValueBinding<TActivated>
   extends ScopedBinding<
     typeof bindingTypeValues.ConstantValue,
     typeof bindingScopeValues.Singleton,
-    TActivated | Promise<TActivated>
+    TActivated
   > {
   readonly value: Resolved<TActivated>;
 }

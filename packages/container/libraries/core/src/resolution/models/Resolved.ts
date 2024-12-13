@@ -2,4 +2,4 @@ export type Resolved<TActivated> =
   | SyncResolved<TActivated>
   | Promise<SyncResolved<TActivated>>;
 
-export type SyncResolved<TActivated> = Awaited<TActivated>;
+export type SyncResolved<TActivated> = TActivated;
