@@ -4,6 +4,11 @@
     "url": "https://github.com/inversify/monorepo/issues"
   },
   "description": "InversifyJs container",
+  "dependencies": {
+    "@inversifyjs/common": "workspace:*",
+    "@inversifyjs/core": "workspace:*",
+    "@inversifyjs/reflect-metadata-utils": "workspace:*"
+  },
   "devDependencies": {
     "@eslint/js": "9.17.0",
     "@jest/globals": "29.7.0",
