@@ -6,7 +6,7 @@
   "description": "Rollup config for monorepo packages",
   "devDependencies": {
     "@rollup/plugin-terser": "0.4.4",
-    "@rollup/plugin-typescript": "12.1.1",
+    "@rollup/plugin-typescript": "12.1.2",
     "rollup-plugin-dts": "6.1.1",
     "rollup": "4.28.1",
     "prettier": "3.4.2",
