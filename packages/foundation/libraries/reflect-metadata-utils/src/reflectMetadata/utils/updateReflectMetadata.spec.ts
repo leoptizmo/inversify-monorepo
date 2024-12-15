@@ -12,14 +12,16 @@ describe(updateReflectMetadata.name, () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     let targetFixture: Function;
     let metadataKeyFixture: unknown;
+    let buildDefaultValueMock: jest.Mock<() => unknown>;
     let defaultValueFixture: unknown;
     let callbackMock: jest.Mock<(value: unknown) => unknown>;
     let reflectMetadata: unknown;
 
     beforeAll(() => {
       targetFixture = class {};
-      metadataKeyFixture = 'sample-key';
       defaultValueFixture = 'default-value';
+      metadataKeyFixture = 'sample-key';
+      buildDefaultValueMock = jest.fn(() => defaultValueFixture);
       callbackMock = jest
         .fn<(value: unknown) => unknown>()
         .mockImplementationOnce((value: unknown) => value);
@@ -31,7 +33,7 @@ describe(updateReflectMetadata.name, () => {
       updateReflectMetadata(
         targetFixture,
         metadataKeyFixture,
-        defaultValueFixture,
+        buildDefaultValueMock,
         callbackMock,
       );
 
@@ -51,6 +53,11 @@ describe(updateReflectMetadata.name, () => {
         targetFixture,
         metadataKeyFixture,
       );
+    });
+
+    it('should call buildDefaultValue', () => {
+      expect(buildDefaultValueMock).toHaveBeenCalledTimes(1);
+      expect(buildDefaultValueMock).toHaveBeenCalledWith();
     });
 
     it('should call callback()', () => {
@@ -68,7 +75,7 @@ describe(updateReflectMetadata.name, () => {
     let targetFixture: Function;
     let metadataFixture: unknown;
     let metadataKeyFixture: unknown;
-    let defaultValueFixture: unknown;
+    let buildDefaultValueMock: jest.Mock<() => unknown>;
     let callbackMock: jest.Mock<(value: unknown) => unknown>;
     let reflectMetadata: unknown;
 
@@ -76,7 +83,7 @@ describe(updateReflectMetadata.name, () => {
       targetFixture = class {};
       metadataFixture = 'metadata';
       metadataKeyFixture = 'sample-key';
-      defaultValueFixture = 'default-value';
+      buildDefaultValueMock = jest.fn();
       callbackMock = jest
         .fn<(value: unknown) => unknown>()
         .mockImplementationOnce((value: unknown) => value);
@@ -88,7 +95,7 @@ describe(updateReflectMetadata.name, () => {
       updateReflectMetadata(
         targetFixture,
         metadataKeyFixture,
-        defaultValueFixture,
+        buildDefaultValueMock,
         callbackMock,
       );
 
@@ -108,6 +115,10 @@ describe(updateReflectMetadata.name, () => {
         targetFixture,
         metadataKeyFixture,
       );
+    });
+
+    it('should not call buildDefaultValue()', () => {
+      expect(buildDefaultValueMock).not.toHaveBeenCalled();
     });
 
     it('should call callback()', () => {

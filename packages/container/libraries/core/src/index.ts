@@ -56,6 +56,8 @@ import { PlanServiceNodeParent } from './planning/models/PlanServiceNodeParent';
 import { PlanServiceRedirectionBindingNode } from './planning/models/PlanServiceRedirectionBindingNode';
 import { PlanTree } from './planning/models/PlanTree';
 import { resolve } from './resolution/actions/resolve';
+import { GetOptions } from './resolution/models/GetOptions';
+import { GetOptionsTagConstraint } from './resolution/models/GetOptionsTagConstraint';
 import { ResolutionContext } from './resolution/models/ResolutionContext';
 import { ResolutionParams } from './resolution/models/ResolutionParams';
 import { Resolved } from './resolution/models/Resolved';
@@ -80,6 +82,8 @@ export type {
   DynamicValueBuilder,
   Factory,
   FactoryBinding,
+  GetOptions,
+  GetOptionsTagConstraint,
   InstanceBinding,
   LeafBindingNode,
   LegacyMetadata,

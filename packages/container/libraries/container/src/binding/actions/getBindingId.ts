@@ -1,5 +1,6 @@
 import {
   getReflectMetadata,
+  setReflectMetadata,
   updateReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
@@ -10,17 +11,12 @@ export function getBindingId(): number {
     getReflectMetadata<number>(Object, ID_METADATA) ?? 0;
 
   if (bindingId === Number.MAX_SAFE_INTEGER) {
-    updateReflectMetadata(
-      Object,
-      ID_METADATA,
-      bindingId,
-      () => Number.MIN_SAFE_INTEGER,
-    );
+    setReflectMetadata(Object, ID_METADATA, Number.MIN_SAFE_INTEGER);
   } else {
     updateReflectMetadata(
       Object,
       ID_METADATA,
-      bindingId,
+      () => bindingId,
       (id: number) => id + 1,
     );
   }

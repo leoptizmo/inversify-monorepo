@@ -15,7 +15,7 @@ export function preDestroy(): MethodDecorator {
       updateReflectMetadata(
         target.constructor,
         classMetadataReflectKey,
-        getDefaultClassMetadata(),
+        getDefaultClassMetadata,
         updateMaybeClassMetadataPreDestroy(propertyKey),
       );
     } catch (error: unknown) {
