@@ -4,6 +4,7 @@ jest.mock('@inversifyjs/reflect-metadata-utils');
 
 import {
   getReflectMetadata,
+  setReflectMetadata,
   updateReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
@@ -38,7 +39,7 @@ describe(getBindingId.name, () => {
       expect(updateReflectMetadata).toHaveBeenCalledWith(
         Object,
         '@inversifyjs/container/bindingId',
-        0,
+        expect.any(Function),
         expect.any(Function),
       );
     });
@@ -71,17 +72,16 @@ describe(getBindingId.name, () => {
       );
     });
 
-    it('should call updateReflectMetadata()', () => {
-      expect(updateReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(updateReflectMetadata).toHaveBeenCalledWith(
+    it('should call setReflectMetadata()', () => {
+      expect(setReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(setReflectMetadata).toHaveBeenCalledWith(
         Object,
         '@inversifyjs/container/bindingId',
-        Number.MAX_SAFE_INTEGER,
-        expect.any(Function),
+        Number.MIN_SAFE_INTEGER,
       );
     });
 
-    it('should return default id', () => {
+    it('should return expected result', () => {
       expect(result).toBe(Number.MAX_SAFE_INTEGER);
     });
   });
