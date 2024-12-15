@@ -3,11 +3,11 @@ import { getReflectMetadata } from './getReflectMetadata';
 export function updateReflectMetadata<TMetadata>(
   target: object,
   metadataKey: unknown,
-  defaultValue: TMetadata,
+  buildDefaultValue: () => TMetadata,
   callback: (metadata: TMetadata) => TMetadata,
 ): void {
   const metadata: TMetadata =
-    getReflectMetadata(target, metadataKey) ?? defaultValue;
+    getReflectMetadata(target, metadataKey) ?? buildDefaultValue();
 
   const updatedMetadata: TMetadata = callback(metadata);
 

@@ -15,7 +15,7 @@ export function postConstruct(): MethodDecorator {
       updateReflectMetadata(
         target.constructor,
         classMetadataReflectKey,
-        getDefaultClassMetadata(),
+        getDefaultClassMetadata,
         updateMaybeClassMetadataPostConstructor(propertyKey),
       );
     } catch (error: unknown) {

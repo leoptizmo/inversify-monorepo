@@ -12,8 +12,6 @@ jest.mock('../actions/updateMaybeClassMetadataProperty', () => ({
   updateMaybeClassMetadataProperty: jest.fn(),
 }));
 
-jest.mock('../calculations/getDefaultClassMetadata');
-
 import { Newable } from '@inversifyjs/common';
 import { updateReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
@@ -21,7 +19,6 @@ import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadat
 import { updateMaybeClassMetadataConstructorArgument } from '../actions/updateMaybeClassMetadataConstructorArgument';
 import { updateMaybeClassMetadataProperty } from '../actions/updateMaybeClassMetadataProperty';
 import { getDefaultClassMetadata } from '../calculations/getDefaultClassMetadata';
-import { ClassMetadata } from '../models/ClassMetadata';
 import { MaybeClassElementMetadata } from '../models/MaybeClassElementMetadata';
 import { MaybeClassMetadata } from '../models/MaybeClassMetadata';
 import { injectBase } from './injectBase';
@@ -43,22 +40,13 @@ describe(injectBase.name, () => {
   });
 
   describe('when called, as property decorator', () => {
-    let defaultClassMetadataFixture: ClassMetadata;
     let targetFixture: Newable;
     let updateMaybeClassMetadataPropertyResult: jest.Mock<
       (classMetadata: MaybeClassMetadata) => MaybeClassMetadata
     >;
 
     beforeAll(() => {
-      defaultClassMetadataFixture = {
-        [Symbol()]: Symbol(),
-      } as unknown as ClassMetadata;
-
       updateMaybeClassMetadataPropertyResult = jest.fn();
-
-      (
-        getDefaultClassMetadata as jest.Mock<typeof getDefaultClassMetadata>
-      ).mockReturnValueOnce(defaultClassMetadataFixture);
 
       (
         updateMaybeClassMetadataProperty as jest.Mock<
@@ -83,29 +71,20 @@ describe(injectBase.name, () => {
       expect(updateReflectMetadata).toHaveBeenCalledWith(
         targetFixture,
         classMetadataReflectKey,
-        defaultClassMetadataFixture,
+        getDefaultClassMetadata,
         updateMaybeClassMetadataPropertyResult,
       );
     });
   });
 
   describe('when called, as constructor parameter decorator', () => {
-    let defaultClassMetadataFixture: ClassMetadata;
     let targetFixture: Newable;
     let updateMaybeClassMetadataConstructorArgumentsResult: jest.Mock<
       (classMetadata: MaybeClassMetadata) => MaybeClassMetadata
     >;
 
     beforeAll(() => {
-      defaultClassMetadataFixture = {
-        [Symbol()]: Symbol(),
-      } as unknown as ClassMetadata;
-
       updateMaybeClassMetadataConstructorArgumentsResult = jest.fn();
-
-      (
-        getDefaultClassMetadata as jest.Mock<typeof getDefaultClassMetadata>
-      ).mockReturnValueOnce(defaultClassMetadataFixture);
 
       (
         updateMaybeClassMetadataConstructorArgument as jest.Mock<
@@ -132,7 +111,7 @@ describe(injectBase.name, () => {
       expect(updateReflectMetadata).toHaveBeenCalledWith(
         targetFixture,
         classMetadataReflectKey,
-        expect.anything(),
+        getDefaultClassMetadata,
         updateMaybeClassMetadataConstructorArgumentsResult,
       );
     });

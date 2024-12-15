@@ -40,7 +40,7 @@ function injectParameter(
       updateReflectMetadata(
         target,
         classMetadataReflectKey,
-        getDefaultClassMetadata(),
+        getDefaultClassMetadata,
         updateMaybeClassMetadataConstructorArgument(
           updateMetadata,
           parameterIndex,
@@ -66,7 +66,7 @@ function injectProperty(
     updateReflectMetadata(
       target.constructor,
       classMetadataReflectKey,
-      getDefaultClassMetadata(),
+      getDefaultClassMetadata,
       updateMaybeClassMetadataProperty(updateMetadata, propertyKey),
     );
   };

@@ -5,14 +5,12 @@ jest.mock('@inversifyjs/reflect-metadata-utils');
 import { updateReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 jest.mock('../actions/updateMaybeClassMetadataPostConstructor');
-jest.mock('../calculations/getDefaultClassMetadata');
 jest.mock('../calculations/handleInjectionError');
 
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
 import { updateMaybeClassMetadataPostConstructor } from '../actions/updateMaybeClassMetadataPostConstructor';
 import { getDefaultClassMetadata } from '../calculations/getDefaultClassMetadata';
 import { handleInjectionError } from '../calculations/handleInjectionError';
-import { ClassMetadata } from '../models/ClassMetadata';
 import { MaybeClassMetadata } from '../models/MaybeClassMetadata';
 import { postConstruct } from './postConstruct';
 
@@ -28,8 +26,6 @@ describe(postConstruct.name, () => {
   });
 
   describe('when caled', () => {
-    let classMetadataFixture: ClassMetadata;
-
     let updateMaybeClassMetadataPostConstructorResult: jest.Mock<
       (metadata: MaybeClassMetadata) => MaybeClassMetadata
     >;
@@ -37,20 +33,7 @@ describe(postConstruct.name, () => {
     let result: unknown;
 
     beforeAll(() => {
-      classMetadataFixture = {
-        constructorArguments: [],
-        lifecycle: {
-          postConstructMethodName: undefined,
-          preDestroyMethodName: undefined,
-        },
-        properties: new Map(),
-      };
-
       updateMaybeClassMetadataPostConstructorResult = jest.fn();
-
-      (
-        getDefaultClassMetadata as jest.Mock<typeof getDefaultClassMetadata>
-      ).mockReturnValueOnce(classMetadataFixture);
 
       (
         updateMaybeClassMetadataPostConstructor as jest.Mock<
@@ -69,11 +52,6 @@ describe(postConstruct.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call getDefaultClassMetadata()', () => {
-      expect(getDefaultClassMetadata).toHaveBeenCalledTimes(1);
-      expect(getDefaultClassMetadata).toHaveBeenCalledWith();
-    });
-
     it('should call updateMaybeClassMetadataPostConstructor()', () => {
       expect(updateMaybeClassMetadataPostConstructor).toHaveBeenCalledTimes(1);
       expect(updateMaybeClassMetadataPostConstructor).toHaveBeenCalledWith(
@@ -86,7 +64,7 @@ describe(postConstruct.name, () => {
       expect(updateReflectMetadata).toHaveBeenCalledWith(
         targetFixture.constructor,
         classMetadataReflectKey,
-        classMetadataFixture,
+        getDefaultClassMetadata,
         updateMaybeClassMetadataPostConstructorResult,
       );
     });
@@ -97,7 +75,6 @@ describe(postConstruct.name, () => {
   });
 
   describe('when caled, and updateReflectMetadata throws an Error', () => {
-    let classMetadataFixture: ClassMetadata;
     let errorFixture: Error;
 
     let updateMaybeClassMetadataPostConstructorResult: jest.Mock<
@@ -107,22 +84,9 @@ describe(postConstruct.name, () => {
     let result: unknown;
 
     beforeAll(() => {
-      classMetadataFixture = {
-        constructorArguments: [],
-        lifecycle: {
-          postConstructMethodName: undefined,
-          preDestroyMethodName: undefined,
-        },
-        properties: new Map(),
-      };
-
       errorFixture = new Error('error-fixture');
 
       updateMaybeClassMetadataPostConstructorResult = jest.fn();
-
-      (
-        getDefaultClassMetadata as jest.Mock<typeof getDefaultClassMetadata>
-      ).mockReturnValueOnce(classMetadataFixture);
 
       (
         updateMaybeClassMetadataPostConstructor as jest.Mock<
@@ -147,11 +111,6 @@ describe(postConstruct.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call getDefaultClassMetadata()', () => {
-      expect(getDefaultClassMetadata).toHaveBeenCalledTimes(1);
-      expect(getDefaultClassMetadata).toHaveBeenCalledWith();
-    });
-
     it('should call updateMaybeClassMetadataPostConstructor()', () => {
       expect(updateMaybeClassMetadataPostConstructor).toHaveBeenCalledTimes(1);
       expect(updateMaybeClassMetadataPostConstructor).toHaveBeenCalledWith(
@@ -164,7 +123,7 @@ describe(postConstruct.name, () => {
       expect(updateReflectMetadata).toHaveBeenCalledWith(
         targetFixture.constructor,
         classMetadataReflectKey,
-        classMetadataFixture,
+        getDefaultClassMetadata,
         updateMaybeClassMetadataPostConstructorResult,
       );
     });
