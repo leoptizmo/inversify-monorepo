@@ -23,16 +23,11 @@ import {
   BindingActivationRelation,
 } from './binding/services/ActivationsService';
 import { BindingService } from './binding/services/BindingService';
-import { getClassElementMetadataFromLegacyMetadata } from './metadata/calculations/getClassElementMetadataFromLegacyMetadata';
 import { getClassMetadata } from './metadata/calculations/getClassMetadata';
-import { getClassMetadataFromMetadataReader } from './metadata/calculations/getClassMetadataFromMetadataReader';
 import { ClassElementMetadata } from './metadata/models/ClassElementMetadata';
 import { ClassElementMetadataKind } from './metadata/models/ClassElementMetadataKind';
 import { ClassMetadata } from './metadata/models/ClassMetadata';
 import { ClassMetadataLifecycle } from './metadata/models/ClassMetadataLifecycle';
-import { LegacyMetadata } from './metadata/models/LegacyMetadata';
-import { LegacyMetadataMap } from './metadata/models/LegacyMetadataMap';
-import { LegacyMetadataReader } from './metadata/models/LegacyMetadataReader';
 import { ManagedClassElementMetadata } from './metadata/models/ManagedClassElementMetadata';
 import { MetadataName } from './metadata/models/MetadataName';
 import { MetadataTag } from './metadata/models/MetadataTag';
@@ -82,9 +77,6 @@ export type {
   GetOptionsTagConstraint,
   InstanceBinding,
   LeafBindingNode,
-  LegacyMetadata,
-  LegacyMetadataMap,
-  LegacyMetadataReader,
   LegacyQueryableString,
   ManagedClassElementMetadata,
   MetadataName,
@@ -115,9 +107,7 @@ export {
   BindingService,
   bindingTypeValues,
   ClassElementMetadataKind,
-  getClassElementMetadataFromLegacyMetadata,
   getClassMetadata,
-  getClassMetadataFromMetadataReader,
   plan,
   resolve,
 };
