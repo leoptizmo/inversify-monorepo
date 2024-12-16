@@ -7,6 +7,7 @@ jest.mock(
 jest.mock('../calculations/handleInjectionError');
 jest.mock('./injectBase');
 
+import { incrementPendingClassMetadataCount } from '../actions/incrementPendingClassMetadataCount';
 import { updateMetadataName } from '../actions/updateMetadataName';
 import { buildMaybeClassElementMetadataFromMaybeClassElementMetadata } from '../calculations/buildMaybeClassElementMetadataFromMaybeClassElementMetadata';
 import { handleInjectionError } from '../calculations/handleInjectionError';
@@ -94,7 +95,10 @@ describe(named.name, () => {
 
       it('should call injectBase()', () => {
         expect(injectBase).toHaveBeenCalledTimes(1);
-        expect(injectBase).toHaveBeenCalledWith(updateMetadataMock);
+        expect(injectBase).toHaveBeenCalledWith(
+          updateMetadataMock,
+          incrementPendingClassMetadataCount,
+        );
       });
 
       it('should call injectBaseDecorator()', () => {
@@ -173,7 +177,10 @@ describe(named.name, () => {
 
       it('should call injectBase()', () => {
         expect(injectBase).toHaveBeenCalledTimes(1);
-        expect(injectBase).toHaveBeenCalledWith(updateMetadataMock);
+        expect(injectBase).toHaveBeenCalledWith(
+          updateMetadataMock,
+          incrementPendingClassMetadataCount,
+        );
       });
 
       it('should throw handleInjectionError()', () => {
@@ -259,7 +266,10 @@ describe(named.name, () => {
 
       it('should call injectBase()', () => {
         expect(injectBase).toHaveBeenCalledTimes(1);
-        expect(injectBase).toHaveBeenCalledWith(updateMetadataMock);
+        expect(injectBase).toHaveBeenCalledWith(
+          updateMetadataMock,
+          incrementPendingClassMetadataCount,
+        );
       });
 
       it('should call injectBaseDecorator()', () => {
@@ -339,7 +349,10 @@ describe(named.name, () => {
 
       it('should call injectBase()', () => {
         expect(injectBase).toHaveBeenCalledTimes(1);
-        expect(injectBase).toHaveBeenCalledWith(updateMetadataMock);
+        expect(injectBase).toHaveBeenCalledWith(
+          updateMetadataMock,
+          incrementPendingClassMetadataCount,
+        );
       });
 
       it('should throw handleInjectionError()', () => {

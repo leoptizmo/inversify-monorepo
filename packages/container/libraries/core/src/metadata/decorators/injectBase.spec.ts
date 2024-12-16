@@ -29,6 +29,11 @@ describe(injectBase.name, () => {
       metadata: MaybeClassElementMetadata | undefined,
     ) => MaybeClassElementMetadata
   >;
+  let updatePendingClassMetadataCountMock: jest.Mock<
+    (
+      target: object,
+    ) => (metadata: MaybeClassElementMetadata | undefined) => void
+  >;
 
   beforeAll(() => {
     updateMetadataMock =
@@ -37,6 +42,7 @@ describe(injectBase.name, () => {
           metadata: MaybeClassElementMetadata | undefined,
         ) => MaybeClassElementMetadata
       >();
+    updatePendingClassMetadataCountMock = jest.fn();
   });
 
   describe('when called, as property decorator', () => {
@@ -55,7 +61,7 @@ describe(injectBase.name, () => {
       ).mockReturnValueOnce(updateMaybeClassMetadataPropertyResult);
 
       class TargetFixture {
-        @injectBase(updateMetadataMock)
+        @injectBase(updateMetadataMock, updatePendingClassMetadataCountMock)
         public foo: string | undefined;
       }
 
@@ -94,7 +100,7 @@ describe(injectBase.name, () => {
 
       class TargetFixture {
         constructor(
-          @injectBase(updateMetadataMock)
+          @injectBase(updateMetadataMock, updatePendingClassMetadataCountMock)
           public foo: string | undefined,
         ) {}
       }
@@ -125,7 +131,7 @@ describe(injectBase.name, () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         class TargetFixture {
           public doSomethingWithFoo(
-            @injectBase(updateMetadataMock)
+            @injectBase(updateMetadataMock, updatePendingClassMetadataCountMock)
             foo: string | undefined,
           ) {
             console.log(foo ?? '?');

@@ -6,6 +6,7 @@ jest.mock('../calculations/buildManagedMetadataFromMaybeClassElementMetadata');
 jest.mock('../calculations/handleInjectionError');
 jest.mock('./injectBase');
 
+import { decrementPendingClassMetadataCount } from '../actions/decrementPendingClassMetadataCount';
 import { buildManagedMetadataFromMaybeClassElementMetadata } from '../calculations/buildManagedMetadataFromMaybeClassElementMetadata';
 import { handleInjectionError } from '../calculations/handleInjectionError';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
@@ -84,7 +85,10 @@ describe(inject.name, () => {
 
       it('should call injectBase()', () => {
         expect(injectBase).toHaveBeenCalledTimes(1);
-        expect(injectBase).toHaveBeenCalledWith(updateMetadataMock);
+        expect(injectBase).toHaveBeenCalledWith(
+          updateMetadataMock,
+          decrementPendingClassMetadataCount,
+        );
       });
 
       it('should call injectBaseDecorator()', () => {
@@ -164,7 +168,10 @@ describe(inject.name, () => {
 
       it('should call injectBase()', () => {
         expect(injectBase).toHaveBeenCalledTimes(1);
-        expect(injectBase).toHaveBeenCalledWith(updateMetadataMock);
+        expect(injectBase).toHaveBeenCalledWith(
+          updateMetadataMock,
+          decrementPendingClassMetadataCount,
+        );
       });
 
       it('should throw handleInjectionError()', () => {
@@ -253,7 +260,10 @@ describe(inject.name, () => {
 
       it('should call injectBase()', () => {
         expect(injectBase).toHaveBeenCalledTimes(1);
-        expect(injectBase).toHaveBeenCalledWith(updateMetadataMock);
+        expect(injectBase).toHaveBeenCalledWith(
+          updateMetadataMock,
+          decrementPendingClassMetadataCount,
+        );
       });
 
       it('should call injectBaseDecorator()', () => {
@@ -338,7 +348,10 @@ describe(inject.name, () => {
 
       it('should call injectBase()', () => {
         expect(injectBase).toHaveBeenCalledTimes(1);
-        expect(injectBase).toHaveBeenCalledWith(updateMetadataMock);
+        expect(injectBase).toHaveBeenCalledWith(
+          updateMetadataMock,
+          decrementPendingClassMetadataCount,
+        );
       });
 
       it('should throw handleInjectionError()', () => {

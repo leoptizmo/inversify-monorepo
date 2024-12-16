@@ -10,6 +10,9 @@ export function injectBase(
   updateMetadata: (
     metadata: MaybeClassElementMetadata | undefined,
   ) => MaybeClassElementMetadata,
+  updatePendingClassMetadataCount: (
+    target: object,
+  ) => (metadata: MaybeClassElementMetadata | undefined) => void,
 ): ParameterDecorator & PropertyDecorator {
   const decorator: ParameterDecorator & PropertyDecorator = (
     target: object,
@@ -17,20 +20,70 @@ export function injectBase(
     parameterIndex?: number,
   ): void => {
     if (parameterIndex === undefined) {
-      injectProperty(updateMetadata)(target, propertyKey as string | symbol);
+      injectProperty(updateMetadata, updatePendingClassMetadataCount)(
+        target,
+        propertyKey as string | symbol,
+      );
     } else {
-      injectParameter(updateMetadata)(target, propertyKey, parameterIndex);
+      injectParameter(updateMetadata, updatePendingClassMetadataCount)(
+        target,
+        propertyKey,
+        parameterIndex,
+      );
     }
   };
 
   return decorator;
 }
 
+function buildComposedUpdateMetadata(
+  updateMetadata: (
+    metadata: MaybeClassElementMetadata | undefined,
+  ) => MaybeClassElementMetadata,
+  updatePendingClassMetadataCount: (
+    target: object,
+  ) => (metadata: MaybeClassElementMetadata | undefined) => void,
+): (
+  target: object,
+) => (
+  metadata: MaybeClassElementMetadata | undefined,
+) => MaybeClassElementMetadata {
+  return (
+    target: object,
+  ): ((
+    metadata: MaybeClassElementMetadata | undefined,
+  ) => MaybeClassElementMetadata) => {
+    const updateTargetPendingClassMetadataCount: (
+      metadata: MaybeClassElementMetadata | undefined,
+    ) => void = updatePendingClassMetadataCount(target);
+
+    return (
+      metadata: MaybeClassElementMetadata | undefined,
+    ): MaybeClassElementMetadata => {
+      updateTargetPendingClassMetadataCount(metadata);
+
+      return updateMetadata(metadata);
+    };
+  };
+}
+
 function injectParameter(
   updateMetadata: (
     metadata: MaybeClassElementMetadata | undefined,
   ) => MaybeClassElementMetadata,
+  updatePendingClassMetadataCount: (
+    target: object,
+  ) => (metadata: MaybeClassElementMetadata | undefined) => void,
 ): ParameterDecorator {
+  const buildComposedUpdateMetadataFromTarget: (
+    target: object,
+  ) => (
+    metadata: MaybeClassElementMetadata | undefined,
+  ) => MaybeClassElementMetadata = buildComposedUpdateMetadata(
+    updateMetadata,
+    updatePendingClassMetadataCount,
+  );
+
   return (
     target: object,
     propertyKey: string | symbol | undefined,
@@ -42,7 +95,7 @@ function injectParameter(
         classMetadataReflectKey,
         getDefaultClassMetadata,
         updateMaybeClassMetadataConstructorArgument(
-          updateMetadata,
+          buildComposedUpdateMetadataFromTarget(target),
           parameterIndex,
         ),
       );
@@ -61,13 +114,28 @@ function injectProperty(
   updateMetadata: (
     metadata: MaybeClassElementMetadata | undefined,
   ) => MaybeClassElementMetadata,
+  updatePendingClassMetadataCount: (
+    target: object,
+  ) => (metadata: MaybeClassElementMetadata | undefined) => void,
 ): PropertyDecorator {
+  const buildComposedUpdateMetadataFromTarget: (
+    target: object,
+  ) => (
+    metadata: MaybeClassElementMetadata | undefined,
+  ) => MaybeClassElementMetadata = buildComposedUpdateMetadata(
+    updateMetadata,
+    updatePendingClassMetadataCount,
+  );
+
   return (target: object, propertyKey: string | symbol): void => {
     updateReflectMetadata(
       target.constructor,
       classMetadataReflectKey,
       getDefaultClassMetadata,
-      updateMaybeClassMetadataProperty(updateMetadata, propertyKey),
+      updateMaybeClassMetadataProperty(
+        buildComposedUpdateMetadataFromTarget(target),
+        propertyKey,
+      ),
     );
   };
 }
