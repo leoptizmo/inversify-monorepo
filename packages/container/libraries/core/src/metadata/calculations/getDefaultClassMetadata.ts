@@ -8,5 +8,6 @@ export function getDefaultClassMetadata(): ClassMetadata {
       preDestroyMethodName: undefined,
     },
     properties: new Map(),
+    scope: undefined,
   };
 }

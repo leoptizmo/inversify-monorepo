@@ -42,6 +42,7 @@ function composeUpdateReflectMetadataCallback(
       baseTypeClassMetadata,
       typeMetadata,
     ),
+    scope: typeMetadata.scope,
   });
 
   return callback;

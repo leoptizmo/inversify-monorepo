@@ -1,8 +1,8 @@
-import { ClassMetadata } from '../models/ClassMetadata';
+import { MaybeClassMetadata } from '../models/MaybeClassMetadata';
 
-export class ClassMetadataFixtures {
-  public static get any(): ClassMetadata {
-    const fixture: ClassMetadata = {
+export class MaybeClassMetadataFixtures {
+  public static get any(): MaybeClassMetadata {
+    const fixture: MaybeClassMetadata = {
       constructorArguments: [],
       lifecycle: {
         postConstructMethodName: undefined,

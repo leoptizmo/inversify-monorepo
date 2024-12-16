@@ -18,6 +18,7 @@ describe(updateMaybeClassMetadataPreDestroy.name, () => {
           preDestroyMethodName: undefined,
         },
         properties: new Map(),
+        scope: undefined,
       };
       methodNameFixture = Symbol();
     });
@@ -40,6 +41,7 @@ describe(updateMaybeClassMetadataPreDestroy.name, () => {
             preDestroyMethodName: methodNameFixture,
           },
           properties: new Map(),
+          scope: undefined,
         };
 
         expect(result).toStrictEqual(expected);
@@ -59,6 +61,7 @@ describe(updateMaybeClassMetadataPreDestroy.name, () => {
           preDestroyMethodName: 'postConstructorMethodName',
         },
         properties: new Map(),
+        scope: undefined,
       };
       methodNameFixture = Symbol();
     });

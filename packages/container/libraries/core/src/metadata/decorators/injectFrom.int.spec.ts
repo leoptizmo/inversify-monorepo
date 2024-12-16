@@ -54,6 +54,7 @@ describe(injectFrom.name, () => {
               preDestroyMethodName: undefined,
             },
             properties: new Map(),
+            scope: undefined,
           };
 
           expect(result).toStrictEqual(expected);
@@ -127,6 +128,7 @@ describe(injectFrom.name, () => {
                 },
               ],
             ]),
+            scope: undefined,
           };
 
           expect(result).toStrictEqual(expected);
@@ -276,6 +278,7 @@ describe(injectFrom.name, () => {
                 ['bar', expectedBarPropertyMetadata],
                 ['baz', expectedBazPropertyMetadata],
               ]),
+              scope: undefined,
             };
 
             expect(result).toStrictEqual(expectedClassMetadata);
@@ -325,6 +328,7 @@ describe(injectFrom.name, () => {
               preDestroyMethodName: undefined,
             },
             properties: new Map(),
+            scope: undefined,
           };
 
           expect(result).toStrictEqual(expected);
@@ -392,6 +396,7 @@ describe(injectFrom.name, () => {
                 },
               ],
             ]),
+            scope: undefined,
           };
 
           expect(result).toStrictEqual(expectedClassMetadata);
@@ -461,6 +466,7 @@ describe(injectFrom.name, () => {
                 },
               ],
             ]),
+            scope: undefined,
           };
           expect(result).toStrictEqual(expectedClassMetadata);
         });
@@ -586,6 +592,7 @@ describe(injectFrom.name, () => {
                 },
               ],
             ]),
+            scope: undefined,
           };
 
           expect(result).toStrictEqual(expectedClassMetadata);
