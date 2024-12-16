@@ -1,82 +1,123 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
+jest.mock('./getDefaultClassMetadata');
+
 jest.mock('@inversifyjs/reflect-metadata-utils');
 
+import { Newable } from '@inversifyjs/common';
 import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
-jest.mock('./getClassMetadataConstructorArguments');
-jest.mock('./getClassMetadataProperties');
+jest.mock('./assertConstructorMetadataArrayFilled');
+jest.mock('./getDefaultClassMetadata');
+jest.mock('./isPendingClassMetadata');
+jest.mock('./throwAtInvalidClassMetadata');
 
-import { Newable } from '@inversifyjs/common';
-
-import { POST_CONSTRUCT, PRE_DESTROY } from '../../reflectMetadata/data/keys';
-import { ClassElementMetadata } from '../models/ClassElementMetadata';
-import { ClassElementMetadataKind } from '../models/ClassElementMetadataKind';
+import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
 import { ClassMetadata } from '../models/ClassMetadata';
-import { LegacyMetadata } from '../models/LegacyMetadata';
+import { assertConstructorMetadataArrayFilled } from './assertConstructorMetadataArrayFilled';
 import { getClassMetadata } from './getClassMetadata';
-import { getClassMetadataConstructorArguments } from './getClassMetadataConstructorArguments';
-import { getClassMetadataProperties } from './getClassMetadataProperties';
+import { getDefaultClassMetadata } from './getDefaultClassMetadata';
+import { isPendingClassMetadata } from './isPendingClassMetadata';
+import { throwAtInvalidClassMetadata } from './throwAtInvalidClassMetadata';
 
 describe(getClassMetadata.name, () => {
-  describe('when called, and getReflectMetadata() returns LegacyMetadata', () => {
-    let constructorArgumentsMetadataFixture: ClassElementMetadata[];
-    let propertiesMetadataFixture: Map<string | symbol, ClassElementMetadata>;
-    let postConstructMetadataFixture: LegacyMetadata;
-    let preDestroyMetadataFixture: LegacyMetadata;
+  let typeFixture: Newable;
 
-    let typeFixture: Newable;
+  beforeAll(() => {
+    typeFixture = class Foo {};
+  });
+
+  describe('when called, and getReflectMetadata() returns ClassMetadata and isPendingClassMetadata() returns true', () => {
+    let errorFixture: Error;
+    let metadataFixture: ClassMetadata;
 
     let result: unknown;
 
     beforeAll(() => {
-      constructorArgumentsMetadataFixture = [
-        {
-          kind: ClassElementMetadataKind.unmanaged,
+      errorFixture = new Error('error-fixture-message');
+      metadataFixture = {
+        constructorArguments: [],
+        lifecycle: {
+          postConstructMethodName: undefined,
+          preDestroyMethodName: undefined,
         },
-      ];
-
-      propertiesMetadataFixture = new Map([
-        [
-          'property-fixture',
-          {
-            kind: ClassElementMetadataKind.singleInjection,
-            name: undefined,
-            optional: false,
-            tags: new Map(),
-            targetName: undefined,
-            value: Symbol(),
-          },
-        ],
-      ]);
-
-      postConstructMetadataFixture = {
-        key: 'post-construct-key-fixture',
-        value: 'post-construct-value-fixture',
+        properties: new Map(),
       };
 
-      preDestroyMetadataFixture = {
-        key: 'pre-destroy-key-fixture',
-        value: 'pre-destroy-value-fixture',
+      (
+        getReflectMetadata as jest.Mock<typeof getReflectMetadata>
+      ).mockReturnValueOnce(metadataFixture);
+
+      (
+        isPendingClassMetadata as jest.Mock<typeof isPendingClassMetadata>
+      ).mockReturnValueOnce(true);
+
+      (
+        throwAtInvalidClassMetadata as jest.Mock<
+          typeof throwAtInvalidClassMetadata
+        >
+      ).mockImplementationOnce((): never => {
+        throw errorFixture;
+      });
+
+      try {
+        getClassMetadata(typeFixture);
+      } catch (error: unknown) {
+        result = error;
+      }
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should call getReflectMetadata()', () => {
+      expect(getReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(getReflectMetadata).toHaveBeenCalledWith(
+        typeFixture,
+        classMetadataReflectKey,
+      );
+    });
+
+    it('should not call getDefaultClassMetadata()', () => {
+      expect(getDefaultClassMetadata).not.toHaveBeenCalled();
+    });
+
+    it('should call throwAtInvalidClassMetadata()', () => {
+      expect(throwAtInvalidClassMetadata).toHaveBeenCalledTimes(1);
+      expect(throwAtInvalidClassMetadata).toHaveBeenCalledWith(
+        typeFixture,
+        metadataFixture,
+      );
+    });
+
+    it('should throw expected Error', () => {
+      expect(result).toBe(errorFixture);
+    });
+  });
+
+  describe('when called, and getReflectMetadata() returns undefined, and isPendingClassMetadata() returns false', () => {
+    let metadataFixture: ClassMetadata;
+
+    let result: unknown;
+
+    beforeAll(() => {
+      metadataFixture = {
+        constructorArguments: [],
+        lifecycle: {
+          postConstructMethodName: undefined,
+          preDestroyMethodName: undefined,
+        },
+        properties: new Map(),
       };
 
-      typeFixture = class {};
+      (
+        getDefaultClassMetadata as jest.Mock<typeof getDefaultClassMetadata>
+      ).mockReturnValueOnce(metadataFixture);
 
       (
-        getClassMetadataConstructorArguments as jest.Mock<
-          typeof getClassMetadataConstructorArguments
-        >
-      ).mockReturnValueOnce(constructorArgumentsMetadataFixture);
-
-      (
-        getClassMetadataProperties as jest.Mock<
-          typeof getClassMetadataProperties
-        >
-      ).mockReturnValueOnce(propertiesMetadataFixture);
-
-      (getReflectMetadata as jest.Mock<typeof getReflectMetadata>)
-        .mockReturnValueOnce(postConstructMetadataFixture)
-        .mockReturnValueOnce(preDestroyMetadataFixture);
+        isPendingClassMetadata as jest.Mock<typeof isPendingClassMetadata>
+      ).mockReturnValueOnce(false);
 
       result = getClassMetadata(typeFixture);
     });
@@ -86,42 +127,28 @@ describe(getClassMetadata.name, () => {
     });
 
     it('should call getReflectMetadata()', () => {
-      expect(getReflectMetadata).toHaveBeenCalledTimes(2);
-      expect(getReflectMetadata).toHaveBeenNthCalledWith(
-        1,
+      expect(getReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(getReflectMetadata).toHaveBeenCalledWith(
         typeFixture,
-        POST_CONSTRUCT,
-      );
-      expect(getReflectMetadata).toHaveBeenNthCalledWith(
-        2,
-        typeFixture,
-        PRE_DESTROY,
+        classMetadataReflectKey,
       );
     });
 
-    it('should call getClassMetadataConstructorArguments()', () => {
-      expect(getClassMetadataConstructorArguments).toHaveBeenCalledTimes(1);
-      expect(getClassMetadataConstructorArguments).toHaveBeenCalledWith(
+    it('should call getDefaultClassMetadata()', () => {
+      expect(getDefaultClassMetadata).toHaveBeenCalledTimes(1);
+      expect(getDefaultClassMetadata).toHaveBeenCalledWith();
+    });
+
+    it('should call assertConstructorMetadataArrayFilled()', () => {
+      expect(assertConstructorMetadataArrayFilled).toHaveBeenCalledTimes(1);
+      expect(assertConstructorMetadataArrayFilled).toHaveBeenCalledWith(
         typeFixture,
+        metadataFixture.constructorArguments,
       );
     });
 
-    it('should call getClassMetadataProperties()', () => {
-      expect(getClassMetadataProperties).toHaveBeenCalledTimes(1);
-      expect(getClassMetadataProperties).toHaveBeenCalledWith(typeFixture);
-    });
-
-    it('should return ClassMetadata', () => {
-      const expected: ClassMetadata = {
-        constructorArguments: constructorArgumentsMetadataFixture,
-        lifecycle: {
-          postConstructMethodName: postConstructMetadataFixture.value as string,
-          preDestroyMethodName: preDestroyMetadataFixture.value as string,
-        },
-        properties: propertiesMetadataFixture,
-      };
-
-      expect(result).toStrictEqual(expected);
+    it('should return expected result', () => {
+      expect(result).toBe(metadataFixture);
     });
   });
 });
