@@ -1,3 +1,4 @@
+import { incrementPendingClassMetadataCount } from '../actions/incrementPendingClassMetadataCount';
 import { updateMetadataOptional } from '../actions/updateMetadataOptional';
 import { buildMaybeClassElementMetadataFromMaybeClassElementMetadata } from '../calculations/buildMaybeClassElementMetadataFromMaybeClassElementMetadata';
 import { handleInjectionError } from '../calculations/handleInjectionError';
@@ -21,9 +22,16 @@ export function optional(): ParameterDecorator & PropertyDecorator {
   ): void => {
     try {
       if (parameterIndex === undefined) {
-        injectBase(updateMetadata)(target, propertyKey as string | symbol);
+        injectBase(updateMetadata, incrementPendingClassMetadataCount)(
+          target,
+          propertyKey as string | symbol,
+        );
       } else {
-        injectBase(updateMetadata)(target, propertyKey, parameterIndex);
+        injectBase(updateMetadata, incrementPendingClassMetadataCount)(
+          target,
+          propertyKey,
+          parameterIndex,
+        );
       }
     } catch (error: unknown) {
       handleInjectionError(target, propertyKey, parameterIndex, error);

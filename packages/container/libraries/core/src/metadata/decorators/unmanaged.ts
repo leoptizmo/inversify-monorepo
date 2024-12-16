@@ -1,3 +1,4 @@
+import { decrementPendingClassMetadataCount } from '../actions/decrementPendingClassMetadataCount';
 import { buildUnmanagedMetadataFromMaybeClassElementMetadata } from '../calculations/buildUnmanagedMetadataFromMaybeClassElementMetadata';
 import { handleInjectionError } from '../calculations/handleInjectionError';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
@@ -17,9 +18,16 @@ export function unmanaged(): ParameterDecorator & PropertyDecorator {
   ): void => {
     try {
       if (parameterIndex === undefined) {
-        injectBase(updateMetadata)(target, propertyKey as string | symbol);
+        injectBase(updateMetadata, decrementPendingClassMetadataCount)(
+          target,
+          propertyKey as string | symbol,
+        );
       } else {
-        injectBase(updateMetadata)(target, propertyKey, parameterIndex);
+        injectBase(updateMetadata, decrementPendingClassMetadataCount)(
+          target,
+          propertyKey,
+          parameterIndex,
+        );
       }
     } catch (error: unknown) {
       handleInjectionError(target, propertyKey, parameterIndex, error);
