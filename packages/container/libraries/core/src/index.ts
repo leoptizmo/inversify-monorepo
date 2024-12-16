@@ -23,10 +23,6 @@ import {
   BindingActivationRelation,
 } from './binding/services/ActivationsService';
 import { BindingService } from './binding/services/BindingService';
-import { getTargets } from './legacyTarget/calculations/getTargets';
-import { LegacyTarget } from './legacyTarget/models/LegacyTarget';
-import { LegacyTargetImpl } from './legacyTarget/models/LegacyTargetImpl';
-import { LegacyTargetType } from './legacyTarget/models/LegacyTargetType';
 import { getClassElementMetadataFromLegacyMetadata } from './metadata/calculations/getClassElementMetadataFromLegacyMetadata';
 import { getClassMetadata } from './metadata/calculations/getClassMetadata';
 import { getClassMetadataFromMetadataReader } from './metadata/calculations/getClassMetadataFromMetadataReader';
@@ -90,8 +86,6 @@ export type {
   LegacyMetadataMap,
   LegacyMetadataReader,
   LegacyQueryableString,
-  LegacyTarget,
-  LegacyTargetType,
   ManagedClassElementMetadata,
   MetadataName,
   MetadataTag,
@@ -124,8 +118,6 @@ export {
   getClassElementMetadataFromLegacyMetadata,
   getClassMetadata,
   getClassMetadataFromMetadataReader,
-  getTargets,
-  LegacyTargetImpl,
   plan,
   resolve,
 };
