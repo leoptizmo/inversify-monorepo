@@ -2,6 +2,7 @@ import { beforeAll, describe, expect, it } from '@jest/globals';
 
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
+import { MaybeClassMetadataFixtures } from '../fixtures/MaybeClassMetadataFixtures';
 import { MaybeClassMetadata } from '../models/MaybeClassMetadata';
 import { updateMaybeClassMetadataPostConstructor } from './updateMaybeClassMetadataPostConstructor';
 
@@ -11,14 +12,7 @@ describe(updateMaybeClassMetadataPostConstructor.name, () => {
     let methodNameFixture: string | symbol;
 
     beforeAll(() => {
-      metadataFixture = {
-        constructorArguments: [],
-        lifecycle: {
-          postConstructMethodName: undefined,
-          preDestroyMethodName: undefined,
-        },
-        properties: new Map(),
-      };
+      metadataFixture = MaybeClassMetadataFixtures.any;
       methodNameFixture = Symbol();
     });
 
@@ -40,6 +34,7 @@ describe(updateMaybeClassMetadataPostConstructor.name, () => {
             preDestroyMethodName: undefined,
           },
           properties: new Map(),
+          scope: undefined,
         };
 
         expect(result).toStrictEqual(expected);
@@ -59,6 +54,7 @@ describe(updateMaybeClassMetadataPostConstructor.name, () => {
           preDestroyMethodName: undefined,
         },
         properties: new Map(),
+        scope: undefined,
       };
       methodNameFixture = Symbol();
     });

@@ -13,6 +13,7 @@ import { InstanceBinding } from '../../binding/models/InstanceBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
 import { SingleInmutableLinkedList } from '../../common/models/SingleInmutableLinkedList';
 import { Writable } from '../../common/models/Writable';
+import { ClassMetadataFixtures } from '../../metadata/fixtures/ClassMetadataFixtures';
 import { ClassElementMetadataKind } from '../../metadata/models/ClassElementMetadataKind';
 import { ClassMetadata } from '../../metadata/models/ClassMetadata';
 import { ManagedClassElementMetadata } from '../../metadata/models/ManagedClassElementMetadata';
@@ -286,14 +287,7 @@ describe(plan.name, () => {
       let result: unknown;
 
       beforeAll(() => {
-        classMetadataFixture = {
-          constructorArguments: [],
-          lifecycle: {
-            postConstructMethodName: undefined,
-            preDestroyMethodName: undefined,
-          },
-          properties: new Map(),
-        };
+        classMetadataFixture = ClassMetadataFixtures.any;
         instanceBindingFixture = {
           cache: {
             isRight: true,
@@ -424,6 +418,7 @@ describe(plan.name, () => {
             preDestroyMethodName: undefined,
           },
           properties: new Map([[propertyKey, propertyMetadata]]),
+          scope: undefined,
         };
         instanceBindingFixture = {
           cache: {
@@ -633,6 +628,7 @@ describe(plan.name, () => {
             preDestroyMethodName: undefined,
           },
           properties: new Map([[propertyKey, propertyMetadata]]),
+          scope: undefined,
         };
         instanceBindingFixture = {
           cache: {
@@ -846,6 +842,7 @@ describe(plan.name, () => {
             preDestroyMethodName: undefined,
           },
           properties: new Map([[propertyKey, propertyMetadata]]),
+          scope: undefined,
         };
         instanceBindingFixture = {
           cache: {
@@ -1055,6 +1052,7 @@ describe(plan.name, () => {
             preDestroyMethodName: undefined,
           },
           properties: new Map([[propertyKey, propertyArgumentMetadata]]),
+          scope: undefined,
         };
         instanceBindingFixture = {
           cache: {

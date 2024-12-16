@@ -76,6 +76,7 @@ describe(tagged.name, () => {
             },
           ],
         ]),
+        scope: undefined,
       };
 
       expect(result).toStrictEqual(expected);

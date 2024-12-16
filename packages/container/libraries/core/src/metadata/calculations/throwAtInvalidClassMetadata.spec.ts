@@ -4,6 +4,7 @@ import { Newable } from '@inversifyjs/common';
 
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
+import { ClassMetadataFixtures } from '../fixtures/ClassMetadataFixtures';
 import { ClassMetadata } from '../models/ClassMetadata';
 import { MaybeClassElementMetadata } from '../models/MaybeClassElementMetadata';
 import { MaybeClassElementMetadataKind } from '../models/MaybeClassElementMetadataKind';
@@ -17,14 +18,7 @@ describe(throwAtInvalidClassMetadata.name, () => {
 
     beforeAll(() => {
       typefixture = class Foo {};
-      classMetadataFixure = {
-        constructorArguments: [],
-        lifecycle: {
-          postConstructMethodName: undefined,
-          preDestroyMethodName: undefined,
-        },
-        properties: new Map(),
-      };
+      classMetadataFixure = ClassMetadataFixtures.any;
     });
 
     describe('when called', () => {
@@ -93,6 +87,7 @@ This might be caused by one of the following reasons:
           preDestroyMethodName: undefined,
         },
         properties: new Map([[invalidPropertyName, maybeClassElementMetadata]]),
+        scope: undefined,
       };
     });
 

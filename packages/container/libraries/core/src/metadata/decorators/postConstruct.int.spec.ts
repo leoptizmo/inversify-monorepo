@@ -29,6 +29,7 @@ describe(postConstruct.name, () => {
           preDestroyMethodName: undefined,
         },
         properties: new Map(),
+        scope: undefined,
       };
 
       expect(result).toStrictEqual(expected);

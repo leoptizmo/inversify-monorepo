@@ -80,6 +80,7 @@ describe(multiInject.name, () => {
             },
           ],
         ]),
+        scope: undefined,
       };
 
       expect(result).toStrictEqual(expected);

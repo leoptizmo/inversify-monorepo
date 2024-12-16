@@ -29,6 +29,7 @@ describe(preDestroy.name, () => {
           preDestroyMethodName: 'initialize',
         },
         properties: new Map(),
+        scope: undefined,
       };
 
       expect(result).toStrictEqual(expected);

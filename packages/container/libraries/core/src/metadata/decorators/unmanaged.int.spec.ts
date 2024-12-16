@@ -60,6 +60,7 @@ describe(unmanaged.name, () => {
             },
           ],
         ]),
+        scope: undefined,
       };
 
       expect(result).toStrictEqual(expected);

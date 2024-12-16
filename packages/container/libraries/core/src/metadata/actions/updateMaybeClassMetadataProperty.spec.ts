@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
+import { MaybeClassMetadataFixtures } from '../fixtures/MaybeClassMetadataFixtures';
 import { ClassElementMetadataKind } from '../models/ClassElementMetadataKind';
 import { ManagedClassElementMetadata } from '../models/ManagedClassElementMetadata';
 import { MaybeClassElementMetadata } from '../models/MaybeClassElementMetadata';
@@ -19,23 +20,9 @@ describe(updateMaybeClassMetadataProperty.name, () => {
   beforeAll(() => {
     updateMetadataMock = jest.fn();
 
-    classMetadataFixture = {
-      constructorArguments: [],
-      lifecycle: {
-        postConstructMethodName: undefined,
-        preDestroyMethodName: undefined,
-      },
-      properties: new Map(),
-    };
+    classMetadataFixture = MaybeClassMetadataFixtures.any;
 
-    originalClassMetadataFixture = {
-      constructorArguments: [],
-      lifecycle: {
-        postConstructMethodName: undefined,
-        preDestroyMethodName: undefined,
-      },
-      properties: new Map(),
-    };
+    originalClassMetadataFixture = MaybeClassMetadataFixtures.any;
 
     propertyKeyFixture = 'property-key-fixture';
   });

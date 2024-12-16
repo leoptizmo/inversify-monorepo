@@ -13,6 +13,7 @@ jest.mock('./isPendingClassMetadata');
 jest.mock('./throwAtInvalidClassMetadata');
 
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
+import { ClassMetadataFixtures } from '../fixtures/ClassMetadataFixtures';
 import { ClassMetadata } from '../models/ClassMetadata';
 import { assertConstructorMetadataArrayFilled } from './assertConstructorMetadataArrayFilled';
 import { getClassMetadata } from './getClassMetadata';
@@ -35,14 +36,7 @@ describe(getClassMetadata.name, () => {
 
     beforeAll(() => {
       errorFixture = new Error('error-fixture-message');
-      metadataFixture = {
-        constructorArguments: [],
-        lifecycle: {
-          postConstructMethodName: undefined,
-          preDestroyMethodName: undefined,
-        },
-        properties: new Map(),
-      };
+      metadataFixture = ClassMetadataFixtures.any;
 
       (
         getReflectMetadata as jest.Mock<typeof getReflectMetadata>
@@ -109,6 +103,7 @@ describe(getClassMetadata.name, () => {
           preDestroyMethodName: undefined,
         },
         properties: new Map(),
+        scope: undefined,
       };
 
       (
