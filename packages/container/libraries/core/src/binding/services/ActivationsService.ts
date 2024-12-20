@@ -19,7 +19,9 @@ export class ActivationsService {
     BindingActivationRelation
   >;
 
-  constructor() {
+  readonly #parent: ActivationsService | undefined;
+
+  constructor(parent: ActivationsService | undefined) {
     this.#activationMaps = new OneToManyMapStar<
       BindingActivation,
       BindingActivationRelation
@@ -31,6 +33,8 @@ export class ActivationsService {
         isOptional: false,
       },
     });
+
+    this.#parent = parent;
   }
 
   public add(
@@ -43,17 +47,12 @@ export class ActivationsService {
   public get(
     serviceIdentifier: ServiceIdentifier,
   ): Iterable<BindingActivation> | undefined {
-    const bindings: Iterable<BindingActivation> | undefined =
+    return (
       this.#activationMaps.get(
         ActivationRelationKind.serviceId,
         serviceIdentifier,
-      );
-
-    if (bindings === undefined) {
-      return undefined;
-    }
-
-    return bindings;
+      ) ?? this.#parent?.get(serviceIdentifier)
+    );
   }
 
   public removeAllByModuleId(moduleId: number): void {
