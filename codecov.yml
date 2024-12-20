@@ -11,6 +11,9 @@ coverage:
       '@inversifyjs/core':
         flags:
           - '@inversifyjs/core'
+      '@inversifyjs/prototype-utils':
+        flags:
+          - '@inversifyjs/prototype-utils'
       '@inversifyjs/reflect-metadata-utils':
         flags:
           - '@inversifyjs/reflect-metadata-utils'
@@ -24,6 +27,9 @@ flags:
   '@inversifyjs/core':
     paths:
       - packages/container/libraries/core/
+  '@inversifyjs/prototype-utils':
+    paths:
+      - packages/foundation/libraries/prototype-utils
   '@inversifyjs/reflect-metadata-utils':
     paths:
       - packages/foundation/libraries/reflect-metadata-utils
