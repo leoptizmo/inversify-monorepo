@@ -23,6 +23,7 @@ import {
   BindingActivationRelation,
 } from './binding/services/ActivationsService';
 import { BindingService } from './binding/services/BindingService';
+import { DeactivationsService } from './binding/services/DeactivationsService';
 import { getClassMetadata } from './metadata/calculations/getClassMetadata';
 import { inject } from './metadata/decorators/inject';
 import { injectable } from './metadata/decorators/injectable';
@@ -61,6 +62,7 @@ import { resolveBindingDeactivations } from './resolution/actions/resolveBinding
 import { DeactivationParams } from './resolution/models/DeactivationParams';
 import { GetOptions } from './resolution/models/GetOptions';
 import { GetOptionsTagConstraint } from './resolution/models/GetOptionsTagConstraint';
+import { OptionalGetOptions } from './resolution/models/OptionalGetOptions';
 import { ResolutionContext } from './resolution/models/ResolutionContext';
 import { ResolutionParams } from './resolution/models/ResolutionParams';
 import { Resolved } from './resolution/models/Resolved';
@@ -95,6 +97,7 @@ export type {
   MetadataName,
   MetadataTag,
   MetadataTargetName,
+  OptionalGetOptions,
   PlanBindingNode,
   PlanParams,
   PlanParamsConstraint,
@@ -120,6 +123,7 @@ export {
   BindingService,
   bindingTypeValues,
   ClassElementMetadataKind,
+  DeactivationsService,
   getClassMetadata,
   multiInject,
   inject,
