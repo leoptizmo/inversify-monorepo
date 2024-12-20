@@ -197,7 +197,7 @@ describe(resolve.name, () => {
       type: bindingTypeValues.ServiceRedirection,
     };
 
-    activationService = new ActivationsService();
+    activationService = new ActivationsService(undefined);
     bindingService = new BindingService(undefined);
 
     activationService.add(
