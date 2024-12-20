@@ -16,6 +16,7 @@ describe(ActivationsService.name, () => {
     OneToManyMapStar<BindingActivation, BindingActivationRelation>
   >;
 
+  let parentActivationService: ActivationsService;
   let activationsService: ActivationsService;
 
   beforeAll(() => {
@@ -33,7 +34,9 @@ describe(ActivationsService.name, () => {
       OneToManyMapStar<BindingActivation, BindingActivationRelation>
     >;
 
-    activationsService = new ActivationsService();
+    parentActivationService = new ActivationsService(undefined);
+
+    activationsService = new ActivationsService(parentActivationService);
   });
 
   describe('.add', () => {
@@ -80,10 +83,18 @@ describe(ActivationsService.name, () => {
       serviceIdFixture = 'service-identifier';
     });
 
-    describe('when called, and activationMaps.get() returns undefined', () => {
+    describe('when called, and activationMaps.get() returns undefined and parent activationMaps.get() returns Iterable', () => {
+      let bindingActivationFixture: BindingActivation;
+
       let result: unknown;
 
       beforeAll(() => {
+        bindingActivationFixture = Symbol() as unknown as BindingActivation;
+
+        activationMapsMock.get
+          .mockReturnValueOnce(undefined)
+          .mockReturnValueOnce([bindingActivationFixture]);
+
         result = activationsService.get(serviceIdFixture);
       });
 
@@ -92,15 +103,21 @@ describe(ActivationsService.name, () => {
       });
 
       it('should call activationMaps.get()', () => {
-        expect(activationMapsMock.get).toHaveBeenCalledTimes(1);
-        expect(activationMapsMock.get).toHaveBeenCalledWith(
+        expect(activationMapsMock.get).toHaveBeenCalledTimes(2);
+        expect(activationMapsMock.get).toHaveBeenNthCalledWith(
+          1,
+          'serviceId',
+          serviceIdFixture,
+        );
+        expect(activationMapsMock.get).toHaveBeenNthCalledWith(
+          2,
           'serviceId',
           serviceIdFixture,
         );
       });
 
-      it('should return undefined', () => {
-        expect(result).toBeUndefined();
+      it('should return BindingActivation[]', () => {
+        expect(result).toStrictEqual([bindingActivationFixture]);
       });
     });
 
