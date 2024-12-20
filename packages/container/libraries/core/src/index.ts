@@ -24,6 +24,16 @@ import {
 } from './binding/services/ActivationsService';
 import { BindingService } from './binding/services/BindingService';
 import { getClassMetadata } from './metadata/calculations/getClassMetadata';
+import { inject } from './metadata/decorators/inject';
+import { injectable } from './metadata/decorators/injectable';
+import { injectFromBase } from './metadata/decorators/injectFromBase';
+import { multiInject } from './metadata/decorators/multiInject';
+import { named } from './metadata/decorators/named';
+import { optional } from './metadata/decorators/optional';
+import { postConstruct } from './metadata/decorators/postConstruct';
+import { preDestroy } from './metadata/decorators/preDestroy';
+import { tagged } from './metadata/decorators/tagged';
+import { unmanaged } from './metadata/decorators/unmanaged';
 import { ClassElementMetadata } from './metadata/models/ClassElementMetadata';
 import { ClassElementMetadataKind } from './metadata/models/ClassElementMetadataKind';
 import { ClassMetadata } from './metadata/models/ClassMetadata';
@@ -108,6 +118,16 @@ export {
   bindingTypeValues,
   ClassElementMetadataKind,
   getClassMetadata,
+  multiInject,
+  inject,
+  injectable,
+  injectFromBase,
+  named,
+  optional,
+  postConstruct,
   plan,
+  preDestroy,
   resolve,
+  tagged,
+  unmanaged,
 };
