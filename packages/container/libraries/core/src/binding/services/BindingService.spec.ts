@@ -27,41 +27,96 @@ describe(BindingService.name, () => {
       };
     });
 
-    describe('when called, with existing bindings', () => {
-      let bindingServiceImplementation: BindingService;
+    describe('having a BindingService with existing bindings with no parent', () => {
+      describe('when called', () => {
+        let bindingServiceImplementation: BindingService;
 
-      let result: unknown;
+        let result: unknown;
 
-      beforeAll(() => {
-        bindingServiceImplementation = new BindingService();
+        beforeAll(() => {
+          bindingServiceImplementation = new BindingService(undefined);
 
-        bindingServiceImplementation.set(bindingFixture);
+          bindingServiceImplementation.set(bindingFixture);
 
-        result = bindingServiceImplementation.get(
-          bindingFixture.serviceIdentifier,
-        );
-      });
+          result = bindingServiceImplementation.get(
+            bindingFixture.serviceIdentifier,
+          );
+        });
 
-      it('should return Binding[]', () => {
-        expect(result).toStrictEqual([bindingFixture]);
+        it('should return Binding[]', () => {
+          expect(result).toStrictEqual([bindingFixture]);
+        });
       });
     });
 
-    describe('when called, with non existing bindings', () => {
-      let bindingServiceImplementation: BindingService;
+    describe('having a BindingService with non existing bindings with no parent', () => {
+      describe('when called', () => {
+        let bindingServiceImplementation: BindingService;
 
-      let result: unknown;
+        let result: unknown;
 
-      beforeAll(() => {
-        bindingServiceImplementation = new BindingService();
+        beforeAll(() => {
+          bindingServiceImplementation = new BindingService(undefined);
 
-        result = bindingServiceImplementation.get(
-          bindingFixture.serviceIdentifier,
-        );
+          result = bindingServiceImplementation.get(
+            bindingFixture.serviceIdentifier,
+          );
+        });
+
+        it('should return undefined', () => {
+          expect(result).toBeUndefined();
+        });
       });
+    });
 
-      it('should return undefined', () => {
-        expect(result).toBeUndefined();
+    describe('having a BindingService with parent with existing bindings', () => {
+      describe('when called', () => {
+        let bindingServiceImplementation: BindingService;
+        let parentBindingServiceImplementation: BindingService;
+
+        let result: unknown;
+
+        beforeAll(() => {
+          parentBindingServiceImplementation = new BindingService(undefined);
+          parentBindingServiceImplementation.set(bindingFixture);
+
+          bindingServiceImplementation = new BindingService(
+            parentBindingServiceImplementation,
+          );
+
+          result = bindingServiceImplementation.get(
+            bindingFixture.serviceIdentifier,
+          );
+        });
+
+        it('should return Binding[]', () => {
+          expect(result).toStrictEqual([bindingFixture]);
+        });
+      });
+    });
+
+    describe('having a BindingService with parent with non existing bindings', () => {
+      describe('when called, with non existing bindings', () => {
+        let bindingServiceImplementation: BindingService;
+        let parentBindingServiceImplementation: BindingService;
+
+        let result: unknown;
+
+        beforeAll(() => {
+          parentBindingServiceImplementation = new BindingService(undefined);
+
+          bindingServiceImplementation = new BindingService(
+            parentBindingServiceImplementation,
+          );
+
+          result = bindingServiceImplementation.get(
+            bindingFixture.serviceIdentifier,
+          );
+        });
+
+        it('should return undefined', () => {
+          expect(result).toBeUndefined();
+        });
       });
     });
   });
@@ -91,7 +146,7 @@ describe(BindingService.name, () => {
       let bindingServiceImplementation: BindingService;
 
       beforeAll(() => {
-        bindingServiceImplementation = new BindingService();
+        bindingServiceImplementation = new BindingService(undefined);
 
         bindingServiceImplementation.set(bindingFixture);
         bindingServiceImplementation.remove(bindingFixture.serviceIdentifier);
@@ -138,7 +193,7 @@ describe(BindingService.name, () => {
       let bindingServiceImplementation: BindingService;
 
       beforeAll(() => {
-        bindingServiceImplementation = new BindingService();
+        bindingServiceImplementation = new BindingService(undefined);
 
         bindingServiceImplementation.set(bindingFixture);
         bindingServiceImplementation.removeByModule(

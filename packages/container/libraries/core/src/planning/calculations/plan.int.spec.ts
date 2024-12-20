@@ -304,7 +304,7 @@ describe(plan.name, () => {
       type: bindingTypeValues.ServiceRedirection,
     };
 
-    bindingService = new BindingService();
+    bindingService = new BindingService(undefined);
 
     bindingService.set(constantValueBinding);
     bindingService.set(dynamicValueBinding);

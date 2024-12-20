@@ -26,7 +26,7 @@ export interface ResolutionContext {
   getAsync<TActivated>(
     serviceIdentifier: ServiceIdentifier<TActivated>,
     options: OptionalGetOptions,
-  ): Promise<TActivated> | undefined;
+  ): Promise<TActivated | undefined>;
   getAsync<TActivated>(
     serviceIdentifier: ServiceIdentifier<TActivated>,
     options?: GetOptions,
