@@ -8,18 +8,19 @@ export class BindingService {
     number,
     Map<number, Binding<unknown>>
   >;
+  readonly #parent: BindingService | undefined;
 
-  constructor() {
+  constructor(parent: BindingService | undefined) {
     this.#idToBindingMap = new Map();
     this.#moduleIdToIdToBindingMap = new Map();
+    this.#parent = parent;
   }
 
   public get<TInstance>(
     serviceIdentifier: ServiceIdentifier,
   ): Binding<TInstance>[] | undefined {
-    return this.#idToBindingMap.get(serviceIdentifier) as
-      | Binding<TInstance>[]
-      | undefined;
+    return (this.#idToBindingMap.get(serviceIdentifier) ??
+      this.#parent?.get(serviceIdentifier)) as Binding<TInstance>[] | undefined;
   }
 
   public remove(serviceIdentifier: ServiceIdentifier): void {

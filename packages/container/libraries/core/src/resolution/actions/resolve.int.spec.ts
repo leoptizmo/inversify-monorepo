@@ -198,7 +198,7 @@ describe(resolve.name, () => {
     };
 
     activationService = new ActivationsService();
-    bindingService = new BindingService();
+    bindingService = new BindingService(undefined);
 
     activationService.add(
       constantValueBindingWithActivation.onActivation as BindingActivation,
