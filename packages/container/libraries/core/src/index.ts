@@ -57,6 +57,8 @@ import { PlanServiceNodeParent } from './planning/models/PlanServiceNodeParent';
 import { PlanServiceRedirectionBindingNode } from './planning/models/PlanServiceRedirectionBindingNode';
 import { PlanTree } from './planning/models/PlanTree';
 import { resolve } from './resolution/actions/resolve';
+import { resolveBindingDeactivations } from './resolution/actions/resolveBindingDeactivations';
+import { DeactivationParams } from './resolution/models/DeactivationParams';
 import { GetOptions } from './resolution/models/GetOptions';
 import { GetOptionsTagConstraint } from './resolution/models/GetOptionsTagConstraint';
 import { ResolutionContext } from './resolution/models/ResolutionContext';
@@ -79,6 +81,7 @@ export type {
   ClassMetadata,
   ClassMetadataLifecycle,
   ConstantValueBinding,
+  DeactivationParams,
   DynamicValueBinding,
   DynamicValueBuilder,
   Factory,
@@ -128,6 +131,7 @@ export {
   plan,
   preDestroy,
   resolve,
+  resolveBindingDeactivations,
   tagged,
   unmanaged,
 };
