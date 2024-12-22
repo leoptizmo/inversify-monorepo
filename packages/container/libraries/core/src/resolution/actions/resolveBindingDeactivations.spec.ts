@@ -14,8 +14,11 @@ describe(resolveBindingDeactivations.name, () => {
 
     beforeAll(() => {
       paramsMock = {
+        getBindings: jest.fn(),
         getDeactivations: jest.fn(),
-      };
+      } as Partial<
+        jest.Mocked<DeactivationParams>
+      > as jest.Mocked<DeactivationParams>;
       serviceIdentifierFixture = 'service-id';
       valueFixture = Symbol();
     });
@@ -133,8 +136,11 @@ describe(resolveBindingDeactivations.name, () => {
 
     beforeAll(() => {
       paramsMock = {
+        getBindings: jest.fn(),
         getDeactivations: jest.fn(),
-      };
+      } as Partial<
+        jest.Mocked<DeactivationParams>
+      > as jest.Mocked<DeactivationParams>;
       serviceIdentifierFixture = 'service-id';
       valueFixture = Symbol();
     });
