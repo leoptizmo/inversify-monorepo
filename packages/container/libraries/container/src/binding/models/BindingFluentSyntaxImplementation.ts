@@ -22,9 +22,9 @@ import {
   ServiceRedirectionBinding,
 } from '@inversifyjs/core';
 
-import { getBindingId } from '../../../binding/actions/getBindingId';
-import { Writable } from '../../../common/models/Writable';
-import { BindingConstraintUtils } from '../utils/BindingConstraintUtils';
+import { Writable } from '../../common/models/Writable';
+import { BindingConstraintUtils } from '../../container/binding/utils/BindingConstraintUtils';
+import { getBindingId } from '../actions/getBindingId';
 import {
   BindInFluentSyntax,
   BindInWhenOnFluentSyntax,

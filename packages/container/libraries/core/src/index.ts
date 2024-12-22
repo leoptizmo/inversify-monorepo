@@ -23,7 +23,10 @@ import {
   BindingActivationRelation,
 } from './binding/services/ActivationsService';
 import { BindingService } from './binding/services/BindingService';
-import { DeactivationsService } from './binding/services/DeactivationsService';
+import {
+  BindingDeactivationRelation,
+  DeactivationsService,
+} from './binding/services/DeactivationsService';
 import { getClassMetadata } from './metadata/calculations/getClassMetadata';
 import { inject } from './metadata/decorators/inject';
 import { injectable } from './metadata/decorators/injectable';
@@ -76,6 +79,7 @@ export type {
   BindingActivation,
   BindingActivationRelation,
   BindingDeactivation,
+  BindingDeactivationRelation,
   BindingMetadata,
   BindingScope,
   BindingType,
