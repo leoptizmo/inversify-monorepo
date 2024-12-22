@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
-jest.mock('../../../binding/actions/getBindingId');
+jest.mock('../actions/getBindingId');
 
 import { ServiceIdentifier } from '@inversifyjs/common';
 import {
@@ -22,8 +22,8 @@ import {
   ServiceRedirectionBinding,
 } from '@inversifyjs/core';
 
-import { getBindingId } from '../../../binding/actions/getBindingId';
-import { Writable } from '../../../common/models/Writable';
+import { Writable } from '../../common/models/Writable';
+import { getBindingId } from '../actions/getBindingId';
 import {
   BindInFluentSyntaxImplementation,
   BindInWhenOnFluentSyntaxImplementation,
