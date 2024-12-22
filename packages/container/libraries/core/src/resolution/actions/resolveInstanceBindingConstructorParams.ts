@@ -1,5 +1,6 @@
+import { isPromise } from '@inversifyjs/common';
+
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
-import { isPromise } from '../../common/calculations/isPromise';
 import { InstanceBindingNode } from '../../planning/models/InstanceBindingNode';
 import { PlanServiceNode } from '../../planning/models/PlanServiceNode';
 import { ResolutionParams } from '../models/ResolutionParams';

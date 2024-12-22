@@ -1,4 +1,5 @@
-import { isPromise } from '../../common/calculations/isPromise';
+import { isPromise } from '@inversifyjs/common';
+
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
 import { ClassElementMetadata } from '../../metadata/models/ClassElementMetadata';

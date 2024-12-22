@@ -1,6 +1,7 @@
+import { isPromise } from '@inversifyjs/common';
+
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
-import { isPromise } from '../../common/calculations/isPromise';
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
 import { isPlanServiceRedirectionBindingNode } from '../../planning/calculations/isPlanServiceRedirectionBindingNode';

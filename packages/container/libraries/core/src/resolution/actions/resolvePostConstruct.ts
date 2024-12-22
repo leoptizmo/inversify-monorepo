@@ -1,5 +1,6 @@
+import { isPromise } from '@inversifyjs/common';
+
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
-import { isPromise } from '../../common/calculations/isPromise';
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
 import { Resolved, SyncResolved } from '../models/Resolved';

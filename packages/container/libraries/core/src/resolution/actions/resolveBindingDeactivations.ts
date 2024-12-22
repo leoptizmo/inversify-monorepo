@@ -1,7 +1,6 @@
-import { ServiceIdentifier } from '@inversifyjs/common';
+import { isPromise, ServiceIdentifier } from '@inversifyjs/common';
 
 import { BindingDeactivation } from '../../binding/models/BindingDeactivation';
-import { isPromise } from '../../common/calculations/isPromise';
 import { DeactivationParams } from '../models/DeactivationParams';
 import { Resolved, SyncResolved } from '../models/Resolved';
 

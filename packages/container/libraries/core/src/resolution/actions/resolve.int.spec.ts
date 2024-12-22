@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from '@jest/globals';
 
 import 'reflect-metadata';
 
-import { Newable, ServiceIdentifier } from '@inversifyjs/common';
+import { isPromise, Newable, ServiceIdentifier } from '@inversifyjs/common';
 import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { BindingActivation } from '../../binding/models/BindingActivation';
@@ -18,7 +18,6 @@ import { ProviderBinding } from '../../binding/models/ProviderBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
 import { ActivationsService } from '../../binding/services/ActivationsService';
 import { BindingService } from '../../binding/services/BindingService';
-import { isPromise } from '../../common/calculations/isPromise';
 import { Writable } from '../../common/models/Writable';
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';

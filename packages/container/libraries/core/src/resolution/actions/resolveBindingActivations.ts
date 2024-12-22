@@ -1,7 +1,6 @@
-import { ServiceIdentifier } from '@inversifyjs/common';
+import { isPromise, ServiceIdentifier } from '@inversifyjs/common';
 
 import { BindingActivation } from '../../binding/models/BindingActivation';
-import { isPromise } from '../../common/calculations/isPromise';
 import { ResolutionParams } from '../models/ResolutionParams';
 import { Resolved, SyncResolved } from '../models/Resolved';
 
