@@ -58,7 +58,7 @@ import { PlanServiceNodeParent } from './planning/models/PlanServiceNodeParent';
 import { PlanServiceRedirectionBindingNode } from './planning/models/PlanServiceRedirectionBindingNode';
 import { PlanTree } from './planning/models/PlanTree';
 import { resolve } from './resolution/actions/resolve';
-import { resolveBindingDeactivations } from './resolution/actions/resolveBindingDeactivations';
+import { resolveServiceDeactivations } from './resolution/actions/resolveServiceDeactivations';
 import { DeactivationParams } from './resolution/models/DeactivationParams';
 import { GetOptions } from './resolution/models/GetOptions';
 import { GetOptionsTagConstraint } from './resolution/models/GetOptionsTagConstraint';
@@ -135,7 +135,7 @@ export {
   plan,
   preDestroy,
   resolve,
-  resolveBindingDeactivations,
+  resolveServiceDeactivations,
   tagged,
   unmanaged,
 };

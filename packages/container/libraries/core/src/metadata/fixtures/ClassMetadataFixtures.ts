@@ -14,4 +14,18 @@ export class ClassMetadataFixtures {
 
     return fixture;
   }
+
+  public static get withPreDestroyMethodName(): ClassMetadata {
+    const fixture: ClassMetadata = {
+      constructorArguments: [],
+      lifecycle: {
+        postConstructMethodName: undefined,
+        preDestroyMethodName: 'preDestroy',
+      },
+      properties: new Map(),
+      scope: undefined,
+    };
+
+    return fixture;
+  }
 }

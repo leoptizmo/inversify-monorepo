@@ -2,4 +2,4 @@
 "@inversifyjs/core": minor
 ---
 
-Added `resolveBindingDeactivations`.
+Added `resolveServiceDeactivations`.
