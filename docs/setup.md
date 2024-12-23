@@ -4,9 +4,9 @@ Welcome aboard! In this doc you will be provided with all the relevant knowledge
 
 ## Requirements
 
-A few software tools are required to set the backend services:
+A few software tools are required to set develop environment:
 
-- NodeJS 20. (we strongly suggest using [nvm](https://github.com/nvm-sh/nvm)).
+- NodeJS 22. (we strongly suggest using [nvm](https://github.com/nvm-sh/nvm)).
 - [pnpm](https://pnpm.io/) is used as package manager, so be sure you have it globally installed.
 
 ## Steps to set up the backend monorepo
