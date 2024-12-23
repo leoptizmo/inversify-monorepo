@@ -42,7 +42,7 @@
     "typescript"
   ],
   "devEngines": {
-    "node": "^20.18.0",
+    "node": "^22.10.2",
     "pnpm": "^9.12.1"
   },
   "license": "MIT",
