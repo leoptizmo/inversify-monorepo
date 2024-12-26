@@ -1,5 +1,6 @@
 packages:
   - "packages/container/libraries/*"
   - "packages/docs/services/*"
+  - "packages/docs/tools/*"
   - "packages/foundation/libraries/*"
   - "packages/foundation/tools/*"
