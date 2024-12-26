@@ -4,6 +4,9 @@
 # Production
 /build
 
+# Turbo
+.turbo
+
 # Generated files
 .docusaurus
 .cache-loader
