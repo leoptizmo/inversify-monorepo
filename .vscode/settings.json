@@ -2,6 +2,7 @@
   "eslint.workingDirectories": [
     { "pattern": "./packages/container/libraries/*" },
     { "pattern": "./packages/docs/services/*" },
+    { "pattern": "./packages/docs/tools/*" },
     { "pattern": "./packages/foundation/libraries/*" },
     { "pattern": "./packages/foundation/tools/*" }
   ]
