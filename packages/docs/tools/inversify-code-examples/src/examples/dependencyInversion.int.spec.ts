@@ -1,9 +1,9 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { ninja } from './gettingStarted';
+import { ninja } from './dependencyInversion';
 
-describe('getting started', () => {
+describe('dependency inversion', () => {
   it('should provide a ninja with a weapon with right damage', () => {
-    expect(ninja.katana.damage).toBe(10);
+    expect(ninja.weapon.damage).toBe(10);
   });
 });
