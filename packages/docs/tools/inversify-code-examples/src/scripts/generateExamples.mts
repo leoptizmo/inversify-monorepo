@@ -11,23 +11,27 @@ const EXAMPLES_GLOB_PATTERN: string = `${SRC_FOLDER}/examples/*.ts`;
 const TEST_EXAMPLES_GLOB_PATTERN: string = `${SRC_FOLDER}/examples/*.spec.ts`;
 
 enum RelevanCommentKind {
-  beginExample,
-  endExample,
+  begin,
+  end,
+  exclude,
 }
 
 interface RelevanCommentPositions {
-  [RelevanCommentKind.beginExample]: [ts.CommentRange, ts.Node][];
-  [RelevanCommentKind.endExample]: [ts.CommentRange, ts.Node][];
+  [RelevanCommentKind.begin]: [ts.CommentRange, ts.Node][];
+  [RelevanCommentKind.end]: [ts.CommentRange, ts.Node][];
+  [RelevanCommentKind.exclude]: [ts.CommentRange, ts.Node][];
 }
 
 const BEGIN_EXAMPLE_COMMENT: string = '// Begin-example';
 const END_EXAMPLE_COMMENT: string = '// End-example';
+const EXCLUDE_FROM_EXAMPLE_COMMENT: string = '// Exclude-from-example';
 
 const commentToRelevantCommentKindMap: {
   [key: string]: RelevanCommentKind;
 } = {
-  [BEGIN_EXAMPLE_COMMENT]: RelevanCommentKind.beginExample,
-  [END_EXAMPLE_COMMENT]: RelevanCommentKind.endExample,
+  [BEGIN_EXAMPLE_COMMENT]: RelevanCommentKind.begin,
+  [END_EXAMPLE_COMMENT]: RelevanCommentKind.end,
+  [EXCLUDE_FROM_EXAMPLE_COMMENT]: RelevanCommentKind.exclude,
 };
 
 function findRelevantCommentPositions(
@@ -35,8 +39,9 @@ function findRelevantCommentPositions(
   sourceFileNode: ts.Node,
 ): RelevanCommentPositions {
   const positions: RelevanCommentPositions = {
-    [RelevanCommentKind.beginExample]: [],
-    [RelevanCommentKind.endExample]: [],
+    [RelevanCommentKind.begin]: [],
+    [RelevanCommentKind.end]: [],
+    [RelevanCommentKind.exclude]: [],
   };
 
   visitRelevantCommentPositions(fileContent, sourceFileNode, positions);
@@ -76,38 +81,6 @@ function visitRelevantCommentPositions(
   }
 }
 
-function getCodeExampleBegining(
-  sourceFile: ts.SourceFile,
-  positions: RelevanCommentPositions,
-): number {
-  const [firstBeginExamplePosition]: [ts.CommentRange, ts.Node][] =
-    positions[RelevanCommentKind.beginExample];
-
-  if (firstBeginExamplePosition === undefined) {
-    return 0;
-  }
-
-  const [, node] = firstBeginExamplePosition;
-
-  return node.getStart(sourceFile);
-}
-
-function getCodeExampleEnd(
-  sourceFile: ts.SourceFile,
-  positions: RelevanCommentPositions,
-): number {
-  const lastEndExamplePosition: [ts.CommentRange, ts.Node] | undefined =
-    positions[RelevanCommentKind.endExample].at(-1);
-
-  if (lastEndExamplePosition === undefined) {
-    return sourceFile.end;
-  }
-
-  const [comment] = lastEndExamplePosition;
-
-  return comment.pos;
-}
-
 async function getExamplePaths(): Promise<string[]> {
   return glob(EXAMPLES_GLOB_PATTERN, { ignore: TEST_EXAMPLES_GLOB_PATTERN });
 }
@@ -126,10 +99,7 @@ async function generateExampleFromSourceCode(
   const relevantCommentPositions: RelevanCommentPositions =
     findRelevantCommentPositions(fileContent, sourceFile);
 
-  return fileContent.slice(
-    getCodeExampleBegining(sourceFile, relevantCommentPositions),
-    getCodeExampleEnd(sourceFile, relevantCommentPositions),
-  );
+  return transformSourceFile(sourceFile, relevantCommentPositions);
 }
 
 async function writeSourceCodeExample(
@@ -153,11 +123,73 @@ async function run(): Promise<void> {
   const codeExamplePaths: string[] = await getExamplePaths();
 
   for (const codeExamplePath of codeExamplePaths) {
+    console.log(`Generating code example at ${codeExamplePath}...`);
+
     await writeSourceCodeExample(
       codeExamplePath,
       await generateExampleFromSourceCode(codeExamplePath),
     );
+
+    console.log('Code example generated successfully');
   }
 }
 
 await run();
+
+function getExcludeRanges(
+  sourceFile: ts.SourceFile,
+  positions: RelevanCommentPositions,
+): [number, number][] {
+  const [firstBeginOfExamplePosition]: [ts.CommentRange, ts.Node][] =
+    positions[RelevanCommentKind.begin];
+
+  const lastEndOfExamplePosition: [ts.CommentRange, ts.Node] | undefined =
+    positions[RelevanCommentKind.end].at(-1);
+
+  const excludedRanges: [number, number][] = [];
+
+  if (firstBeginOfExamplePosition !== undefined) {
+    const [commentNode] = firstBeginOfExamplePosition;
+
+    excludedRanges.push([0, commentNode.end]);
+  }
+
+  for (const [, node] of positions[RelevanCommentKind.exclude]) {
+    excludedRanges.push([node.pos, node.end]);
+  }
+
+  if (lastEndOfExamplePosition !== undefined) {
+    const [, node] = lastEndOfExamplePosition;
+
+    excludedRanges.push([node.pos, sourceFile.end]);
+  }
+
+  return excludedRanges;
+}
+
+function transformSourceFile(
+  sourceFile: ts.SourceFile,
+  positions: RelevanCommentPositions,
+): string {
+  const excludedRanges: [number, number][] = getExcludeRanges(
+    sourceFile,
+    positions,
+  );
+
+  let transformedSourceCode: string = '';
+  let currentIndex: number = 0;
+
+  for (const [min, max] of excludedRanges) {
+    while (currentIndex <= max) {
+      if (currentIndex < min) {
+        transformedSourceCode += sourceFile.text[currentIndex];
+      }
+
+      ++currentIndex;
+    }
+  }
+
+  transformedSourceCode += sourceFile.text.slice(currentIndex);
+
+  return transformedSourceCode;
+}
