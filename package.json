@@ -17,14 +17,14 @@
     "@inversifyjs/foundation-stryker-config": "workspace:*",
     "@inversifyjs/foundation-typescript-config": "workspace:*",
     "husky": "9.1.7",
-    "lint-staged": "15.2.11",
+    "lint-staged": "15.3.0",
     "turbo": "2.3.3"
   },
   "homepage": "https://inversify.io",
   "keywords": [],
   "license": "MIT",
   "name": "root",
-  "packageManager": "pnpm@9.15.1",
+  "packageManager": "pnpm@9.15.2",
   "private": true,
   "repository": {
     "type": "git",
