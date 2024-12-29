@@ -10,15 +10,48 @@ const SRC_FOLDER: string = './src';
 const EXAMPLES_GLOB_PATTERN: string = `${SRC_FOLDER}/examples/*.ts`;
 const TEST_EXAMPLES_GLOB_PATTERN: string = `${SRC_FOLDER}/examples/*.spec.ts`;
 
-const END_OF_EXAMPLE_COMMENT: string = '// End-of-example';
+enum RelevanCommentKind {
+  beginExample,
+  endExample,
+}
 
-function findEndOfExampleCommentPosition(
+interface RelevanCommentPositions {
+  [RelevanCommentKind.beginExample]: [ts.CommentRange, ts.Node][];
+  [RelevanCommentKind.endExample]: [ts.CommentRange, ts.Node][];
+}
+
+const BEGIN_EXAMPLE_COMMENT: string = '// Begin-example';
+const END_EXAMPLE_COMMENT: string = '// End-example';
+
+const commentToRelevantCommentKindMap: {
+  [key: string]: RelevanCommentKind;
+} = {
+  [BEGIN_EXAMPLE_COMMENT]: RelevanCommentKind.beginExample,
+  [END_EXAMPLE_COMMENT]: RelevanCommentKind.endExample,
+};
+
+function findRelevantCommentPositions(
   fileContent: string,
   sourceFileNode: ts.Node,
-): number | undefined {
+): RelevanCommentPositions {
+  const positions: RelevanCommentPositions = {
+    [RelevanCommentKind.beginExample]: [],
+    [RelevanCommentKind.endExample]: [],
+  };
+
+  visitRelevantCommentPositions(fileContent, sourceFileNode, positions);
+
+  return positions;
+}
+
+function visitRelevantCommentPositions(
+  fileContent: string,
+  sourceFileNode: ts.Node,
+  positions: RelevanCommentPositions,
+): void {
   // sourceFileNode.getSourceFile() might return undefined!
   if (sourceFileNode.getSourceFile() === undefined) {
-    return undefined;
+    return;
   }
 
   for (const childNode of sourceFileNode.getChildren()) {
@@ -31,20 +64,48 @@ function findEndOfExampleCommentPosition(
         comment.end,
       );
 
-      if (commentContent === END_OF_EXAMPLE_COMMENT) {
-        return comment.pos;
+      const relevanCommentKind: RelevanCommentKind | undefined =
+        commentToRelevantCommentKindMap[commentContent];
+
+      if (relevanCommentKind !== undefined) {
+        positions[relevanCommentKind].push([comment, childNode]);
       }
     }
 
-    const childEndOfExampleCommentPosition: number | undefined =
-      findEndOfExampleCommentPosition(fileContent, childNode);
+    visitRelevantCommentPositions(fileContent, childNode, positions);
+  }
+}
 
-    if (childEndOfExampleCommentPosition !== undefined) {
-      return childEndOfExampleCommentPosition;
-    }
+function getCodeExampleBegining(
+  sourceFile: ts.SourceFile,
+  positions: RelevanCommentPositions,
+): number {
+  const [firstBeginExamplePosition]: [ts.CommentRange, ts.Node][] =
+    positions[RelevanCommentKind.beginExample];
+
+  if (firstBeginExamplePosition === undefined) {
+    return 0;
   }
 
-  return undefined;
+  const [, node] = firstBeginExamplePosition;
+
+  return node.getStart(sourceFile);
+}
+
+function getCodeExampleEnd(
+  sourceFile: ts.SourceFile,
+  positions: RelevanCommentPositions,
+): number {
+  const lastEndExamplePosition: [ts.CommentRange, ts.Node] | undefined =
+    positions[RelevanCommentKind.endExample].at(-1);
+
+  if (lastEndExamplePosition === undefined) {
+    return sourceFile.end;
+  }
+
+  const [comment] = lastEndExamplePosition;
+
+  return comment.pos;
 }
 
 async function getExamplePaths(): Promise<string[]> {
@@ -62,14 +123,13 @@ async function generateExampleFromSourceCode(
     ts.ScriptTarget.Latest,
   );
 
-  const endOfExampleCommentPosition: number | undefined =
-    findEndOfExampleCommentPosition(fileContent, sourceFile);
+  const relevantCommentPositions: RelevanCommentPositions =
+    findRelevantCommentPositions(fileContent, sourceFile);
 
-  if (endOfExampleCommentPosition === undefined) {
-    return fileContent;
-  }
-
-  return fileContent.slice(0, endOfExampleCommentPosition);
+  return fileContent.slice(
+    getCodeExampleBegining(sourceFile, relevantCommentPositions),
+    getCodeExampleEnd(sourceFile, relevantCommentPositions),
+  );
 }
 
 async function writeSourceCodeExample(
