@@ -1,0 +1,83 @@
+---
+sidebar_position: 2
+title: Container Module
+---
+import containerModuleApiExampleSource from '@inversifyjs/code-examples/generated/examples/containerModuleApiExample.ts.txt';
+import CodeBlock from '@theme/CodeBlock';
+
+# ContainerModule
+
+Container modules can help you to manage the complexity of your bindings in large applications.
+
+## Constructor
+
+```ts
+constructor(registry: interfaces.ContainerModuleCallBack)
+```
+
+The constructor argument for `ContainerModule` is a registration callback with function parameters to manage bindings in the scope of the container module.
+
+### bind
+
+```ts
+bind: interfaces.Bind
+```
+
+Consider [docs](/docs/api/container#bind) as reference.
+
+### unbind
+
+```
+unbind: interfaces.Unbind
+```
+
+Consider [docs](/docs/api/container#unbind) as reference.
+
+### isBound
+
+```ts
+isBound: interfaces.IsBound
+```
+
+Consider [docs](/docs/api/container#isbound) as reference.
+
+### rebind
+
+```ts
+rebind: interfaces.Rebind
+```
+
+Consider [docs](/docs/api/container#rebind) as reference.
+
+### unbindAsync
+
+```ts
+unbindAsync: interfaces.UnbindAsync
+```
+
+Consider [docs](/docs/api/container#unbindasync) as reference.
+
+### onActivation
+
+```ts
+onActivation: interfaces.Container['onActivation']
+```
+
+Consider [docs](/docs/api/container#onactivation) as reference.
+
+### onDeactivation
+
+```ts
+onDeactivation: interfaces.Container['onDeactivation']
+```
+
+Consider [docs](/docs/api/container#ondeactivation) as reference.
+
+## Example: binding services through ContainerModule API
+
+When a container module is loaded into a Container the registration callback is invoked. This is the opportunity for the container module to register bindings and handlers.  Use the Container load method for ContainerModule instances and the Container loadAsync method for AsyncContainerModule instances.
+
+When a container module is unloaded from a Container the bindings added by that container will be removed and the [deactivation process](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md) will occur for each of them.  Container deactivation and [activation handlers](https://github.com/inversify/InversifyJS/blob/master/wiki/activation_handler.md) will also be removed.
+Use the unloadAsync method to unload when there will be an async deactivation handler or async [pre destroy](https://github.com/inversify/InversifyJS/blob/master/wiki/pre_destroy.md) 
+
+<CodeBlock language="ts">{containerModuleApiExampleSource}</CodeBlock>

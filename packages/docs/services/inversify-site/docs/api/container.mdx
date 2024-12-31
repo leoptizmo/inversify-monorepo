@@ -30,7 +30,7 @@ import containerApiRebindSource from '@inversifyjs/code-examples/generated/examp
 import containerApiResolveSource from '@inversifyjs/code-examples/generated/examples/containerApiResolve.ts.txt';
 import CodeBlock from '@theme/CodeBlock';
 
-# The Container API
+# Container
 
 The InversifyJS container is where dependencies are first configured through bind and, possibly later, reconfigured and removed. The container can be worked on directly in this regard or container modules can be utilized.
 You can query the configuration and resolve configured dependencies with resolved and the 'get' methods.
@@ -292,7 +292,7 @@ You can use the `isBoundTagged` method to check if there are registered bindings
 load(...modules: interfaces.ContainerModule[]): void;
 ```
 
-Calls the registration method of each module. See [container modules](https://github.com/inversify/InversifyJS/blob/master/wiki/container_modules.md)
+Calls the registration method of each module. See [ContainerModule API docs](/docs/api/container-module)
 
 ## loadAsync
 
@@ -308,7 +308,7 @@ As per load but for asynchronous registration.
 rebind<T>(serviceIdentifier: interfaces.ServiceIdentifier<T>): interfaces.BindingToSyntax<T>;
 ```
 
-You can use the `rebind` method to replace all the existing bindings for a given `serviceIdentifier`.
+Replaces all the existing bindings for a given `serviceIdentifier`.
 The function returns an instance of `BindingToSyntax` which allows to create the replacement binding.
 
 <CodeBlock language="ts">{containerApiRebindSource}</CodeBlock>
@@ -478,8 +478,7 @@ Remove all bindings binded in this container to the service identifier.  This wi
 unbindAsync(serviceIdentifier: interfaces.ServiceIdentifier<unknown>): Promise<void>;
 ```
 
-This is the asynchronous version of unbind.  If you know deactivation is asynchronous then this should be used.
-If you are not sure then use this method !
+This is the asynchronous version of unbind. If any deactivation realated to this service identifier is asynchronous then this method should be used instead of `container.unbind`.
 
 ## unbindAll
 
@@ -503,8 +502,8 @@ This is the asynchronous version of unbindAll. If any of the container's deactiv
 unload(...modules: interfaces.ContainerModuleBase[]): void;
 ```
 
-Removes bindings and handlers added by the modules.  This will result in the [deactivation process](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md).
-See [container modules](https://github.com/inversify/InversifyJS/blob/master/wiki/container_modules.md)
+Removes bindings and handlers added by the modules. This will result in the [deactivation process](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md).
+See [ContainerModule API docs](/docs/api/container-module).
 
 ## unloadAsync
 
