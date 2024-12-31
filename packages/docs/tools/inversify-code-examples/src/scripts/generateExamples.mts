@@ -7,8 +7,8 @@ import ts from 'typescript';
 import path from 'node:path';
 
 const SRC_FOLDER: string = './src';
-const EXAMPLES_GLOB_PATTERN: string = `${SRC_FOLDER}/examples/*.ts`;
-const TEST_EXAMPLES_GLOB_PATTERN: string = `${SRC_FOLDER}/examples/*.spec.ts`;
+const EXAMPLES_GLOB_PATTERN: string = `${SRC_FOLDER}/examples/**/*.ts`;
+const TEST_EXAMPLES_GLOB_PATTERN: string = `${SRC_FOLDER}/examples/**/*.spec.ts`;
 
 enum RelevanCommentKind {
   begin,
