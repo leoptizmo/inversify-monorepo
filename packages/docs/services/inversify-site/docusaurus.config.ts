@@ -59,6 +59,13 @@ const config: Config = {
   tagline:
     'A powerful and lightweight inversion of control container for JavaScript & Node.js apps powered by TypeScript',
   themeConfig: {
+    algolia: {
+      apiKey: 'f1814910b25236de2107d45323b70469',
+      appId: '8BIUPXYCF9',
+      contextualSearch: true,
+      indexName: 'crawler_InversifyJS crawler',
+      insights: false,
+    },
     footer: {
       links: [
         {
