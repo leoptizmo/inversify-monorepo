@@ -2,6 +2,9 @@
 sidebar_position: 2
 title: Binding Syntax
 ---
+import bindingInSyntaxApiInRequestScopeSource from '@inversifyjs/code-examples/generated/examples/bindingInSyntaxApiInRequestScope.ts.txt';
+import bindingInSyntaxApiInSingletonScopeSource from '@inversifyjs/code-examples/generated/examples/bindingInSyntaxApiInSingletonScope.ts.txt';
+import bindingInSyntaxApiInTransientScopeSource from '@inversifyjs/code-examples/generated/examples/bindingInSyntaxApiInTransientScope.ts.txt';
 import bindingToSyntaxApiToSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiTo.ts.txt';
 import bindingToSyntaxApiToAutoFactorySource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToAutoFactory.ts.txt';
 import bindingToSyntaxApiToAutoNamedFactorySource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToAutoNamedFactory.ts.txt';
@@ -11,12 +14,19 @@ import bindingToSyntaxApiToDynamicValueSource from '@inversifyjs/code-examples/g
 import bindingToSyntaxApiToFactorySource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToFactory.ts.txt';
 import bindingToSyntaxApiToProviderSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToProvider.ts.txt';
 import bindingToSyntaxApiToSelfSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToSelf.ts.txt';
+import bindingToSyntaxApiToServiceSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToService.ts.txt';
 import CodeBlock from '@theme/CodeBlock';
 
 # Binding Syntax
-Bindng syntax is provided as a fluent interface.
+Binding syntax is provided as a fluent interface provided as the result of using the [container API](/docs/api/container#bind) or the [container module API](/docs/api/container-module#bind)
 
 ## BindingToSyntax
+
+```ts
+interface BindingToSyntax<T> {
+  // ...
+}
+```
 
 Represents a service binding given a service identifier.
 
@@ -137,3 +147,47 @@ toService(service: interfaces.ServiceIdentifier<T>): void
 ```
 
 Binds the services bound to a target service identifier to the given service identifier.
+
+<CodeBlock language="ts">{bindingToSyntaxApiToServiceSource}</CodeBlock>
+
+## BindingInSyntax
+
+```ts
+interface BindingInSyntax<T> {
+  // ...
+}
+```
+
+Represents a service binding given a service identifier and a service resolution such as a contructor, a factory or a provider.
+
+### inSingletonScope
+
+```ts
+inSingletonScope(): BindingWhenOnSyntax<T>
+```
+
+Sets the binding scope to singleton. Whenever the service is resolved, the same cached resolved value will be used.
+
+<CodeBlock language="ts">{bindingInSyntaxApiInSingletonScopeSource}</CodeBlock>
+
+### inTransientScope
+
+```ts
+inTransientScope(): BindingWhenOnSyntax<T>
+```
+
+Sets the binding scope to transient. Whenever the service is resolved, a different resolved value will be used.
+
+<CodeBlock language="ts">{bindingInSyntaxApiInTransientScopeSource}</CodeBlock>
+
+### inTransientScope
+
+```ts
+inRequestScope(): BindingWhenOnSyntax<T>
+```
+
+Sets the binding scope to request. Whenever the service is resolved in the same `container.get` request, the same resolved value will be used.
+
+<CodeBlock language="ts">{bindingInSyntaxApiInRequestScopeSource}</CodeBlock>
+
+
