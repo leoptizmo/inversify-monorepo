@@ -1,0 +1,133 @@
+---
+sidebar_position: 2
+title: Binding Syntax
+---
+import bindingToSyntaxApiToSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiTo.ts.txt';
+import bindingToSyntaxApiToConstantValueSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToConstantValue.ts.txt';
+import bindingToSyntaxApiToConstructorSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToConstructor.ts.txt';
+import bindingToSyntaxApiToDynamicValueSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToDynamicValue.ts.txt';
+import bindingToSyntaxApiToFactorySource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToFactory.ts.txt';
+import bindingToSyntaxApiToProviderSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToProvider.ts.txt';
+import bindingToSyntaxApiToSelfSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToSelf.ts.txt';
+import CodeBlock from '@theme/CodeBlock';
+
+# Binding Syntax
+Bindng syntax is provided as a fluent interface.
+
+## BindingToSyntax
+
+Represents a service binding given a service identifier.
+
+```ts
+const bindingToSyntax = container.bind('service-id');
+```
+
+Further docs refers to this service identifier as the "given service identifier".
+
+### to
+
+```ts
+to(constructor: interfaces.Newable<T>): interfaces.BindingInWhenOnSyntax<T>;
+```
+
+Binds a class instantiation to the given service binding. Whenever the service is resolved, the class constructor will be invoked in order to build the resolved value.
+
+<CodeBlock language="ts">{bindingToSyntaxApiToSource}</CodeBlock>
+
+### toSelf
+
+```ts
+toSelf(): interfaces.BindingInWhenOnSyntax<T>;
+```
+
+If the given service identifier is a class, establish a type binding to that class.
+
+<CodeBlock language="ts">{bindingToSyntaxApiToSelfSource}</CodeBlock>
+
+### toConstantValue
+
+```ts
+toConstantValue(value: T): interfaces.BindingWhenOnSyntax<T>;
+```
+
+Binds a value in singleton scope to the given service identifier.
+
+<CodeBlock language="ts">{bindingToSyntaxApiToConstantValueSource}</CodeBlock>
+
+### toDynamicValue
+
+```ts
+toDynamicValue(func: interfaces.DynamicValue<T>): interfaces.BindingInWhenOnSyntax<T>;
+```
+
+Binds a function to the given service id. Whenever the service is resolved, the function passed will be invoked in order to build the resolved value.
+
+:::info
+
+Keep in mind a service is not resolved if it's cached in the current scope.
+
+:::
+
+<CodeBlock language="ts">{bindingToSyntaxApiToDynamicValueSource}</CodeBlock>
+
+### toConstructor
+
+```ts
+toConstructor<T2>(constructor: interfaces.Newable<T2>): interfaces.BindingWhenOnSyntax<T>;
+```
+
+Binds a class to the given service id. Whenever the service is resolved, the class constructor will be passed as the resolved value.
+
+<CodeBlock language="ts">{bindingToSyntaxApiToConstructorSource}</CodeBlock>
+
+### toFactory
+
+```ts
+toFactory<T2>(factory: interfaces.FactoryCreator<T2>): interfaces.BindingWhenOnSyntax<T>;
+```
+
+Binds a factory to the given service identifier. Whenever the service is resolved, the factory will be passed as the resolved value.
+
+<CodeBlock language="ts">{bindingToSyntaxApiToFactorySource}</CodeBlock>
+
+### toFunction
+
+```ts
+toFunction(func: T): interfaces.BindingWhenOnSyntax<T>;
+```
+
+An alias of `BindingToSyntax.toConstantValue` restricted to functions.
+
+### toAutoFactory
+
+```ts
+toAutoFactory<T2>(serviceIdentifier: interfaces.ServiceIdentifier<T2>): interfaces.BindingWhenOnSyntax<T>;
+```
+
+Binds a factory of services asociated a target service identifier to the given service identifier.
+
+### toAutoNamedFactory
+
+```ts
+toAutoNamedFactory<T2>(serviceIdentifier: interfaces.ServiceIdentifier<T2>): BindingWhenOnSyntax<T>
+```
+
+Binds a factory of services asociated a target service identifier and a name to the given service identifier.
+
+### toProvider
+
+```ts
+toProvider<T2>(provider: interfaces.ProviderCreator<T2>): interfaces.BindingWhenOnSyntax<T>
+```
+
+Binds a provider of services asociated a target service identifier to the given service identifier. A provider is just an asyncronous factory.
+
+<CodeBlock language="ts">{bindingToSyntaxApiToProviderSource}</CodeBlock>
+
+### toService
+
+```ts
+toService(service: interfaces.ServiceIdentifier<T>): void
+```
+
+Binds the services bound to a target service identifier to the given service identifier.
