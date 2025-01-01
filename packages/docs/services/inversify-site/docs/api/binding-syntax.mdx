@@ -3,6 +3,8 @@ sidebar_position: 2
 title: Binding Syntax
 ---
 import bindingToSyntaxApiToSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiTo.ts.txt';
+import bindingToSyntaxApiToAutoFactorySource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToAutoFactory.ts.txt';
+import bindingToSyntaxApiToAutoNamedFactorySource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToAutoNamedFactory.ts.txt';
 import bindingToSyntaxApiToConstantValueSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToConstantValue.ts.txt';
 import bindingToSyntaxApiToConstructorSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToConstructor.ts.txt';
 import bindingToSyntaxApiToDynamicValueSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToDynamicValue.ts.txt';
@@ -106,6 +108,8 @@ toAutoFactory<T2>(serviceIdentifier: interfaces.ServiceIdentifier<T2>): interfac
 
 Binds a factory of services asociated a target service identifier to the given service identifier.
 
+<CodeBlock language="ts">{bindingToSyntaxApiToAutoFactorySource}</CodeBlock>
+
 ### toAutoNamedFactory
 
 ```ts
@@ -113,6 +117,8 @@ toAutoNamedFactory<T2>(serviceIdentifier: interfaces.ServiceIdentifier<T2>): Bin
 ```
 
 Binds a factory of services asociated a target service identifier and a name to the given service identifier.
+
+<CodeBlock language="ts">{bindingToSyntaxApiToAutoNamedFactorySource}</CodeBlock>
 
 ### toProvider
 
