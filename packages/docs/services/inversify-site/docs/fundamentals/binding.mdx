@@ -1,0 +1,50 @@
+---
+sidebar_position: 1
+title: Binding
+---
+import bindingScopeRequestSource from '@inversifyjs/code-examples/generated/examples/bindingScopeRequest.ts.txt';
+import bindingScopeSingletonSource from '@inversifyjs/code-examples/generated/examples/bindingScopeSingleton.ts.txt';
+import bindingScopeTransientSource from '@inversifyjs/code-examples/generated/examples/bindingScopeTransient.ts.txt';
+import CodeBlock from '@theme/CodeBlock';
+
+# Binding
+
+A binding represents a relation between a service identifier and a service resolution. Bindings are added to a container in order to configure it to provide services.
+
+## Binding properties
+
+A binding has the following properties:
+
+### Service identifier
+
+Identifier of the service to provide a resolution.
+
+### Scope
+
+The scope is an alias of a caching strategy to decide whether or not the service should be resolved instead of provide a cached value.
+
+#### Request
+
+Sets the binding scope to request. Whenever the service is resolved in the same `container.get` request, the same resolved value will be used.
+
+<CodeBlock language="ts">{bindingScopeRequestSource}</CodeBlock>
+
+#### Singleton
+
+Whenever the service is resolved, the same cached resolved value will be used.
+
+<CodeBlock language="ts">{bindingScopeSingletonSource}</CodeBlock>
+
+#### Transient
+
+Whenever the service is resolved, a different resolved value will be used.
+
+<CodeBlock language="ts">{bindingScopeTransientSource}</CodeBlock>
+
+### Constraint
+
+Whether or not the binding is used to provide a resolved value for the given service identifier. Consider [API docs](/docs/api/binding-syntax#bindingwhensyntax) as reference.
+
+### Lifecycle handlers
+
+Handlers to be called after a resolved value is provided or a singleton scoped binding is deactivated.
