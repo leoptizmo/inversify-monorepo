@@ -470,7 +470,7 @@ Same as `container.getAllTaggedAsync`, but returns `Promise<[]>` in the event no
 unbind(serviceIdentifier: interfaces.ServiceIdentifier): void;
 ```
 
-Remove all bindings binded in this container to the service identifier.  This will result in the [deactivation process](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md).
+Remove all bindings binded in this container to the service identifier.  This will result in the [deactivation process](/docs/fundamentals/lifecycle/deactivation).
 
 ## unbindAsync
 
@@ -486,7 +486,7 @@ This is the asynchronous version of unbind. If any deactivation realated to this
 unbindAll(): void;
 ```
 
-Remove all bindings binded in this container.  This will result in the [deactivation process](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md).
+Remove all bindings binded in this container.  This will result in the [deactivation process](/docs/fundamentals/lifecycle/deactivation).
 
 ## unbindAllAsync
 
@@ -502,7 +502,7 @@ This is the asynchronous version of unbindAll. If any of the container's deactiv
 unload(...modules: interfaces.ContainerModuleBase[]): void;
 ```
 
-Removes bindings and handlers added by the modules. This will result in the [deactivation process](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md).
+Removes bindings and handlers added by the modules. This will result in the [deactivation process](/docs/fundamentals/lifecycle/deactivation).
 See [ContainerModule API docs](/docs/api/container-module).
 
 ## unloadAsync

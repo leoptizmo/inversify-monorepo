@@ -77,7 +77,7 @@ Consider [docs](/docs/api/container#ondeactivation) as reference.
 
 When a container module is loaded into a Container the registration callback is invoked. This is the opportunity for the container module to register bindings and handlers.  Use the Container load method for ContainerModule instances and the Container loadAsync method for AsyncContainerModule instances.
 
-When a container module is unloaded from a Container the bindings added by that container will be removed and the [deactivation process](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md) will occur for each of them.  Container deactivation and [activation handlers](https://github.com/inversify/InversifyJS/blob/master/wiki/activation_handler.md) will also be removed.
+When a container module is unloaded from a Container the bindings added by that container will be removed and the [deactivation process](https://github.com/inversify/InversifyJS/blob/master/wiki/deactivation_handler.md) will occur for each of them.  Container deactivation and [activation handlers](/docs/fundamentals/lifecycle/activation) will also be removed.
 Use the unloadAsync method to unload when there will be an async deactivation handler or async [pre destroy](https://github.com/inversify/InversifyJS/blob/master/wiki/pre_destroy.md) 
 
 <CodeBlock language="ts">{containerModuleApiExampleSource}</CodeBlock>

@@ -2,9 +2,6 @@
 sidebar_position: 2
 title: Binding Syntax
 ---
-import bindingInSyntaxApiInRequestScopeSource from '@inversifyjs/code-examples/generated/examples/bindingInSyntaxApiInRequestScope.ts.txt';
-import bindingInSyntaxApiInSingletonScopeSource from '@inversifyjs/code-examples/generated/examples/bindingInSyntaxApiInSingletonScope.ts.txt';
-import bindingInSyntaxApiInTransientScopeSource from '@inversifyjs/code-examples/generated/examples/bindingInSyntaxApiInTransientScope.ts.txt';
 import bindingOnSyntaxApiOnActivationSource from '@inversifyjs/code-examples/generated/examples/bindingOnSyntaxApiOnActivation.ts.txt';
 import bindingToSyntaxApiToSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiTo.ts.txt';
 import bindingToSyntaxApiToAutoFactorySource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToAutoFactory.ts.txt';
@@ -168,9 +165,7 @@ Represents a service binding given a service identifier and a service resolution
 inSingletonScope(): BindingWhenOnSyntax<T>;
 ```
 
-Sets the binding scope to singleton. Whenever the service is resolved, the same cached resolved value will be used.
-
-<CodeBlock language="ts">{bindingInSyntaxApiInSingletonScopeSource}</CodeBlock>
+Sets the binding scope to singleton. Consider [docs](/docs/fundamentals/binding#singleton) as reference.
 
 ### inTransientScope
 
@@ -178,19 +173,15 @@ Sets the binding scope to singleton. Whenever the service is resolved, the same 
 inTransientScope(): BindingWhenOnSyntax<T>;
 ```
 
-Sets the binding scope to transient. Whenever the service is resolved, a different resolved value will be used.
+Sets the binding scope to transient. Consider [docs](/docs/fundamentals/binding#transient) as reference.
 
-<CodeBlock language="ts">{bindingInSyntaxApiInTransientScopeSource}</CodeBlock>
-
-### inTransientScope
+### inRequestScope
 
 ```ts
 inRequestScope(): BindingWhenOnSyntax<T>;
 ```
 
-Sets the binding scope to request. Whenever the service is resolved in the same `container.get` request, the same resolved value will be used.
-
-<CodeBlock language="ts">{bindingInSyntaxApiInRequestScopeSource}</CodeBlock>
+Sets the binding scope to request. Consider [docs](/docs/fundamentals/binding#request) as reference.
 
 ## BindingOnSyntax
 
@@ -217,6 +208,8 @@ Sets a binding activation handler. The activation handler is invoked after a dep
 ```ts
 onDeactivation(fn: (injectable: T) => void | Promise<void>): BindingWhenSyntax<T>;
 ```
+
+Sets a binding deactivation handler on a singleton scope binding. The deactivation handler is caled when the binding is unbound from a container.
 
 ## BindingWhenSyntax
 
@@ -362,7 +355,7 @@ export interface BindingWhenOnSyntax<T>
     BindingOnSyntax<T> {}
 ```
 
-### BindingInWhenOnSyntax
+## BindingInWhenOnSyntax
 
 The union of [BindingInSyntax](#bindinginsyntax) and [BindingWhenOnSyntax](#bindingwhenonsyntax).
 
