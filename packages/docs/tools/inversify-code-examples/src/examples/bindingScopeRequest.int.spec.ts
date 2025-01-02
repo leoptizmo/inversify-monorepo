@@ -1,9 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import {
-  isSameKatana,
-  warriorHasSameKatana,
-} from './bindingInSyntaxApiInRequestScope';
+import { isSameKatana, warriorHasSameKatana } from './bindingScopeRequest';
 
 describe('BindingInSyntax API (inSingletonScope)', () => {
   it('should provide same Katana', () => {
