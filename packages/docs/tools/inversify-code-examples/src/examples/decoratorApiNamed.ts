@@ -1,4 +1,4 @@
-import { Container, injectable } from 'inversify';
+import { Container, inject, injectable, named } from 'inversify';
 
 interface Weapon {
   readonly damage: number;
@@ -15,12 +15,25 @@ export class Shuriken implements Weapon {
 }
 
 // Begin-example
+@injectable()
+class Ninja {
+  public katana: Weapon;
+  public shuriken: Weapon;
+  constructor(
+    @inject('Weapon') @named('melee') katana: Weapon,
+    @inject('Weapon') @named('ranged') shuriken: Weapon,
+  ) {
+    this.katana = katana;
+    this.shuriken = shuriken;
+  }
+}
+
 const container: Container = new Container();
 container.bind<Weapon>('Weapon').to(Katana).whenTargetNamed('melee');
 container.bind<Weapon>('Weapon').to(Shuriken).whenTargetNamed('ranged');
+container.bind(Ninja).toSelf();
 
-const katana: Weapon = container.getNamed<Weapon>('Weapon', 'melee');
-const shuriken: Weapon = container.getNamed<Weapon>('Weapon', 'ranged');
+const ninja: Ninja = container.get(Ninja);
 // End-example
 
-export { katana, shuriken };
+export { ninja };

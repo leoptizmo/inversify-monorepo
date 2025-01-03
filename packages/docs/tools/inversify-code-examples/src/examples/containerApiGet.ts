@@ -1,9 +1,10 @@
-import { Container } from 'inversify';
+import { Container, injectable } from 'inversify';
 
 interface Weapon {
   damage: number;
 }
 
+@injectable()
 export class Katana implements Weapon {
   public readonly damage: number = 10;
 }
