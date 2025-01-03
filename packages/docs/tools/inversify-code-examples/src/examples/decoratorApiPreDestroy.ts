@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { jest } from '@jest/globals';
 
-import { Container } from 'inversify';
+import { Container, preDestroy } from 'inversify';
 
 // Begin-example
 interface Weapon {
@@ -13,6 +13,11 @@ export class Katana implements Weapon {
 
   public get damage(): number {
     return this.#damage;
+  }
+
+  @preDestroy()
+  public onDeactivation(): void {
+    console.log(`Deactivating weapon with damage ${this.damage.toString()}`);
   }
 }
 
@@ -29,10 +34,6 @@ export const katanaDamageSpy: jest.SpiedGetter<number> = jest.spyOn<
   number,
   'get'
 >(container.get<Weapon>('Weapon'), 'damage', 'get');
-
-container.onDeactivation('Weapon', (weapon: Weapon): void | Promise<void> => {
-  console.log(`Deactivating weapon with damage ${weapon.damage.toString()}`);
-});
 
 container.unbind('Weapon');
 // End-example

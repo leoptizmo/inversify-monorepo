@@ -129,6 +129,7 @@ const config: Config = {
     },
   } satisfies Preset.ThemeConfig,
   title: 'InversifyJS',
+  trailingSlash: true,
   url: 'https://inversify.github.io',
 };
 
