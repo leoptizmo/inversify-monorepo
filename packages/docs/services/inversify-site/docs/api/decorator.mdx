@@ -7,6 +7,8 @@ import decoratorApiInjectPropertySource from '@inversifyjs/code-examples/generat
 import decoratorApiMultiInjectPropertySource from '@inversifyjs/code-examples/generated/examples/decoratorApiMultiInjectProperty.ts.txt';
 import decoratorApiNamedSource from '@inversifyjs/code-examples/generated/examples/decoratorApiNamed.ts.txt';
 import decoratorApiOptionalSource from '@inversifyjs/code-examples/generated/examples/decoratorApiOptional.ts.txt';
+import decoratorApiPostConstructSource from '@inversifyjs/code-examples/generated/examples/decoratorApiPostConstruct.ts.txt';
+import decoratorApiPreDestroySource from '@inversifyjs/code-examples/generated/examples/decoratorApiPreDestroy.ts.txt';
 import decoratorApiTaggedSource from '@inversifyjs/code-examples/generated/examples/decoratorApiTagged.ts.txt';
 import decoratorApiUnmanagedSource from '@inversifyjs/code-examples/generated/examples/decoratorApiUnmanaged.ts.txt';
 import CodeBlock from '@theme/CodeBlock';
@@ -119,6 +121,18 @@ Decorator used to establish a relation between a constructor argument or a class
 Decorator used to establish a target constructor argument or property is optional and, therefore, it shall not be resolved if no bindings are found for the associated service id.
 
 <CodeBlock language="ts">{decoratorApiOptionalSource}</CodeBlock>
+
+## postConstruct
+
+Decorator used to establish an activation handler for the target class. Consider [docs](/docs/fundamentals/lifecycle/activation) as reference.
+
+<CodeBlock language="ts">{decoratorApiPostConstructSource}</CodeBlock>
+
+## preDestroy
+
+Decorator used to establish a deactivation handler for the target class. Consider [docs](/docs/fundamentals/lifecycle/deactivation) as reference.
+
+<CodeBlock language="ts">{decoratorApiPreDestroySource}</CodeBlock>
 
 ## tagged
 
