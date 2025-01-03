@@ -45,6 +45,7 @@
   },
   "license": "MIT",
   "name": "@inversifyjs/inversify-docs-site",
+  "private": true,
   "publishConfig": {
     "access": "public"
   },
@@ -61,6 +62,5 @@
     "lint": "eslint ./src ./docusaurus.config.ts ./sidebars.ts",
     "serve": "docusaurus serve",
     "typecheck": "tsc"
-  },
-  "version": "1.0.0"
+  }
 }
