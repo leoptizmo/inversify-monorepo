@@ -9,14 +9,10 @@ interface Weapon {
 }
 
 export class Katana implements Weapon {
-  #damage: number = 10;
+  readonly #damage: number = 10;
 
   public get damage(): number {
     return this.#damage;
-  }
-
-  public improve(): void {
-    this.#damage += 2;
   }
 }
 
