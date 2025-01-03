@@ -8,6 +8,9 @@ const config: Config = {
   baseUrl: '/monorepo',
   deploymentBranch: 'gh-pages',
   favicon: 'img/favicon.ico',
+  future: {
+    experimental_faster: true,
+  },
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
