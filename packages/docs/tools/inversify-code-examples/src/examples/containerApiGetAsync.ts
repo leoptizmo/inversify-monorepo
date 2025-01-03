@@ -1,5 +1,6 @@
-import { Container } from 'inversify';
+import { Container, injectable } from 'inversify';
 
+@injectable()
 export class Level1 {}
 
 // Begin-example
