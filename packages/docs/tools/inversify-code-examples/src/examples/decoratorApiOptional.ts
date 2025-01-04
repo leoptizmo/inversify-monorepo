@@ -1,4 +1,4 @@
-import { Container, inject, injectable, named, optional } from 'inversify';
+import { Container, inject, injectable, optional } from 'inversify';
 
 interface Weapon {
   readonly damage: number;

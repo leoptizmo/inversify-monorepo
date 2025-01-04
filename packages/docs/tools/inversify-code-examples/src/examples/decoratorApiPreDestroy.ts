@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { jest } from '@jest/globals';
 
 import { Container, preDestroy } from 'inversify';
