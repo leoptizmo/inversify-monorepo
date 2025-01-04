@@ -1,9 +1,11 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
+jest.mock('../../common/calculations/chain');
 jest.mock('../../common/models/OneToManyMapStar');
 
 import { ServiceIdentifier } from '@inversifyjs/common';
 
+import { chain } from '../../common/calculations/chain';
 import { OneToManyMapStar } from '../../common/models/OneToManyMapStar';
 import { BindingDeactivation } from '../models/BindingDeactivation';
 import {
@@ -83,7 +85,7 @@ describe(DeactivationsService.name, () => {
       serviceIdFixture = 'service-identifier';
     });
 
-    describe('when called, and activationMaps.get() returns undefined and parent activationMaps.get() returns Iterable', () => {
+    describe('when called, and activationMaps.get() returns Iterable and parent activationMaps.get() returns undefined', () => {
       let bindingActivationFixture: BindingDeactivation;
 
       let result: unknown;
@@ -92,8 +94,12 @@ describe(DeactivationsService.name, () => {
         bindingActivationFixture = Symbol() as unknown as BindingDeactivation;
 
         activationMapsMock.get
-          .mockReturnValueOnce(undefined)
-          .mockReturnValueOnce([bindingActivationFixture]);
+          .mockReturnValueOnce([bindingActivationFixture])
+          .mockReturnValueOnce(undefined);
+
+        (chain as jest.Mock<typeof chain>).mockReturnValueOnce([
+          bindingActivationFixture,
+        ]);
 
         result = activationsService.get(serviceIdFixture);
       });
@@ -116,12 +122,17 @@ describe(DeactivationsService.name, () => {
         );
       });
 
+      it('should call chain()', () => {
+        expect(chain).toHaveBeenCalledTimes(1);
+        expect(chain).toHaveBeenCalledWith([bindingActivationFixture]);
+      });
+
       it('should return BindingDeactivation[]', () => {
         expect(result).toStrictEqual([bindingActivationFixture]);
       });
     });
 
-    describe('when called, and activationMaps.get() returns Iterable', () => {
+    describe('when called, and activationMaps.get() returns Iterable and parent activationMaps.get() returns Iterable', () => {
       let bindingActivationFixture: BindingDeactivation;
 
       let result: unknown;
@@ -129,7 +140,16 @@ describe(DeactivationsService.name, () => {
       beforeAll(() => {
         bindingActivationFixture = Symbol() as unknown as BindingDeactivation;
 
-        activationMapsMock.get.mockReturnValueOnce([bindingActivationFixture]);
+        activationMapsMock.get
+          .mockReturnValueOnce([bindingActivationFixture])
+          .mockReturnValueOnce([bindingActivationFixture]);
+
+        (chain as jest.Mock<typeof chain>)
+          .mockReturnValueOnce([bindingActivationFixture])
+          .mockReturnValueOnce([
+            bindingActivationFixture,
+            bindingActivationFixture,
+          ]);
 
         result = activationsService.get(serviceIdFixture);
       });
@@ -139,15 +159,34 @@ describe(DeactivationsService.name, () => {
       });
 
       it('should call activationMaps.get()', () => {
-        expect(activationMapsMock.get).toHaveBeenCalledTimes(1);
-        expect(activationMapsMock.get).toHaveBeenCalledWith(
+        expect(activationMapsMock.get).toHaveBeenCalledTimes(2);
+        expect(activationMapsMock.get).toHaveBeenNthCalledWith(
+          1,
+          'serviceId',
+          serviceIdFixture,
+        );
+        expect(activationMapsMock.get).toHaveBeenNthCalledWith(
+          2,
           'serviceId',
           serviceIdFixture,
         );
       });
 
+      it('should call chain()', () => {
+        expect(chain).toHaveBeenCalledTimes(2);
+        expect(chain).toHaveBeenNthCalledWith(1, [bindingActivationFixture]);
+        expect(chain).toHaveBeenNthCalledWith(
+          2,
+          [bindingActivationFixture],
+          [bindingActivationFixture],
+        );
+      });
+
       it('should return BindingDeactivation[]', () => {
-        expect(result).toStrictEqual([bindingActivationFixture]);
+        expect(result).toStrictEqual([
+          bindingActivationFixture,
+          bindingActivationFixture,
+        ]);
       });
     });
   });

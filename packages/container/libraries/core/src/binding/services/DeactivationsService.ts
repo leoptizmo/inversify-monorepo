@@ -1,5 +1,6 @@
 import { ServiceIdentifier } from '@inversifyjs/common';
 
+import { chain } from '../../common/calculations/chain';
 import { OneToManyMapStar } from '../../common/models/OneToManyMapStar';
 import { BindingDeactivation } from '../models/BindingDeactivation';
 
@@ -47,12 +48,30 @@ export class DeactivationsService {
   public get(
     serviceIdentifier: ServiceIdentifier,
   ): Iterable<BindingDeactivation> | undefined {
-    return (
+    const deactivationIterables: Iterable<BindingDeactivation>[] = [];
+
+    const deactivations: Iterable<BindingDeactivation> | undefined =
       this.#activationMaps.get(
         DeactivationRelationKind.serviceId,
         serviceIdentifier,
-      ) ?? this.#parent?.get(serviceIdentifier)
-    );
+      );
+
+    if (deactivations !== undefined) {
+      deactivationIterables.push(deactivations);
+    }
+
+    const parentDeactivations: Iterable<BindingDeactivation> | undefined =
+      this.#parent?.get(serviceIdentifier);
+
+    if (parentDeactivations !== undefined) {
+      deactivationIterables.push(parentDeactivations);
+    }
+
+    if (deactivationIterables.length === 0) {
+      return undefined;
+    }
+
+    return chain(...deactivationIterables);
   }
 
   public removeAllByModuleId(moduleId: number): void {
