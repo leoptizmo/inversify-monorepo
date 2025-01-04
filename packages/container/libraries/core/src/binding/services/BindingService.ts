@@ -1,122 +1,80 @@
 import { ServiceIdentifier } from '@inversifyjs/common';
 
+import { OneToManyMapStar } from '../../common/models/OneToManyMapStar';
 import { Binding } from '../models/Binding';
 
+enum BindingRelationKind {
+  moduleId = 'moduleId',
+  serviceId = 'serviceId',
+}
+
+export interface BindingRelation {
+  [BindingRelationKind.moduleId]?: number;
+  [BindingRelationKind.serviceId]: ServiceIdentifier;
+}
+
 export class BindingService {
-  readonly #idToBindingMap: Map<ServiceIdentifier, Binding<unknown>[]>;
-  readonly #moduleIdToIdToBindingMap: Map<
-    number,
-    Map<number, Binding<unknown>>
-  >;
+  readonly #bindingMaps: OneToManyMapStar<Binding<unknown>, BindingRelation>;
+
   readonly #parent: BindingService | undefined;
 
   constructor(parent: BindingService | undefined) {
-    this.#idToBindingMap = new Map();
-    this.#moduleIdToIdToBindingMap = new Map();
+    this.#bindingMaps = new OneToManyMapStar<Binding<unknown>, BindingRelation>(
+      {
+        moduleId: {
+          isOptional: true,
+        },
+        serviceId: {
+          isOptional: false,
+        },
+      },
+    );
+
     this.#parent = parent;
   }
 
-  public get<TInstance>(
+  public get<TResolved>(
     serviceIdentifier: ServiceIdentifier,
-  ): Binding<TInstance>[] | undefined {
-    return (this.#idToBindingMap.get(serviceIdentifier) ??
-      this.#parent?.get(serviceIdentifier)) as Binding<TInstance>[] | undefined;
+  ): Iterable<Binding<TResolved>> | undefined {
+    return (
+      (this.#bindingMaps.get(
+        BindingRelationKind.serviceId,
+        serviceIdentifier,
+      ) as Iterable<Binding<TResolved>> | undefined) ??
+      this.#parent?.get(serviceIdentifier)
+    );
   }
 
-  public remove(serviceIdentifier: ServiceIdentifier): void {
-    const serviceBindings: Binding<unknown>[] | undefined =
-      this.#idToBindingMap.get(serviceIdentifier);
-
-    this.#idToBindingMap.delete(serviceIdentifier);
-
-    if (serviceBindings !== undefined) {
-      this.#removeBindingsFromModuleMap(serviceBindings);
-    }
+  public getByModuleId<TResolved>(
+    moduleId: number,
+  ): Iterable<Binding<TResolved>> | undefined {
+    return (
+      (this.#bindingMaps.get(BindingRelationKind.moduleId, moduleId) as
+        | Iterable<Binding<TResolved>>
+        | undefined) ?? this.#parent?.getByModuleId(moduleId)
+    );
   }
 
-  public removeByModule(moduleId: number): void {
-    const moduleBindings: Map<number, Binding<unknown>> | undefined =
-      this.#moduleIdToIdToBindingMap.get(moduleId);
+  public removeAllByModuleId(moduleId: number): void {
+    this.#bindingMaps.removeByRelation(BindingRelationKind.moduleId, moduleId);
+  }
 
-    if (moduleBindings === undefined) {
-      return;
-    }
-
-    this.#moduleIdToIdToBindingMap.delete(moduleId);
-
-    this.#removeBindingsFromIdMap(moduleBindings.values());
+  public removeAllByServiceId(serviceId: ServiceIdentifier): void {
+    this.#bindingMaps.removeByRelation(
+      BindingRelationKind.serviceId,
+      serviceId,
+    );
   }
 
   public set<TInstance>(binding: Binding<TInstance>): void {
-    this.#setIdToBindingMapBinding(binding);
-    this.#setModuleIdToIdToBindingMapBinding(binding);
-  }
+    const relation: BindingRelation = {
+      [BindingRelationKind.serviceId]: binding.serviceIdentifier,
+    };
 
-  #removeBindingsFromIdMap(bindings: Iterable<Binding<unknown>>): void {
-    for (const binding of bindings) {
-      let serviceBindings: Binding<unknown>[] | undefined =
-        this.#idToBindingMap.get(binding.serviceIdentifier);
-
-      if (serviceBindings !== undefined) {
-        serviceBindings = serviceBindings.filter(
-          (serviceBinding: Binding<unknown>): boolean =>
-            serviceBinding.id !== binding.id,
-        );
-
-        if (serviceBindings.length === 0) {
-          this.#idToBindingMap.delete(binding.serviceIdentifier);
-        } else {
-          this.#idToBindingMap.set(binding.serviceIdentifier, serviceBindings);
-        }
-      }
-    }
-  }
-
-  #removeBindingsFromModuleMap(bindings: Iterable<Binding<unknown>>): void {
-    for (const binding of bindings) {
-      if (binding.moduleId !== undefined) {
-        const moduleBindings: Map<number, Binding<unknown>> | undefined =
-          this.#moduleIdToIdToBindingMap.get(binding.moduleId);
-
-        if (moduleBindings !== undefined) {
-          moduleBindings.delete(binding.id);
-
-          if (moduleBindings.size === 0) {
-            this.#moduleIdToIdToBindingMap.delete(binding.moduleId);
-          }
-        }
-      }
-    }
-  }
-
-  #setIdToBindingMapBinding<TInstance>(binding: Binding<TInstance>): void {
-    let serviceBindings: Binding<unknown>[] | undefined =
-      this.#idToBindingMap.get(binding.serviceIdentifier);
-
-    if (serviceBindings === undefined) {
-      serviceBindings = [];
+    if (binding.moduleId !== undefined) {
+      relation[BindingRelationKind.moduleId] = binding.moduleId;
     }
 
-    serviceBindings.push(binding as Binding<unknown>);
-
-    this.#idToBindingMap.set(binding.serviceIdentifier, serviceBindings);
-  }
-
-  #setModuleIdToIdToBindingMapBinding<TInstance>(
-    binding: Binding<TInstance>,
-  ): void {
-    if (binding.moduleId === undefined) {
-      return;
-    }
-
-    let moduleBindingsMap: Map<number, Binding<unknown>> | undefined =
-      this.#moduleIdToIdToBindingMap.get(binding.moduleId);
-
-    if (moduleBindingsMap === undefined) {
-      moduleBindingsMap = new Map();
-      this.#moduleIdToIdToBindingMap.set(binding.moduleId, moduleBindingsMap);
-    }
-
-    moduleBindingsMap.set(binding.id, binding as Binding<unknown>);
+    this.#bindingMaps.set(binding as Binding<unknown>, relation);
   }
 }

@@ -40,4 +40,18 @@ export class ConstantValueBindingFixtures {
       },
     };
   }
+
+  public static get withModuleIdUndefined(): ConstantValueBinding<unknown> {
+    return {
+      ...ConstantValueBindingFixtures.any,
+      moduleId: undefined,
+    };
+  }
+
+  public static get withModuleId(): ConstantValueBinding<unknown> {
+    return {
+      ...ConstantValueBindingFixtures.any,
+      moduleId: 1,
+    };
+  }
 }
