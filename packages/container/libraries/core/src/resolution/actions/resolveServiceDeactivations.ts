@@ -43,16 +43,12 @@ export function resolveServiceDeactivations(
       if (preDestroyResult === undefined) {
         deactivationResult = resolveBindingDeactivations(
           params,
-          serviceIdentifier,
+          binding,
           binding.cache.value,
         );
       } else {
         deactivationResult = preDestroyResult.then((): void | Promise<void> =>
-          resolveBindingDeactivations(
-            params,
-            serviceIdentifier,
-            binding.cache.value,
-          ),
+          resolveBindingDeactivations(params, binding, binding.cache.value),
         );
       }
 

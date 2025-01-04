@@ -116,7 +116,7 @@ describe(resolveServiceDeactivations.name, () => {
       expect(resolveBindingDeactivations).toHaveBeenCalledTimes(1);
       expect(resolveBindingDeactivations).toHaveBeenCalledWith(
         paramsMock,
-        serviceIdentifierFixture,
+        bindingFixture,
         bindingFixture.cache.value,
       );
     });
@@ -177,7 +177,7 @@ describe(resolveServiceDeactivations.name, () => {
       expect(resolveBindingDeactivations).toHaveBeenCalledTimes(1);
       expect(resolveBindingDeactivations).toHaveBeenCalledWith(
         paramsMock,
-        serviceIdentifierFixture,
+        bindingFixture,
         bindingFixture.cache.value,
       );
     });
@@ -239,7 +239,7 @@ describe(resolveServiceDeactivations.name, () => {
       expect(resolveBindingDeactivations).toHaveBeenCalledTimes(1);
       expect(resolveBindingDeactivations).toHaveBeenCalledWith(
         paramsMock,
-        serviceIdentifierFixture,
+        bindingFixture,
         bindingFixture.cache.value,
       );
     });
