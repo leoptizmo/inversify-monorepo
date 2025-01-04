@@ -6,7 +6,7 @@ import { ClassMetadata } from '../../metadata/models/ClassMetadata';
 export interface BasePlanParams {
   getBindings: <TInstance>(
     serviceIdentifier: ServiceIdentifier<TInstance>,
-  ) => Binding<TInstance>[] | undefined;
+  ) => Iterable<Binding<TInstance>> | undefined;
   getClassMetadata: (type: Newable) => ClassMetadata;
   servicesBranch: Set<ServiceIdentifier>;
 }

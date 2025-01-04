@@ -55,7 +55,7 @@ describe(Container.name, () => {
     > as jest.Mocked<ActivationsService>;
     bindingServiceMock = {
       get: jest.fn(),
-      remove: jest.fn(),
+      removeAllByServiceId: jest.fn(),
       set: jest.fn(),
     } as Partial<jest.Mocked<BindingService>> as jest.Mocked<BindingService>;
     deactivationServiceMock = {
@@ -996,9 +996,11 @@ describe(Container.name, () => {
         );
       });
 
-      it('should call bindingService.remove()', () => {
-        expect(bindingServiceMock.remove).toHaveBeenCalledTimes(1);
-        expect(bindingServiceMock.remove).toHaveBeenCalledWith(
+      it('should call bindingService.removeAllByServiceId()', () => {
+        expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledTimes(
+          1,
+        );
+        expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledWith(
           serviceIdentifierFixture,
         );
       });

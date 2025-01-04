@@ -1,212 +1,318 @@
-import { beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
+jest.mock('../../common/models/OneToManyMapStar');
+
+import { ServiceIdentifier } from '@inversifyjs/common';
+
+import { OneToManyMapStar } from '../../common/models/OneToManyMapStar';
+import { ConstantValueBindingFixtures } from '../fixtures/ConstantValueBindingFixtures';
 import { Binding } from '../models/Binding';
-import { bindingScopeValues } from '../models/BindingScope';
-import { bindingTypeValues } from '../models/BindingType';
-import { BindingService } from './BindingService';
+import { BindingRelation, BindingService } from './BindingService';
 
 describe(BindingService.name, () => {
+  let bindingMapsMock: jest.Mocked<
+    OneToManyMapStar<Binding<unknown>, BindingRelation>
+  >;
+
+  let parentBindingService: BindingService;
+  let bindingService: BindingService;
+
+  beforeAll(() => {
+    bindingMapsMock = new OneToManyMapStar<Binding<unknown>, BindingRelation>({
+      moduleId: {
+        isOptional: true,
+      },
+      serviceId: {
+        isOptional: false,
+      },
+    }) as jest.Mocked<OneToManyMapStar<Binding<unknown>, BindingRelation>>;
+
+    parentBindingService = new BindingService(undefined);
+
+    bindingService = new BindingService(parentBindingService);
+  });
+
   describe('.get', () => {
-    let bindingFixture: Binding<unknown>;
+    let serviceIdFixture: ServiceIdentifier;
 
     beforeAll(() => {
-      bindingFixture = {
-        cache: {
-          isRight: false,
-          value: undefined,
-        },
-        id: 2,
-        isSatisfiedBy: (): boolean => true,
-        moduleId: 1,
-        onActivation: undefined,
-        onDeactivation: undefined,
-        scope: bindingScopeValues.Singleton,
-        serviceIdentifier: 'service-identifier-fixture',
-        type: bindingTypeValues.ConstantValue,
-        value: Symbol(),
-      };
+      serviceIdFixture = 'service-identifier';
     });
 
-    describe('having a BindingService with existing bindings with no parent', () => {
-      describe('when called', () => {
-        let bindingServiceImplementation: BindingService;
+    describe('when called, and bindingMaps.get() returns undefined and parent bindingMaps.get() returns Iterable', () => {
+      let bindingFixture: Binding<unknown>;
 
-        let result: unknown;
-
-        beforeAll(() => {
-          bindingServiceImplementation = new BindingService(undefined);
-
-          bindingServiceImplementation.set(bindingFixture);
-
-          result = bindingServiceImplementation.get(
-            bindingFixture.serviceIdentifier,
-          );
-        });
-
-        it('should return Binding[]', () => {
-          expect(result).toStrictEqual([bindingFixture]);
-        });
-      });
-    });
-
-    describe('having a BindingService with non existing bindings with no parent', () => {
-      describe('when called', () => {
-        let bindingServiceImplementation: BindingService;
-
-        let result: unknown;
-
-        beforeAll(() => {
-          bindingServiceImplementation = new BindingService(undefined);
-
-          result = bindingServiceImplementation.get(
-            bindingFixture.serviceIdentifier,
-          );
-        });
-
-        it('should return undefined', () => {
-          expect(result).toBeUndefined();
-        });
-      });
-    });
-
-    describe('having a BindingService with parent with existing bindings', () => {
-      describe('when called', () => {
-        let bindingServiceImplementation: BindingService;
-        let parentBindingServiceImplementation: BindingService;
-
-        let result: unknown;
-
-        beforeAll(() => {
-          parentBindingServiceImplementation = new BindingService(undefined);
-          parentBindingServiceImplementation.set(bindingFixture);
-
-          bindingServiceImplementation = new BindingService(
-            parentBindingServiceImplementation,
-          );
-
-          result = bindingServiceImplementation.get(
-            bindingFixture.serviceIdentifier,
-          );
-        });
-
-        it('should return Binding[]', () => {
-          expect(result).toStrictEqual([bindingFixture]);
-        });
-      });
-    });
-
-    describe('having a BindingService with parent with non existing bindings', () => {
-      describe('when called, with non existing bindings', () => {
-        let bindingServiceImplementation: BindingService;
-        let parentBindingServiceImplementation: BindingService;
-
-        let result: unknown;
-
-        beforeAll(() => {
-          parentBindingServiceImplementation = new BindingService(undefined);
-
-          bindingServiceImplementation = new BindingService(
-            parentBindingServiceImplementation,
-          );
-
-          result = bindingServiceImplementation.get(
-            bindingFixture.serviceIdentifier,
-          );
-        });
-
-        it('should return undefined', () => {
-          expect(result).toBeUndefined();
-        });
-      });
-    });
-  });
-
-  describe('.remove', () => {
-    let bindingFixture: Binding<unknown>;
-
-    beforeAll(() => {
-      bindingFixture = {
-        cache: {
-          isRight: false,
-          value: undefined,
-        },
-        id: 2,
-        isSatisfiedBy: (): boolean => true,
-        moduleId: 1,
-        onActivation: undefined,
-        onDeactivation: undefined,
-        scope: bindingScopeValues.Singleton,
-        serviceIdentifier: Symbol(),
-        type: bindingTypeValues.ConstantValue,
-        value: Symbol(),
-      };
-    });
-
-    describe('when called, with existing bindings', () => {
-      let bindingServiceImplementation: BindingService;
+      let result: unknown;
 
       beforeAll(() => {
-        bindingServiceImplementation = new BindingService(undefined);
+        bindingFixture = Symbol() as unknown as Binding<unknown>;
 
-        bindingServiceImplementation.set(bindingFixture);
-        bindingServiceImplementation.remove(bindingFixture.serviceIdentifier);
+        bindingMapsMock.get
+          .mockReturnValueOnce(undefined)
+          .mockReturnValueOnce([bindingFixture]);
+
+        result = bindingService.get(serviceIdFixture);
       });
 
-      describe('when called .get()', () => {
-        let result: unknown;
-
-        beforeAll(() => {
-          result = bindingServiceImplementation.get(
-            bindingFixture.serviceIdentifier,
-          );
-        });
-
-        it('should return undefined', () => {
-          expect(result).toBeUndefined();
-        });
+      afterAll(() => {
+        jest.clearAllMocks();
       });
-    });
-  });
 
-  describe('.removeByModule', () => {
-    let bindingFixture: Binding<unknown>;
-
-    beforeAll(() => {
-      bindingFixture = {
-        cache: {
-          isRight: false,
-          value: undefined,
-        },
-        id: 2,
-        isSatisfiedBy: (): boolean => true,
-        moduleId: 1,
-        onActivation: undefined,
-        onDeactivation: undefined,
-        scope: bindingScopeValues.Singleton,
-        serviceIdentifier: Symbol(),
-        type: bindingTypeValues.ConstantValue,
-        value: Symbol(),
-      };
-    });
-
-    describe('when called, with existing bindings', () => {
-      let bindingServiceImplementation: BindingService;
-
-      beforeAll(() => {
-        bindingServiceImplementation = new BindingService(undefined);
-
-        bindingServiceImplementation.set(bindingFixture);
-        bindingServiceImplementation.removeByModule(
-          bindingFixture.moduleId as number,
+      it('should call bindingMaps.get()', () => {
+        expect(bindingMapsMock.get).toHaveBeenCalledTimes(2);
+        expect(bindingMapsMock.get).toHaveBeenNthCalledWith(
+          1,
+          'serviceId',
+          serviceIdFixture,
+        );
+        expect(bindingMapsMock.get).toHaveBeenNthCalledWith(
+          2,
+          'serviceId',
+          serviceIdFixture,
         );
       });
 
-      describe('when called .get()', () => {
+      it('should return Binding[]', () => {
+        expect(result).toStrictEqual([bindingFixture]);
+      });
+    });
+
+    describe('when called, and bindingMaps.get() returns Iterable', () => {
+      let bindingFixture: Binding<unknown>;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        bindingFixture = Symbol() as unknown as Binding<unknown>;
+
+        bindingMapsMock.get.mockReturnValueOnce([bindingFixture]);
+
+        result = bindingService.get(serviceIdFixture);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call bindingMaps.get()', () => {
+        expect(bindingMapsMock.get).toHaveBeenCalledTimes(1);
+        expect(bindingMapsMock.get).toHaveBeenCalledWith(
+          'serviceId',
+          serviceIdFixture,
+        );
+      });
+
+      it('should return BindingActivation[]', () => {
+        expect(result).toStrictEqual([bindingFixture]);
+      });
+    });
+  });
+
+  describe('.getByModuleId', () => {
+    let moduleIdFixture: number;
+
+    beforeAll(() => {
+      moduleIdFixture = 1;
+    });
+
+    describe('when called, and bindingMaps.get() returns undefined and parent bindingMaps.get() returns Iterable', () => {
+      let bindingFixture: Binding<unknown>;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        bindingFixture = Symbol() as unknown as Binding<unknown>;
+
+        bindingMapsMock.get
+          .mockReturnValueOnce(undefined)
+          .mockReturnValueOnce([bindingFixture]);
+
+        result = bindingService.getByModuleId(moduleIdFixture);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call bindingMaps.get()', () => {
+        expect(bindingMapsMock.get).toHaveBeenCalledTimes(2);
+        expect(bindingMapsMock.get).toHaveBeenNthCalledWith(
+          1,
+          'moduleId',
+          moduleIdFixture,
+        );
+        expect(bindingMapsMock.get).toHaveBeenNthCalledWith(
+          2,
+          'moduleId',
+          moduleIdFixture,
+        );
+      });
+
+      it('should return Binding[]', () => {
+        expect(result).toStrictEqual([bindingFixture]);
+      });
+    });
+
+    describe('when called, and bindingMaps.get() returns Iterable', () => {
+      let bindingFixture: Binding<unknown>;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        bindingFixture = Symbol() as unknown as Binding<unknown>;
+
+        bindingMapsMock.get.mockReturnValueOnce([bindingFixture]);
+
+        result = bindingService.getByModuleId(moduleIdFixture);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call bindingMaps.get()', () => {
+        expect(bindingMapsMock.get).toHaveBeenCalledTimes(1);
+        expect(bindingMapsMock.get).toHaveBeenCalledWith(
+          'moduleId',
+          moduleIdFixture,
+        );
+      });
+
+      it('should return BindingActivation[]', () => {
+        expect(result).toStrictEqual([bindingFixture]);
+      });
+    });
+  });
+
+  describe('.removeAllByModuleId', () => {
+    let moduleIdFixture: number;
+
+    beforeAll(() => {
+      moduleIdFixture = 3;
+    });
+
+    describe('when called', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        result = bindingService.removeAllByModuleId(moduleIdFixture);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call bindingMaps.removeByRelation()', () => {
+        expect(bindingMapsMock.removeByRelation).toHaveBeenCalledTimes(1);
+        expect(bindingMapsMock.removeByRelation).toHaveBeenCalledWith(
+          'moduleId',
+          moduleIdFixture,
+        );
+      });
+
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe('.removeAllByServiceId', () => {
+    let serviceIdFixture: ServiceIdentifier;
+
+    beforeAll(() => {
+      serviceIdFixture = 'service-id';
+    });
+
+    describe('when called', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        result = bindingService.removeAllByServiceId(serviceIdFixture);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call bindingMaps.removeByRelation()', () => {
+        expect(bindingMapsMock.removeByRelation).toHaveBeenCalledTimes(1);
+        expect(bindingMapsMock.removeByRelation).toHaveBeenCalledWith(
+          'serviceId',
+          serviceIdFixture,
+        );
+      });
+
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe('.set', () => {
+    describe('having a binding with no container id', () => {
+      let bindingFixture: Binding<unknown>;
+
+      beforeAll(() => {
+        bindingFixture = ConstantValueBindingFixtures.withModuleIdUndefined;
+      });
+
+      describe('when called', () => {
         let result: unknown;
 
         beforeAll(() => {
-          result = bindingServiceImplementation.get(
-            bindingFixture.serviceIdentifier,
+          result = bindingService.set(bindingFixture);
+        });
+
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call bindingMaps.set()', () => {
+          const expectedRelation: BindingRelation = {
+            serviceId: bindingFixture.serviceIdentifier,
+          };
+
+          expect(bindingMapsMock.set).toHaveBeenCalledTimes(1);
+          expect(bindingMapsMock.set).toHaveBeenCalledWith(
+            bindingFixture,
+            expectedRelation,
+          );
+        });
+
+        it('should return undefined', () => {
+          expect(result).toBeUndefined();
+        });
+      });
+    });
+
+    describe('having a binding with container id', () => {
+      let bindingFixture: Binding<unknown>;
+
+      beforeAll(() => {
+        bindingFixture = ConstantValueBindingFixtures.withModuleId;
+      });
+
+      describe('when called', () => {
+        let result: unknown;
+
+        beforeAll(() => {
+          result = bindingService.set(bindingFixture);
+        });
+
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call bindingMaps.set()', () => {
+          const expectedRelation: BindingRelation = {
+            moduleId: bindingFixture.moduleId as number,
+            serviceId: bindingFixture.serviceIdentifier,
+          };
+
+          expect(bindingMapsMock.set).toHaveBeenCalledTimes(1);
+          expect(bindingMapsMock.set).toHaveBeenCalledWith(
+            bindingFixture,
+            expectedRelation,
           );
         });
 

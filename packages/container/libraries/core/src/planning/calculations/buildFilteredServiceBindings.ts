@@ -23,8 +23,9 @@ export function buildFilteredServiceBindings(
   const serviceIdentifier: ServiceIdentifier =
     options?.customServiceIdentifier ?? bindingMetadata.serviceIdentifier;
 
-  const serviceBindings: Binding<unknown>[] =
-    params.getBindings(serviceIdentifier) ?? [];
+  const serviceBindings: Binding<unknown>[] = [
+    ...(params.getBindings(serviceIdentifier) ?? []),
+  ];
 
   return serviceBindings.filter((binding: Binding<unknown>): boolean =>
     binding.isSatisfiedBy(bindingMetadata),

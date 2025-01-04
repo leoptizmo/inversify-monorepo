@@ -19,7 +19,8 @@ export function resolveServiceDeactivations(
   params: DeactivationParams,
   serviceIdentifier: ServiceIdentifier,
 ): void | Promise<void> {
-  const bindings: Binding[] | undefined = params.getBindings(serviceIdentifier);
+  const bindings: Iterable<Binding> | undefined =
+    params.getBindings(serviceIdentifier);
 
   if (bindings === undefined) {
     return;
@@ -67,13 +68,20 @@ export function resolveServiceDeactivations(
 }
 
 function filterSinglentonScopedBindings(
-  bindings: Binding[],
+  bindings: Iterable<Binding>,
 ): SingletonScopedBinding[] {
-  return bindings.filter(
-    (binding: Binding): binding is SingletonScopedBinding =>
+  const filteredBindings: SingletonScopedBinding[] = [];
+
+  for (const binding of bindings) {
+    if (
       isScopedBinding(binding) &&
-      binding.scope === bindingScopeValues.Singleton,
-  );
+      binding.scope === bindingScopeValues.Singleton
+    ) {
+      filteredBindings.push(binding as SingletonScopedBinding);
+    }
+  }
+
+  return filteredBindings;
 }
 
 function resolveBindingPreDestroy(

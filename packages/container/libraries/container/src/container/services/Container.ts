@@ -12,6 +12,7 @@ import {
   BindingScope,
   bindingScopeValues,
   BindingService,
+  DeactivationParams,
   DeactivationsService,
   getClassMetadata,
   GetOptions,
@@ -175,7 +176,7 @@ export class Container {
     serviceIdentifier: ServiceIdentifier,
     options?: IsBoundOptions,
   ): boolean {
-    const bindings: Binding<unknown>[] | undefined =
+    const bindings: Iterable<Binding<unknown>> | undefined =
       this.#bindingService.get(serviceIdentifier);
 
     if (bindings === undefined) {
@@ -193,9 +194,13 @@ export class Container {
       bindingMetadata.tags.set(options.tag.key, options.tag.value);
     }
 
-    return bindings.some((binding: Binding): boolean =>
-      binding.isSatisfiedBy(bindingMetadata),
-    );
+    for (const binding of bindings) {
+      if (binding.isSatisfiedBy(bindingMetadata)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public async load(...modules: ContainerModule[]): Promise<void> {
@@ -227,21 +232,12 @@ export class Container {
 
   public async unbind(serviceIdentifier: ServiceIdentifier): Promise<void> {
     await resolveServiceDeactivations(
-      {
-        getBindings: <TInstance>(
-          serviceIdentifier: ServiceIdentifier<TInstance>,
-        ): Binding<TInstance>[] | undefined =>
-          this.#bindingService.get(serviceIdentifier),
-        getClassMetadata,
-        getDeactivations: <TActivated>(
-          serviceIdentifier: ServiceIdentifier<TActivated>,
-        ) => this.#deactivationService.get(serviceIdentifier),
-      },
+      this.#buildDeactivationParams(),
       serviceIdentifier,
     );
 
     this.#activationService.removeAllByServiceId(serviceIdentifier);
-    this.#bindingService.remove(serviceIdentifier);
+    this.#bindingService.removeAllByServiceId(serviceIdentifier);
     this.#deactivationService.removeAllByServiceId(serviceIdentifier);
   }
 
@@ -281,6 +277,19 @@ export class Container {
         });
       },
       unbind: this.unbind.bind(this),
+    };
+  }
+
+  #buildDeactivationParams(): DeactivationParams {
+    return {
+      getBindings: <TInstance>(
+        serviceIdentifier: ServiceIdentifier<TInstance>,
+      ): Iterable<Binding<TInstance>> | undefined =>
+        this.#bindingService.get(serviceIdentifier),
+      getClassMetadata,
+      getDeactivations: <TActivated>(
+        serviceIdentifier: ServiceIdentifier<TActivated>,
+      ) => this.#deactivationService.get(serviceIdentifier),
     };
   }
 
