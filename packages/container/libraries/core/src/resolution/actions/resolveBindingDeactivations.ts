@@ -1,70 +1,37 @@
-import { isPromise, ServiceIdentifier } from '@inversifyjs/common';
-
-import { BindingDeactivation } from '../../binding/models/BindingDeactivation';
+import { bindingScopeValues } from '../../binding/models/BindingScope';
+import { BindingType } from '../../binding/models/BindingType';
+import { ScopedBinding } from '../../binding/models/ScopedBinding';
 import { DeactivationParams } from '../models/DeactivationParams';
-import { Resolved, SyncResolved } from '../models/Resolved';
+import { resolveBindingServiceDeactivations } from './resolveBindingServiceDeactivations';
 
-export function resolveBindingDeactivations<TActivated>(
+export function resolveBindingDeactivations<TResolved>(
   params: DeactivationParams,
-  serviceIdentifier: ServiceIdentifier<TActivated>,
-  value: Resolved<TActivated>,
+  binding: ScopedBinding<
+    BindingType,
+    typeof bindingScopeValues.Singleton,
+    TResolved
+  >,
+  resolvedValue: TResolved,
 ): void | Promise<void> {
-  const deactivations: Iterable<BindingDeactivation<TActivated>> | undefined =
-    params.getDeactivations(serviceIdentifier);
+  let deactivationResult: void | Promise<void> = undefined;
 
-  if (deactivations === undefined) {
-    return undefined;
+  if (binding.onDeactivation !== undefined) {
+    deactivationResult = binding.onDeactivation(resolvedValue);
   }
 
-  if (isPromise(value)) {
-    return resolveBindingDeactivationsFromIteratorAsync(
-      value,
-      deactivations[Symbol.iterator](),
+  if (deactivationResult === undefined) {
+    return resolveBindingServiceDeactivations(
+      params,
+      binding.serviceIdentifier,
+      binding.cache.value,
     );
-  }
-
-  return resolveBindingDeactivationsFromIterator(
-    value,
-    deactivations[Symbol.iterator](),
-  );
-}
-
-function resolveBindingDeactivationsFromIterator<TActivated>(
-  value: SyncResolved<TActivated>,
-  deactivationsIterator: Iterator<BindingDeactivation<TActivated>>,
-): void | Promise<void> {
-  let deactivationIteratorResult: IteratorResult<
-    BindingDeactivation<TActivated>
-  > = deactivationsIterator.next();
-
-  while (deactivationIteratorResult.done !== true) {
-    const nextDeactivationValue: void | Promise<void> =
-      deactivationIteratorResult.value(value);
-
-    if (isPromise(nextDeactivationValue)) {
-      return resolveBindingDeactivationsFromIteratorAsync(
-        value,
-        deactivationsIterator,
-      );
-    }
-
-    deactivationIteratorResult = deactivationsIterator.next();
-  }
-}
-
-async function resolveBindingDeactivationsFromIteratorAsync<TActivated>(
-  value: Resolved<TActivated>,
-  deactivationsIterator: Iterator<BindingDeactivation<TActivated>>,
-): Promise<void> {
-  const resolvedValue: SyncResolved<TActivated> = await value;
-
-  let deactivationIteratorResult: IteratorResult<
-    BindingDeactivation<TActivated>
-  > = deactivationsIterator.next();
-
-  while (deactivationIteratorResult.done !== true) {
-    await deactivationIteratorResult.value(resolvedValue);
-
-    deactivationIteratorResult = deactivationsIterator.next();
+  } else {
+    return deactivationResult.then((): void | Promise<void> =>
+      resolveBindingServiceDeactivations(
+        params,
+        binding.serviceIdentifier,
+        binding.cache.value,
+      ),
+    );
   }
 }
