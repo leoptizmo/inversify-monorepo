@@ -41,6 +41,27 @@ export class ConstantValueBindingFixtures {
     };
   }
 
+  public static get withOnDeactivationAsync(): ConstantValueBinding<unknown> {
+    return {
+      ...ConstantValueBindingFixtures.any,
+      onDeactivation: async (): Promise<void> => undefined,
+    };
+  }
+
+  public static get withOnDeactivationSync(): ConstantValueBinding<unknown> {
+    return {
+      ...ConstantValueBindingFixtures.any,
+      onDeactivation: (): void => undefined,
+    };
+  }
+
+  public static get withOnDeactivationUndefined(): ConstantValueBinding<unknown> {
+    return {
+      ...ConstantValueBindingFixtures.any,
+      onDeactivation: undefined,
+    };
+  }
+
   public static get withModuleIdUndefined(): ConstantValueBinding<unknown> {
     return {
       ...ConstantValueBindingFixtures.any,
