@@ -9,23 +9,23 @@ export function resolveBindingDeactivations<TActivated>(
   serviceIdentifier: ServiceIdentifier<TActivated>,
   value: Resolved<TActivated>,
 ): void | Promise<void> {
-  const activations: Iterable<BindingDeactivation<TActivated>> | undefined =
+  const deactivations: Iterable<BindingDeactivation<TActivated>> | undefined =
     params.getDeactivations(serviceIdentifier);
 
-  if (activations === undefined) {
+  if (deactivations === undefined) {
     return undefined;
   }
 
   if (isPromise(value)) {
     return resolveBindingDeactivationsFromIteratorAsync(
       value,
-      activations[Symbol.iterator](),
+      deactivations[Symbol.iterator](),
     );
   }
 
   return resolveBindingDeactivationsFromIterator(
     value,
-    activations[Symbol.iterator](),
+    deactivations[Symbol.iterator](),
   );
 }
 

@@ -7,7 +7,7 @@ import { ClassMetadata } from '../../metadata/models/ClassMetadata';
 export interface DeactivationParams {
   getBindings: <TInstance>(
     serviceIdentifier: ServiceIdentifier<TInstance>,
-  ) => Binding<TInstance>[] | undefined;
+  ) => Iterable<Binding<TInstance>> | undefined;
   getClassMetadata: (type: Newable) => ClassMetadata;
   getDeactivations: <TActivated>(
     serviceIdentifier: ServiceIdentifier<TActivated>,

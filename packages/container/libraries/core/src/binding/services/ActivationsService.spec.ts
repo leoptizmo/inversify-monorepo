@@ -152,7 +152,7 @@ describe(ActivationsService.name, () => {
     });
   });
 
-  describe('.removeAllByModule', () => {
+  describe('.removeAllByModuleId', () => {
     let moduleIdFixture: number;
 
     beforeAll(() => {
