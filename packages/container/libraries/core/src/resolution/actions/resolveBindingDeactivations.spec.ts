@@ -12,7 +12,7 @@ describe(resolveBindingDeactivations.name, () => {
   describe('having a binding with no deactivation', () => {
     let paramsMock: jest.Mocked<DeactivationParams>;
     let bindingFixture: ConstantValueBinding<unknown>;
-    let resolvedValue: unknown;
+    let resolvedValueFixture: unknown;
 
     beforeAll(() => {
       paramsMock = {
@@ -22,7 +22,7 @@ describe(resolveBindingDeactivations.name, () => {
         jest.Mocked<DeactivationParams>
       > as jest.Mocked<DeactivationParams>;
       bindingFixture = ConstantValueBindingFixtures.withOnDeactivationUndefined;
-      resolvedValue = Symbol();
+      resolvedValueFixture = Symbol();
     });
 
     describe('when called', () => {
@@ -32,7 +32,7 @@ describe(resolveBindingDeactivations.name, () => {
         result = resolveBindingDeactivations(
           paramsMock,
           bindingFixture,
-          resolvedValue,
+          resolvedValueFixture,
         );
       });
 
@@ -45,7 +45,7 @@ describe(resolveBindingDeactivations.name, () => {
         expect(resolveBindingServiceDeactivations).toHaveBeenCalledWith(
           paramsMock,
           bindingFixture.serviceIdentifier,
-          bindingFixture.cache.value,
+          resolvedValueFixture,
         );
       });
 
@@ -58,7 +58,7 @@ describe(resolveBindingDeactivations.name, () => {
   describe('having a binding with sync deactivation', () => {
     let paramsMock: jest.Mocked<DeactivationParams>;
     let bindingFixture: ConstantValueBinding<unknown>;
-    let resolvedValue: unknown;
+    let resolvedValueFixture: unknown;
 
     beforeAll(() => {
       paramsMock = {
@@ -68,7 +68,7 @@ describe(resolveBindingDeactivations.name, () => {
         jest.Mocked<DeactivationParams>
       > as jest.Mocked<DeactivationParams>;
       bindingFixture = ConstantValueBindingFixtures.withOnDeactivationSync;
-      resolvedValue = Symbol();
+      resolvedValueFixture = Symbol();
     });
 
     describe('when called', () => {
@@ -78,7 +78,7 @@ describe(resolveBindingDeactivations.name, () => {
         result = resolveBindingDeactivations(
           paramsMock,
           bindingFixture,
-          resolvedValue,
+          resolvedValueFixture,
         );
       });
 
@@ -91,7 +91,7 @@ describe(resolveBindingDeactivations.name, () => {
         expect(resolveBindingServiceDeactivations).toHaveBeenCalledWith(
           paramsMock,
           bindingFixture.serviceIdentifier,
-          bindingFixture.cache.value,
+          resolvedValueFixture,
         );
       });
 
@@ -104,7 +104,7 @@ describe(resolveBindingDeactivations.name, () => {
   describe('having a binding with async deactivation', () => {
     let paramsMock: jest.Mocked<DeactivationParams>;
     let bindingFixture: ConstantValueBinding<unknown>;
-    let resolvedValue: unknown;
+    let resolvedValueFixture: unknown;
 
     beforeAll(() => {
       paramsMock = {
@@ -114,7 +114,7 @@ describe(resolveBindingDeactivations.name, () => {
         jest.Mocked<DeactivationParams>
       > as jest.Mocked<DeactivationParams>;
       bindingFixture = ConstantValueBindingFixtures.withOnDeactivationAsync;
-      resolvedValue = Symbol();
+      resolvedValueFixture = Symbol();
     });
 
     describe('when called', () => {
@@ -124,7 +124,7 @@ describe(resolveBindingDeactivations.name, () => {
         result = resolveBindingDeactivations(
           paramsMock,
           bindingFixture,
-          resolvedValue,
+          resolvedValueFixture,
         );
       });
 
@@ -137,7 +137,7 @@ describe(resolveBindingDeactivations.name, () => {
         expect(resolveBindingServiceDeactivations).toHaveBeenCalledWith(
           paramsMock,
           bindingFixture.serviceIdentifier,
-          bindingFixture.cache.value,
+          resolvedValueFixture,
         );
       });
 

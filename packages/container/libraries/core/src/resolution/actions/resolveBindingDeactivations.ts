@@ -23,14 +23,14 @@ export function resolveBindingDeactivations<TResolved>(
     return resolveBindingServiceDeactivations(
       params,
       binding.serviceIdentifier,
-      binding.cache.value,
+      resolvedValue,
     );
   } else {
     return deactivationResult.then((): void | Promise<void> =>
       resolveBindingServiceDeactivations(
         params,
         binding.serviceIdentifier,
-        binding.cache.value,
+        resolvedValue,
       ),
     );
   }
