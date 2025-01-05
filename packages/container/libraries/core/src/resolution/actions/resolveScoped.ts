@@ -1,5 +1,3 @@
-import { ServiceIdentifier } from '@inversifyjs/common';
-
 import {
   BindingScope,
   bindingScopeValues,
@@ -32,7 +30,7 @@ export function resolveScoped<
         const resolvedValue: Resolved<TActivated> = resolveAndActivate(
           params,
           arg,
-          binding.serviceIdentifier,
+          binding,
           resolve,
         );
 
@@ -53,7 +51,7 @@ export function resolveScoped<
         const resolvedValue: Resolved<TActivated> = resolveAndActivate(
           params,
           arg,
-          binding.serviceIdentifier,
+          binding,
           resolve,
         );
 
@@ -62,12 +60,7 @@ export function resolveScoped<
         return resolvedValue;
       }
       case bindingScopeValues.Transient:
-        return resolveAndActivate(
-          params,
-          arg,
-          binding.serviceIdentifier,
-          resolve,
-        );
+        return resolveAndActivate(params, arg, binding, resolve);
     }
   };
 }
@@ -75,12 +68,12 @@ export function resolveScoped<
 function resolveAndActivate<TActivated, TArg>(
   params: ResolutionParams,
   arg: TArg,
-  serviceIdentifier: ServiceIdentifier,
+  binding: ScopedBinding<BindingType, BindingScope, TActivated>,
   resolve: (params: ResolutionParams, arg: TArg) => Resolved<TActivated>,
 ): Resolved<TActivated> {
   return resolveBindingActivations<TActivated>(
     params,
-    serviceIdentifier,
+    binding,
     resolve(params, arg),
   );
 }

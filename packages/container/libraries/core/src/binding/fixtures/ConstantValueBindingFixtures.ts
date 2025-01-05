@@ -41,6 +41,13 @@ export class ConstantValueBindingFixtures {
     };
   }
 
+  public static get withOnActivationUndefined(): ConstantValueBinding<unknown> {
+    return {
+      ...ConstantValueBindingFixtures.any,
+      onActivation: undefined,
+    };
+  }
+
   public static get withOnDeactivationAsync(): ConstantValueBinding<unknown> {
     return {
       ...ConstantValueBindingFixtures.any,

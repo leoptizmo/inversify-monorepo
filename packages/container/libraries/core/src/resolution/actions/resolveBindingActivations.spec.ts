@@ -1,71 +1,47 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
-import { ServiceIdentifier } from '@inversifyjs/common';
+jest.mock('./resolveBindingServiceActivations');
 
-import { BindingActivation } from '../../binding/models/BindingActivation';
+import { ConstantValueBindingFixtures } from '../../binding/fixtures/ConstantValueBindingFixtures';
+import { ConstantValueBinding } from '../../binding/models/ConstantValueBinding';
 import { ResolutionParams } from '../models/ResolutionParams';
 import { resolveBindingActivations } from './resolveBindingActivations';
+import { resolveBindingServiceActivations } from './resolveBindingServiceActivations';
 
 describe(resolveBindingActivations.name, () => {
-  describe('having a non promise value', () => {
+  describe('having a binding with no activation', () => {
     let paramsMock: jest.Mocked<ResolutionParams>;
-    let serviceIdentifierFixture: ServiceIdentifier;
-    let valueFixture: unknown;
+    let bindingFixture: ConstantValueBinding<unknown>;
+    let resolvedValueFixture: unknown;
 
     beforeAll(() => {
       paramsMock = {
         getActivations: jest.fn(),
+        getBindings: jest.fn(),
       } as Partial<
         jest.Mocked<ResolutionParams>
       > as jest.Mocked<ResolutionParams>;
-      serviceIdentifierFixture = 'service-id';
-      valueFixture = Symbol();
+      bindingFixture = ConstantValueBindingFixtures.withOnActivationUndefined;
+      resolvedValueFixture = Symbol();
     });
 
-    describe('when called, and params.getActivations() returns undefined', () => {
+    describe('when called', () => {
+      let resolveBindingServiceActivationsResultFixture: unknown;
       let result: unknown;
 
       beforeAll(() => {
-        result = resolveBindingActivations(
-          paramsMock,
-          serviceIdentifierFixture,
-          valueFixture,
-        );
-      });
+        resolveBindingServiceActivationsResultFixture = Symbol();
 
-      afterAll(() => {
-        jest.clearAllMocks();
-      });
-
-      it('should call params.getActivations', () => {
-        expect(paramsMock.getActivations).toHaveBeenCalledTimes(1);
-        expect(paramsMock.getActivations).toHaveBeenCalledWith(
-          serviceIdentifierFixture,
-        );
-      });
-
-      it('should return value', () => {
-        expect(result).toBe(valueFixture);
-      });
-    });
-
-    describe('when called, and params.getActivations() returns sync activations', () => {
-      let activationMock: jest.Mock<BindingActivation>;
-      let activationResult: unknown;
-
-      let result: unknown;
-
-      beforeAll(() => {
-        activationResult = Symbol('activation-result');
-
-        activationMock = jest.fn().mockReturnValueOnce(activationResult);
-
-        paramsMock.getActivations.mockReturnValueOnce([activationMock]);
+        (
+          resolveBindingServiceActivations as jest.Mock<
+            typeof resolveBindingServiceActivations
+          >
+        ).mockReturnValueOnce(resolveBindingServiceActivationsResultFixture);
 
         result = resolveBindingActivations(
           paramsMock,
-          serviceIdentifierFixture,
-          valueFixture,
+          bindingFixture,
+          resolvedValueFixture,
         );
       });
 
@@ -73,90 +49,63 @@ describe(resolveBindingActivations.name, () => {
         jest.clearAllMocks();
       });
 
-      it('should call params.getActivations', () => {
-        expect(paramsMock.getActivations).toHaveBeenCalledTimes(1);
-        expect(paramsMock.getActivations).toHaveBeenCalledWith(
-          serviceIdentifierFixture,
-        );
-      });
-
-      it('should call activation', () => {
-        expect(activationMock).toHaveBeenCalledTimes(1);
-        expect(activationMock).toHaveBeenCalledWith(valueFixture);
-      });
-
-      it('should return value', () => {
-        expect(result).toBe(activationResult);
-      });
-    });
-
-    describe('when called, and params.getActivations() returns async activations', () => {
-      let activationMock: jest.Mock<BindingActivation>;
-      let activationResult: unknown;
-
-      let result: unknown;
-
-      beforeAll(async () => {
-        activationResult = Symbol('activation-result');
-
-        activationMock = jest
-          .fn()
-          .mockReturnValueOnce(Promise.resolve(activationResult));
-
-        paramsMock.getActivations.mockReturnValueOnce([activationMock]);
-
-        result = await resolveBindingActivations(
+      it('should call resolveBindingServiceActivations()', () => {
+        expect(resolveBindingServiceActivations).toHaveBeenCalledTimes(1);
+        expect(resolveBindingServiceActivations).toHaveBeenCalledWith(
           paramsMock,
-          serviceIdentifierFixture,
-          valueFixture,
+          bindingFixture.serviceIdentifier,
+          resolvedValueFixture,
         );
       });
 
-      afterAll(() => {
-        jest.clearAllMocks();
-      });
-
-      it('should call params.getActivations', () => {
-        expect(paramsMock.getActivations).toHaveBeenCalledTimes(1);
-        expect(paramsMock.getActivations).toHaveBeenCalledWith(
-          serviceIdentifierFixture,
-        );
-      });
-
-      it('should call activation', () => {
-        expect(activationMock).toHaveBeenCalledTimes(1);
-        expect(activationMock).toHaveBeenCalledWith(valueFixture);
-      });
-
-      it('should return value', () => {
-        expect(result).toBe(activationResult);
+      it('should return expected result', () => {
+        expect(result).toBe(resolveBindingServiceActivationsResultFixture);
       });
     });
   });
 
-  describe('having a promise value', () => {
+  describe('having a binding with activation', () => {
+    let onActivationMock: jest.Mock<(value: unknown) => unknown>;
     let paramsMock: jest.Mocked<ResolutionParams>;
-    let serviceIdentifierFixture: ServiceIdentifier;
-    let valueFixture: unknown;
+    let bindingFixture: ConstantValueBinding<unknown>;
+    let resolvedValue: unknown;
 
     beforeAll(() => {
+      onActivationMock = jest.fn();
       paramsMock = {
         getActivations: jest.fn(),
+        getBindings: jest.fn(),
       } as Partial<
         jest.Mocked<ResolutionParams>
       > as jest.Mocked<ResolutionParams>;
-      serviceIdentifierFixture = 'service-id';
-      valueFixture = Symbol();
+      bindingFixture = {
+        ...ConstantValueBindingFixtures.any,
+        onActivation: onActivationMock,
+      };
+      resolvedValue = Symbol();
     });
 
-    describe('when called, and params.getActivations() returns undefined', () => {
+    describe('when called', () => {
+      let onActivationResultFixture: unknown;
+      let resolveBindingServiceActivationsResultFixture: unknown;
       let result: unknown;
 
-      beforeAll(async () => {
-        result = await resolveBindingActivations(
+      beforeAll(() => {
+        onActivationResultFixture = Symbol();
+        resolveBindingServiceActivationsResultFixture = Symbol();
+
+        onActivationMock.mockReturnValueOnce(onActivationResultFixture);
+
+        (
+          resolveBindingServiceActivations as jest.Mock<
+            typeof resolveBindingServiceActivations
+          >
+        ).mockReturnValueOnce(resolveBindingServiceActivationsResultFixture);
+
+        result = resolveBindingActivations(
           paramsMock,
-          serviceIdentifierFixture,
-          Promise.resolve(valueFixture),
+          bindingFixture,
+          resolvedValue,
         );
       });
 
@@ -164,99 +113,17 @@ describe(resolveBindingActivations.name, () => {
         jest.clearAllMocks();
       });
 
-      it('should call params.getActivations', () => {
-        expect(paramsMock.getActivations).toHaveBeenCalledTimes(1);
-        expect(paramsMock.getActivations).toHaveBeenCalledWith(
-          serviceIdentifierFixture,
-        );
-      });
-
-      it('should return value', () => {
-        expect(result).toBe(valueFixture);
-      });
-    });
-
-    describe('when called, and params.getActivations() returns sync activations', () => {
-      let activationMock: jest.Mock<BindingActivation>;
-      let activationResult: unknown;
-
-      let result: unknown;
-
-      beforeAll(async () => {
-        activationResult = Symbol('activation-result');
-
-        activationMock = jest.fn().mockReturnValueOnce(activationResult);
-
-        paramsMock.getActivations.mockReturnValueOnce([activationMock]);
-
-        result = await resolveBindingActivations(
+      it('should call resolveBindingServiceActivations()', () => {
+        expect(resolveBindingServiceActivations).toHaveBeenCalledTimes(1);
+        expect(resolveBindingServiceActivations).toHaveBeenCalledWith(
           paramsMock,
-          serviceIdentifierFixture,
-          Promise.resolve(valueFixture),
+          bindingFixture.serviceIdentifier,
+          onActivationResultFixture,
         );
       });
 
-      afterAll(() => {
-        jest.clearAllMocks();
-      });
-
-      it('should call params.getActivations', () => {
-        expect(paramsMock.getActivations).toHaveBeenCalledTimes(1);
-        expect(paramsMock.getActivations).toHaveBeenCalledWith(
-          serviceIdentifierFixture,
-        );
-      });
-
-      it('should call activation', () => {
-        expect(activationMock).toHaveBeenCalledTimes(1);
-        expect(activationMock).toHaveBeenCalledWith(valueFixture);
-      });
-
-      it('should return value', () => {
-        expect(result).toBe(activationResult);
-      });
-    });
-
-    describe('when called, and params.getActivations() returns async activations', () => {
-      let activationMock: jest.Mock<BindingActivation>;
-      let activationResult: unknown;
-
-      let result: unknown;
-
-      beforeAll(async () => {
-        activationResult = Symbol('activation-result');
-
-        activationMock = jest
-          .fn()
-          .mockReturnValueOnce(Promise.resolve(activationResult));
-
-        paramsMock.getActivations.mockReturnValueOnce([activationMock]);
-
-        result = await resolveBindingActivations(
-          paramsMock,
-          serviceIdentifierFixture,
-          Promise.resolve(valueFixture),
-        );
-      });
-
-      afterAll(() => {
-        jest.clearAllMocks();
-      });
-
-      it('should call params.getActivations', () => {
-        expect(paramsMock.getActivations).toHaveBeenCalledTimes(1);
-        expect(paramsMock.getActivations).toHaveBeenCalledWith(
-          serviceIdentifierFixture,
-        );
-      });
-
-      it('should call activation', () => {
-        expect(activationMock).toHaveBeenCalledTimes(1);
-        expect(activationMock).toHaveBeenCalledWith(valueFixture);
-      });
-
-      it('should return value', () => {
-        expect(result).toBe(activationResult);
+      it('should return expected result', () => {
+        expect(result).toBe(resolveBindingServiceActivationsResultFixture);
       });
     });
   });

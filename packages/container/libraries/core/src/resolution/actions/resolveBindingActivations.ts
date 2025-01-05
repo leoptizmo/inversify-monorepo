@@ -1,76 +1,36 @@
-import { isPromise, ServiceIdentifier } from '@inversifyjs/common';
+import { isPromise } from '@inversifyjs/common';
 
 import { BindingActivation } from '../../binding/models/BindingActivation';
+import { BindingScope } from '../../binding/models/BindingScope';
+import { BindingType } from '../../binding/models/BindingType';
+import { ScopedBinding } from '../../binding/models/ScopedBinding';
 import { ResolutionParams } from '../models/ResolutionParams';
 import { Resolved, SyncResolved } from '../models/Resolved';
+import { resolveBindingServiceActivations } from './resolveBindingServiceActivations';
 
 export function resolveBindingActivations<TActivated>(
   params: ResolutionParams,
-  serviceIdentifier: ServiceIdentifier<TActivated>,
+  binding: ScopedBinding<BindingType, BindingScope, TActivated>,
   value: Resolved<TActivated>,
 ): Resolved<TActivated> {
-  const activations: Iterable<BindingActivation<TActivated>> | undefined =
-    params.getActivations(serviceIdentifier);
+  let activationResult: TActivated | Promise<TActivated> = value;
 
-  if (activations === undefined) {
-    return value;
-  }
+  if (binding.onActivation !== undefined) {
+    const onActivation: BindingActivation<TActivated> = binding.onActivation;
 
-  if (isPromise(value)) {
-    return resolveBindingActivationsFromIteratorAsync(
-      value,
-      activations[Symbol.iterator](),
-    );
-  }
-
-  return resolveBindingActivationsFromIterator(
-    value,
-    activations[Symbol.iterator](),
-  );
-}
-
-function resolveBindingActivationsFromIterator<TActivated>(
-  value: SyncResolved<TActivated>,
-  activationsIterator: Iterator<BindingActivation<TActivated>>,
-): Resolved<TActivated> {
-  let activatedValue: SyncResolved<TActivated> = value;
-
-  let activationIteratorResult: IteratorResult<BindingActivation<TActivated>> =
-    activationsIterator.next();
-
-  while (activationIteratorResult.done !== true) {
-    const nextActivatedValue: Resolved<TActivated> =
-      activationIteratorResult.value(activatedValue);
-
-    if (isPromise(nextActivatedValue)) {
-      return resolveBindingActivationsFromIteratorAsync(
-        nextActivatedValue,
-        activationsIterator,
+    if (isPromise(activationResult)) {
+      activationResult = activationResult.then(
+        (resolved: SyncResolved<TActivated>): Resolved<TActivated> =>
+          onActivation(resolved),
       );
     } else {
-      activatedValue = nextActivatedValue;
+      activationResult = onActivation(activationResult);
     }
-
-    activationIteratorResult = activationsIterator.next();
   }
 
-  return activatedValue;
-}
-
-async function resolveBindingActivationsFromIteratorAsync<TActivated>(
-  value: Promise<TActivated>,
-  activationsIterator: Iterator<BindingActivation<TActivated>>,
-): Promise<SyncResolved<TActivated>> {
-  let activatedValue: SyncResolved<TActivated> = await value;
-
-  let activationIteratorResult: IteratorResult<BindingActivation<TActivated>> =
-    activationsIterator.next();
-
-  while (activationIteratorResult.done !== true) {
-    activatedValue = await activationIteratorResult.value(activatedValue);
-
-    activationIteratorResult = activationsIterator.next();
-  }
-
-  return activatedValue;
+  return resolveBindingServiceActivations<TActivated>(
+    params,
+    binding.serviceIdentifier,
+    activationResult,
+  );
 }

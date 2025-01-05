@@ -157,7 +157,7 @@ describe(resolveScoped.name, () => {
       expect(resolveBindingActivations).toHaveBeenCalledTimes(1);
       expect(resolveBindingActivations).toHaveBeenCalledWith(
         paramsMock,
-        bindingFixture.serviceIdentifier,
+        bindingFixture,
         resolveResult,
       );
     });
@@ -315,7 +315,7 @@ describe(resolveScoped.name, () => {
       expect(resolveBindingActivations).toHaveBeenCalledTimes(1);
       expect(resolveBindingActivations).toHaveBeenCalledWith(
         paramsMock,
-        bindingFixture.serviceIdentifier,
+        bindingFixture,
         resolveResult,
       );
     });
@@ -395,7 +395,7 @@ describe(resolveScoped.name, () => {
       expect(resolveBindingActivations).toHaveBeenCalledTimes(1);
       expect(resolveBindingActivations).toHaveBeenCalledWith(
         paramsMock,
-        bindingFixture.serviceIdentifier,
+        bindingFixture,
         resolveResult,
       );
     });

@@ -144,7 +144,7 @@ describe(resolveSingletonScopedBinding.name, () => {
         expect(resolveBindingActivations).toHaveBeenCalledTimes(1);
         expect(resolveBindingActivations).toHaveBeenCalledWith(
           resolutionParamsFixture,
-          bindingFixture.serviceIdentifier,
+          bindingFixture,
           resolveResult,
         );
       });

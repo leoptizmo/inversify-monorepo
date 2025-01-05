@@ -29,7 +29,7 @@ export function resolveSingletonScopedBinding<
 
     const resolvedValue: Resolved<TActivated> = resolveBindingActivations(
       params,
-      binding.serviceIdentifier,
+      binding,
       resolve(params, binding),
     );
 
