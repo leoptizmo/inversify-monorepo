@@ -29,6 +29,17 @@
       "inputs": ["src/**/*.{cts,mts,ts}"],
       "outputs": []
     },
+    "test:e2e": {
+      "cache": false
+    },
+    "test:e2e:cjs": {
+      "cache": false,
+      "dependsOn": ["build"]
+    },
+    "test:e2e:esm": {
+      "cache": false,
+      "dependsOn": ["build"]
+    },
     "test:integration:js": {
       "dependsOn": ["build"],
       "inputs": ["{dist,lib}/**/*.{cjs,mjs,js}"],
