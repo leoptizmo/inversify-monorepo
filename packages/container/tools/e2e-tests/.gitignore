@@ -1,7 +1,7 @@
 # Typescript compiled files
 /lib/**
 
-/tsconfig.tsbuildinfo
+/tsconfig.cjs.tsbuildinfo
 
 # node modules
 /node_modules/
