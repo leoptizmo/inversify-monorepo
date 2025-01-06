@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
+import multi from '@rollup/plugin-multi-entry';
 import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
 import { dts } from 'rollup-plugin-dts';
@@ -65,6 +66,59 @@ function buildBundleConfig(inputFile, outputDir) {
         dts({
           tsconfig: './tsconfig.esm.json',
         }),
+      ],
+    },
+  ];
+}
+
+/**
+ * @param { !string } input
+ * @param { !string } output
+ * @returns {!import("rollup").MergedRollupOptions[]}
+ */
+export function buildMultiBundleConfig(inputFiles, outputDir) {
+  const filePath = path.parse(inputFiles);
+
+  const declarationFilePath = path.join(
+    outputDir,
+    `${filePath.name}.d${filePath.ext}`,
+  );
+
+  return [
+    {
+      input: inputFiles,
+      external: [...packageDependencies, ...packagePeerDependencies],
+      output: [
+        {
+          dir: outputDir,
+          format: 'esm',
+          sourcemap: true,
+          sourcemapPathTransform: (relativeSourcePath) => {
+            // Rollup seems to generate source maps pointing to the wrong directory. Ugly patch to fix it
+            if (relativeSourcePath.startsWith('../')) {
+              return relativeSourcePath.slice(3);
+            } else {
+              return relativeSourcePath;
+            }
+          },
+        },
+      ],
+      plugins: [
+        multi(),
+        typescript({
+          tsconfig: './tsconfig.esm.json',
+        }),
+        terser(),
+      ],
+    },
+    {
+      input: declarationFilePath,
+      output: [{ file: declarationFilePath, format: 'es' }],
+      plugins: [
+        dts({
+          tsconfig: './tsconfig.esm.json',
+        }),
+        multi(),
       ],
     },
   ];
