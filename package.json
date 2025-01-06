@@ -44,6 +44,9 @@
     "test:mutation": "turbo run test:mutation --concurrency=25%",
     "test:uncommitted": "turbo run test:uncommitted --filter [HEAD]",
     "test:unit:js": "turbo run test:unit:js",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "test:e2e:cjs": "turbo run test:e2e:cjs",
+    "test:e2e:esm": "turbo run test:e2e:esm"
   }
 }
