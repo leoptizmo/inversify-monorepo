@@ -11,3 +11,18 @@ Feature: Bind
         Given a service "service-id" binding to constant value
         When binding is bound to container
         Then container acknowledges binding to be bound
+
+    Rule: container binds in the expected scope
+
+      Scenario: A binding is bound to a container and two requests are resolved according to the binding scope
+        Given a service "service-id" binding to dynamic value in <binding_scope> scope
+        When binding is bound to container
+        And container gets a "first" value for service "service-id"
+        And container gets a "second" value for service "service-id"
+        Then "first" and "second" values are <equality>
+
+        Examples:
+          | binding_scope | equality |
+          | "Request"     | distinct |
+          | "Singleton"   | equal    |
+          | "Transient"   | distinct |
