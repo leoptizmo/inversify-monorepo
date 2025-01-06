@@ -8,6 +8,11 @@ export interface EntitiesMap {
   containers: Map<string, Container>;
 }
 
+export interface ContainerRequests {
+  get: Map<string, unknown>;
+}
+
 export interface InversifyWorld extends IWorld {
+  readonly containerRequests: ContainerRequests;
   readonly entities: EntitiesMap;
 }

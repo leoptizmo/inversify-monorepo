@@ -8,7 +8,11 @@ function getConfiguration(parallel) {
   /** @type {!import("@cucumber/cucumber/lib/configuration").IConfiguration} */
   const config = {
     ...getBaseConfiguration(parallel),
-    require: ['src/*/step-definitions/*.ts', 'src/app/hooks/*.ts'],
+    require: [
+      'src/*/parameters/*.ts',
+      'src/*/step-definitions/*.ts',
+      'src/app/hooks/*.ts',
+    ],
     requireModule: ['ts-node/register'],
   };
 

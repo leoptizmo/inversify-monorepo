@@ -8,7 +8,11 @@ function getConfiguration(parallel) {
   /** @type {!import("@cucumber/cucumber/lib/configuration").IConfiguration} */
   const config = {
     ...getBaseConfiguration(parallel),
-    require: ['lib/cjs/*/step-definitions/*.js', 'lib/cjs/app/hooks/*.js'],
+    require: [
+      'lib/cjs/*/parameters/*.js',
+      'lib/cjs/*/step-definitions/*.js',
+      'lib/cjs/app/hooks/*.js',
+    ],
   };
 
   return config;
