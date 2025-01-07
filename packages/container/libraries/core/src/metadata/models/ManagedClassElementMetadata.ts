@@ -11,6 +11,7 @@ export interface ManagedClassElementMetadata
     | ClassElementMetadataKind.singleInjection
     | ClassElementMetadataKind.multipleInjection
   > {
+  isFromTypescriptParamType?: true;
   name: MetadataName | undefined;
   optional: boolean;
   tags: Map<MetadataTag, unknown>;
