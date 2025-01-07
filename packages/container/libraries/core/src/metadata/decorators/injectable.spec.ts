@@ -4,21 +4,42 @@ jest.mock('@inversifyjs/reflect-metadata-utils');
 
 import { updateReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
+jest.mock('../actions/updateClassMetadataWithTypescriptParameterTypes');
+
 import {
   BindingScope,
   bindingScopeValues,
 } from '../../binding/models/BindingScope';
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
+import { updateClassMetadataWithTypescriptParameterTypes } from '../actions/updateClassMetadataWithTypescriptParameterTypes';
 import { getDefaultClassMetadata } from '../calculations/getDefaultClassMetadata';
 import { injectable } from './injectable';
 
 describe(injectable.name, () => {
   describe('having undefined binding scope', () => {
     describe('when called', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+      let targetFixture: Function;
+
       let result: unknown;
 
       beforeAll(() => {
-        result = injectable()(class {});
+        targetFixture = class {};
+
+        result = injectable()(targetFixture);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call updateClassMetadataWithTypescriptParameterTypes()', () => {
+        expect(
+          updateClassMetadataWithTypescriptParameterTypes,
+        ).toHaveBeenCalledTimes(1);
+        expect(
+          updateClassMetadataWithTypescriptParameterTypes,
+        ).toHaveBeenCalledWith(targetFixture);
       });
 
       it('should not call updateReflectMetadata()', () => {
@@ -49,6 +70,19 @@ describe(injectable.name, () => {
 
       afterAll(() => {
         jest.clearAllMocks();
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call updateClassMetadataWithTypescriptParameterTypes()', () => {
+        expect(
+          updateClassMetadataWithTypescriptParameterTypes,
+        ).toHaveBeenCalledTimes(1);
+        expect(
+          updateClassMetadataWithTypescriptParameterTypes,
+        ).toHaveBeenCalledWith(Foo);
       });
 
       it('should call updateReflectMetadata()', () => {
