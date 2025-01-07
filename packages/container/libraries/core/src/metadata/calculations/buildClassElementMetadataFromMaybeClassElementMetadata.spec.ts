@@ -4,6 +4,7 @@ import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
 import { ClassElementMetadataKind } from '../models/ClassElementMetadataKind';
+import { ManagedClassElementMetadata } from '../models/ManagedClassElementMetadata';
 import { MaybeClassElementMetadataKind } from '../models/MaybeClassElementMetadataKind';
 import { MaybeManagedClassElementMetadata } from '../models/MaybeManagedClassElementMetadata';
 import { UnmanagedClassElementMetadata } from '../models/UnmanagedClassElementMetadata';
@@ -16,7 +17,9 @@ describe(buildClassElementMetadataFromMaybeClassElementMetadata.name, () => {
     >;
     let buildMetadataFromMaybeManagedMetadataMock: jest.Mock<
       (
-        metadata: MaybeManagedClassElementMetadata,
+        metadata:
+          | MaybeManagedClassElementMetadata
+          | ManagedClassElementMetadata,
         ...params: unknown[]
       ) => ClassElementMetadata
     >;
@@ -72,7 +75,9 @@ describe(buildClassElementMetadataFromMaybeClassElementMetadata.name, () => {
     >;
     let buildMetadataFromMaybeManagedMetadataMock: jest.Mock<
       (
-        metadata: MaybeManagedClassElementMetadata,
+        metadata:
+          | MaybeManagedClassElementMetadata
+          | ManagedClassElementMetadata,
         ...params: unknown[]
       ) => ClassElementMetadata
     >;
@@ -139,7 +144,9 @@ describe(buildClassElementMetadataFromMaybeClassElementMetadata.name, () => {
     >;
     let buildMetadataFromMaybeManagedMetadataMock: jest.Mock<
       (
-        metadata: MaybeManagedClassElementMetadata,
+        metadata:
+          | MaybeManagedClassElementMetadata
+          | ManagedClassElementMetadata,
         ...params: unknown[]
       ) => ClassElementMetadata
     >;
