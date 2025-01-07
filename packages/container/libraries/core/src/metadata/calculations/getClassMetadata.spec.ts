@@ -7,19 +7,19 @@ jest.mock('@inversifyjs/reflect-metadata-utils');
 import { Newable } from '@inversifyjs/common';
 import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
-jest.mock('./assertConstructorMetadataArrayFilled');
 jest.mock('./getDefaultClassMetadata');
 jest.mock('./isPendingClassMetadata');
 jest.mock('./throwAtInvalidClassMetadata');
+jest.mock('./validateConstructorMetadataArray');
 
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
 import { ClassMetadataFixtures } from '../fixtures/ClassMetadataFixtures';
 import { ClassMetadata } from '../models/ClassMetadata';
-import { assertConstructorMetadataArrayFilled } from './assertConstructorMetadataArrayFilled';
 import { getClassMetadata } from './getClassMetadata';
 import { getDefaultClassMetadata } from './getDefaultClassMetadata';
 import { isPendingClassMetadata } from './isPendingClassMetadata';
 import { throwAtInvalidClassMetadata } from './throwAtInvalidClassMetadata';
+import { validateConstructorMetadataArray } from './validateConstructorMetadataArray';
 
 describe(getClassMetadata.name, () => {
   let typeFixture: Newable;
@@ -134,9 +134,9 @@ describe(getClassMetadata.name, () => {
       expect(getDefaultClassMetadata).toHaveBeenCalledWith();
     });
 
-    it('should call assertConstructorMetadataArrayFilled()', () => {
-      expect(assertConstructorMetadataArrayFilled).toHaveBeenCalledTimes(1);
-      expect(assertConstructorMetadataArrayFilled).toHaveBeenCalledWith(
+    it('should call validateConstructorMetadataArray()', () => {
+      expect(validateConstructorMetadataArray).toHaveBeenCalledTimes(1);
+      expect(validateConstructorMetadataArray).toHaveBeenCalledWith(
         typeFixture,
         metadataFixture.constructorArguments,
       );

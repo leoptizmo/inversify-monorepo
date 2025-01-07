@@ -3,10 +3,10 @@ import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
 import { ClassMetadata } from '../models/ClassMetadata';
-import { assertConstructorMetadataArrayFilled } from './assertConstructorMetadataArrayFilled';
 import { getDefaultClassMetadata } from './getDefaultClassMetadata';
 import { isPendingClassMetadata } from './isPendingClassMetadata';
 import { throwAtInvalidClassMetadata } from './throwAtInvalidClassMetadata';
+import { validateConstructorMetadataArray } from './validateConstructorMetadataArray';
 
 export function getClassMetadata(type: Newable): ClassMetadata {
   const classMetadata: ClassMetadata =
@@ -16,10 +16,7 @@ export function getClassMetadata(type: Newable): ClassMetadata {
   if (isPendingClassMetadata(type)) {
     throwAtInvalidClassMetadata(type, classMetadata);
   } else {
-    assertConstructorMetadataArrayFilled(
-      type,
-      classMetadata.constructorArguments,
-    );
+    validateConstructorMetadataArray(type, classMetadata.constructorArguments);
 
     return classMetadata;
   }
