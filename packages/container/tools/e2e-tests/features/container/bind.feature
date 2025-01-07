@@ -26,3 +26,17 @@ Feature: Bind
           | "Request"     | distinct |
           | "Singleton"   | equal    |
           | "Transient"   | distinct |
+
+      Scenario: A binding is bound to a container and two sub requests are resolved according to the binding scope
+        Given a sword type binding as "sword" in <binding_scope> scope
+        And a service "service-id" dual wield swordsman type binding
+        When "sword" binding is bound to container
+        And binding is bound to container
+        And container gets a value for service "service-id"
+        Then dual wield swordsman swords are <equality>
+
+        Examples:
+          | binding_scope | equality |
+          | "Request"     | equal    |
+          | "Singleton"   | equal    |
+          | "Transient"   | distinct |

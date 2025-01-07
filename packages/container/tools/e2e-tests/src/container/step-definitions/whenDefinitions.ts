@@ -21,6 +21,13 @@ function whenContainerGetsValueForService(
 }
 
 When<InversifyWorld>(
+  'container gets a value for service {string}',
+  function (serviceId: string): void {
+    whenContainerGetsValueForService.bind(this)(serviceId);
+  },
+);
+
+When<InversifyWorld>(
   'container gets a {string} value for service {string}',
   function (valueAlias: string, serviceId: string): void {
     whenContainerGetsValueForService.bind(this)(
