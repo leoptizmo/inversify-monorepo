@@ -21,3 +21,10 @@ function whenBindingIsBound(
 When<InversifyWorld>('binding is bound to container', function (): void {
   whenBindingIsBound.bind(this)();
 });
+
+When<InversifyWorld>(
+  '{string} binding is bound to container',
+  function (bindingAlias: string): void {
+    whenBindingIsBound.bind(this)(bindingAlias);
+  },
+);
