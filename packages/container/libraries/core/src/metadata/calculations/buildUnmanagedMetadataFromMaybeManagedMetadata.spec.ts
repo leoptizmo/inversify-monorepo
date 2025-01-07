@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
+jest.mock('./assertMetadataFromTypescriptIfManaged');
 jest.mock('./buildDefaultUnmanagedMetadata');
 
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
@@ -8,6 +9,7 @@ import { ClassElementMetadataKind } from '../models/ClassElementMetadataKind';
 import { MaybeClassElementMetadataKind } from '../models/MaybeClassElementMetadataKind';
 import { MaybeManagedClassElementMetadata } from '../models/MaybeManagedClassElementMetadata';
 import { UnmanagedClassElementMetadata } from '../models/UnmanagedClassElementMetadata';
+import { assertMetadataFromTypescriptIfManaged } from './assertMetadataFromTypescriptIfManaged';
 import { buildDefaultUnmanagedMetadata } from './buildDefaultUnmanagedMetadata';
 import { buildUnmanagedMetadataFromMaybeManagedMetadata } from './buildUnmanagedMetadataFromMaybeManagedMetadata';
 
@@ -72,6 +74,19 @@ describe(buildUnmanagedMetadataFromMaybeManagedMetadata.name, () => {
           }
         });
 
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call assertMetadataFromTypescriptIfManaged()', () => {
+          expect(assertMetadataFromTypescriptIfManaged).toHaveBeenCalledTimes(
+            1,
+          );
+          expect(assertMetadataFromTypescriptIfManaged).toHaveBeenCalledWith(
+            maybeManagedClassElementMetadata,
+          );
+        });
+
         it('should throw an InversifyCoreError', () => {
           const expectedErrorProperties: Partial<InversifyCoreError> = {
             kind: InversifyCoreErrorKind.injectionDecoratorConflict,
@@ -124,6 +139,13 @@ describe(buildUnmanagedMetadataFromMaybeManagedMetadata.name, () => {
 
       afterAll(() => {
         jest.clearAllMocks();
+      });
+
+      it('should call assertMetadataFromTypescriptIfManaged()', () => {
+        expect(assertMetadataFromTypescriptIfManaged).toHaveBeenCalledTimes(1);
+        expect(assertMetadataFromTypescriptIfManaged).toHaveBeenCalledWith(
+          maybeManagedClassElementMetadata,
+        );
       });
 
       it('should call buildDefaultUnmanagedMetadata()', () => {

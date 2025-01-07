@@ -1,8 +1,9 @@
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
 import { ClassElementMetadata } from '../models/ClassElementMetadata';
+import { ClassElementMetadataKind } from '../models/ClassElementMetadataKind';
+import { ManagedClassElementMetadata } from '../models/ManagedClassElementMetadata';
 import { MaybeClassElementMetadata } from '../models/MaybeClassElementMetadata';
-import { MaybeClassElementMetadataKind } from '../models/MaybeClassElementMetadataKind';
 import { MaybeManagedClassElementMetadata } from '../models/MaybeManagedClassElementMetadata';
 
 export function buildClassElementMetadataFromMaybeClassElementMetadata<
@@ -10,7 +11,7 @@ export function buildClassElementMetadataFromMaybeClassElementMetadata<
 >(
   buildDefaultMetadata: (...params: TParams) => ClassElementMetadata,
   buildMetadataFromMaybeManagedMetadata: (
-    metadata: MaybeManagedClassElementMetadata,
+    metadata: MaybeManagedClassElementMetadata | ManagedClassElementMetadata,
     ...params: TParams
   ) => ClassElementMetadata,
 ): (
@@ -22,14 +23,13 @@ export function buildClassElementMetadataFromMaybeClassElementMetadata<
         return buildDefaultMetadata(...params);
       }
 
-      switch (metadata.kind) {
-        case MaybeClassElementMetadataKind.unknown:
-          return buildMetadataFromMaybeManagedMetadata(metadata, ...params);
-        default:
-          throw new InversifyCoreError(
-            InversifyCoreErrorKind.injectionDecoratorConflict,
-            'Unexpected injection found. Multiple @inject, @multiInject or @unmanaged decorators found',
-          );
+      if (metadata.kind === ClassElementMetadataKind.unmanaged) {
+        throw new InversifyCoreError(
+          InversifyCoreErrorKind.injectionDecoratorConflict,
+          'Unexpected injection found. Multiple @inject, @multiInject or @unmanaged decorators found',
+        );
       }
+
+      return buildMetadataFromMaybeManagedMetadata(metadata, ...params);
     };
 }
