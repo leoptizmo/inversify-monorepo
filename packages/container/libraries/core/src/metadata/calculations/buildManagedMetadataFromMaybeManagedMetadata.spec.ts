@@ -1,11 +1,14 @@
-import { beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
 import { LazyServiceIdentifier, ServiceIdentifier } from '@inversifyjs/common';
+
+jest.mock('./assertMetadataFromTypescriptIfManaged');
 
 import { ClassElementMetadataKind } from '../models/ClassElementMetadataKind';
 import { ManagedClassElementMetadata } from '../models/ManagedClassElementMetadata';
 import { MaybeClassElementMetadataKind } from '../models/MaybeClassElementMetadataKind';
 import { MaybeManagedClassElementMetadata } from '../models/MaybeManagedClassElementMetadata';
+import { assertMetadataFromTypescriptIfManaged } from './assertMetadataFromTypescriptIfManaged';
 import { buildManagedMetadataFromMaybeManagedMetadata } from './buildManagedMetadataFromMaybeManagedMetadata';
 
 describe(buildManagedMetadataFromMaybeManagedMetadata.name, () => {
@@ -34,6 +37,17 @@ describe(buildManagedMetadataFromMaybeManagedMetadata.name, () => {
         metadataFixture,
         kindFixture,
         serviceIdentifierFixture,
+      );
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should call assertMetadataFromTypescriptIfManaged()', () => {
+      expect(assertMetadataFromTypescriptIfManaged).toHaveBeenCalledTimes(1);
+      expect(assertMetadataFromTypescriptIfManaged).toHaveBeenCalledWith(
+        metadataFixture,
       );
     });
 
