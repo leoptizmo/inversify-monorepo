@@ -1,12 +1,16 @@
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
+import { ManagedClassElementMetadata } from '../models/ManagedClassElementMetadata';
 import { MaybeManagedClassElementMetadata } from '../models/MaybeManagedClassElementMetadata';
 import { UnmanagedClassElementMetadata } from '../models/UnmanagedClassElementMetadata';
+import { assertMetadataFromTypescriptIfManaged } from './assertMetadataFromTypescriptIfManaged';
 import { buildDefaultUnmanagedMetadata } from './buildDefaultUnmanagedMetadata';
 
 export function buildUnmanagedMetadataFromMaybeManagedMetadata(
-  metadata: MaybeManagedClassElementMetadata,
+  metadata: MaybeManagedClassElementMetadata | ManagedClassElementMetadata,
 ): UnmanagedClassElementMetadata {
+  assertMetadataFromTypescriptIfManaged(metadata);
+
   if (hasManagedMetadata(metadata)) {
     throw new InversifyCoreError(
       InversifyCoreErrorKind.injectionDecoratorConflict,
@@ -18,7 +22,7 @@ export function buildUnmanagedMetadataFromMaybeManagedMetadata(
 }
 
 function hasManagedMetadata(
-  metadata: MaybeManagedClassElementMetadata,
+  metadata: MaybeManagedClassElementMetadata | ManagedClassElementMetadata,
 ): boolean {
   return (
     metadata.name !== undefined ||
