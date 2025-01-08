@@ -12,6 +12,16 @@ Feature: Bind
         When binding is bound to container
         Then container acknowledges binding to be bound
 
+      Scenario: A named binding is acknowledged after being bound to a container
+        Given a service "weapon" sword type binding as "sword" when named "sword"
+        When "sword" binding is bound to container
+        Then container acknowledges "sword" binding to be bound when named "sword"
+
+      Scenario: A tagged binding is acknowledged after being bound to a container
+        Given a service "weapon" sword type binding as "sword" when tagged "kind" to "sword"
+        When "sword" binding is bound to container
+        Then container acknowledges "sword" binding to be bound when tagged "kind" to "sword"
+
     Rule: container binds in the expected scope
 
       Scenario: A binding is bound to a container and two requests are resolved according to the binding scope

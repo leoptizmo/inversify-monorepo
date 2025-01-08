@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 
 import { Then } from '@cucumber/cucumber';
+import { IsBoundOptions } from '@inversifyjs/container';
 
 import { defaultAlias } from '../../common/models/defaultAlias';
 import { InversifyWorld } from '../../common/models/InversifyWorld';
@@ -9,6 +10,7 @@ import { getBindingOrFail } from '../calculations/getContainerOrFail';
 
 function thenContainerAcknowledgesBindingToBeBound(
   this: InversifyWorld,
+  isBoundOptions?: IsBoundOptions,
   bindingAlias?: string,
   containerAlias?: string,
 ): void {
@@ -20,6 +22,7 @@ function thenContainerAcknowledgesBindingToBeBound(
       .bind(this)(parsedContainerAlias)
       .isBound(
         getBindingOrFail.bind(this)(parsedBindingAlias).serviceIdentifier,
+        isBoundOptions,
       ),
   );
 }
@@ -27,6 +30,31 @@ function thenContainerAcknowledgesBindingToBeBound(
 Then<InversifyWorld>(
   'container acknowledges binding to be bound',
   function (): void {
-    thenContainerAcknowledgesBindingToBeBound.bind(this);
+    thenContainerAcknowledgesBindingToBeBound.bind(this)();
+  },
+);
+
+Then<InversifyWorld>(
+  'container acknowledges {string} binding to be bound when named {string}',
+  function (bindingAlias: string, name: string): void {
+    thenContainerAcknowledgesBindingToBeBound.bind(this)(
+      { name },
+      bindingAlias,
+    );
+  },
+);
+
+Then<InversifyWorld>(
+  'container acknowledges {string} binding to be bound when tagged {string} to {string}',
+  function (bindingAlias: string, tag: string, tagValue: string): void {
+    thenContainerAcknowledgesBindingToBeBound.bind(this)(
+      {
+        tag: {
+          key: tag,
+          value: tagValue,
+        },
+      },
+      bindingAlias,
+    );
   },
 );
