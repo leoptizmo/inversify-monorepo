@@ -3,10 +3,10 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { BindingMetadata, MetadataName } from '@inversifyjs/core';
 
 jest.mock('./isBindingMetadataWithName');
-jest.mock('./isBindingMetadataWithRightParent');
+jest.mock('./isParentBindingMetadata');
 
 import { isBindingMetadataWithName } from './isBindingMetadataWithName';
-import { isBindingMetadataWithRightParent } from './isBindingMetadataWithRightParent';
+import { isParentBindingMetadata } from './isParentBindingMetadata';
 import { isParentBindingMetadataWithName } from './isParentBindingMetadataWithName';
 
 describe(isParentBindingMetadataWithName.name, () => {
@@ -20,7 +20,7 @@ describe(isParentBindingMetadataWithName.name, () => {
     let isBindingMetadataWithNameResultMock: jest.Mock<
       (metadata: BindingMetadata) => boolean
     >;
-    let isBindingMetadataWithRightParentResultMock: jest.Mock<
+    let isParentBindingMetadataResultMock: jest.Mock<
       (metadata: BindingMetadata) => boolean
     >;
 
@@ -28,17 +28,15 @@ describe(isParentBindingMetadataWithName.name, () => {
 
     beforeAll(() => {
       isBindingMetadataWithNameResultMock = jest.fn();
-      isBindingMetadataWithRightParentResultMock = jest.fn();
+      isParentBindingMetadataResultMock = jest.fn();
 
       (
         isBindingMetadataWithName as jest.Mock<typeof isBindingMetadataWithName>
       ).mockReturnValueOnce(isBindingMetadataWithNameResultMock);
 
       (
-        isBindingMetadataWithRightParent as jest.Mock<
-          typeof isBindingMetadataWithRightParent
-        >
-      ).mockReturnValueOnce(isBindingMetadataWithRightParentResultMock);
+        isParentBindingMetadata as jest.Mock<typeof isParentBindingMetadata>
+      ).mockReturnValueOnce(isParentBindingMetadataResultMock);
 
       result = isParentBindingMetadataWithName(nameFixture);
     });
@@ -52,15 +50,15 @@ describe(isParentBindingMetadataWithName.name, () => {
       expect(isBindingMetadataWithName).toHaveBeenCalledWith(nameFixture);
     });
 
-    it('should call isBindingMetadataWithRightParent()', () => {
-      expect(isBindingMetadataWithRightParent).toHaveBeenCalledTimes(1);
-      expect(isBindingMetadataWithRightParent).toHaveBeenCalledWith(
+    it('should call isParentBindingMetadata()', () => {
+      expect(isParentBindingMetadata).toHaveBeenCalledTimes(1);
+      expect(isParentBindingMetadata).toHaveBeenCalledWith(
         isBindingMetadataWithNameResultMock,
       );
     });
 
     it('should return expected result', () => {
-      expect(result).toBe(isBindingMetadataWithRightParentResultMock);
+      expect(result).toBe(isParentBindingMetadataResultMock);
     });
   });
 });

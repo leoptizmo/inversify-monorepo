@@ -2,9 +2,9 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
 import { BindingMetadata } from '@inversifyjs/core';
 
-import { isBindingMetadataWithRightParent } from './isBindingMetadataWithRightParent';
+import { isParentBindingMetadata } from './isParentBindingMetadata';
 
-describe(isBindingMetadataWithRightParent.name, () => {
+describe(isParentBindingMetadata.name, () => {
   let constraintMock: jest.Mock<(metadata: BindingMetadata) => boolean>;
   let metadataMock: jest.Mocked<BindingMetadata>;
 
@@ -21,7 +21,7 @@ describe(isBindingMetadataWithRightParent.name, () => {
     beforeAll(() => {
       metadataMock.getAncestor.mockReturnValueOnce(undefined);
 
-      result = isBindingMetadataWithRightParent(constraintMock)(metadataMock);
+      result = isParentBindingMetadata(constraintMock)(metadataMock);
     });
 
     afterAll(() => {
@@ -54,7 +54,7 @@ describe(isBindingMetadataWithRightParent.name, () => {
 
       constraintMock.mockReturnValueOnce(constraintResultFixture);
 
-      result = isBindingMetadataWithRightParent(constraintMock)(metadataMock);
+      result = isParentBindingMetadata(constraintMock)(metadataMock);
     });
 
     afterAll(() => {

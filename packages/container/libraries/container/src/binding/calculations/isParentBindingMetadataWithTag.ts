@@ -1,11 +1,11 @@
 import { BindingMetadata, MetadataTag } from '@inversifyjs/core';
 
-import { isBindingMetadataWithRightParent } from './isBindingMetadataWithRightParent';
 import { isBindingMetadataWithTag } from './isBindingMetadataWithTag';
+import { isParentBindingMetadata } from './isParentBindingMetadata';
 
 export function isParentBindingMetadataWithTag(
   tag: MetadataTag,
   value: unknown,
 ): (metadata: BindingMetadata) => boolean {
-  return isBindingMetadataWithRightParent(isBindingMetadataWithTag(tag, value));
+  return isParentBindingMetadata(isBindingMetadataWithTag(tag, value));
 }
