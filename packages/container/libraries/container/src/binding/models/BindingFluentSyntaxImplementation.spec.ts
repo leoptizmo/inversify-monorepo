@@ -41,6 +41,7 @@ import { isAnyAncestorBindingMetadataWithName } from '../calculations/isAnyAnces
 import { isAnyAncestorBindingMetadataWithServiceId } from '../calculations/isAnyAncestorBindingMetadataWithServiceId';
 import { isAnyAncestorBindingMetadataWithTag } from '../calculations/isAnyAncestorBindingMetadataWithTag';
 import { isBindingMetadataWithName } from '../calculations/isBindingMetadataWithName';
+import { isBindingMetadataWithNoNameNorTags } from '../calculations/isBindingMetadataWithNoNameNorTags';
 import { isBindingMetadataWithTag } from '../calculations/isBindingMetadataWithTag';
 import { isParentBindingMetadata } from '../calculations/isParentBindingMetadata';
 import { isParentBindingMetadataWithName } from '../calculations/isParentBindingMetadataWithName';
@@ -807,6 +808,29 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       expect(isAnyAncestorBindingMetadataWithTag).toHaveBeenCalledWith(
         tagFixture,
         tagValueFixture,
+      );
+    });
+
+    it('should return expected result', () => {
+      expect(result).toBeInstanceOf(BindOnFluentSyntaxImplementation);
+    });
+  });
+
+  describe('.whenDefault', () => {
+    let result: unknown;
+
+    beforeAll(() => {
+      result = bindWhenFluentSyntaxImplementation.whenDefault();
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should set constraint', () => {
+      expect(isSatisfiedBySetterMock).toHaveBeenCalledTimes(1);
+      expect(isSatisfiedBySetterMock).toHaveBeenCalledWith(
+        isBindingMetadataWithNoNameNorTags,
       );
     });
 

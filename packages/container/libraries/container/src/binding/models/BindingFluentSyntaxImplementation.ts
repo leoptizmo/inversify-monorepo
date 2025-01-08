@@ -32,6 +32,7 @@ import { isAnyAncestorBindingMetadataWithName } from '../calculations/isAnyAnces
 import { isAnyAncestorBindingMetadataWithServiceId } from '../calculations/isAnyAncestorBindingMetadataWithServiceId';
 import { isAnyAncestorBindingMetadataWithTag } from '../calculations/isAnyAncestorBindingMetadataWithTag';
 import { isBindingMetadataWithName } from '../calculations/isBindingMetadataWithName';
+import { isBindingMetadataWithNoNameNorTags } from '../calculations/isBindingMetadataWithNoNameNorTags';
 import { isBindingMetadataWithTag } from '../calculations/isBindingMetadataWithTag';
 import { isParentBindingMetadata } from '../calculations/isParentBindingMetadata';
 import { isParentBindingMetadataWithName } from '../calculations/isParentBindingMetadataWithName';
@@ -326,6 +327,10 @@ export class BindWhenFluentSyntaxImplementation<T>
     tagValue: unknown,
   ): BindOnFluentSyntax<T> {
     return this.when(isAnyAncestorBindingMetadataWithTag(tag, tagValue));
+  }
+
+  public whenDefault(): BindOnFluentSyntax<T> {
+    return this.when(isBindingMetadataWithNoNameNorTags);
   }
 
   public whenNamed(name: MetadataName): BindOnFluentSyntax<T> {
