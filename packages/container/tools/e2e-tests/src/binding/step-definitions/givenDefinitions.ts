@@ -9,6 +9,7 @@ import {
   Container,
 } from '@inversifyjs/container';
 import {
+  BindingActivation,
   BindingScope,
   bindingScopeValues,
   MetadataName,
@@ -45,12 +46,12 @@ function bindInScope(
 function bindWhenNamed(
   name: MetadataName,
 ): (
-  bindInFluentSyntax: BindWhenFluentSyntax<unknown>,
+  bindWhenFluentSyntax: BindWhenFluentSyntax<unknown>,
 ) => BindOnFluentSyntax<unknown> {
   return (
-    bindInFluentSyntax: BindWhenFluentSyntax<unknown>,
+    bindWhenFluentSyntax: BindWhenFluentSyntax<unknown>,
   ): BindOnFluentSyntax<unknown> => {
-    return bindInFluentSyntax.whenNamed(name);
+    return bindWhenFluentSyntax.whenNamed(name);
   };
 }
 
@@ -58,12 +59,24 @@ function bindWhenTagged(
   tag: MetadataTag,
   tagValue: unknown,
 ): (
-  bindInFluentSyntax: BindWhenFluentSyntax<unknown>,
+  bindWhenFluentSyntax: BindWhenFluentSyntax<unknown>,
 ) => BindOnFluentSyntax<unknown> {
   return (
-    bindInFluentSyntax: BindWhenFluentSyntax<unknown>,
+    bindWhenFluentSyntax: BindWhenFluentSyntax<unknown>,
   ): BindOnFluentSyntax<unknown> => {
-    return bindInFluentSyntax.whenTagged(tag, tagValue);
+    return bindWhenFluentSyntax.whenTagged(tag, tagValue);
+  };
+}
+
+function bindOnActivation(
+  activation: BindingActivation,
+): (
+  bindOnFluentSyntax: BindOnFluentSyntax<unknown>,
+) => BindWhenFluentSyntax<unknown> {
+  return (
+    bindOnFluentSyntax: BindOnFluentSyntax<unknown>,
+  ): BindWhenFluentSyntax<unknown> => {
+    return bindOnFluentSyntax.onActivation(activation);
   };
 }
 
@@ -128,9 +141,12 @@ function givenTypeBinding(
   bindInScope?: (
     bindInFluentSyntax: BindInFluentSyntax<unknown>,
   ) => BindWhenOnFluentSyntax<unknown>,
-  bindWhen?: (
-    bindInFluentSyntax: BindWhenOnFluentSyntax<unknown>,
+  bindWhenConstraint?: (
+    bindWhenFluentSyntax: BindWhenFluentSyntax<unknown>,
   ) => BindOnFluentSyntax<unknown>,
+  bindOnEvent?: (
+    bindOnFluentSyntax: BindOnFluentSyntax<unknown>,
+  ) => BindWhenFluentSyntax<unknown>,
   bindingAlias?: string,
   serviceIdentifier?: string,
 ): void {
@@ -138,16 +154,23 @@ function givenTypeBinding(
 
   setBinding.bind(this)(parsedBindingAlias, {
     bind: (container: Container): void => {
-      const bindInWhenOn: BindInWhenOnFluentSyntax<unknown> =
+      const bindInWhenOnSyntax: BindInWhenOnFluentSyntax<unknown> =
         serviceIdentifier === undefined
           ? container.bind(type).toSelf()
           : container.bind(serviceIdentifier).to(type);
 
-      const bindWhenOn: BindWhenOnFluentSyntax<unknown> =
-        bindInScope === undefined ? bindInWhenOn : bindInScope(bindInWhenOn);
+      const bindWhenOnSyntax: BindWhenOnFluentSyntax<unknown> =
+        bindInScope === undefined
+          ? bindInWhenOnSyntax
+          : bindInScope(bindInWhenOnSyntax);
 
-      if (bindWhen !== undefined) {
-        bindWhen(bindWhenOn);
+      const bindOnSyntax: BindOnFluentSyntax<unknown> =
+        bindWhenConstraint === undefined
+          ? bindWhenOnSyntax
+          : bindWhenConstraint(bindWhenOnSyntax);
+
+      if (bindOnEvent !== undefined) {
+        bindOnEvent(bindOnSyntax);
       }
     },
     kind: BindingParameterKind.instance,
@@ -187,6 +210,7 @@ Given<InversifyWorld>(
       warriorRelatedType,
       bindInScope(scope),
       undefined,
+      undefined,
       bindingAlias,
     );
   },
@@ -201,6 +225,7 @@ Given<InversifyWorld>(
   ): void {
     givenTypeBinding.bind(this)(
       warriorRelatedType,
+      undefined,
       undefined,
       undefined,
       bindingAlias,
@@ -221,6 +246,7 @@ Given<InversifyWorld>(
       warriorRelatedType,
       undefined,
       bindWhenNamed(name),
+      undefined,
       bindingAlias,
       serviceId,
     );
@@ -240,8 +266,26 @@ Given<InversifyWorld>(
       warriorRelatedType,
       undefined,
       bindWhenTagged(tag, tagValue),
+      undefined,
       bindingAlias,
       serviceId,
+    );
+  },
+);
+
+Given<InversifyWorld>(
+  'a {warriorRelatedType} type binding as {string} with a(n) {activation} activation',
+  function (
+    warriorRelatedType: Newable,
+    bindingAlias: string,
+    activation: BindingActivation,
+  ): void {
+    givenTypeBinding.bind(this)(
+      warriorRelatedType,
+      undefined,
+      undefined,
+      bindOnActivation(activation),
+      bindingAlias,
     );
   },
 );
