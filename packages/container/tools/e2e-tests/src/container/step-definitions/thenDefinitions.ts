@@ -4,6 +4,8 @@ import { Then } from '@cucumber/cucumber';
 
 import { defaultAlias } from '../../common/models/defaultAlias';
 import { InversifyWorld } from '../../common/models/InversifyWorld';
+import { Archer } from '../../warrior/models/Archer';
+import { Bow } from '../../warrior/models/Bow';
 import { DualWieldSwordsman } from '../../warrior/models/DualWieldSwordsman';
 import { Sword } from '../../warrior/models/Sword';
 import { getContainerGetRequestOrFail } from '../calculations/getContainerGetRequestOrFail';
@@ -101,3 +103,10 @@ Then<InversifyWorld>(
     thenDualWieldSworsdmanSwordsAreEqual.bind(this)();
   },
 );
+
+Then<InversifyWorld>('value is an archer with a bow', function (): void {
+  const value: unknown = getContainerGetRequestOrFail.bind(this)(defaultAlias);
+
+  assert.ok(value instanceof Archer);
+  assert.ok(value.bow instanceof Bow);
+});
