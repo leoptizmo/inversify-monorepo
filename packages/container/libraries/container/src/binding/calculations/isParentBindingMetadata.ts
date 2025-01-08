@@ -1,6 +1,6 @@
 import { BindingMetadata } from '@inversifyjs/core';
 
-export function isBindingMetadataWithRightParent(
+export function isParentBindingMetadata(
   constraint: (metadata: BindingMetadata) => boolean,
 ): (metadata: BindingMetadata) => boolean {
   return (metadata: BindingMetadata): boolean => {

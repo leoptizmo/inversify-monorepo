@@ -1,21 +1,21 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
-import { BindingMetadata, MetadataTag } from '@inversifyjs/core';
+import { BindingMetadata } from '@inversifyjs/core';
 
-jest.mock('./isBindingMetadataWithTag');
+jest.mock('./isBindingMetadataWithServiceId');
 jest.mock('./isParentBindingMetadata');
 
-import { isBindingMetadataWithTag } from './isBindingMetadataWithTag';
-import { isParentBindingMetadata } from './isParentBindingMetadata';
-import { isParentBindingMetadataWithTag } from './isParentBindingMetadataWithTag';
+import { ServiceIdentifier } from '@inversifyjs/common';
 
-describe(isParentBindingMetadataWithTag.name, () => {
-  let tagFixture: MetadataTag;
-  let tagValueFixture: unknown;
+import { isBindingMetadataWithServiceId } from './isBindingMetadataWithServiceId';
+import { isParentBindingMetadata } from './isParentBindingMetadata';
+import { isParentBindingMetadataWithServiceId } from './isParentBindingMetadataWithServiceId';
+
+describe(isParentBindingMetadataWithServiceId.name, () => {
+  let serviceIdFixture: ServiceIdentifier;
 
   beforeAll(() => {
-    tagFixture = 'name-fixture';
-    tagValueFixture = Symbol();
+    serviceIdFixture = 'name-fixture';
   });
 
   describe('when called', () => {
@@ -33,25 +33,26 @@ describe(isParentBindingMetadataWithTag.name, () => {
       isParentBindingMetadataResultMock = jest.fn();
 
       (
-        isBindingMetadataWithTag as jest.Mock<typeof isBindingMetadataWithTag>
+        isBindingMetadataWithServiceId as jest.Mock<
+          typeof isBindingMetadataWithServiceId
+        >
       ).mockReturnValueOnce(isBindingMetadataWithNameResultMock);
 
       (
         isParentBindingMetadata as jest.Mock<typeof isParentBindingMetadata>
       ).mockReturnValueOnce(isParentBindingMetadataResultMock);
 
-      result = isParentBindingMetadataWithTag(tagFixture, tagValueFixture);
+      result = isParentBindingMetadataWithServiceId(serviceIdFixture);
     });
 
     afterAll(() => {
       jest.clearAllMocks();
     });
 
-    it('should call isBindingMetadataWithTag()', () => {
-      expect(isBindingMetadataWithTag).toHaveBeenCalledTimes(1);
-      expect(isBindingMetadataWithTag).toHaveBeenCalledWith(
-        tagFixture,
-        tagValueFixture,
+    it('should call isBindingMetadataWithServiceId()', () => {
+      expect(isBindingMetadataWithServiceId).toHaveBeenCalledTimes(1);
+      expect(isBindingMetadataWithServiceId).toHaveBeenCalledWith(
+        serviceIdFixture,
       );
     });
 

@@ -3,13 +3,13 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { BindingMetadata, MetadataName } from '@inversifyjs/core';
 
 jest.mock('./isBindingMetadataWithName');
-jest.mock('./isParentBindingMetadata');
+jest.mock('./isAnyAncestorBindingMetadata');
 
+import { isAnyAncestorBindingMetadata } from './isAnyAncestorBindingMetadata';
+import { isAnyAncestorBindingMetadataWithName } from './isAnyAncestorBindingMetadataWithName';
 import { isBindingMetadataWithName } from './isBindingMetadataWithName';
-import { isParentBindingMetadata } from './isParentBindingMetadata';
-import { isParentBindingMetadataWithName } from './isParentBindingMetadataWithName';
 
-describe(isParentBindingMetadataWithName.name, () => {
+describe(isAnyAncestorBindingMetadataWithName.name, () => {
   let nameFixture: MetadataName;
 
   beforeAll(() => {
@@ -20,7 +20,7 @@ describe(isParentBindingMetadataWithName.name, () => {
     let isBindingMetadataWithNameResultMock: jest.Mock<
       (metadata: BindingMetadata) => boolean
     >;
-    let isParentBindingMetadataResultMock: jest.Mock<
+    let isAnyAncestorBindingMetadataResultMock: jest.Mock<
       (metadata: BindingMetadata) => boolean
     >;
 
@@ -28,17 +28,19 @@ describe(isParentBindingMetadataWithName.name, () => {
 
     beforeAll(() => {
       isBindingMetadataWithNameResultMock = jest.fn();
-      isParentBindingMetadataResultMock = jest.fn();
+      isAnyAncestorBindingMetadataResultMock = jest.fn();
 
       (
         isBindingMetadataWithName as jest.Mock<typeof isBindingMetadataWithName>
       ).mockReturnValueOnce(isBindingMetadataWithNameResultMock);
 
       (
-        isParentBindingMetadata as jest.Mock<typeof isParentBindingMetadata>
-      ).mockReturnValueOnce(isParentBindingMetadataResultMock);
+        isAnyAncestorBindingMetadata as jest.Mock<
+          typeof isAnyAncestorBindingMetadata
+        >
+      ).mockReturnValueOnce(isAnyAncestorBindingMetadataResultMock);
 
-      result = isParentBindingMetadataWithName(nameFixture);
+      result = isAnyAncestorBindingMetadataWithName(nameFixture);
     });
 
     afterAll(() => {
@@ -50,15 +52,15 @@ describe(isParentBindingMetadataWithName.name, () => {
       expect(isBindingMetadataWithName).toHaveBeenCalledWith(nameFixture);
     });
 
-    it('should call isParentBindingMetadata()', () => {
-      expect(isParentBindingMetadata).toHaveBeenCalledTimes(1);
-      expect(isParentBindingMetadata).toHaveBeenCalledWith(
+    it('should call isAnyAncestorBindingMetadata()', () => {
+      expect(isAnyAncestorBindingMetadata).toHaveBeenCalledTimes(1);
+      expect(isAnyAncestorBindingMetadata).toHaveBeenCalledWith(
         isBindingMetadataWithNameResultMock,
       );
     });
 
     it('should return expected result', () => {
-      expect(result).toBe(isParentBindingMetadataResultMock);
+      expect(result).toBe(isAnyAncestorBindingMetadataResultMock);
     });
   });
 });

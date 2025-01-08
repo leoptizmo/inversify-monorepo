@@ -27,9 +27,15 @@ import {
 import { Writable } from '../../common/models/Writable';
 import { BindingConstraintUtils } from '../../container/binding/utils/BindingConstraintUtils';
 import { getBindingId } from '../actions/getBindingId';
+import { isAnyAncestorBindingMetadata } from '../calculations/isAnyAncestorBindingMetadata';
+import { isAnyAncestorBindingMetadataWithName } from '../calculations/isAnyAncestorBindingMetadataWithName';
+import { isAnyAncestorBindingMetadataWithServiceId } from '../calculations/isAnyAncestorBindingMetadataWithServiceId';
+import { isAnyAncestorBindingMetadataWithTag } from '../calculations/isAnyAncestorBindingMetadataWithTag';
 import { isBindingMetadataWithName } from '../calculations/isBindingMetadataWithName';
 import { isBindingMetadataWithTag } from '../calculations/isBindingMetadataWithTag';
+import { isParentBindingMetadata } from '../calculations/isParentBindingMetadata';
 import { isParentBindingMetadataWithName } from '../calculations/isParentBindingMetadataWithName';
+import { isParentBindingMetadataWithServiceId } from '../calculations/isParentBindingMetadataWithServiceId';
 import { isParentBindingMetadataWithTag } from '../calculations/isParentBindingMetadataWithTag';
 import {
   BindInFluentSyntax,
@@ -297,8 +303,45 @@ export class BindWhenFluentSyntaxImplementation<T>
     return new BindOnFluentSyntaxImplementation(this.#binding);
   }
 
+  public whenAnyAncestor(
+    constraint: (metadata: BindingMetadata) => boolean,
+  ): BindOnFluentSyntax<T> {
+    return this.when(isAnyAncestorBindingMetadata(constraint));
+  }
+
+  public whenAnyAncestorIs(
+    serviceIdentifier: ServiceIdentifier,
+  ): BindOnFluentSyntax<T> {
+    return this.when(
+      isAnyAncestorBindingMetadataWithServiceId(serviceIdentifier),
+    );
+  }
+
+  public whenAnyAncestorNamed(name: MetadataName): BindOnFluentSyntax<T> {
+    return this.when(isAnyAncestorBindingMetadataWithName(name));
+  }
+
+  public whenAnyAncestorTagged(
+    tag: MetadataTag,
+    tagValue: unknown,
+  ): BindOnFluentSyntax<T> {
+    return this.when(isAnyAncestorBindingMetadataWithTag(tag, tagValue));
+  }
+
   public whenNamed(name: MetadataName): BindOnFluentSyntax<T> {
     return this.when(isBindingMetadataWithName(name));
+  }
+
+  public whenParent(
+    constraint: (metadata: BindingMetadata) => boolean,
+  ): BindOnFluentSyntax<T> {
+    return this.when(isParentBindingMetadata(constraint));
+  }
+
+  public whenParentIs(
+    serviceIdentifier: ServiceIdentifier,
+  ): BindOnFluentSyntax<T> {
+    return this.when(isParentBindingMetadataWithServiceId(serviceIdentifier));
   }
 
   public whenParentNamed(name: MetadataName): BindOnFluentSyntax<T> {

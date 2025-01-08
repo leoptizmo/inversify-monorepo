@@ -1,10 +1,10 @@
 import { BindingMetadata, MetadataName } from '@inversifyjs/core';
 
+import { isAnyAncestorBindingMetadata } from './isAnyAncestorBindingMetadata';
 import { isBindingMetadataWithName } from './isBindingMetadataWithName';
-import { isParentBindingMetadata } from './isParentBindingMetadata';
 
-export function isParentBindingMetadataWithName(
+export function isAnyAncestorBindingMetadataWithName(
   name: MetadataName,
 ): (metadata: BindingMetadata) => boolean {
-  return isParentBindingMetadata(isBindingMetadataWithName(name));
+  return isAnyAncestorBindingMetadata(isBindingMetadataWithName(name));
 }
