@@ -14,6 +14,8 @@ import {
   Factory,
   FactoryBinding,
   InstanceBinding,
+  MetadataName,
+  MetadataTag,
   Provider,
   ProviderBinding,
   ResolutionContext,
@@ -25,6 +27,10 @@ import {
 import { Writable } from '../../common/models/Writable';
 import { BindingConstraintUtils } from '../../container/binding/utils/BindingConstraintUtils';
 import { getBindingId } from '../actions/getBindingId';
+import { isBindingMetadataWithName } from '../calculations/isBindingMetadataWithName';
+import { isBindingMetadataWithTag } from '../calculations/isBindingMetadataWithTag';
+import { isParentBindingMetadataWithName } from '../calculations/isParentBindingMetadataWithName';
+import { isParentBindingMetadataWithTag } from '../calculations/isParentBindingMetadataWithTag';
 import {
   BindInFluentSyntax,
   BindInWhenOnFluentSyntax,
@@ -289,6 +295,28 @@ export class BindWhenFluentSyntaxImplementation<T>
     this.#binding.isSatisfiedBy = constraint;
 
     return new BindOnFluentSyntaxImplementation(this.#binding);
+  }
+
+  public whenNamed(name: MetadataName): BindOnFluentSyntax<T> {
+    return this.when(isBindingMetadataWithName(name));
+  }
+
+  public whenParentNamed(name: MetadataName): BindOnFluentSyntax<T> {
+    return this.when(isParentBindingMetadataWithName(name));
+  }
+
+  public whenParentTagged(
+    tag: MetadataTag,
+    tagValue: unknown,
+  ): BindOnFluentSyntax<T> {
+    return this.when(isParentBindingMetadataWithTag(tag, tagValue));
+  }
+
+  public whenTagged(
+    tag: MetadataTag,
+    tagValue: unknown,
+  ): BindOnFluentSyntax<T> {
+    return this.when(isBindingMetadataWithTag(tag, tagValue));
   }
 }
 

@@ -5,6 +5,8 @@ import {
   BindingMetadata,
   DynamicValueBuilder,
   Factory,
+  MetadataName,
+  MetadataTag,
   Provider,
   ResolutionContext,
 } from '@inversifyjs/core';
@@ -50,4 +52,8 @@ export interface BindWhenFluentSyntax<T> {
   when(
     constraint: (metadata: BindingMetadata) => boolean,
   ): BindOnFluentSyntax<T>;
+  whenNamed(name: MetadataName): BindOnFluentSyntax<T>;
+  whenParentNamed(name: MetadataName): BindOnFluentSyntax<T>;
+  whenParentTagged(tag: MetadataTag, tagValue: unknown): BindOnFluentSyntax<T>;
+  whenTagged(tag: MetadataTag, tagValue: unknown): BindOnFluentSyntax<T>;
 }
