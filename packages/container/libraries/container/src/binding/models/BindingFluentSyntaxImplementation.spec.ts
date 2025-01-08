@@ -1,6 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
 jest.mock('../actions/getBindingId');
+jest.mock('../calculations/isBindingMetadataWithName');
+jest.mock('../calculations/isBindingMetadataWithTag');
+jest.mock('../calculations/isParentBindingMetadataWithName');
+jest.mock('../calculations/isParentBindingMetadataWithTag');
 
 import { ServiceIdentifier } from '@inversifyjs/common';
 import {
@@ -16,6 +20,8 @@ import {
   DynamicValueBuilder,
   Factory,
   InstanceBinding,
+  MetadataName,
+  MetadataTag,
   Provider,
   ResolutionContext,
   ScopedBinding,
@@ -24,6 +30,10 @@ import {
 
 import { Writable } from '../../common/models/Writable';
 import { getBindingId } from '../actions/getBindingId';
+import { isBindingMetadataWithName } from '../calculations/isBindingMetadataWithName';
+import { isBindingMetadataWithTag } from '../calculations/isBindingMetadataWithTag';
+import { isParentBindingMetadataWithName } from '../calculations/isParentBindingMetadataWithName';
+import { isParentBindingMetadataWithTag } from '../calculations/isParentBindingMetadataWithTag';
 import {
   BindInFluentSyntaxImplementation,
   BindInWhenOnFluentSyntaxImplementation,
@@ -667,6 +677,122 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
     it('should set constraint', () => {
       expect(isSatisfiedBySetterMock).toHaveBeenCalledTimes(1);
       expect(isSatisfiedBySetterMock).toHaveBeenCalledWith(constraintFixture);
+    });
+
+    it('should return expected result', () => {
+      expect(result).toBeInstanceOf(BindOnFluentSyntaxImplementation);
+    });
+  });
+
+  describe('.whenNamed', () => {
+    let nameFixture: MetadataName;
+
+    let result: unknown;
+
+    beforeAll(() => {
+      nameFixture = 'name-fixture';
+
+      result = bindWhenFluentSyntaxImplementation.whenNamed(nameFixture);
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should call isBindingMetadataWithName', () => {
+      expect(isBindingMetadataWithName).toHaveBeenCalledTimes(1);
+      expect(isBindingMetadataWithName).toHaveBeenCalledWith(nameFixture);
+    });
+
+    it('should return expected result', () => {
+      expect(result).toBeInstanceOf(BindOnFluentSyntaxImplementation);
+    });
+  });
+
+  describe('.whenParentNamed', () => {
+    let nameFixture: MetadataName;
+
+    let result: unknown;
+
+    beforeAll(() => {
+      nameFixture = 'name-fixture';
+
+      result = bindWhenFluentSyntaxImplementation.whenParentNamed(nameFixture);
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should call isParentBindingMetadataWithName', () => {
+      expect(isParentBindingMetadataWithName).toHaveBeenCalledTimes(1);
+      expect(isParentBindingMetadataWithName).toHaveBeenCalledWith(nameFixture);
+    });
+
+    it('should return expected result', () => {
+      expect(result).toBeInstanceOf(BindOnFluentSyntaxImplementation);
+    });
+  });
+
+  describe('.whenParentTagged', () => {
+    let tagFixture: MetadataTag;
+    let tagValueFixture: unknown;
+
+    let result: unknown;
+
+    beforeAll(() => {
+      tagFixture = 'tag-fixture';
+      tagValueFixture = Symbol();
+
+      result = bindWhenFluentSyntaxImplementation.whenParentTagged(
+        tagFixture,
+        tagValueFixture,
+      );
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should call isParentBindingMetadataWithTag', () => {
+      expect(isParentBindingMetadataWithTag).toHaveBeenCalledTimes(1);
+      expect(isParentBindingMetadataWithTag).toHaveBeenCalledWith(
+        tagFixture,
+        tagValueFixture,
+      );
+    });
+
+    it('should return expected result', () => {
+      expect(result).toBeInstanceOf(BindOnFluentSyntaxImplementation);
+    });
+  });
+
+  describe('.whenTagged', () => {
+    let tagFixture: MetadataTag;
+    let tagValueFixture: unknown;
+
+    let result: unknown;
+
+    beforeAll(() => {
+      tagFixture = 'tag-fixture';
+      tagValueFixture = Symbol();
+
+      result = bindWhenFluentSyntaxImplementation.whenTagged(
+        tagFixture,
+        tagValueFixture,
+      );
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should call isBindingMetadataWithTag', () => {
+      expect(isBindingMetadataWithTag).toHaveBeenCalledTimes(1);
+      expect(isBindingMetadataWithTag).toHaveBeenCalledWith(
+        tagFixture,
+        tagValueFixture,
+      );
     });
 
     it('should return expected result', () => {
