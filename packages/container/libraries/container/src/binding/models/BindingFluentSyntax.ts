@@ -63,6 +63,7 @@ export interface BindWhenFluentSyntax<T> {
     tag: MetadataTag,
     tagValue: unknown,
   ): BindOnFluentSyntax<T>;
+  whenDefault(): BindOnFluentSyntax<T>;
   whenNamed(name: MetadataName): BindOnFluentSyntax<T>;
   whenParent(
     constraint: (metadata: BindingMetadata) => boolean,
