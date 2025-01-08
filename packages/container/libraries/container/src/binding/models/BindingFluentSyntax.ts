@@ -52,7 +52,22 @@ export interface BindWhenFluentSyntax<T> {
   when(
     constraint: (metadata: BindingMetadata) => boolean,
   ): BindOnFluentSyntax<T>;
+  whenAnyAncestor(
+    constraint: (metadata: BindingMetadata) => boolean,
+  ): BindOnFluentSyntax<T>;
+  whenAnyAncestorIs(
+    serviceIdentifier: ServiceIdentifier,
+  ): BindOnFluentSyntax<T>;
+  whenAnyAncestorNamed(name: MetadataName): BindOnFluentSyntax<T>;
+  whenAnyAncestorTagged(
+    tag: MetadataTag,
+    tagValue: unknown,
+  ): BindOnFluentSyntax<T>;
   whenNamed(name: MetadataName): BindOnFluentSyntax<T>;
+  whenParent(
+    constraint: (metadata: BindingMetadata) => boolean,
+  ): BindOnFluentSyntax<T>;
+  whenParentIs(serviceIdentifier: ServiceIdentifier): BindOnFluentSyntax<T>;
   whenParentNamed(name: MetadataName): BindOnFluentSyntax<T>;
   whenParentTagged(tag: MetadataTag, tagValue: unknown): BindOnFluentSyntax<T>;
   whenTagged(tag: MetadataTag, tagValue: unknown): BindOnFluentSyntax<T>;
