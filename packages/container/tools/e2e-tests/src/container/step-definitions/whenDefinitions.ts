@@ -1,4 +1,5 @@
 import { When } from '@cucumber/cucumber';
+import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 
 import { defaultAlias } from '../../common/models/defaultAlias';
 import { InversifyWorld } from '../../common/models/InversifyWorld';
@@ -7,7 +8,7 @@ import { getContainerOrFail } from '../calculations/getContainerOrFail';
 
 function whenContainerGetsValueForService(
   this: InversifyWorld,
-  serviceId: string,
+  serviceId: ServiceIdentifier,
   containerAlias?: string,
   valueAlias?: string,
 ): void {
@@ -19,6 +20,13 @@ function whenContainerGetsValueForService(
     getContainerOrFail.bind(this)(parsedContainerAlias).get(serviceId),
   );
 }
+
+When<InversifyWorld>(
+  'container gets a {warriorRelatedType} type value',
+  function (warriorRelatedType: Newable): void {
+    whenContainerGetsValueForService.bind(this)(warriorRelatedType);
+  },
+);
 
 When<InversifyWorld>(
   'container gets a value for service {string}',

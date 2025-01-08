@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import assert from 'node:assert/strict';
 
 import { Then } from '@cucumber/cucumber';
@@ -110,3 +111,14 @@ Then<InversifyWorld>('value is an archer with a bow', function (): void {
   assert.ok(value instanceof Archer);
   assert.ok(value.bow instanceof Bow);
 });
+
+Then<InversifyWorld>(
+  'value is a sword with improved damage',
+  function (): void {
+    const value: unknown =
+      getContainerGetRequestOrFail.bind(this)(defaultAlias);
+
+    assert.ok(value instanceof Sword);
+    assert.equal(value.damage, 12);
+  },
+);
