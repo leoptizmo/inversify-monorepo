@@ -18,7 +18,6 @@ import {
 import { defaultAlias } from '../../common/models/defaultAlias';
 import { InversifyWorld } from '../../common/models/InversifyWorld';
 import { DualWieldSwordsman } from '../../warrior/models/DualWieldSwordsman';
-import { Sword } from '../../warrior/models/Sword';
 import { setBinding } from '../actions/setBinding';
 import { BindingParameterKind } from '../models/BindingParameterKind';
 
@@ -152,7 +151,7 @@ function givenTypeBinding(
       }
     },
     kind: BindingParameterKind.instance,
-    serviceIdentifier: Sword,
+    serviceIdentifier: serviceIdentifier ?? type,
   });
 }
 
