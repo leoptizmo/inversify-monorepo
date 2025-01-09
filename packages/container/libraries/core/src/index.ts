@@ -27,6 +27,7 @@ import {
   BindingDeactivationRelation,
   DeactivationsService,
 } from './binding/services/DeactivationsService';
+import { decorate } from './decorator/actions/decorate';
 import { getClassMetadata } from './metadata/calculations/getClassMetadata';
 import { inject } from './metadata/decorators/inject';
 import { injectable } from './metadata/decorators/injectable';
@@ -129,6 +130,7 @@ export {
   bindingTypeValues,
   ClassElementMetadataKind,
   DeactivationsService,
+  decorate,
   getClassMetadata,
   multiInject,
   inject,
