@@ -46,11 +46,8 @@ jobs:
         run: |
           echo "gitCommitHash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Build
-        run: pnpm run build --filter ${{ matrix.package }}
-
       - name: Launch Unit Tests and generate coverage report
-        run: pnpm run test:js:coverage --filter ${{ matrix.package }} --only
+        run: pnpm run test:js:coverage --filter ${{ matrix.package }}
 
       - name: Upload coverage to Codecov (branch)
         uses: codecov/codecov-action@v5
