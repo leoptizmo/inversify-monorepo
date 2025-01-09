@@ -972,6 +972,9 @@ describe(Container.name, () => {
           getBindings: expect.any(Function) as unknown as <TInstance>(
             serviceIdentifier: ServiceIdentifier<TInstance>,
           ) => Binding<TInstance>[] | undefined,
+          getBindingsFromModule: expect.any(Function) as unknown as <TInstance>(
+            moduleId: number,
+          ) => Binding<TInstance>[] | undefined,
           getClassMetadata: expect.any(Function) as unknown as (
             type: Newable,
           ) => ClassMetadata,
