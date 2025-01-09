@@ -8,6 +8,8 @@ import { dts } from 'rollup-plugin-dts';
 
 import pathExists from './utils/pathExists.js';
 
+const NODE_REGEX = /^node:/;
+
 const PACKAGE_JSON_PATH = './package.json';
 
 if (!pathExists(PACKAGE_JSON_PATH)) {
@@ -36,7 +38,11 @@ function buildBundleConfig(inputFile, outputDir) {
   return [
     {
       input: inputFile,
-      external: [...packageDependencies, ...packagePeerDependencies],
+      external: [
+        NODE_REGEX,
+        ...packageDependencies,
+        ...packagePeerDependencies,
+      ],
       output: [
         {
           dir: outputDir,
@@ -87,7 +93,11 @@ export function buildMultiBundleConfig(inputFiles, outputDir) {
   return [
     {
       input: inputFiles,
-      external: [...packageDependencies, ...packagePeerDependencies],
+      external: [
+        NODE_REGEX,
+        ...packageDependencies,
+        ...packagePeerDependencies,
+      ],
       output: [
         {
           dir: outputDir,
