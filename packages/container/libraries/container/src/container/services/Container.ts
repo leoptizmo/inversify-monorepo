@@ -54,17 +54,19 @@ export class Container {
 
   constructor(options?: ContainerOptions) {
     if (options?.parent !== undefined) {
-      this.#activationService = new ActivationsService(
+      this.#activationService = ActivationsService.build(
         options.parent.#activationService,
       );
-      this.#bindingService = new BindingService(options.parent.#bindingService);
-      this.#deactivationService = new DeactivationsService(
+      this.#bindingService = BindingService.build(
+        options.parent.#bindingService,
+      );
+      this.#deactivationService = DeactivationsService.build(
         options.parent.#deactivationService,
       );
     } else {
-      this.#activationService = new ActivationsService(undefined);
-      this.#bindingService = new BindingService(undefined);
-      this.#deactivationService = new DeactivationsService(undefined);
+      this.#activationService = ActivationsService.build(undefined);
+      this.#bindingService = BindingService.build(undefined);
+      this.#deactivationService = DeactivationsService.build(undefined);
     }
 
     this.#options = {

@@ -14,15 +14,15 @@ import {
 } from './DeactivationsService';
 
 describe(DeactivationsService.name, () => {
-  let activationMapsMock: jest.Mocked<
+  let deactivationMapsMock: jest.Mocked<
     OneToManyMapStar<BindingDeactivation, BindingDeactivationRelation>
   >;
 
-  let parentActivationService: DeactivationsService;
-  let activationsService: DeactivationsService;
+  let parentDeactivationService: DeactivationsService;
+  let deactivationsService: DeactivationsService;
 
   beforeAll(() => {
-    activationMapsMock = new OneToManyMapStar<
+    deactivationMapsMock = new OneToManyMapStar<
       BindingDeactivation,
       BindingDeactivationRelation
     >({
@@ -36,9 +36,11 @@ describe(DeactivationsService.name, () => {
       OneToManyMapStar<BindingDeactivation, BindingDeactivationRelation>
     >;
 
-    parentActivationService = new DeactivationsService(undefined);
+    parentDeactivationService = DeactivationsService.build(undefined);
 
-    activationsService = new DeactivationsService(parentActivationService);
+    deactivationsService = DeactivationsService.build(
+      parentDeactivationService,
+    );
   });
 
   describe('.add', () => {
@@ -57,16 +59,16 @@ describe(DeactivationsService.name, () => {
       let result: unknown;
 
       beforeAll(() => {
-        result = activationsService.add(deactivationFixture, relationFixture);
+        result = deactivationsService.add(deactivationFixture, relationFixture);
       });
 
       afterAll(() => {
         jest.clearAllMocks();
       });
 
-      it('should call activationMaps.set()', () => {
-        expect(activationMapsMock.set).toHaveBeenCalledTimes(1);
-        expect(activationMapsMock.set).toHaveBeenCalledWith(
+      it('should call deactivationMaps.set()', () => {
+        expect(deactivationMapsMock.set).toHaveBeenCalledTimes(1);
+        expect(deactivationMapsMock.set).toHaveBeenCalledWith(
           deactivationFixture,
           relationFixture,
         );
@@ -78,6 +80,31 @@ describe(DeactivationsService.name, () => {
     });
   });
 
+  describe('.clone', () => {
+    describe('when called', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        deactivationMapsMock.clone.mockReturnValueOnce(deactivationMapsMock);
+
+        result = deactivationsService.clone();
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call deactivationMaps.clone', () => {
+        expect(deactivationMapsMock.clone).toHaveBeenCalledTimes(1);
+        expect(deactivationMapsMock.clone).toHaveBeenCalledWith();
+      });
+
+      it('should return a clone()', () => {
+        expect(result).toStrictEqual(deactivationsService);
+      });
+    });
+  });
+
   describe('.get', () => {
     let serviceIdFixture: ServiceIdentifier;
 
@@ -85,37 +112,37 @@ describe(DeactivationsService.name, () => {
       serviceIdFixture = 'service-identifier';
     });
 
-    describe('when called, and activationMaps.get() returns Iterable and parent activationMaps.get() returns undefined', () => {
-      let bindingActivationFixture: BindingDeactivation;
+    describe('when called, and deactivationMaps.get() returns Iterable and parent deactivationMaps.get() returns undefined', () => {
+      let bindingDeactivationFixture: BindingDeactivation;
 
       let result: unknown;
 
       beforeAll(() => {
-        bindingActivationFixture = Symbol() as unknown as BindingDeactivation;
+        bindingDeactivationFixture = Symbol() as unknown as BindingDeactivation;
 
-        activationMapsMock.get
-          .mockReturnValueOnce([bindingActivationFixture])
+        deactivationMapsMock.get
+          .mockReturnValueOnce([bindingDeactivationFixture])
           .mockReturnValueOnce(undefined);
 
         (chain as jest.Mock<typeof chain>).mockReturnValueOnce([
-          bindingActivationFixture,
+          bindingDeactivationFixture,
         ]);
 
-        result = activationsService.get(serviceIdFixture);
+        result = deactivationsService.get(serviceIdFixture);
       });
 
       afterAll(() => {
         jest.clearAllMocks();
       });
 
-      it('should call activationMaps.get()', () => {
-        expect(activationMapsMock.get).toHaveBeenCalledTimes(2);
-        expect(activationMapsMock.get).toHaveBeenNthCalledWith(
+      it('should call deactivationMaps.get()', () => {
+        expect(deactivationMapsMock.get).toHaveBeenCalledTimes(2);
+        expect(deactivationMapsMock.get).toHaveBeenNthCalledWith(
           1,
           'serviceId',
           serviceIdFixture,
         );
-        expect(activationMapsMock.get).toHaveBeenNthCalledWith(
+        expect(deactivationMapsMock.get).toHaveBeenNthCalledWith(
           2,
           'serviceId',
           serviceIdFixture,
@@ -124,48 +151,48 @@ describe(DeactivationsService.name, () => {
 
       it('should call chain()', () => {
         expect(chain).toHaveBeenCalledTimes(1);
-        expect(chain).toHaveBeenCalledWith([bindingActivationFixture]);
+        expect(chain).toHaveBeenCalledWith([bindingDeactivationFixture]);
       });
 
       it('should return BindingDeactivation[]', () => {
-        expect(result).toStrictEqual([bindingActivationFixture]);
+        expect(result).toStrictEqual([bindingDeactivationFixture]);
       });
     });
 
-    describe('when called, and activationMaps.get() returns Iterable and parent activationMaps.get() returns Iterable', () => {
-      let bindingActivationFixture: BindingDeactivation;
+    describe('when called, and deactivationMaps.get() returns Iterable and parent deactivationMaps.get() returns Iterable', () => {
+      let bindingDeactivationFixture: BindingDeactivation;
 
       let result: unknown;
 
       beforeAll(() => {
-        bindingActivationFixture = Symbol() as unknown as BindingDeactivation;
+        bindingDeactivationFixture = Symbol() as unknown as BindingDeactivation;
 
-        activationMapsMock.get
-          .mockReturnValueOnce([bindingActivationFixture])
-          .mockReturnValueOnce([bindingActivationFixture]);
+        deactivationMapsMock.get
+          .mockReturnValueOnce([bindingDeactivationFixture])
+          .mockReturnValueOnce([bindingDeactivationFixture]);
 
         (chain as jest.Mock<typeof chain>)
-          .mockReturnValueOnce([bindingActivationFixture])
+          .mockReturnValueOnce([bindingDeactivationFixture])
           .mockReturnValueOnce([
-            bindingActivationFixture,
-            bindingActivationFixture,
+            bindingDeactivationFixture,
+            bindingDeactivationFixture,
           ]);
 
-        result = activationsService.get(serviceIdFixture);
+        result = deactivationsService.get(serviceIdFixture);
       });
 
       afterAll(() => {
         jest.clearAllMocks();
       });
 
-      it('should call activationMaps.get()', () => {
-        expect(activationMapsMock.get).toHaveBeenCalledTimes(2);
-        expect(activationMapsMock.get).toHaveBeenNthCalledWith(
+      it('should call deactivationMaps.get()', () => {
+        expect(deactivationMapsMock.get).toHaveBeenCalledTimes(2);
+        expect(deactivationMapsMock.get).toHaveBeenNthCalledWith(
           1,
           'serviceId',
           serviceIdFixture,
         );
-        expect(activationMapsMock.get).toHaveBeenNthCalledWith(
+        expect(deactivationMapsMock.get).toHaveBeenNthCalledWith(
           2,
           'serviceId',
           serviceIdFixture,
@@ -174,18 +201,18 @@ describe(DeactivationsService.name, () => {
 
       it('should call chain()', () => {
         expect(chain).toHaveBeenCalledTimes(2);
-        expect(chain).toHaveBeenNthCalledWith(1, [bindingActivationFixture]);
+        expect(chain).toHaveBeenNthCalledWith(1, [bindingDeactivationFixture]);
         expect(chain).toHaveBeenNthCalledWith(
           2,
-          [bindingActivationFixture],
-          [bindingActivationFixture],
+          [bindingDeactivationFixture],
+          [bindingDeactivationFixture],
         );
       });
 
       it('should return BindingDeactivation[]', () => {
         expect(result).toStrictEqual([
-          bindingActivationFixture,
-          bindingActivationFixture,
+          bindingDeactivationFixture,
+          bindingDeactivationFixture,
         ]);
       });
     });
@@ -202,16 +229,16 @@ describe(DeactivationsService.name, () => {
       let result: unknown;
 
       beforeAll(() => {
-        result = activationsService.removeAllByModuleId(moduleIdFixture);
+        result = deactivationsService.removeAllByModuleId(moduleIdFixture);
       });
 
       afterAll(() => {
         jest.clearAllMocks();
       });
 
-      it('should call activationMaps.removeByRelation()', () => {
-        expect(activationMapsMock.removeByRelation).toHaveBeenCalledTimes(1);
-        expect(activationMapsMock.removeByRelation).toHaveBeenCalledWith(
+      it('should call deactivationMaps.removeByRelation()', () => {
+        expect(deactivationMapsMock.removeByRelation).toHaveBeenCalledTimes(1);
+        expect(deactivationMapsMock.removeByRelation).toHaveBeenCalledWith(
           'moduleId',
           moduleIdFixture,
         );
@@ -234,16 +261,16 @@ describe(DeactivationsService.name, () => {
       let result: unknown;
 
       beforeAll(() => {
-        result = activationsService.removeAllByServiceId(serviceIdFixture);
+        result = deactivationsService.removeAllByServiceId(serviceIdFixture);
       });
 
       afterAll(() => {
         jest.clearAllMocks();
       });
 
-      it('should call activationMaps.removeByRelation()', () => {
-        expect(activationMapsMock.removeByRelation).toHaveBeenCalledTimes(1);
-        expect(activationMapsMock.removeByRelation).toHaveBeenCalledWith(
+      it('should call deactivationMaps.removeByRelation()', () => {
+        expect(deactivationMapsMock.removeByRelation).toHaveBeenCalledTimes(1);
+        expect(deactivationMapsMock.removeByRelation).toHaveBeenCalledWith(
           'serviceId',
           serviceIdFixture,
         );

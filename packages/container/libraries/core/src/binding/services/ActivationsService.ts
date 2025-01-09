@@ -1,6 +1,7 @@
 import { ServiceIdentifier } from '@inversifyjs/common';
 
 import { chain } from '../../common/calculations/chain';
+import { Cloneable } from '../../common/models/Cloneable';
 import { OneToManyMapStar } from '../../common/models/OneToManyMapStar';
 import { BindingActivation } from '../models/BindingActivation';
 
@@ -14,7 +15,7 @@ export interface BindingActivationRelation {
   [ActivationRelationKind.serviceId]: ServiceIdentifier;
 }
 
-export class ActivationsService {
+export class ActivationsService implements Cloneable<ActivationsService> {
   readonly #activationMaps: OneToManyMapStar<
     BindingActivation,
     BindingActivationRelation
@@ -22,20 +23,31 @@ export class ActivationsService {
 
   readonly #parent: ActivationsService | undefined;
 
-  constructor(parent: ActivationsService | undefined) {
-    this.#activationMaps = new OneToManyMapStar<
+  private constructor(
+    parent: ActivationsService | undefined,
+    activationMaps?: OneToManyMapStar<
       BindingActivation,
       BindingActivationRelation
-    >({
-      moduleId: {
-        isOptional: true,
-      },
-      serviceId: {
-        isOptional: false,
-      },
-    });
+    >,
+  ) {
+    this.#activationMaps =
+      activationMaps ??
+      new OneToManyMapStar<BindingActivation, BindingActivationRelation>({
+        moduleId: {
+          isOptional: true,
+        },
+        serviceId: {
+          isOptional: false,
+        },
+      });
 
     this.#parent = parent;
+  }
+
+  public static build(
+    parent: ActivationsService | undefined,
+  ): ActivationsService {
+    return new ActivationsService(parent);
   }
 
   public add(
@@ -43,6 +55,15 @@ export class ActivationsService {
     relation: BindingActivationRelation,
   ): void {
     this.#activationMaps.set(activation, relation);
+  }
+
+  public clone(): ActivationsService {
+    const clone: ActivationsService = new ActivationsService(
+      this.#parent,
+      this.#activationMaps.clone(),
+    );
+
+    return clone;
   }
 
   public get(
