@@ -17,6 +17,10 @@
       ],
       "outputs": ["build/**"]
     },
+    "@inversifyjs/code-examples#build": {
+      "inputs": ["src/**/*.{cts,mts,ts}"],
+      "outputs": ["generated/**", "lib/**"]
+    },
     "format": {
       "inputs": ["src/**/*.{cts,mts,ts}"],
       "outputs": ["src/**/*.{cts,mts,ts}"]
