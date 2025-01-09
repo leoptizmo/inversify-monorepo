@@ -69,14 +69,15 @@ describe(Container.name, () => {
       jest.Mocked<DeactivationsService>
     > as jest.Mocked<DeactivationsService>;
 
-    (ActivationsService as jest.Mock<() => ActivationsService>).mockReturnValue(
-      activationServiceMock,
-    );
-    (BindingService as jest.Mock<() => BindingService>).mockReturnValue(
+    (
+      ActivationsService.build as jest.Mock<() => ActivationsService>
+    ).mockReturnValue(activationServiceMock);
+
+    (BindingService.build as jest.Mock<() => BindingService>).mockReturnValue(
       bindingServiceMock,
     );
     (
-      DeactivationsService as jest.Mock<() => DeactivationsService>
+      DeactivationsService.build as jest.Mock<() => DeactivationsService>
     ).mockReturnValue(deactivationServiceMock);
   });
 
@@ -99,25 +100,34 @@ describe(Container.name, () => {
           jest.clearAllMocks();
         });
 
-        it('should call new ActivationsService', () => {
-          expect(ActivationsService).toHaveBeenCalledTimes(2);
-          expect(ActivationsService).toHaveBeenNthCalledWith(1, undefined);
-          expect(ActivationsService).toHaveBeenNthCalledWith(
+        it('should call new ActivationsService.build()', () => {
+          expect(ActivationsService.build).toHaveBeenCalledTimes(2);
+          expect(ActivationsService.build).toHaveBeenNthCalledWith(
+            1,
+            undefined,
+          );
+          expect(ActivationsService.build).toHaveBeenNthCalledWith(
             2,
             activationServiceMock,
           );
         });
 
-        it('should call new BindingService', () => {
-          expect(BindingService).toHaveBeenCalledTimes(2);
-          expect(BindingService).toHaveBeenNthCalledWith(1, undefined);
-          expect(BindingService).toHaveBeenNthCalledWith(2, bindingServiceMock);
+        it('should call BindingService.build', () => {
+          expect(BindingService.build).toHaveBeenCalledTimes(2);
+          expect(BindingService.build).toHaveBeenNthCalledWith(1, undefined);
+          expect(BindingService.build).toHaveBeenNthCalledWith(
+            2,
+            bindingServiceMock,
+          );
         });
 
-        it('should call new DeactivationsService', () => {
-          expect(DeactivationsService).toHaveBeenCalledTimes(2);
-          expect(DeactivationsService).toHaveBeenNthCalledWith(1, undefined);
-          expect(DeactivationsService).toHaveBeenNthCalledWith(
+        it('should call DeactivationsService.build()', () => {
+          expect(DeactivationsService.build).toHaveBeenCalledTimes(2);
+          expect(DeactivationsService.build).toHaveBeenNthCalledWith(
+            1,
+            undefined,
+          );
+          expect(DeactivationsService.build).toHaveBeenNthCalledWith(
             2,
             deactivationServiceMock,
           );

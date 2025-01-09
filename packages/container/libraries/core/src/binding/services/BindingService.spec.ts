@@ -27,9 +27,34 @@ describe(BindingService.name, () => {
       },
     }) as jest.Mocked<OneToManyMapStar<Binding<unknown>, BindingRelation>>;
 
-    parentBindingService = new BindingService(undefined);
+    parentBindingService = BindingService.build(undefined);
 
-    bindingService = new BindingService(parentBindingService);
+    bindingService = BindingService.build(parentBindingService);
+  });
+
+  describe('.clone', () => {
+    describe('when called', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        bindingMapsMock.clone.mockReturnValueOnce(bindingMapsMock);
+
+        result = bindingService.clone();
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call activationMaps.clone()', () => {
+        expect(bindingMapsMock.clone).toHaveBeenCalledTimes(1);
+        expect(bindingMapsMock.clone).toHaveBeenCalledWith();
+      });
+
+      it('should return a clone()', () => {
+        expect(result).toStrictEqual(bindingService);
+      });
+    });
   });
 
   describe('.get', () => {

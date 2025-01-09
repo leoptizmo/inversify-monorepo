@@ -1,6 +1,7 @@
 import { ServiceIdentifier } from '@inversifyjs/common';
 
 import { chain } from '../../common/calculations/chain';
+import { Cloneable } from '../../common/models/Cloneable';
 import { OneToManyMapStar } from '../../common/models/OneToManyMapStar';
 import { BindingDeactivation } from '../models/BindingDeactivation';
 
@@ -14,35 +15,55 @@ export interface BindingDeactivationRelation {
   [DeactivationRelationKind.serviceId]: ServiceIdentifier;
 }
 
-export class DeactivationsService {
-  readonly #activationMaps: OneToManyMapStar<
+export class DeactivationsService implements Cloneable<DeactivationsService> {
+  readonly #deactivationMaps: OneToManyMapStar<
     BindingDeactivation,
     BindingDeactivationRelation
   >;
 
   readonly #parent: DeactivationsService | undefined;
 
-  constructor(parent: DeactivationsService | undefined) {
-    this.#activationMaps = new OneToManyMapStar<
+  private constructor(
+    parent: DeactivationsService | undefined,
+    deactivationMaps?: OneToManyMapStar<
       BindingDeactivation,
       BindingDeactivationRelation
-    >({
-      moduleId: {
-        isOptional: true,
-      },
-      serviceId: {
-        isOptional: false,
-      },
-    });
+    >,
+  ) {
+    this.#deactivationMaps =
+      deactivationMaps ??
+      new OneToManyMapStar<BindingDeactivation, BindingDeactivationRelation>({
+        moduleId: {
+          isOptional: true,
+        },
+        serviceId: {
+          isOptional: false,
+        },
+      });
 
     this.#parent = parent;
+  }
+
+  public static build(
+    parent: DeactivationsService | undefined,
+  ): DeactivationsService {
+    return new DeactivationsService(parent);
   }
 
   public add(
     deactivation: BindingDeactivation,
     relation: BindingDeactivationRelation,
   ): void {
-    this.#activationMaps.set(deactivation, relation);
+    this.#deactivationMaps.set(deactivation, relation);
+  }
+
+  public clone(): DeactivationsService {
+    const clone: DeactivationsService = new DeactivationsService(
+      this.#parent,
+      this.#deactivationMaps.clone(),
+    );
+
+    return clone;
   }
 
   public get(
@@ -51,7 +72,7 @@ export class DeactivationsService {
     const deactivationIterables: Iterable<BindingDeactivation>[] = [];
 
     const deactivations: Iterable<BindingDeactivation> | undefined =
-      this.#activationMaps.get(
+      this.#deactivationMaps.get(
         DeactivationRelationKind.serviceId,
         serviceIdentifier,
       );
@@ -75,14 +96,14 @@ export class DeactivationsService {
   }
 
   public removeAllByModuleId(moduleId: number): void {
-    this.#activationMaps.removeByRelation(
+    this.#deactivationMaps.removeByRelation(
       DeactivationRelationKind.moduleId,
       moduleId,
     );
   }
 
   public removeAllByServiceId(serviceId: ServiceIdentifier): void {
-    this.#activationMaps.removeByRelation(
+    this.#deactivationMaps.removeByRelation(
       DeactivationRelationKind.serviceId,
       serviceId,
     );

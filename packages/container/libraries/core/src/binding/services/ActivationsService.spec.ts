@@ -37,9 +37,9 @@ describe(ActivationsService.name, () => {
       OneToManyMapStar<BindingActivation, BindingActivationRelation>
     >;
 
-    parentActivationService = new ActivationsService(undefined);
+    parentActivationService = ActivationsService.build(undefined);
 
-    activationsService = new ActivationsService(parentActivationService);
+    activationsService = ActivationsService.build(parentActivationService);
   });
 
   describe('.add', () => {
@@ -75,6 +75,31 @@ describe(ActivationsService.name, () => {
 
       it('should return undefined', () => {
         expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe('.clone', () => {
+    describe('when called', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        activationMapsMock.clone.mockReturnValueOnce(activationMapsMock);
+
+        result = activationsService.clone();
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call activationMaps.clone', () => {
+        expect(activationMapsMock.clone).toHaveBeenCalledTimes(1);
+        expect(activationMapsMock.clone).toHaveBeenCalledWith();
+      });
+
+      it('should return a clone()', () => {
+        expect(result).toStrictEqual(activationsService);
       });
     });
   });

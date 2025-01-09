@@ -1,5 +1,6 @@
 import { ServiceIdentifier } from '@inversifyjs/common';
 
+import { Cloneable } from '../../common/models/Cloneable';
 import { OneToManyMapStar } from '../../common/models/OneToManyMapStar';
 import { Binding } from '../models/Binding';
 
@@ -13,24 +14,39 @@ export interface BindingRelation {
   [BindingRelationKind.serviceId]: ServiceIdentifier;
 }
 
-export class BindingService {
+export class BindingService implements Cloneable<BindingService> {
   readonly #bindingMaps: OneToManyMapStar<Binding<unknown>, BindingRelation>;
-
   readonly #parent: BindingService | undefined;
 
-  constructor(parent: BindingService | undefined) {
-    this.#bindingMaps = new OneToManyMapStar<Binding<unknown>, BindingRelation>(
-      {
+  private constructor(
+    parent: BindingService | undefined,
+    bindingMaps?: OneToManyMapStar<Binding<unknown>, BindingRelation>,
+  ) {
+    this.#bindingMaps =
+      bindingMaps ??
+      new OneToManyMapStar<Binding<unknown>, BindingRelation>({
         moduleId: {
           isOptional: true,
         },
         serviceId: {
           isOptional: false,
         },
-      },
-    );
+      });
 
     this.#parent = parent;
+  }
+
+  public static build(parent: BindingService | undefined): BindingService {
+    return new BindingService(parent);
+  }
+
+  public clone(): BindingService {
+    const clone: BindingService = new BindingService(
+      this.#parent,
+      this.#bindingMaps.clone(),
+    );
+
+    return clone;
   }
 
   public get<TResolved>(
