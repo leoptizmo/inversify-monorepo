@@ -13,6 +13,38 @@ interface RelationTest {
 }
 
 describe(OneToManyMapStar.name, () => {
+  describe('.clone', () => {
+    let oneToManyMapStar: OneToManyMapStar<unknown, RelationTest>;
+
+    beforeAll(() => {
+      oneToManyMapStar = new OneToManyMapStar<unknown, RelationTest>({
+        bar: {
+          isOptional: true,
+        },
+        foo: {
+          isOptional: false,
+        },
+      });
+
+      oneToManyMapStar.set(Symbol(), {
+        [RelationKey.bar]: 2,
+        [RelationKey.foo]: 'foo-value-fixture',
+      });
+    });
+
+    describe('when called', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        result = oneToManyMapStar.clone();
+      });
+
+      it('should return a clone', () => {
+        expect(result).toStrictEqual(oneToManyMapStar);
+      });
+    });
+  });
+
   describe('.get', () => {
     describe('having a OneToManyMapStartSpec with model', () => {
       let modelFixture: unknown;
