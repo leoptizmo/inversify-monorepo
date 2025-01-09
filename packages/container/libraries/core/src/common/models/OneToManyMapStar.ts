@@ -1,3 +1,5 @@
+import { Cloneable } from './Cloneable';
+
 export type OneToManyMapStartSpec<TRelation extends object> = {
   [TKey in keyof TRelation]: {
     isOptional: undefined extends TRelation[TKey] ? true : false;
@@ -11,9 +13,12 @@ type RelationToModelMap<TModel, TRelation extends object> = {
 /**
  * Data structure able to efficiently manage a set of models related to a set of properties in a one to many relation.
  */
-export class OneToManyMapStar<TModel, TRelation extends object> {
+export class OneToManyMapStar<TModel, TRelation extends object>
+  implements Cloneable<OneToManyMapStar<TModel, TRelation>>
+{
   readonly #modelToRelationMap: Map<TModel, TRelation>;
   readonly #relationToModelsMaps: RelationToModelMap<TModel, TRelation>;
+  readonly #spec: OneToManyMapStartSpec<TRelation>;
 
   constructor(spec: OneToManyMapStartSpec<TRelation>) {
     this.#modelToRelationMap = new Map();
@@ -23,6 +28,32 @@ export class OneToManyMapStar<TModel, TRelation extends object> {
     for (const specProperty of Reflect.ownKeys(spec) as (keyof TRelation)[]) {
       this.#relationToModelsMaps[specProperty] = new Map();
     }
+
+    this.#spec = spec;
+  }
+
+  public clone(): OneToManyMapStar<TModel, TRelation> {
+    const properties: (keyof TRelation)[] = Reflect.ownKeys(
+      this.#spec,
+    ) as (keyof TRelation)[];
+
+    const clone: OneToManyMapStar<TModel, TRelation> = new OneToManyMapStar(
+      this.#spec,
+    );
+
+    this.#pushEntriesIntoMap(
+      this.#modelToRelationMap,
+      clone.#modelToRelationMap,
+    );
+
+    for (const property of properties) {
+      this.#pushEntriesIntoMap(
+        this.#relationToModelsMaps[property],
+        clone.#relationToModelsMaps[property],
+      );
+    }
+
+    return clone;
   }
 
   public get<TKey extends keyof TRelation>(
@@ -81,6 +112,15 @@ export class OneToManyMapStar<TModel, TRelation extends object> {
     }
 
     return modelSet;
+  }
+
+  #pushEntriesIntoMap<TKey, TValue>(
+    source: Map<TKey, TValue>,
+    target: Map<TKey, TValue>,
+  ): void {
+    for (const [key, value] of source) {
+      target.set(key, value);
+    }
   }
 
   #removeModelFromRelationMaps(model: TModel, relation: TRelation): void {
