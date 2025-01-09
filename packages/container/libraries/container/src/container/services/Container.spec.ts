@@ -27,6 +27,7 @@ import {
   ResolutionContext,
   ResolutionParams,
   resolve,
+  resolveModuleDeactivations,
   resolveServiceDeactivations,
 } from '@inversifyjs/core';
 
@@ -49,17 +50,20 @@ describe(Container.name, () => {
   beforeAll(() => {
     activationServiceMock = {
       add: jest.fn(),
+      removeAllByModuleId: jest.fn(),
       removeAllByServiceId: jest.fn(),
     } as Partial<
       jest.Mocked<ActivationsService>
     > as jest.Mocked<ActivationsService>;
     bindingServiceMock = {
       get: jest.fn(),
+      removeAllByModuleId: jest.fn(),
       removeAllByServiceId: jest.fn(),
       set: jest.fn(),
     } as Partial<jest.Mocked<BindingService>> as jest.Mocked<BindingService>;
     deactivationServiceMock = {
       add: jest.fn(),
+      removeAllByModuleId: jest.fn(),
       removeAllByServiceId: jest.fn(),
     } as Partial<
       jest.Mocked<DeactivationsService>
@@ -74,6 +78,52 @@ describe(Container.name, () => {
     (
       DeactivationsService as jest.Mock<() => DeactivationsService>
     ).mockReturnValue(deactivationServiceMock);
+  });
+
+  describe('.constructor', () => {
+    describe('having a parent container', () => {
+      let parentContainerFixture: Container;
+
+      beforeAll(() => {
+        parentContainerFixture = new Container();
+      });
+
+      describe('when called', () => {
+        beforeAll(() => {
+          new Container({
+            parent: parentContainerFixture,
+          });
+        });
+
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call new ActivationsService', () => {
+          expect(ActivationsService).toHaveBeenCalledTimes(2);
+          expect(ActivationsService).toHaveBeenNthCalledWith(1, undefined);
+          expect(ActivationsService).toHaveBeenNthCalledWith(
+            2,
+            activationServiceMock,
+          );
+        });
+
+        it('should call new BindingService', () => {
+          expect(BindingService).toHaveBeenCalledTimes(2);
+          expect(BindingService).toHaveBeenNthCalledWith(1, undefined);
+          expect(BindingService).toHaveBeenNthCalledWith(2, bindingServiceMock);
+        });
+
+        it('should call new DeactivationsService', () => {
+          expect(DeactivationsService).toHaveBeenCalledTimes(2);
+          expect(DeactivationsService).toHaveBeenNthCalledWith(1, undefined);
+          expect(DeactivationsService).toHaveBeenNthCalledWith(
+            2,
+            deactivationServiceMock,
+          );
+        });
+      });
+    });
   });
 
   describe('.bind', () => {
@@ -1015,6 +1065,55 @@ describe(Container.name, () => {
         expect(
           deactivationServiceMock.removeAllByServiceId,
         ).toHaveBeenCalledWith(serviceIdentifierFixture);
+      });
+
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe('.unload', () => {
+    let containerModuleFixture: ContainerModule;
+
+    beforeAll(() => {
+      containerModuleFixture = {
+        id: 2,
+      } as Partial<ContainerModule> as ContainerModule;
+    });
+
+    describe('when called', () => {
+      let result: unknown;
+
+      beforeAll(async () => {
+        result = await new Container().unload(containerModuleFixture);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call resolveModuleDeactivations', () => {
+        const expectedParams: DeactivationParams = {
+          getBindings: expect.any(Function) as unknown as <TInstance>(
+            serviceIdentifier: ServiceIdentifier<TInstance>,
+          ) => Binding<TInstance>[] | undefined,
+          getBindingsFromModule: expect.any(Function) as unknown as <TInstance>(
+            moduleId: number,
+          ) => Binding<TInstance>[] | undefined,
+          getClassMetadata: expect.any(Function) as unknown as (
+            type: Newable,
+          ) => ClassMetadata,
+          getDeactivations: expect.any(Function) as unknown as <TActivated>(
+            serviceIdentifier: ServiceIdentifier<TActivated>,
+          ) => Iterable<BindingDeactivation<TActivated>> | undefined,
+        };
+
+        expect(resolveModuleDeactivations).toHaveBeenCalledTimes(1);
+        expect(resolveModuleDeactivations).toHaveBeenCalledWith(
+          expectedParams,
+          containerModuleFixture.id,
+        );
       });
 
       it('should return undefined', () => {

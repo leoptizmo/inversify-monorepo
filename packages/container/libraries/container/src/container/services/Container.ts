@@ -21,6 +21,7 @@ import {
   PlanParams,
   PlanResult,
   resolve,
+  resolveModuleDeactivations,
   resolveServiceDeactivations,
 } from '@inversifyjs/core';
 
@@ -239,6 +240,31 @@ export class Container {
     this.#activationService.removeAllByServiceId(serviceIdentifier);
     this.#bindingService.removeAllByServiceId(serviceIdentifier);
     this.#deactivationService.removeAllByServiceId(serviceIdentifier);
+  }
+
+  public async unload(...modules: ContainerModule[]): Promise<void> {
+    const deactivationParams: DeactivationParams =
+      this.#buildDeactivationParams();
+
+    await Promise.all(
+      modules.map((module: ContainerModule): void | Promise<void> =>
+        resolveModuleDeactivations(deactivationParams, module.id),
+      ),
+    );
+
+    /*
+     * Removing module related objects here so unload is deterministic.
+     *
+     * Removing modules as soon as resolveModuleDeactivations takes effect leads to
+     * module deactivations not triggering previously deleted deactivations,
+     * introducing non determinism depending in the order in which modules are
+     * deactivated.
+     */
+    for (const module of modules) {
+      this.#activationService.removeAllByModuleId(module.id);
+      this.#bindingService.removeAllByModuleId(module.id);
+      this.#deactivationService.removeAllByModuleId(module.id);
+    }
   }
 
   #buildContainerModuleLoadOptions(
