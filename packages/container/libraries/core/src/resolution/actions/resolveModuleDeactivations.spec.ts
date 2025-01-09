@@ -1,44 +1,39 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
-import { ServiceIdentifier } from '@inversifyjs/common';
-
 jest.mock('./resolveBindingsDeactivations');
 
 import { DeactivationParams } from '../models/DeactivationParams';
 import { resolveBindingsDeactivations } from './resolveBindingsDeactivations';
-import { resolveServiceDeactivations } from './resolveServiceDeactivations';
+import { resolveModuleDeactivations } from './resolveModuleDeactivations';
 
-describe(resolveServiceDeactivations.name, () => {
+describe(resolveModuleDeactivations.name, () => {
   let paramsMock: jest.Mocked<DeactivationParams>;
-  let serviceIdentifierFixture: ServiceIdentifier;
+  let moduleIdFixture: number;
 
   beforeAll(() => {
     paramsMock = {
-      getBindings: jest.fn() as unknown,
+      getBindingsFromModule: jest.fn() as unknown,
     } as Partial<
       jest.Mocked<DeactivationParams>
     > as jest.Mocked<DeactivationParams>;
-    serviceIdentifierFixture = 'service-id';
+    moduleIdFixture = 2;
   });
 
   describe('when called', () => {
     let result: unknown;
 
     beforeAll(() => {
-      result = resolveServiceDeactivations(
-        paramsMock,
-        serviceIdentifierFixture,
-      );
+      result = resolveModuleDeactivations(paramsMock, moduleIdFixture);
     });
 
     afterAll(() => {
       jest.clearAllMocks();
     });
 
-    it('should call params.getBindings()', () => {
-      expect(paramsMock.getBindings).toHaveBeenCalledTimes(1);
-      expect(paramsMock.getBindings).toHaveBeenCalledWith(
-        serviceIdentifierFixture,
+    it('should call params.getBindingsFromModule()', () => {
+      expect(paramsMock.getBindingsFromModule).toHaveBeenCalledTimes(1);
+      expect(paramsMock.getBindingsFromModule).toHaveBeenCalledWith(
+        moduleIdFixture,
       );
     });
 

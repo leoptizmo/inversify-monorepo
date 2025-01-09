@@ -1,15 +1,13 @@
-import { ServiceIdentifier } from '@inversifyjs/common';
-
 import { Binding } from '../../binding/models/Binding';
 import { DeactivationParams } from '../models/DeactivationParams';
 import { resolveBindingsDeactivations } from './resolveBindingsDeactivations';
 
-export function resolveServiceDeactivations(
+export function resolveModuleDeactivations(
   params: DeactivationParams,
-  serviceIdentifier: ServiceIdentifier,
+  moduleId: number,
 ): void | Promise<void> {
   const bindings: Iterable<Binding> | undefined =
-    params.getBindings(serviceIdentifier);
+    params.getBindingsFromModule(moduleId);
 
   return resolveBindingsDeactivations(params, bindings);
 }

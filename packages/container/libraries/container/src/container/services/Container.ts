@@ -286,6 +286,10 @@ export class Container {
         serviceIdentifier: ServiceIdentifier<TInstance>,
       ): Iterable<Binding<TInstance>> | undefined =>
         this.#bindingService.get(serviceIdentifier),
+      getBindingsFromModule: <TInstance>(
+        moduleId: number,
+      ): Iterable<Binding<TInstance>> | undefined =>
+        this.#bindingService.getByModuleId(moduleId),
       getClassMetadata,
       getDeactivations: <TActivated>(
         serviceIdentifier: ServiceIdentifier<TActivated>,

@@ -8,6 +8,9 @@ export interface DeactivationParams {
   getBindings: <TInstance>(
     serviceIdentifier: ServiceIdentifier<TInstance>,
   ) => Iterable<Binding<TInstance>> | undefined;
+  getBindingsFromModule: <TInstance>(
+    moduleId: number,
+  ) => Iterable<Binding<TInstance>> | undefined;
   getClassMetadata: (type: Newable) => ClassMetadata;
   getDeactivations: <TActivated>(
     serviceIdentifier: ServiceIdentifier<TActivated>,
