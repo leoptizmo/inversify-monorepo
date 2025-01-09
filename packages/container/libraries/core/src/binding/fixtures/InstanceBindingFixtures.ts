@@ -21,10 +21,30 @@ export class InstanceBindingFixtures {
     };
   }
 
-  public static get withCacheWithScopeSingleton(): InstanceBinding<unknown> {
+  public static get withScopeSingleton(): InstanceBinding<unknown> {
     return {
       ...InstanceBindingFixtures.any,
       scope: bindingScopeValues.Singleton,
+    };
+  }
+
+  public static get withCacheIsRightAndAsyncValueAndScopeSingleton(): InstanceBinding<unknown> {
+    return {
+      ...InstanceBindingFixtures.withScopeSingleton,
+      cache: {
+        isRight: true,
+        value: Promise.resolve({}),
+      },
+    };
+  }
+
+  public static get withCacheIsRightAndScopeSingleton(): InstanceBinding<unknown> {
+    return {
+      ...InstanceBindingFixtures.withScopeSingleton,
+      cache: {
+        isRight: true,
+        value: {},
+      },
     };
   }
 }

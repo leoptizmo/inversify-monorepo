@@ -5,11 +5,7 @@ import { ServiceIdentifier } from '@inversifyjs/common';
 jest.mock('./resolveBindingDeactivations');
 
 import { ConstantValueBindingFixtures } from '../../binding/fixtures/ConstantValueBindingFixtures';
-import { InstanceBindingFixtures } from '../../binding/fixtures/InstanceBindingFixtures';
 import { ConstantValueBinding } from '../../binding/models/ConstantValueBinding';
-import { InstanceBinding } from '../../binding/models/InstanceBinding';
-import { ClassMetadataFixtures } from '../../metadata/fixtures/ClassMetadataFixtures';
-import { ClassMetadata } from '../../metadata/models/ClassMetadata';
 import { DeactivationParams } from '../models/DeactivationParams';
 import { resolveBindingDeactivations } from './resolveBindingDeactivations';
 import { resolveServiceDeactivations } from './resolveServiceDeactivations';
@@ -117,7 +113,6 @@ describe(resolveServiceDeactivations.name, () => {
       expect(resolveBindingDeactivations).toHaveBeenCalledWith(
         paramsMock,
         bindingFixture,
-        bindingFixture.cache.value,
       );
     });
 
@@ -126,30 +121,21 @@ describe(resolveServiceDeactivations.name, () => {
     });
   });
 
-  describe('when called, and params.getBindings() returns an array with instance singleton ScopedBinding with cached value and params.getClassMetadata() returns metadata with preDestroy method, and preDestroy method returns undefined', () => {
-    let bindingFixture: InstanceBinding<unknown>;
-    let classMetadataFixture: ClassMetadata;
-    let preDestoyMock: jest.Mock<() => void>;
+  describe('when called, and params.getBindings() returns an array with non instance singleton ScopedBinding with cached value and resolveBindingDeactivations() returns Promise', () => {
+    let bindingFixture: ConstantValueBinding<unknown>;
 
     let result: unknown;
 
     beforeAll(() => {
-      classMetadataFixture = ClassMetadataFixtures.withPreDestroyMethodName;
-      preDestoyMock = jest.fn();
-
-      bindingFixture = {
-        ...InstanceBindingFixtures.withCacheWithScopeSingleton,
-        cache: {
-          isRight: true,
-          value: {
-            [classMetadataFixture.lifecycle.preDestroyMethodName as string]:
-              preDestoyMock,
-          },
-        },
-      };
+      bindingFixture = ConstantValueBindingFixtures.withCacheWithIsRightTrue;
 
       paramsMock.getBindings.mockReturnValueOnce([bindingFixture]);
-      paramsMock.getClassMetadata.mockReturnValueOnce(classMetadataFixture);
+
+      (
+        resolveBindingDeactivations as jest.Mock<
+          typeof resolveBindingDeactivations
+        >
+      ).mockReturnValueOnce(Promise.resolve(undefined));
 
       result = resolveServiceDeactivations(
         paramsMock,
@@ -168,84 +154,16 @@ describe(resolveServiceDeactivations.name, () => {
       );
     });
 
-    it('should call preDestroy method', () => {
-      expect(preDestoyMock).toHaveBeenCalledTimes(1);
-      expect(preDestoyMock).toHaveBeenCalledWith();
-    });
-
     it('should call resolveBindingDeactivations()', () => {
       expect(resolveBindingDeactivations).toHaveBeenCalledTimes(1);
       expect(resolveBindingDeactivations).toHaveBeenCalledWith(
         paramsMock,
         bindingFixture,
-        bindingFixture.cache.value,
       );
     });
 
     it('should return undefined', () => {
-      expect(result).toBeUndefined();
-    });
-  });
-
-  describe('when called, and params.getBindings() returns an array with instance singleton ScopedBinding with cached value and params.getClassMetadata() returns metadata with preDestroy method, and preDestroy method returns promise', () => {
-    let bindingFixture: InstanceBinding<unknown>;
-    let classMetadataFixture: ClassMetadata;
-    let preDestoyMock: jest.Mock<() => Promise<void>>;
-
-    let result: unknown;
-
-    beforeAll(async () => {
-      classMetadataFixture = ClassMetadataFixtures.withPreDestroyMethodName;
-      preDestoyMock = jest.fn();
-
-      bindingFixture = {
-        ...InstanceBindingFixtures.withCacheWithScopeSingleton,
-        cache: {
-          isRight: true,
-          value: {
-            [classMetadataFixture.lifecycle.preDestroyMethodName as string]:
-              preDestoyMock,
-          },
-        },
-      };
-
-      paramsMock.getBindings.mockReturnValueOnce([bindingFixture]);
-      paramsMock.getClassMetadata.mockReturnValueOnce(classMetadataFixture);
-      preDestoyMock.mockResolvedValueOnce(undefined);
-
-      result = await resolveServiceDeactivations(
-        paramsMock,
-        serviceIdentifierFixture,
-      );
-    });
-
-    afterAll(() => {
-      jest.clearAllMocks();
-    });
-
-    it('should call params.getBindings()', () => {
-      expect(paramsMock.getBindings).toHaveBeenCalledTimes(1);
-      expect(paramsMock.getBindings).toHaveBeenCalledWith(
-        serviceIdentifierFixture,
-      );
-    });
-
-    it('should call preDestroy method', () => {
-      expect(preDestoyMock).toHaveBeenCalledTimes(1);
-      expect(preDestoyMock).toHaveBeenCalledWith();
-    });
-
-    it('should call resolveBindingDeactivations()', () => {
-      expect(resolveBindingDeactivations).toHaveBeenCalledTimes(1);
-      expect(resolveBindingDeactivations).toHaveBeenCalledWith(
-        paramsMock,
-        bindingFixture,
-        bindingFixture.cache.value,
-      );
-    });
-
-    it('should return undefined', () => {
-      expect(result).toBeUndefined();
+      expect(result).toStrictEqual(Promise.resolve(undefined));
     });
   });
 });

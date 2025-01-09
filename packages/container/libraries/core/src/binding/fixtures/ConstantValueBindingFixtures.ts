@@ -48,23 +48,34 @@ export class ConstantValueBindingFixtures {
     };
   }
 
-  public static get withOnDeactivationAsync(): ConstantValueBinding<unknown> {
+  public static get withCacheWithIsRightTrueOnDeactivationAsync(): ConstantValueBinding<unknown> {
     return {
       ...ConstantValueBindingFixtures.any,
       onDeactivation: async (): Promise<void> => undefined,
     };
   }
 
-  public static get withOnDeactivationSync(): ConstantValueBinding<unknown> {
+  public static get withCacheWithIsRightTrueAndAsyncValueAndOnDeactivationSync(): ConstantValueBinding<unknown> {
     return {
       ...ConstantValueBindingFixtures.any,
+      cache: {
+        isRight: true,
+        value: Promise.resolve(Symbol()),
+      },
       onDeactivation: (): void => undefined,
     };
   }
 
-  public static get withOnDeactivationUndefined(): ConstantValueBinding<unknown> {
+  public static get withCacheWithIsRightTrueAndOnDeactivationSync(): ConstantValueBinding<unknown> {
     return {
-      ...ConstantValueBindingFixtures.any,
+      ...ConstantValueBindingFixtures.withCacheWithIsRightTrue,
+      onDeactivation: (): void => undefined,
+    };
+  }
+
+  public static get withCacheWithIsRightTrueAndOnDeactivationUndefined(): ConstantValueBinding<unknown> {
+    return {
+      ...ConstantValueBindingFixtures.withCacheWithIsRightTrue,
       onDeactivation: undefined,
     };
   }
