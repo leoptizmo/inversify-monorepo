@@ -8,6 +8,7 @@ export class Katana implements Weapon {
   public readonly damage: number = 10;
 }
 
+// Begin-example
 export class LegendaryWarrior {
   constructor(
     @inject('Weapon') public readonly firstWeapon: Weapon,
@@ -16,7 +17,6 @@ export class LegendaryWarrior {
   ) {}
 }
 
-// Begin-example
 const container: Container = new Container();
 container.bind<Weapon>('Weapon').to(Katana).inRequestScope();
 container.bind(LegendaryWarrior).toSelf();
