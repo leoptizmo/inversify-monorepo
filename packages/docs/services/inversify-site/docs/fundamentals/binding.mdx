@@ -9,7 +9,7 @@ import CodeBlock from '@theme/CodeBlock';
 
 # Binding
 
-A binding represents a relation between a service identifier and a service resolution. Bindings are added to a container in order to configure it to provide services.
+A binding represents the relationship between a service identifier and its resolution. Bindings are added to a container to configure it to provide services.
 
 ## Binding properties
 
@@ -17,34 +17,34 @@ A binding has the following properties:
 
 ### Service identifier
 
-Identifier of the service to provide a resolution.
+The identifier of the service for which a resolution is provided.
 
 ### Scope
 
-The scope is an alias of a caching strategy to decide whether or not the service should be resolved instead of provide a cached value.
+The scope determines the caching strategy used to decide whether the service should be resolved or a cached value should be provided.
 
 #### Request
 
-Sets the binding scope to request. Whenever the service is resolved in the same `container.get` request, the same resolved value will be used.
+When the service is resolved within the same container.get request, the same resolved value will be used.
 
 <CodeBlock language="ts">{bindingScopeRequestSource}</CodeBlock>
 
 #### Singleton
 
-Whenever the service is resolved, the same cached resolved value will be used.
+When the service is resolved, the same cached resolved value will be used.
 
 <CodeBlock language="ts">{bindingScopeSingletonSource}</CodeBlock>
 
 #### Transient
 
-Whenever the service is resolved, a different resolved value will be used.
+When the service is resolved, a new resolved value will be used each time.
 
 <CodeBlock language="ts">{bindingScopeTransientSource}</CodeBlock>
 
 ### Constraint
 
-Whether or not the binding is used to provide a resolved value for the given service identifier. Consider [API docs](/docs/api/binding-syntax#bindingwhensyntax) as reference.
+Specifies whether the binding is used to provide a resolved value for the given service identifier. Refer to the [API docs](/docs/api/binding-syntax#bindingwhensyntax) for more information.
 
 ### Lifecycle handlers
 
-Handlers to be called after a resolved value is provided or a singleton scoped binding is deactivated.
+Handlers that are called after a resolved value is provided or a singleton-scoped binding is deactivated.
