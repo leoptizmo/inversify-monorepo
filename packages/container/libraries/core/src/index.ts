@@ -71,7 +71,6 @@ import { OptionalGetOptions } from './resolution/models/OptionalGetOptions';
 import { ResolutionContext } from './resolution/models/ResolutionContext';
 import { ResolutionParams } from './resolution/models/ResolutionParams';
 import { Resolved } from './resolution/models/Resolved';
-import { LegacyQueryableString } from './string/models/LegacyQueryableString';
 
 export type {
   BaseBinding,
@@ -98,7 +97,6 @@ export type {
   GetOptionsTagConstraint,
   InstanceBinding,
   LeafBindingNode,
-  LegacyQueryableString,
   ManagedClassElementMetadata,
   MetadataName,
   MetadataTag,
