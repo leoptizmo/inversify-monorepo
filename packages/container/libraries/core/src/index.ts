@@ -38,6 +38,7 @@ import { optional } from './metadata/decorators/optional';
 import { postConstruct } from './metadata/decorators/postConstruct';
 import { preDestroy } from './metadata/decorators/preDestroy';
 import { tagged } from './metadata/decorators/tagged';
+import { targetName } from './metadata/decorators/targetName';
 import { unmanaged } from './metadata/decorators/unmanaged';
 import { ClassElementMetadata } from './metadata/models/ClassElementMetadata';
 import { ClassElementMetadataKind } from './metadata/models/ClassElementMetadataKind';
@@ -143,5 +144,6 @@ export {
   resolveModuleDeactivations,
   resolveServiceDeactivations,
   tagged,
+  targetName,
   unmanaged,
 };
