@@ -9,6 +9,5 @@
 
 ### Patch Changes
 
-- Updated dependencies [6b52b45]
-- Updated dependencies [1ab083b]
+- Updated dependencies
   - @inversifyjs/common@1.5.0

@@ -42,12 +42,7 @@
 - 6b52b45: Updated rollup config to provide right source map file paths.
 - 14ce6cd: Updated `getClassMetadata` with missing constructor arguments lenght validation
 - a73aa34: Updated `ActivationService.get` to provide missing parent activations
-- Updated dependencies [af81ac4]
-- Updated dependencies [6b52b45]
-- Updated dependencies [a4276ba]
-- Updated dependencies [a4276ba]
-- Updated dependencies [af81ac4]
-- Updated dependencies [1ab083b]
+- Updated dependencies
   - @inversifyjs/prototype-utils@0.1.0
   - @inversifyjs/common@1.5.0
   - @inversifyjs/reflect-metadata-utils@1.0.0
