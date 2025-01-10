@@ -4,18 +4,18 @@ title: Inheritance
 ---
 # Inheritance
 
-Inheritance can be accomplished as long as constructor parameters are properly decorated. There're two ways to have constructor parameters properly decorated:
+Inheritance can be achieved as long as constructor parameters are properly decorated. There are two ways to ensure this:
 
-- The number of decorated constructor arguments in a derived class is greater or equal than the number of constructor arguments in its base class.
-- [skipBaseClassChecks](/docs/api/container#skipbaseclasschecks) option is enabled
+- The number of decorated constructor arguments in a derived class is greater than or equal to the number of constructor arguments in its base class.
+- The [skipBaseClassChecks](/docs/api/container#skipbaseclasschecks) option is enabled.
 
-## Example of wrong inheritance injection
+## Example of incorrect inheritance injection
 
 ```ts
 @injectable()
 class Warrior {
   public rank: string;
-  constructor(rank: string) { // args count  = 1
+  constructor(rank: string) { // args count = 1
     this.rank = rank;
   }
 }
@@ -28,17 +28,17 @@ class SamuraiMaster extends Warrior {
 }
 ```
 
-When trying to get a `SamuraiMaster`, the container throws an Error alerting the constructor parameters are not properly decorated.
+When trying to get a `SamuraiMaster`, the container throws an error indicating that the constructor parameters are not properly decorated.
 
-## Using @unmanaged decorator
+## Using the @unmanaged decorator
 
-The [unmanaged](/docs/api/decorator#unmanaged) decorator is a good way to tell inversify a base type constructor param is should not be managed. This is often the case when dealing with inheritance hierarchies in which only leaf types are injected.
+The [unmanaged](/docs/api/decorator#unmanaged) decorator tells Inversify that a base type constructor parameter should not be managed. This is often the case when dealing with inheritance hierarchies where only leaf types are injected.
 
 ```ts
 @injectable()
 class Warrior {
   public rank: string;
-  constructor(@unmanaged() rank: string) { // args count  = 0, unmanaged args are not included
+  constructor(@unmanaged() rank: string) { // args count = 0, unmanaged args are not included
     this.rank = rank;
   }
 }

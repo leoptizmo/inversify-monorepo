@@ -7,7 +7,7 @@ import CodeBlock from '@theme/CodeBlock';
 
 # ContainerModule
 
-Container modules can help you to manage the complexity of your bindings in large applications.
+Container modules help manage the complexity of bindings in large applications.
 
 ## Constructor
 
@@ -15,7 +15,7 @@ Container modules can help you to manage the complexity of your bindings in larg
 constructor(registry: interfaces.ContainerModuleCallBack)
 ```
 
-The constructor argument for `ContainerModule` is a registration callback with function parameters to manage bindings in the scope of the container module.
+The constructor argument for `ContainerModule` is a registration callback with function parameters to manage bindings within the scope of the container module.
 
 ### bind
 
@@ -23,7 +23,7 @@ The constructor argument for `ContainerModule` is a registration callback with f
 bind: interfaces.Bind
 ```
 
-Consider [docs](/docs/api/container#bind) as reference.
+Refer to the [docs](/docs/api/container#bind) for more information.
 
 ### unbind
 
@@ -31,7 +31,7 @@ Consider [docs](/docs/api/container#bind) as reference.
 unbind: interfaces.Unbind
 ```
 
-Consider [docs](/docs/api/container#unbind) as reference.
+Refer to the [docs](/docs/api/container#unbind) for more information.
 
 ### isBound
 
@@ -39,7 +39,7 @@ Consider [docs](/docs/api/container#unbind) as reference.
 isBound: interfaces.IsBound
 ```
 
-Consider [docs](/docs/api/container#isbound) as reference.
+Refer to the [docs](/docs/api/container#isbound) for more information.
 
 ### rebind
 
@@ -47,7 +47,7 @@ Consider [docs](/docs/api/container#isbound) as reference.
 rebind: interfaces.Rebind
 ```
 
-Consider [docs](/docs/api/container#rebind) as reference.
+Refer to the [docs](/docs/api/container#rebind) for more information.
 
 ### unbindAsync
 
@@ -55,7 +55,7 @@ Consider [docs](/docs/api/container#rebind) as reference.
 unbindAsync: interfaces.UnbindAsync
 ```
 
-Consider [docs](/docs/api/container#unbindasync) as reference.
+Refer to the [docs](/docs/api/container#unbindasync) for more information.
 
 ### onActivation
 
@@ -63,7 +63,7 @@ Consider [docs](/docs/api/container#unbindasync) as reference.
 onActivation: interfaces.Container['onActivation']
 ```
 
-Consider [docs](/docs/api/container#onactivation) as reference.
+Refer to the [docs](/docs/api/container#onactivation) for more information.
 
 ### onDeactivation
 
@@ -71,13 +71,12 @@ Consider [docs](/docs/api/container#onactivation) as reference.
 onDeactivation: interfaces.Container['onDeactivation']
 ```
 
-Consider [docs](/docs/api/container#ondeactivation) as reference.
+Refer to the [docs](/docs/api/container#ondeactivation) for more information.
 
 ## Example: binding services through ContainerModule API
 
-When a container module is loaded into a Container the registration callback is invoked. This is the opportunity for the container module to register bindings and handlers.  Use the Container load method for ContainerModule instances and the Container loadAsync method for AsyncContainerModule instances.
+When a container module is loaded into a Container, the registration callback is invoked. This is the opportunity for the container module to register bindings and handlers. Use the Container `load` method for `ContainerModule` instances and the Container `loadAsync` method for `AsyncContainerModule` instances.
 
-When a container module is unloaded from a Container the bindings added by that container will be removed and the [deactivation process](/docs/fundamentals/lifecycle/deactivation) will occur for each of them. Container deactivation and [activation handlers](/docs/fundamentals/lifecycle/activation) will also be removed.
-Use the unloadAsync method to unload when there will be an async deactivation handler or async [preDestroy](/docs/api/decorator#predestroy) 
+When a container module is unloaded from a Container, the bindings added by that container will be removed, and the [deactivation process](/docs/fundamentals/lifecycle/deactivation) will occur for each of them. Container deactivation and [activation handlers](/docs/fundamentals/lifecycle/activation) will also be removed. Use the `unloadAsync` method to unload when there will be an async deactivation handler or async [preDestroy](/docs/api/decorator#predestroy).
 
 <CodeBlock language="ts">{containerModuleApiExampleSource}</CodeBlock>
