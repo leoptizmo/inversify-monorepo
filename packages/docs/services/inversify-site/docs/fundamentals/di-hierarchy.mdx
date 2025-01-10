@@ -6,12 +6,13 @@ import diHierarchySource from '@inversifyjs/code-examples/generated/examples/diH
 import CodeBlock from '@theme/CodeBlock';
 
 # DI Hierarchy
-InversifyJS is a popular library for implementing inversion of control (IoC) and dependency injection (DI) in TypeScript applications. It also supports hierarchical dependency injection, which can be a powerful tool in complex applications.
 
-With InversifyJS hierarchical injection system, you can create a hierarchy of containers where each container can have a parent container. This allows for better organization and separation of concerns in your application.
+InversifyJS is a popular library for implementing inversion of control (IoC) and dependency injection (DI) in TypeScript applications. It supports hierarchical dependency injection, which can be a powerful tool in complex applications.
+
+With InversifyJS's hierarchical injection system, you can create a hierarchy of containers where each container can have a parent container. This allows for better organization and separation of concerns in your application.
 
 When a dependency needs to be injected, InversifyJS starts by looking in the current container for a binding. If the binding is not found, it moves up the hierarchy to the parent container and continues the search. This process continues until the dependency is resolved or the top-level parent container is reached.
 
-By using InversifyJS hierarchical injection system, you can easily manage complex dependencies and keep your code clean and modular. It provides a flexible and scalable solution for handling dependencies in your TypeScript applications.
+By using InversifyJS's hierarchical injection system, you can easily manage complex dependencies and keep your code clean and modular. It provides a flexible and scalable solution for handling dependencies in your TypeScript applications.
 
 <CodeBlock language="ts">{diHierarchySource}</CodeBlock>

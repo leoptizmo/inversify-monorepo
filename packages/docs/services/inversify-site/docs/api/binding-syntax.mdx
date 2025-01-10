@@ -17,7 +17,8 @@ import bindingWhenSyntaxApiWhenSource from '@inversifyjs/code-examples/generated
 import CodeBlock from '@theme/CodeBlock';
 
 # Binding Syntax
-Binding syntax is provided as a fluent interface provided as the result of using the [container API](/docs/api/container#bind) or the [container module API](/docs/api/container-module#bind)
+
+Binding syntax is provided as a fluent interface resulting from using the [container API](/docs/api/container#bind) or the [container module API](/docs/api/container-module#bind).
 
 ## BindingToSyntax
 
@@ -33,7 +34,7 @@ Represents a service binding given a service identifier.
 const bindingToSyntax = container.bind('service-id');
 ```
 
-Further docs refers to this service identifier as the "given service identifier".
+Further documentation refers to this service identifier as the "given service identifier".
 
 ### to
 
@@ -41,7 +42,7 @@ Further docs refers to this service identifier as the "given service identifier"
 to(constructor: interfaces.Newable<T>): interfaces.BindingInWhenOnSyntax<T>;
 ```
 
-Binds a class instantiation to the given service binding. Whenever the service is resolved, the class constructor will be invoked in order to build the resolved value.
+Binds a class instantiation to the given service binding. Whenever the service is resolved, the class constructor will be invoked to build the resolved value.
 
 <CodeBlock language="ts">{bindingToSyntaxApiToSource}</CodeBlock>
 
@@ -71,7 +72,7 @@ Binds a value in singleton scope to the given service identifier.
 toDynamicValue(func: interfaces.DynamicValue<T>): interfaces.BindingInWhenOnSyntax<T>;
 ```
 
-Binds a function to the given service id. Whenever the service is resolved, the function passed will be invoked in order to build the resolved value.
+Binds a function to the given service id. Whenever the service is resolved, the function passed will be invoked to build the resolved value.
 
 :::info
 
@@ -115,7 +116,7 @@ An alias of `BindingToSyntax.toConstantValue` restricted to functions.
 toAutoFactory<T2>(serviceIdentifier: interfaces.ServiceIdentifier<T2>): interfaces.BindingWhenOnSyntax<T>;
 ```
 
-Binds a factory of services asociated a target service identifier to the given service identifier.
+Binds a factory of services associated with a target service identifier to the given service identifier.
 
 <CodeBlock language="ts">{bindingToSyntaxApiToAutoFactorySource}</CodeBlock>
 
@@ -125,7 +126,7 @@ Binds a factory of services asociated a target service identifier to the given s
 toAutoNamedFactory<T2>(serviceIdentifier: interfaces.ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
 ```
 
-Binds a factory of services asociated a target service identifier and a name to the given service identifier.
+Binds a factory of services associated with a target service identifier and a name to the given service identifier.
 
 <CodeBlock language="ts">{bindingToSyntaxApiToAutoNamedFactorySource}</CodeBlock>
 
@@ -135,7 +136,7 @@ Binds a factory of services asociated a target service identifier and a name to 
 toProvider<T2>(provider: interfaces.ProviderCreator<T2>): interfaces.BindingWhenOnSyntax<T>;
 ```
 
-Binds a provider of services asociated a target service identifier to the given service identifier. A provider is just an asyncronous factory.
+Binds a provider of services associated with a target service identifier to the given service identifier. A provider is just an asynchronous factory.
 
 <CodeBlock language="ts">{bindingToSyntaxApiToProviderSource}</CodeBlock>
 
@@ -157,7 +158,7 @@ interface BindingInSyntax<T> {
 }
 ```
 
-Represents a service binding given a service identifier and a service resolution such as a contructor, a factory or a provider.
+Represents a service binding given a service identifier and a service resolution such as a constructor, a factory, or a provider.
 
 ### inSingletonScope
 
@@ -165,7 +166,7 @@ Represents a service binding given a service identifier and a service resolution
 inSingletonScope(): BindingWhenOnSyntax<T>;
 ```
 
-Sets the binding scope to singleton. Consider [docs](/docs/fundamentals/binding#singleton) as reference.
+Sets the binding scope to singleton. Refer to the [docs](/docs/fundamentals/binding#singleton) for more information.
 
 ### inTransientScope
 
@@ -173,7 +174,7 @@ Sets the binding scope to singleton. Consider [docs](/docs/fundamentals/binding#
 inTransientScope(): BindingWhenOnSyntax<T>;
 ```
 
-Sets the binding scope to transient. Consider [docs](/docs/fundamentals/binding#transient) as reference.
+Sets the binding scope to transient. Refer to the [docs](/docs/fundamentals/binding#transient) for more information.
 
 ### inRequestScope
 
@@ -181,7 +182,7 @@ Sets the binding scope to transient. Consider [docs](/docs/fundamentals/binding#
 inRequestScope(): BindingWhenOnSyntax<T>;
 ```
 
-Sets the binding scope to request. Consider [docs](/docs/fundamentals/binding#request) as reference.
+Sets the binding scope to request. Refer to the [docs](/docs/fundamentals/binding#request) for more information.
 
 ## BindingOnSyntax
 
@@ -209,7 +210,7 @@ Sets a binding activation handler. The activation handler is invoked after a dep
 onDeactivation(fn: (injectable: T) => void | Promise<void>): BindingWhenSyntax<T>;
 ```
 
-Sets a binding deactivation handler on a singleton scope binding. The deactivation handler is caled when the binding is unbound from a container.
+Sets a binding deactivation handler on a singleton scope binding. The deactivation handler is called when the binding is unbound from a container.
 
 ## BindingWhenSyntax
 
@@ -235,7 +236,7 @@ In the previous example, a custom constraint is implemented to use the binding i
 
 ### whenTargetNamed
 
-Constraints the binding to be used if and only if the target name is a certain one.
+Constrains the binding to be used if and only if the target name is a certain one.
 
 ```ts
 whenTargetNamed(name: string | number | symbol): BindingOnSyntax<T>;
@@ -247,7 +248,7 @@ whenTargetNamed(name: string | number | symbol): BindingOnSyntax<T>;
 whenTargetIsDefault(): BindingOnSyntax<T>;
 ```
 
-Constraints the binding to be used if and only if the target has no name nor tags.
+Constrains the binding to be used if and only if the target has no name nor tags.
 
 ### whenTargetTagged
 
@@ -255,7 +256,7 @@ Constraints the binding to be used if and only if the target has no name nor tag
 whenTargetTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
 ```
 
-Constraints the binding to be used if and only if the target tag is a certain one.
+Constrains the binding to be used if and only if the target tag is a certain one.
 
 ### whenInjectedInto
 
@@ -263,7 +264,7 @@ Constraints the binding to be used if and only if the target tag is a certain on
 whenInjectedInto(parent: NewableFunction | string): BindingOnSyntax<T>;
 ```
 
-Constraints the binding to be used if and only if the parent target service identifier is a certain one.
+Constrains the binding to be used if and only if the parent target service identifier is a certain one.
 
 ### whenParentNamed
 
@@ -271,7 +272,7 @@ Constraints the binding to be used if and only if the parent target service iden
 whenParentNamed(name: string | number | symbol): BindingOnSyntax<T>;
 ```
 
-Constraints the binding to be used if and only if the parent target name is a certain one.
+Constrains the binding to be used if and only if the parent target name is a certain one.
 
 ### whenParentTagged
 
@@ -279,7 +280,7 @@ Constraints the binding to be used if and only if the parent target name is a ce
 whenParentTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
 ```
 
-Constraints the binding to be used if and only if the parent target tag is a certain one.
+Constrains the binding to be used if and only if the parent target tag is a certain one.
 
 ### whenAnyAncestorIs
 
@@ -287,7 +288,7 @@ Constraints the binding to be used if and only if the parent target tag is a cer
 whenAnyAncestorIs(ancestor: NewableFunction | string): BindingOnSyntax<T>;
 ```
 
-Constraints the binding to be used if and only if any ancestor target service identifier is a certain one.
+Constrains the binding to be used if and only if any ancestor target service identifier is a certain one.
 
 ### whenNoAncestorIs
 
@@ -295,7 +296,7 @@ Constraints the binding to be used if and only if any ancestor target service id
 whenNoAncestorIs(ancestor: NewableFunction | string): BindingOnSyntax<T>;
 ```
 
-Constraints the binding to be used if and only if no ancestor target service identifier is a certain one.
+Constrains the binding to be used if and only if no ancestor target service identifier is a certain one.
 
 ### whenAnyAncestorNamed
 
@@ -303,7 +304,7 @@ Constraints the binding to be used if and only if no ancestor target service ide
 whenAnyAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
 ```
 
-Constraints the binding to be used if and only if any ancestor target name is a certain one.
+Constrains the binding to be used if and only if any ancestor target name is a certain one.
 
 ### whenAnyAncestorTagged
 
@@ -311,7 +312,7 @@ Constraints the binding to be used if and only if any ancestor target name is a 
 whenAnyAncestorTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
 ```
 
-Constraints the binding to be used if and only if any ancestor target tag is a certain one.
+Constrains the binding to be used if and only if any ancestor target tag is a certain one.
 
 ### whenNoAncestorNamed
 
@@ -319,7 +320,7 @@ Constraints the binding to be used if and only if any ancestor target tag is a c
 whenNoAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
 ```
 
-Constraints the binding to be used if and only if no ancestor target name is a certain one.
+Constrains the binding to be used if and only if no ancestor target name is a certain one.
 
 ### whenNoAncestorTagged
 
@@ -327,7 +328,7 @@ Constraints the binding to be used if and only if no ancestor target name is a c
 whenNoAncestorTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
 ```
 
-Constraints the binding to be used if and only if no ancestor target tag is a certain one.
+Constrains the binding to be used if and only if no ancestor target tag is a certain one.
 
 ### whenAnyAncestorMatches
 
@@ -335,7 +336,7 @@ Constraints the binding to be used if and only if no ancestor target tag is a ce
 whenAnyAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
 ```
 
-Constraints the binding to be used if and only if any ancestor matches a certain constraint.
+Constrains the binding to be used if and only if any ancestor matches a certain constraint.
 
 ### whenNoAncestorMatches
 
@@ -343,11 +344,11 @@ Constraints the binding to be used if and only if any ancestor matches a certain
 whenNoAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
 ```
 
-Constraints the binding to be used if and only if no ancestor matches a certain constraint.
+Constrains the binding to be used if and only if no ancestor matches a certain constraint.
 
 ## BindingWhenOnSyntax
 
-The union of [BindingWhenSyntax](#bindingwhensyntax) and [BindingOnSyntax](#bindingonsyntax)
+The union of [BindingWhenSyntax](#bindingwhensyntax) and [BindingOnSyntax](#bindingonsyntax).
 
 ```ts
 export interface BindingWhenOnSyntax<T>

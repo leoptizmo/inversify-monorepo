@@ -7,24 +7,24 @@ import gettingStartedSource from '@inversifyjs/code-examples/generated/examples/
 
 # Getting started
 
-Start by installing `inversify`:
+Start by installing `inversify` and `reflect-metadata`:
 
 ```bash
 npm install inversify reflect-metadata
 ```
 
-Initialize your first container and add some bindings:
+Next, initialize your first container and add some bindings:
 
 :::warning
 
-[Experimental decorators](https://www.typescriptlang.org/tsconfig/#experimentalDecorators) and [Emit Decorator Metadata](https://www.typescriptlang.org/tsconfig/#emitDecoratorMetadata) options must be enabled in order to use this library.
+Make sure to enable [Experimental decorators](https://www.typescriptlang.org/tsconfig/#experimentalDecorators) and [Emit Decorator Metadata](https://www.typescriptlang.org/tsconfig/#emitDecoratorMetadata) options in your `tsconfig.json` to use this library.
 
 :::
 
 <CodeBlock language="ts">{gettingStartedSource}</CodeBlock>
 
-`@injectable` allows both `Katana` and `Ninja` classes to be used as container bindings. `@inject` provides metadata with `Ninja` dependencies so the container is aware a `Katana` should be provided as the first argument of `Ninja`'s constructor.
+The `@injectable` decorator allows both `Katana` and `Ninja` classes to be used as container bindings. The `@inject` decorator provides metadata about `Ninja` dependencies, so the container knows that a `Katana` should be provided as the first argument of `Ninja`'s constructor.
 
 Bindings are provided through the `Container` API.
 
-Whith these two steps, we are ready to initialize our very first ninja!
+With these two steps, you are ready to initialize your very first ninja!

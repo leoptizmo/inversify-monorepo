@@ -15,17 +15,17 @@ import CodeBlock from '@theme/CodeBlock';
 
 # Decorators
 
-This section covers inversify decorators used to provide class metadata.
+This section covers Inversify decorators used to provide class metadata.
 
 ## injectable
 
-Decorator used to set class metadata so containers can receive class emitted metadata.
+Decorator used to set class metadata so containers can receive class-emitted metadata.
 
-It's highly recommended to annotate every class provided as a service with the injectable decorator. Having said that, it's not mandatory in every single case.
+It's highly recommended to annotate every class provided as a service with the `@injectable` decorator. However, it's not mandatory in every single case.
 
 ### When is injectable mandatory?
 
-Basically, whenever class emitted metadata is expected.
+Whenever class-emitted metadata is expected.
 
 Consider the following sample code:
 
@@ -44,7 +44,7 @@ class A {
 }
 ```
 
-A commonJS transpilation with [emitDecoratorMetadata](https://www.typescriptlang.org/tsconfig/#emitDecoratorMetadata) option enabled might look like this:
+A CommonJS transpilation with the [emitDecoratorMetadata](https://www.typescriptlang.org/tsconfig/#emitDecoratorMetadata) option enabled might look like this:
 
 ```js
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -68,7 +68,7 @@ A = __decorate([
 ], A);
 ```
 
-Typescript emits class metadata if and only if there're any class decorators applied to the target class. If we remove the `injectable` from `A`, the transpiled code looks way different:
+TypeScript emits class metadata if and only if there are any class decorators applied to the target class. If we remove the `@injectable` from `A`, the transpiled code looks very different:
 
 ```js
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -84,11 +84,11 @@ class A {
 }
 ```
 
-This time no class metadata is emitted even if `emitDecoratorMetadata` typescript option is enabled, causing trouble at execution time.
+This time, no class metadata is emitted even if the `emitDecoratorMetadata` TypeScript option is enabled, causing trouble at execution time.
 
 ## inject
 
-Decorator used to establish a relation between a constructor argument or a class property and a service id.
+Decorator used to establish a relation between a constructor argument or a class property and a service ID.
 
 When resolving an instance of the class, the target constructor argument or property will be resolved in the same way [container.get](/docs/api/container#get) behaves.
 
@@ -102,7 +102,7 @@ When resolving an instance of the class, the target constructor argument or prop
 
 ## multiInject
 
-Decorator used to establish a relation between a constructor argument or a class property and a service id.
+Decorator used to establish a relation between a constructor argument or a class property and a service ID.
 
 When resolving an instance of the class, the target constructor argument or property will be resolved in the same way [container.getAll](/docs/api/container#getall) behaves with the `enforceBindingConstraints` flag enabled.
 
@@ -118,19 +118,19 @@ Decorator used to establish a relation between a constructor argument or a class
 
 ## optional
 
-Decorator used to establish a target constructor argument or property is optional and, therefore, it shall not be resolved if no bindings are found for the associated service id.
+Decorator used to establish that a target constructor argument or property is optional and, therefore, it shall not be resolved if no bindings are found for the associated service ID.
 
 <CodeBlock language="ts">{decoratorApiOptionalSource}</CodeBlock>
 
 ## postConstruct
 
-Decorator used to establish an activation handler for the target class. Consider [docs](/docs/fundamentals/lifecycle/activation) as reference.
+Decorator used to establish an activation handler for the target class. Refer to the [docs](/docs/fundamentals/lifecycle/activation) for more information.
 
 <CodeBlock language="ts">{decoratorApiPostConstructSource}</CodeBlock>
 
 ## preDestroy
 
-Decorator used to establish a deactivation handler for the target class. Consider [docs](/docs/fundamentals/lifecycle/deactivation) as reference.
+Decorator used to establish a deactivation handler for the target class. Refer to the [docs](/docs/fundamentals/lifecycle/deactivation) for more information.
 
 <CodeBlock language="ts">{decoratorApiPreDestroySource}</CodeBlock>
 
@@ -141,6 +141,7 @@ Decorator used to establish a relation between a constructor argument or a class
 <CodeBlock language="ts">{decoratorApiTaggedSource}</CodeBlock>
 
 ## targetName
+
 Decorator used to establish a relation between a constructor argument or a class property name at design time.
 
 Bundlers might minify code, altering class property names. This decorator keeps track of the original name.
@@ -168,6 +169,6 @@ container.bind<Weapon>("Weapon").to(Katana).when((request: interfaces.Request) =
 
 ## unmanaged
 
-Decorator used to establish inversify should not inject the target constructor argument or property whatsoever.
+Decorator used to establish that Inversify should not inject the target constructor argument or property whatsoever.
 
 <CodeBlock language="ts">{decoratorApiUnmanagedSource}</CodeBlock>
