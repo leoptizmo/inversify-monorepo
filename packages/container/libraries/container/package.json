@@ -80,6 +80,5 @@
     "test:uncommitted": "pnpm run test --changedSince=HEAD",
     "test:unit:js": "pnpm run test:js --selectProjects Unit"
   },
-  "sideEffects": false,
   "version": "1.0.0"
 }
