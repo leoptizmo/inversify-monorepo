@@ -50,12 +50,14 @@ describe(Container.name, () => {
   beforeAll(() => {
     activationServiceMock = {
       add: jest.fn(),
+      clone: jest.fn(),
       removeAllByModuleId: jest.fn(),
       removeAllByServiceId: jest.fn(),
     } as Partial<
       jest.Mocked<ActivationsService>
     > as jest.Mocked<ActivationsService>;
     bindingServiceMock = {
+      clone: jest.fn(),
       get: jest.fn(),
       removeAllByModuleId: jest.fn(),
       removeAllByServiceId: jest.fn(),
@@ -63,6 +65,7 @@ describe(Container.name, () => {
     } as Partial<jest.Mocked<BindingService>> as jest.Mocked<BindingService>;
     deactivationServiceMock = {
       add: jest.fn(),
+      clone: jest.fn(),
       removeAllByModuleId: jest.fn(),
       removeAllByServiceId: jest.fn(),
     } as Partial<
@@ -1001,6 +1004,73 @@ describe(Container.name, () => {
           deactivationMock,
           bindingDeactivationRelation,
         );
+      });
+
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe('.restore', () => {
+    describe('having a container with no snapshots', () => {
+      let container: Container;
+
+      beforeAll(() => {
+        container = new Container();
+      });
+
+      describe('when called', () => {
+        let result: unknown;
+
+        beforeAll(() => {
+          try {
+            container.restore();
+          } catch (error: unknown) {
+            result = error;
+          }
+        });
+
+        it('should throw an InversifyContainerError', () => {
+          const expectedErrorProperties: Partial<InversifyContainerError> = {
+            kind: InversifyContainerErrorKind.invalidOperation,
+            message: 'No snapshot available to restore',
+          };
+
+          expect(result).toBeInstanceOf(InversifyContainerError);
+          expect(result).toStrictEqual(
+            expect.objectContaining(expectedErrorProperties),
+          );
+        });
+      });
+    });
+  });
+
+  describe('.snapshot', () => {
+    describe('when called', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        result = new Container().snapshot();
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call activationService.clone()', () => {
+        expect(activationServiceMock.clone).toHaveBeenCalledTimes(1);
+        expect(activationServiceMock.clone).toHaveBeenCalledWith();
+      });
+
+      it('should call bindingService.clone()', () => {
+        expect(bindingServiceMock.clone).toHaveBeenCalledTimes(1);
+        expect(bindingServiceMock.clone).toHaveBeenCalledWith();
+      });
+
+      it('should call deactivationService.clone()', () => {
+        expect(deactivationServiceMock.clone).toHaveBeenCalledTimes(1);
+        expect(deactivationServiceMock.clone).toHaveBeenCalledWith();
       });
 
       it('should return undefined', () => {

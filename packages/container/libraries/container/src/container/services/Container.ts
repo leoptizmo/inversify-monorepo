@@ -29,6 +29,7 @@ import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
 import { BindToFluentSyntaxImplementation } from '../../binding/models/BindingFluentSyntaxImplementation';
 import { InversifyContainerError } from '../../error/models/InversifyContainerError';
 import { InversifyContainerErrorKind } from '../../error/models/InversifyContainerErrorKind';
+import { Snapshot } from '../../snapshot/models/Snapshot';
 import {
   ContainerModule,
   ContainerModuleLoadOptions,
@@ -47,10 +48,11 @@ interface InternalContainerOptions {
 const DEFAULT_DEFAULT_SCOPE: BindingScope = bindingScopeValues.Transient;
 
 export class Container {
-  readonly #activationService: ActivationsService;
-  readonly #bindingService: BindingService;
-  readonly #deactivationService: DeactivationsService;
+  #activationService: ActivationsService;
+  #bindingService: BindingService;
+  #deactivationService: DeactivationsService;
   readonly #options: InternalContainerOptions;
+  readonly #snapshots: Snapshot[];
 
   constructor(options?: ContainerOptions) {
     if (options?.parent !== undefined) {
@@ -72,6 +74,7 @@ export class Container {
     this.#options = {
       defaultScope: options?.defaultScope ?? DEFAULT_DEFAULT_SCOPE,
     };
+    this.#snapshots = [];
   }
 
   public bind<T>(
@@ -230,6 +233,29 @@ export class Container {
   ): void {
     this.#deactivationService.add(deactivation as BindingDeactivation, {
       serviceId: serviceIdentifier,
+    });
+  }
+
+  public restore(): void {
+    const snapshot: Snapshot | undefined = this.#snapshots.pop();
+
+    if (snapshot === undefined) {
+      throw new InversifyContainerError(
+        InversifyContainerErrorKind.invalidOperation,
+        'No snapshot available to restore',
+      );
+    }
+
+    this.#activationService = snapshot.activationService;
+    this.#bindingService = snapshot.bindingService;
+    this.#deactivationService = snapshot.deactivationService;
+  }
+
+  public snapshot(): void {
+    this.#snapshots.push({
+      activationService: this.#activationService.clone(),
+      bindingService: this.#bindingService.clone(),
+      deactivationService: this.#deactivationService.clone(),
     });
   }
 
