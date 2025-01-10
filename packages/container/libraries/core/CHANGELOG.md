@@ -1,5 +1,16 @@
 # @inversifyjs/core
 
+## 2.1.0
+
+### Minor Changes
+
+- 142b763: Added `targetName` decorator
+
+### Patch Changes
+
+- 27ddc35: Removed unexpected `LegacyQueryableString`
+- 9257c9a: Updated `BindToFluentSyntaxImplementation.to` to set binding scope if found in class metadata
+
 ## 2.0.0
 
 ### Major Changes
