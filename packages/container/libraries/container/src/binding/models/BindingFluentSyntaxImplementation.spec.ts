@@ -1,5 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
+jest.mock('@inversifyjs/core');
+
 jest.mock('../actions/getBindingId');
 jest.mock('../calculations/isAnyAncestorBindingMetadata');
 jest.mock('../calculations/isAnyAncestorBindingMetadataWithName');
@@ -22,9 +24,11 @@ import {
   bindingScopeValues,
   BindingType,
   bindingTypeValues,
+  ClassMetadata,
   ConstantValueBinding,
   DynamicValueBuilder,
   Factory,
+  getClassMetadata,
   InstanceBinding,
   MetadataName,
   MetadataTag,
@@ -35,6 +39,7 @@ import {
 } from '@inversifyjs/core';
 
 import { Writable } from '../../common/models/Writable';
+import { ClassMetadataFixtures } from '../../metadata/fixtures/ClassMetadataFixtures';
 import { getBindingId } from '../actions/getBindingId';
 import { isAnyAncestorBindingMetadata } from '../calculations/isAnyAncestorBindingMetadata';
 import { isAnyAncestorBindingMetadataWithName } from '../calculations/isAnyAncestorBindingMetadataWithName';
@@ -152,8 +157,6 @@ describe(BindInFluentSyntaxImplementation.name, () => {
 });
 
 describe(BindToFluentSyntaxImplementation.name, () => {
-  class Foo {}
-
   let bindingIdFixture: number;
 
   let dynamicValueBuilderfixture: DynamicValueBuilder<unknown>;
@@ -204,30 +207,6 @@ describe(BindToFluentSyntaxImplementation.name, () => {
       NewableFunction,
     ]
   >([
-    [
-      '.to()',
-      (
-        bindToFluentSyntaxImplementation: BindToFluentSyntaxImplementation<unknown>,
-      ): unknown => bindToFluentSyntaxImplementation.to(Foo),
-      (): Binding => ({
-        cache: {
-          isRight: false,
-          value: undefined,
-        },
-        id: bindingIdFixture,
-        implementationType: Foo,
-        isSatisfiedBy: expect.any(Function) as unknown as (
-          metadata: BindingMetadata,
-        ) => boolean,
-        moduleId: containerModuleIdFixture,
-        onActivation: undefined,
-        onDeactivation: undefined,
-        scope: defaultScopeFixture,
-        serviceIdentifier: serviceIdentifierFixture,
-        type: bindingTypeValues.Instance,
-      }),
-      BindWhenOnFluentSyntaxImplementation,
-    ],
     [
       '.toConstantValue()',
       (
@@ -452,15 +431,26 @@ describe(BindToFluentSyntaxImplementation.name, () => {
         );
       });
 
-      describe('when called', () => {
+      describe('when called, and getClassMetadata() returns ClassMetadata with undefined scope', () => {
         let result: unknown;
 
         beforeAll(() => {
+          (
+            getClassMetadata as jest.Mock<typeof getClassMetadata>
+          ).mockReturnValueOnce(ClassMetadataFixtures.withScopeUndefined);
+
           result = bindToFluentSyntaxImplementation.toSelf();
         });
 
         afterAll(() => {
           jest.clearAllMocks();
+        });
+
+        it('should call getClassMetadata()', () => {
+          expect(getClassMetadata).toHaveBeenCalledTimes(1);
+          expect(getClassMetadata).toHaveBeenCalledWith(
+            serviceIdentifierFixture,
+          );
         });
 
         it('should call callback()', () => {
@@ -478,6 +468,60 @@ describe(BindToFluentSyntaxImplementation.name, () => {
             onActivation: undefined,
             onDeactivation: undefined,
             scope: defaultScopeFixture,
+            serviceIdentifier: serviceIdentifierFixture,
+            type: bindingTypeValues.Instance,
+          };
+
+          expect(callbackMock).toHaveBeenCalledTimes(1);
+          expect(callbackMock).toHaveBeenCalledWith(expectedBinding);
+        });
+
+        it('should return expected result', () => {
+          expect(result).toBeInstanceOf(BindInWhenOnFluentSyntaxImplementation);
+        });
+      });
+
+      describe('when called, and getClassMetadata() returns ClassMetadata with scope', () => {
+        let classMetadataFixture: ClassMetadata;
+
+        let result: unknown;
+
+        beforeAll(() => {
+          classMetadataFixture = ClassMetadataFixtures.withScopeRequest;
+
+          (
+            getClassMetadata as jest.Mock<typeof getClassMetadata>
+          ).mockReturnValueOnce(classMetadataFixture);
+
+          result = bindToFluentSyntaxImplementation.toSelf();
+        });
+
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call getClassMetadata()', () => {
+          expect(getClassMetadata).toHaveBeenCalledTimes(1);
+          expect(getClassMetadata).toHaveBeenCalledWith(
+            serviceIdentifierFixture,
+          );
+        });
+
+        it('should call callback()', () => {
+          const expectedBinding: InstanceBinding<unknown> = {
+            cache: {
+              isRight: false,
+              value: undefined,
+            },
+            id: getBindingId(),
+            implementationType: Foo,
+            isSatisfiedBy: expect.any(Function) as unknown as (
+              metadata: BindingMetadata,
+            ) => boolean,
+            moduleId: containerModuleIdFixture,
+            onActivation: undefined,
+            onDeactivation: undefined,
+            scope: classMetadataFixture.scope as BindingScope,
             serviceIdentifier: serviceIdentifierFixture,
             type: bindingTypeValues.Instance,
           };

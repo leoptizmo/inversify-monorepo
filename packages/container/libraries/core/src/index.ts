@@ -38,6 +38,7 @@ import { optional } from './metadata/decorators/optional';
 import { postConstruct } from './metadata/decorators/postConstruct';
 import { preDestroy } from './metadata/decorators/preDestroy';
 import { tagged } from './metadata/decorators/tagged';
+import { targetName } from './metadata/decorators/targetName';
 import { unmanaged } from './metadata/decorators/unmanaged';
 import { ClassElementMetadata } from './metadata/models/ClassElementMetadata';
 import { ClassElementMetadataKind } from './metadata/models/ClassElementMetadataKind';
@@ -71,7 +72,6 @@ import { OptionalGetOptions } from './resolution/models/OptionalGetOptions';
 import { ResolutionContext } from './resolution/models/ResolutionContext';
 import { ResolutionParams } from './resolution/models/ResolutionParams';
 import { Resolved } from './resolution/models/Resolved';
-import { LegacyQueryableString } from './string/models/LegacyQueryableString';
 
 export type {
   BaseBinding,
@@ -98,7 +98,6 @@ export type {
   GetOptionsTagConstraint,
   InstanceBinding,
   LeafBindingNode,
-  LegacyQueryableString,
   ManagedClassElementMetadata,
   MetadataName,
   MetadataTag,
@@ -145,5 +144,6 @@ export {
   resolveModuleDeactivations,
   resolveServiceDeactivations,
   tagged,
+  targetName,
   unmanaged,
 };

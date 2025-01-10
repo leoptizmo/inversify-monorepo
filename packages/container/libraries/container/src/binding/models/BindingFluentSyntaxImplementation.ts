@@ -8,11 +8,13 @@ import {
   bindingScopeValues,
   BindingType,
   bindingTypeValues,
+  ClassMetadata,
   ConstantValueBinding,
   DynamicValueBinding,
   DynamicValueBuilder,
   Factory,
   FactoryBinding,
+  getClassMetadata,
   InstanceBinding,
   MetadataName,
   MetadataTag,
@@ -96,6 +98,8 @@ export class BindToFluentSyntaxImplementation<T>
   }
 
   public to(type: Newable<T>): BindInWhenOnFluentSyntax<T> {
+    const classMetadata: ClassMetadata = getClassMetadata(type);
+
     const binding: InstanceBinding<T> = {
       cache: {
         isRight: false,
@@ -107,7 +111,7 @@ export class BindToFluentSyntaxImplementation<T>
       moduleId: this.#containerModuleId,
       onActivation: undefined,
       onDeactivation: undefined,
-      scope: this.#defaultScope,
+      scope: classMetadata.scope ?? this.#defaultScope,
       serviceIdentifier: this.#serviceIdentifier,
       type: bindingTypeValues.Instance,
     };
@@ -124,25 +128,7 @@ export class BindToFluentSyntaxImplementation<T>
       );
     }
 
-    const binding: InstanceBinding<T> = {
-      cache: {
-        isRight: false,
-        value: undefined,
-      },
-      id: getBindingId(),
-      implementationType: this.#serviceIdentifier as Newable<T>,
-      isSatisfiedBy: BindingConstraintUtils.always,
-      moduleId: this.#containerModuleId,
-      onActivation: undefined,
-      onDeactivation: undefined,
-      scope: this.#defaultScope,
-      serviceIdentifier: this.#serviceIdentifier,
-      type: bindingTypeValues.Instance,
-    };
-
-    this.#callback(binding);
-
-    return new BindInWhenOnFluentSyntaxImplementation<T>(binding);
+    return this.to(this.#serviceIdentifier as Newable<T>);
   }
 
   public toConstantValue(value: T): BindWhenOnFluentSyntax<T> {
