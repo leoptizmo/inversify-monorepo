@@ -178,7 +178,8 @@ export class BindToFluentSyntaxImplementation<T>
   }
 
   public toFactory(
-    builder: T extends Factory<unknown>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    builder: T extends Factory<unknown, any>
       ? (context: ResolutionContext) => T
       : never,
   ): BindWhenOnFluentSyntax<T> {
@@ -206,7 +207,8 @@ export class BindToFluentSyntaxImplementation<T>
   }
 
   public toProvider(
-    provider: T extends Provider<unknown>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    provider: T extends Provider<unknown, any>
       ? (context: ResolutionContext) => T
       : never,
   ): BindWhenOnFluentSyntax<T> {
