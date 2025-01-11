@@ -22,7 +22,6 @@ describe(buildUnmanagedMetadataFromMaybeManagedMetadata.name, () => {
         name: 'name-fixture',
         optional: false,
         tags: new Map(),
-        targetName: undefined,
       },
     ],
     [
@@ -32,7 +31,6 @@ describe(buildUnmanagedMetadataFromMaybeManagedMetadata.name, () => {
         name: undefined,
         optional: true,
         tags: new Map(),
-        targetName: undefined,
       },
     ],
     [
@@ -42,17 +40,6 @@ describe(buildUnmanagedMetadataFromMaybeManagedMetadata.name, () => {
         name: undefined,
         optional: false,
         tags: new Map([['foo', 'bar']]),
-        targetName: undefined,
-      },
-    ],
-    [
-      'with targetName',
-      {
-        kind: MaybeClassElementMetadataKind.unknown,
-        name: undefined,
-        optional: false,
-        tags: new Map(),
-        targetName: 'target-name-fixture',
       },
     ],
   ])(
@@ -112,7 +99,6 @@ describe(buildUnmanagedMetadataFromMaybeManagedMetadata.name, () => {
         name: undefined,
         optional: false,
         tags: new Map(),
-        targetName: undefined,
       };
     });
 

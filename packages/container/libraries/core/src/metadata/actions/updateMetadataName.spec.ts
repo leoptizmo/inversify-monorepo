@@ -21,7 +21,6 @@ describe(updateMetadataName.name, () => {
         name: undefined,
         optional: false,
         tags: new Map(),
-        targetName: undefined,
         value: 'service-id',
       };
       nameFixture = 'name-fixture';
@@ -59,7 +58,6 @@ describe(updateMetadataName.name, () => {
         name: 'name-fixture',
         optional: false,
         tags: new Map(),
-        targetName: undefined,
         value: 'service-id',
       };
       nameFixture = 'name-fixture';

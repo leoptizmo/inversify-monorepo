@@ -91,7 +91,6 @@ describe(buildClassElementMetadataFromMaybeClassElementMetadata.name, () => {
         name: undefined,
         optional: false,
         tags: new Map(),
-        targetName: undefined,
       };
     });
 
