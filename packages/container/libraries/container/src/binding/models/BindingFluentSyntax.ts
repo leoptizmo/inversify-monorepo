@@ -17,12 +17,14 @@ export interface BindToFluentSyntax<T> {
   toConstantValue(value: T): BindWhenOnFluentSyntax<T>;
   toDynamicValue(builder: DynamicValueBuilder<T>): BindInWhenOnFluentSyntax<T>;
   toFactory(
-    factory: T extends Factory<unknown>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    factory: T extends Factory<unknown, any>
       ? (context: ResolutionContext) => T
       : never,
   ): BindWhenOnFluentSyntax<T>;
   toProvider(
-    provider: T extends Provider<unknown>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    provider: T extends Provider<unknown, any>
       ? (context: ResolutionContext) => T
       : never,
   ): BindWhenOnFluentSyntax<T>;
