@@ -31,7 +31,6 @@ describe(buildDefaultManagedMetadata.name, () => {
         name: undefined,
         optional: false,
         tags: new Map(),
-        targetName: undefined,
         value: serviceIdentifierFixture,
       };
 

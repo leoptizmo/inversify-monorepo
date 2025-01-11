@@ -8,7 +8,6 @@ export class ManagedClassElementMetadataFixtures {
       name: undefined,
       optional: false,
       tags: new Map(),
-      targetName: undefined,
       value: Symbol(),
     };
   }

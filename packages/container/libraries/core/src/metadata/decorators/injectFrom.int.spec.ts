@@ -107,7 +107,6 @@ describe(injectFrom.name, () => {
                 name: undefined,
                 optional: false,
                 tags: new Map(),
-                targetName: undefined,
                 value: constructorArgumentServiceId,
               },
             ],
@@ -123,7 +122,6 @@ describe(injectFrom.name, () => {
                   name: undefined,
                   optional: false,
                   tags: new Map(),
-                  targetName: undefined,
                   value: propertyServiceId,
                 },
               ],
@@ -238,7 +236,6 @@ describe(injectFrom.name, () => {
               name: undefined,
               optional: false,
               tags: new Map(),
-              targetName: undefined,
               value: 'barParam-param-child',
             };
             expectedConstructorArguments[2] = {
@@ -246,7 +243,6 @@ describe(injectFrom.name, () => {
               name: undefined,
               optional: false,
               tags: new Map(),
-              targetName: undefined,
               value: 'bazParam-param-child',
             };
 
@@ -255,7 +251,6 @@ describe(injectFrom.name, () => {
               name: undefined,
               optional: false,
               tags: new Map(),
-              targetName: undefined,
               value: 'bar-property-child',
             };
 
@@ -264,7 +259,6 @@ describe(injectFrom.name, () => {
               name: undefined,
               optional: false,
               tags: new Map(),
-              targetName: undefined,
               value: 'baz-property-child',
             };
 
@@ -375,7 +369,6 @@ describe(injectFrom.name, () => {
                 name: undefined,
                 optional: false,
                 tags: new Map(),
-                targetName: undefined,
                 value: 'sample-param',
               },
             ],
@@ -391,7 +384,6 @@ describe(injectFrom.name, () => {
                   name: undefined,
                   optional: false,
                   tags: new Map(),
-                  targetName: undefined,
                   value: 'sample-service',
                 },
               ],
@@ -445,7 +437,6 @@ describe(injectFrom.name, () => {
                 name: undefined,
                 optional: false,
                 tags: new Map(),
-                targetName: undefined,
                 value: 'sample-param',
               },
             ],
@@ -461,7 +452,6 @@ describe(injectFrom.name, () => {
                   name: undefined,
                   optional: false,
                   tags: new Map(),
-                  targetName: undefined,
                   value: 'sample-service',
                 },
               ],
@@ -533,7 +523,6 @@ describe(injectFrom.name, () => {
                 name: undefined,
                 optional: false,
                 tags: new Map(),
-                targetName: undefined,
                 value: 'fooParam-param-base',
               },
               {
@@ -541,7 +530,6 @@ describe(injectFrom.name, () => {
                 name: undefined,
                 optional: false,
                 tags: new Map(),
-                targetName: undefined,
                 value: 'barParam-param-child',
               },
               {
@@ -549,7 +537,6 @@ describe(injectFrom.name, () => {
                 name: undefined,
                 optional: false,
                 tags: new Map(),
-                targetName: undefined,
                 value: 'bazParam-param-child',
               },
             ],
@@ -565,7 +552,6 @@ describe(injectFrom.name, () => {
                   name: undefined,
                   optional: false,
                   tags: new Map(),
-                  targetName: undefined,
                   value: 'foo-property-base',
                 },
               ],
@@ -576,7 +562,6 @@ describe(injectFrom.name, () => {
                   name: undefined,
                   optional: false,
                   tags: new Map(),
-                  targetName: undefined,
                   value: 'bar-property-child',
                 },
               ],
@@ -587,7 +572,6 @@ describe(injectFrom.name, () => {
                   name: undefined,
                   optional: false,
                   tags: new Map(),
-                  targetName: undefined,
                   value: 'baz-property-child',
                 },
               ],

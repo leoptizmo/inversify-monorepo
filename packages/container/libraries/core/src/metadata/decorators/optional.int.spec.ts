@@ -40,14 +40,12 @@ describe(optional.name, () => {
             name: undefined,
             optional: true,
             tags: new Map(),
-            targetName: undefined,
           },
           {
             kind: MaybeClassElementMetadataKind.unknown,
             name: undefined,
             optional: true,
             tags: new Map(),
-            targetName: undefined,
           },
         ],
         lifecycle: {
@@ -62,7 +60,6 @@ describe(optional.name, () => {
               name: undefined,
               optional: true,
               tags: new Map(),
-              targetName: undefined,
             },
           ],
           [
@@ -72,7 +69,6 @@ describe(optional.name, () => {
               name: undefined,
               optional: true,
               tags: new Map(),
-              targetName: undefined,
             },
           ],
         ]),

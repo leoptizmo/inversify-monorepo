@@ -25,9 +25,6 @@ function hasManagedMetadata(
   metadata: MaybeManagedClassElementMetadata | ManagedClassElementMetadata,
 ): boolean {
   return (
-    metadata.name !== undefined ||
-    metadata.optional ||
-    metadata.tags.size > 0 ||
-    metadata.targetName !== undefined
+    metadata.name !== undefined || metadata.optional || metadata.tags.size > 0
   );
 }

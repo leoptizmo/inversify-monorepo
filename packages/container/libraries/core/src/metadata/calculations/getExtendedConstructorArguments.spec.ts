@@ -60,7 +60,6 @@ describe(getExtendedConstructorArguments.name, () => {
             name: undefined,
             optional: false,
             tags: new Map(),
-            targetName: undefined,
             value: 'service-identifier-2',
           },
         ],
@@ -73,7 +72,6 @@ describe(getExtendedConstructorArguments.name, () => {
             name: undefined,
             optional: false,
             tags: new Map(),
-            targetName: undefined,
             value: 'service-identifier-1',
           },
         ],
@@ -98,7 +96,6 @@ describe(getExtendedConstructorArguments.name, () => {
             name: undefined,
             optional: false,
             tags: new Map(),
-            targetName: undefined,
             value: 'service-identifier-1',
           },
           {
@@ -106,7 +103,6 @@ describe(getExtendedConstructorArguments.name, () => {
             name: undefined,
             optional: false,
             tags: new Map(),
-            targetName: undefined,
             value: 'service-identifier-2',
           },
         ]);
