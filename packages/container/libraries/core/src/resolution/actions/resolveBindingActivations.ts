@@ -21,10 +21,10 @@ export function resolveBindingActivations<TActivated>(
     if (isPromise(activationResult)) {
       activationResult = activationResult.then(
         (resolved: SyncResolved<TActivated>): Resolved<TActivated> =>
-          onActivation(resolved),
+          onActivation(params.context, resolved),
       );
     } else {
-      activationResult = onActivation(activationResult);
+      activationResult = onActivation(params.context, activationResult);
     }
   }
 

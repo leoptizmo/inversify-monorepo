@@ -4,6 +4,7 @@ jest.mock('./resolveBindingServiceActivations');
 
 import { ConstantValueBindingFixtures } from '../../binding/fixtures/ConstantValueBindingFixtures';
 import { ConstantValueBinding } from '../../binding/models/ConstantValueBinding';
+import { ResolutionContext } from '../models/ResolutionContext';
 import { ResolutionParams } from '../models/ResolutionParams';
 import { resolveBindingActivations } from './resolveBindingActivations';
 import { resolveBindingServiceActivations } from './resolveBindingServiceActivations';
@@ -73,6 +74,7 @@ describe(resolveBindingActivations.name, () => {
     beforeAll(() => {
       onActivationMock = jest.fn();
       paramsMock = {
+        context: Symbol() as unknown as jest.Mocked<ResolutionContext>,
         getActivations: jest.fn(),
         getBindings: jest.fn(),
       } as Partial<
@@ -111,6 +113,14 @@ describe(resolveBindingActivations.name, () => {
 
       afterAll(() => {
         jest.clearAllMocks();
+      });
+
+      it('should call binding.onActivation()', () => {
+        expect(onActivationMock).toHaveBeenCalledTimes(1);
+        expect(onActivationMock).toHaveBeenCalledWith(
+          paramsMock.context,
+          resolvedValue,
+        );
       });
 
       it('should call resolveBindingServiceActivations()', () => {
