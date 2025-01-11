@@ -63,6 +63,12 @@ export class OneToManyMapStar<TModel, TRelation extends object>
     return this.#relationToModelsMaps[key].get(value)?.values();
   }
 
+  public getAllKeys<TKey extends keyof TRelation>(
+    key: TKey,
+  ): Iterable<TRelation[TKey]> {
+    return this.#relationToModelsMaps[key].keys();
+  }
+
   public removeByRelation<TKey extends keyof TRelation>(
     key: TKey,
     value: Required<TRelation>[TKey],
