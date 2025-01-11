@@ -270,6 +270,36 @@ export class Container {
     this.#deactivationService.removeAllByServiceId(serviceIdentifier);
   }
 
+  public async unbindAll(): Promise<void> {
+    const deactivationParams: DeactivationParams =
+      this.#buildDeactivationParams();
+
+    const nonParentBoundServiceIds: ServiceIdentifier[] = [
+      ...this.#bindingService.getNonParentBoundServices(),
+    ];
+
+    await Promise.all(
+      nonParentBoundServiceIds.map(
+        async (serviceId: ServiceIdentifier): Promise<void> =>
+          resolveServiceDeactivations(deactivationParams, serviceId),
+      ),
+    );
+
+    /*
+     * Removing service related objects here so unload is deterministic.
+     *
+     * Removing service related objects as soon as resolveModuleDeactivations takes
+     * effect leads to module deactivations not triggering previously deleted
+     * deactivations, introducing non determinism depending in the order in which
+     * services are deactivated.
+     */
+    for (const serviceId of nonParentBoundServiceIds) {
+      this.#activationService.removeAllByServiceId(serviceId);
+      this.#bindingService.removeAllByServiceId(serviceId);
+      this.#deactivationService.removeAllByServiceId(serviceId);
+    }
+  }
+
   public async unload(...modules: ContainerModule[]): Promise<void> {
     const deactivationParams: DeactivationParams =
       this.#buildDeactivationParams();
