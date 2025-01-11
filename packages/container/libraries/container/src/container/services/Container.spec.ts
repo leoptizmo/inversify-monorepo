@@ -59,6 +59,7 @@ describe(Container.name, () => {
     bindingServiceMock = {
       clone: jest.fn(),
       get: jest.fn(),
+      getNonParentBindings: jest.fn(),
       getNonParentBoundServices: jest.fn(),
       removeAllByModuleId: jest.fn(),
       removeAllByServiceId: jest.fn(),
@@ -851,6 +852,187 @@ describe(Container.name, () => {
       it('should call bindingService.get()', () => {
         expect(bindingServiceMock.get).toHaveBeenCalledTimes(1);
         expect(bindingServiceMock.get).toHaveBeenCalledWith(
+          serviceIdentifierFixture,
+        );
+      });
+
+      it('should call binding.isSatisfiedBy()', () => {
+        const expectedBindingMetadata: BindingMetadata = {
+          getAncestor: expect.any(Function) as unknown as () =>
+            | BindingMetadata
+            | undefined,
+          name: nameFixture,
+          serviceIdentifier: serviceIdentifierFixture,
+          tags: new Map([[tagFixture.key, tagFixture.value]]),
+        };
+
+        expect(bindingMock.isSatisfiedBy).toHaveBeenCalledTimes(1);
+        expect(bindingMock.isSatisfiedBy).toHaveBeenCalledWith(
+          expectedBindingMetadata,
+        );
+      });
+
+      it('should return true', () => {
+        expect(result).toBe(true);
+      });
+    });
+  });
+
+  describe('.isCurrentBound', () => {
+    let serviceIdentifierFixture: ServiceIdentifier;
+    let nameFixture: string;
+    let tagFixture: GetOptionsTagConstraint;
+
+    beforeAll(() => {
+      serviceIdentifierFixture = 'service-id';
+      nameFixture = 'name-fixture';
+      tagFixture = {
+        key: 'tag-key-fixture',
+        value: Symbol(),
+      };
+    });
+
+    describe('when called, and bindingService.getNonParentBindings() returns undefined', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        bindingServiceMock.getNonParentBindings.mockReturnValueOnce(undefined);
+
+        result = new Container().isCurrentBound(serviceIdentifierFixture, {
+          name: nameFixture,
+          tag: tagFixture,
+        });
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call bindingService.getNonParentBindings()', () => {
+        expect(bindingServiceMock.getNonParentBindings).toHaveBeenCalledTimes(
+          1,
+        );
+        expect(bindingServiceMock.getNonParentBindings).toHaveBeenCalledWith(
+          serviceIdentifierFixture,
+        );
+      });
+
+      it('should return false', () => {
+        expect(result).toBe(false);
+      });
+    });
+
+    describe('when called, and bindingService.getNonParentBindings() returns bindings and binding.isSatisfiedBy() returns false', () => {
+      let bindingMock: jest.Mocked<Binding>;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        bindingMock = {
+          cache: {
+            isRight: false,
+            value: undefined,
+          },
+          id: 1,
+          isSatisfiedBy: jest.fn(),
+          moduleId: undefined,
+          onActivation: undefined,
+          onDeactivation: undefined,
+          scope: bindingScopeValues.Singleton,
+          serviceIdentifier: 'service-id',
+          type: bindingTypeValues.ConstantValue,
+          value: Symbol.for('constant-value-binding-fixture-value'),
+        };
+
+        bindingServiceMock.getNonParentBindings.mockReturnValueOnce([
+          bindingMock,
+        ]);
+
+        bindingMock.isSatisfiedBy.mockReturnValueOnce(false);
+
+        result = new Container().isCurrentBound(serviceIdentifierFixture, {
+          name: nameFixture,
+          tag: tagFixture,
+        });
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call bindingService.getNonParentBindings()', () => {
+        expect(bindingServiceMock.getNonParentBindings).toHaveBeenCalledTimes(
+          1,
+        );
+        expect(bindingServiceMock.getNonParentBindings).toHaveBeenCalledWith(
+          serviceIdentifierFixture,
+        );
+      });
+
+      it('should call binding.isSatisfiedBy()', () => {
+        const expectedBindingMetadata: BindingMetadata = {
+          getAncestor: expect.any(Function) as unknown as () =>
+            | BindingMetadata
+            | undefined,
+          name: nameFixture,
+          serviceIdentifier: serviceIdentifierFixture,
+          tags: new Map([[tagFixture.key, tagFixture.value]]),
+        };
+
+        expect(bindingMock.isSatisfiedBy).toHaveBeenCalledTimes(1);
+        expect(bindingMock.isSatisfiedBy).toHaveBeenCalledWith(
+          expectedBindingMetadata,
+        );
+      });
+
+      it('should return false', () => {
+        expect(result).toBe(false);
+      });
+    });
+
+    describe('when called, and bindingService.getNonParentBindings() returns bindings and binding.isSatisfiedBy() returns true', () => {
+      let bindingMock: jest.Mocked<Binding>;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        bindingMock = {
+          cache: {
+            isRight: false,
+            value: undefined,
+          },
+          id: 1,
+          isSatisfiedBy: jest.fn(),
+          moduleId: undefined,
+          onActivation: undefined,
+          onDeactivation: undefined,
+          scope: bindingScopeValues.Singleton,
+          serviceIdentifier: 'service-id',
+          type: bindingTypeValues.ConstantValue,
+          value: Symbol.for('constant-value-binding-fixture-value'),
+        };
+
+        bindingServiceMock.getNonParentBindings.mockReturnValueOnce([
+          bindingMock,
+        ]);
+
+        bindingMock.isSatisfiedBy.mockReturnValueOnce(true);
+
+        result = new Container().isCurrentBound(serviceIdentifierFixture, {
+          name: nameFixture,
+          tag: tagFixture,
+        });
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call bindingService.getNonParentBindings()', () => {
+        expect(bindingServiceMock.getNonParentBindings).toHaveBeenCalledTimes(
+          1,
+        );
+        expect(bindingServiceMock.getNonParentBindings).toHaveBeenCalledWith(
           serviceIdentifierFixture,
         );
       });

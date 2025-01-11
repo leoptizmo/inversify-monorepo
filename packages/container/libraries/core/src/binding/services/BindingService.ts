@@ -53,12 +53,17 @@ export class BindingService implements Cloneable<BindingService> {
     serviceIdentifier: ServiceIdentifier,
   ): Iterable<Binding<TResolved>> | undefined {
     return (
-      (this.#bindingMaps.get(
-        BindingRelationKind.serviceId,
-        serviceIdentifier,
-      ) as Iterable<Binding<TResolved>> | undefined) ??
+      this.getNonParentBindings(serviceIdentifier) ??
       this.#parent?.get(serviceIdentifier)
     );
+  }
+
+  public getNonParentBindings<TResolved>(
+    serviceId: ServiceIdentifier,
+  ): Iterable<Binding<TResolved>> | undefined {
+    return this.#bindingMaps.get(BindingRelationKind.serviceId, serviceId) as
+      | Iterable<Binding<TResolved>>
+      | undefined;
   }
 
   public getNonParentBoundServices(): Iterable<ServiceIdentifier> {

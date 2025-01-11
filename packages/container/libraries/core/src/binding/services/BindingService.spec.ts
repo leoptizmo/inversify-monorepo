@@ -133,6 +133,44 @@ describe(BindingService.name, () => {
     });
   });
 
+  describe('.getNonParentBindings', () => {
+    let serviceIdFixture: ServiceIdentifier;
+
+    beforeAll(() => {
+      serviceIdFixture = 'service-id';
+    });
+
+    describe('when called', () => {
+      let bindingsFixture: Iterable<Binding<unknown>>;
+
+      let result: Iterable<Binding> | undefined;
+
+      beforeAll(() => {
+        bindingsFixture = [ConstantValueBindingFixtures.any];
+
+        bindingMapsMock.get.mockReturnValueOnce(bindingsFixture);
+
+        result = bindingService.getNonParentBindings(serviceIdFixture);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call bindingMaps.get() with the correct parameters', () => {
+        expect(bindingMapsMock.get).toHaveBeenCalledTimes(1);
+        expect(bindingMapsMock.get).toHaveBeenCalledWith(
+          'serviceId',
+          serviceIdFixture,
+        );
+      });
+
+      it('should return the expected bindings', () => {
+        expect(result).toBe(bindingsFixture);
+      });
+    });
+  });
+
   describe('.getByModuleId', () => {
     let moduleIdFixture: number;
 
