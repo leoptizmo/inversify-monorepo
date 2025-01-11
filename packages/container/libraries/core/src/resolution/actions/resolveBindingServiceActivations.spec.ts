@@ -3,6 +3,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { ServiceIdentifier } from '@inversifyjs/common';
 
 import { BindingActivation } from '../../binding/models/BindingActivation';
+import { ResolutionContext } from '../models/ResolutionContext';
 import { ResolutionParams } from '../models/ResolutionParams';
 import { resolveBindingServiceActivations } from './resolveBindingServiceActivations';
 
@@ -14,6 +15,7 @@ describe(resolveBindingServiceActivations.name, () => {
 
     beforeAll(() => {
       paramsMock = {
+        context: Symbol() as unknown as jest.Mocked<ResolutionContext>,
         getActivations: jest.fn(),
       } as Partial<
         jest.Mocked<ResolutionParams>
@@ -82,7 +84,10 @@ describe(resolveBindingServiceActivations.name, () => {
 
       it('should call activation', () => {
         expect(activationMock).toHaveBeenCalledTimes(1);
-        expect(activationMock).toHaveBeenCalledWith(valueFixture);
+        expect(activationMock).toHaveBeenCalledWith(
+          paramsMock.context,
+          valueFixture,
+        );
       });
 
       it('should return value', () => {
@@ -125,7 +130,10 @@ describe(resolveBindingServiceActivations.name, () => {
 
       it('should call activation', () => {
         expect(activationMock).toHaveBeenCalledTimes(1);
-        expect(activationMock).toHaveBeenCalledWith(valueFixture);
+        expect(activationMock).toHaveBeenCalledWith(
+          paramsMock.context,
+          valueFixture,
+        );
       });
 
       it('should return value', () => {
@@ -209,7 +217,10 @@ describe(resolveBindingServiceActivations.name, () => {
 
       it('should call activation', () => {
         expect(activationMock).toHaveBeenCalledTimes(1);
-        expect(activationMock).toHaveBeenCalledWith(valueFixture);
+        expect(activationMock).toHaveBeenCalledWith(
+          paramsMock.context,
+          valueFixture,
+        );
       });
 
       it('should return value', () => {
@@ -252,7 +263,10 @@ describe(resolveBindingServiceActivations.name, () => {
 
       it('should call activation', () => {
         expect(activationMock).toHaveBeenCalledTimes(1);
-        expect(activationMock).toHaveBeenCalledWith(valueFixture);
+        expect(activationMock).toHaveBeenCalledWith(
+          paramsMock.context,
+          valueFixture,
+        );
       });
 
       it('should return value', () => {

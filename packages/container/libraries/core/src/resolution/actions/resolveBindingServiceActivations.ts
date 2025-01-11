@@ -18,18 +18,21 @@ export function resolveBindingServiceActivations<TActivated>(
 
   if (isPromise(value)) {
     return resolveBindingActivationsFromIteratorAsync(
+      params,
       value,
       activations[Symbol.iterator](),
     );
   }
 
   return resolveBindingActivationsFromIterator(
+    params,
     value,
     activations[Symbol.iterator](),
   );
 }
 
 function resolveBindingActivationsFromIterator<TActivated>(
+  params: ResolutionParams,
   value: SyncResolved<TActivated>,
   activationsIterator: Iterator<BindingActivation<TActivated>>,
 ): Resolved<TActivated> {
@@ -40,10 +43,11 @@ function resolveBindingActivationsFromIterator<TActivated>(
 
   while (activationIteratorResult.done !== true) {
     const nextActivatedValue: Resolved<TActivated> =
-      activationIteratorResult.value(activatedValue);
+      activationIteratorResult.value(params.context, activatedValue);
 
     if (isPromise(nextActivatedValue)) {
       return resolveBindingActivationsFromIteratorAsync(
+        params,
         nextActivatedValue,
         activationsIterator,
       );
@@ -58,6 +62,7 @@ function resolveBindingActivationsFromIterator<TActivated>(
 }
 
 async function resolveBindingActivationsFromIteratorAsync<TActivated>(
+  params: ResolutionParams,
   value: Promise<TActivated>,
   activationsIterator: Iterator<BindingActivation<TActivated>>,
 ): Promise<SyncResolved<TActivated>> {
@@ -67,7 +72,10 @@ async function resolveBindingActivationsFromIteratorAsync<TActivated>(
     activationsIterator.next();
 
   while (activationIteratorResult.done !== true) {
-    activatedValue = await activationIteratorResult.value(activatedValue);
+    activatedValue = await activationIteratorResult.value(
+      params.context,
+      activatedValue,
+    );
 
     activationIteratorResult = activationsIterator.next();
   }
