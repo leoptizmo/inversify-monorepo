@@ -1,5 +1,17 @@
 # @inversifyjs/container
 
+## 1.2.0
+
+### Minor Changes
+
+- acfe7ec: Updated `Container` with `unbindAll`
+- eb3cbd4: Updated `ContainerModule.load` to support sync load functions
+
+### Patch Changes
+
+- Updated dependencies
+  - @inversifyjs/core@2.2.0
+
 ## 1.1.1
 
 ### Patch Changes
