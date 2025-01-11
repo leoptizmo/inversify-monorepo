@@ -1,17 +1,28 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
-export function decorate(decorators: ClassDecorator[], target: Function): void;
 export function decorate(
-  decorators: ParameterDecorator[],
+  decorators: ClassDecorator | ClassDecorator[],
+  target: Function,
+): void;
+export function decorate(
+  decorators: ParameterDecorator | ParameterDecorator[],
   target: Function,
   parameterIndex: number,
 ): void;
 export function decorate(
-  decorators: MethodDecorator[] | PropertyDecorator[],
+  decorators:
+    | MethodDecorator
+    | PropertyDecorator
+    | MethodDecorator[]
+    | PropertyDecorator[],
   target: Function,
   property: string | symbol,
 ): void;
 export function decorate(
   decorators:
+    | ClassDecorator
+    | MethodDecorator
+    | ParameterDecorator
+    | PropertyDecorator
     | ClassDecorator[]
     | MethodDecorator[]
     | ParameterDecorator[]
@@ -19,17 +30,29 @@ export function decorate(
   target: Function,
   parameterIndexOrProperty?: number | string | symbol,
 ): void {
+  const parsedDecorators:
+    | ClassDecorator[]
+    | MethodDecorator[]
+    | ParameterDecorator[]
+    | PropertyDecorator[] = Array.isArray(decorators)
+    ? decorators
+    : ([decorators] as
+        | ClassDecorator[]
+        | MethodDecorator[]
+        | ParameterDecorator[]
+        | PropertyDecorator[]);
+
   if (parameterIndexOrProperty === undefined) {
     // Asume ClassDecorator[]
 
-    Reflect.decorate(decorators as ClassDecorator[], target);
+    Reflect.decorate(parsedDecorators as ClassDecorator[], target);
     return;
   }
 
   if (typeof parameterIndexOrProperty === 'number') {
     // Asume ParameterDecorator[]
 
-    for (const decorator of decorators as ParameterDecorator[]) {
+    for (const decorator of parsedDecorators as ParameterDecorator[]) {
       decorator(target, undefined, parameterIndexOrProperty);
     }
 
@@ -37,7 +60,7 @@ export function decorate(
   }
 
   Reflect.decorate(
-    decorators as MethodDecorator[] | PropertyDecorator[],
+    parsedDecorators as MethodDecorator[] | PropertyDecorator[],
     target.prototype as object,
     parameterIndexOrProperty,
   );
