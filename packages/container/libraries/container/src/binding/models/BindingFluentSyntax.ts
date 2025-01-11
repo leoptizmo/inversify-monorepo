@@ -67,6 +67,15 @@ export interface BindWhenFluentSyntax<T> {
   ): BindOnFluentSyntax<T>;
   whenDefault(): BindOnFluentSyntax<T>;
   whenNamed(name: MetadataName): BindOnFluentSyntax<T>;
+  whenNoParent(
+    constraint: (metadata: BindingMetadata) => boolean,
+  ): BindOnFluentSyntax<T>;
+  whenNoParentIs(serviceIdentifier: ServiceIdentifier): BindOnFluentSyntax<T>;
+  whenNoParentNamed(name: MetadataName): BindOnFluentSyntax<T>;
+  whenNoParentTagged(
+    tag: MetadataTag,
+    tagValue: unknown,
+  ): BindOnFluentSyntax<T>;
   whenParent(
     constraint: (metadata: BindingMetadata) => boolean,
   ): BindOnFluentSyntax<T>;
