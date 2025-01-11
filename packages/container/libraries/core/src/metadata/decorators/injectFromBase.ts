@@ -6,7 +6,9 @@ import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKin
 import { InjectFromBaseOptions } from '../models/InjectFromBaseOptions';
 import { injectFrom } from './injectFrom';
 
-export function injectFromBase(options: InjectFromBaseOptions): ClassDecorator {
+export function injectFromBase(
+  options?: InjectFromBaseOptions,
+): ClassDecorator {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   return (target: Function): void => {
     const baseType: Newable | undefined = getBaseType(target as Newable);
