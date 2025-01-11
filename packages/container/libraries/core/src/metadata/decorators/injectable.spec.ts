@@ -4,6 +4,7 @@ jest.mock('@inversifyjs/reflect-metadata-utils');
 
 import { updateReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
+jest.mock('../actions/setIsInjectableFlag');
 jest.mock('../actions/updateClassMetadataWithTypescriptParameterTypes');
 
 import {
@@ -11,6 +12,7 @@ import {
   bindingScopeValues,
 } from '../../binding/models/BindingScope';
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
+import { setIsInjectableFlag } from '../actions/setIsInjectableFlag';
 import { updateClassMetadataWithTypescriptParameterTypes } from '../actions/updateClassMetadataWithTypescriptParameterTypes';
 import { getDefaultClassMetadata } from '../calculations/getDefaultClassMetadata';
 import { injectable } from './injectable';
@@ -40,6 +42,11 @@ describe(injectable.name, () => {
         expect(
           updateClassMetadataWithTypescriptParameterTypes,
         ).toHaveBeenCalledWith(targetFixture);
+      });
+
+      it('should call setIsInjectableFlag()', () => {
+        expect(setIsInjectableFlag).toHaveBeenCalledTimes(1);
+        expect(setIsInjectableFlag).toHaveBeenCalledWith(targetFixture);
       });
 
       it('should not call updateReflectMetadata()', () => {
@@ -74,6 +81,11 @@ describe(injectable.name, () => {
 
       afterAll(() => {
         jest.clearAllMocks();
+      });
+
+      it('should call setIsInjectableFlag()', () => {
+        expect(setIsInjectableFlag).toHaveBeenCalledTimes(1);
+        expect(setIsInjectableFlag).toHaveBeenCalledWith(Foo);
       });
 
       it('should call updateClassMetadataWithTypescriptParameterTypes()', () => {
