@@ -27,7 +27,6 @@ describe(buildManagedMetadataFromMaybeManagedMetadata.name, () => {
         name: 'name-fixture',
         optional: true,
         tags: new Map(),
-        targetName: 'target-name-fixture',
       };
 
       kindFixture = ClassElementMetadataKind.singleInjection;
@@ -57,7 +56,6 @@ describe(buildManagedMetadataFromMaybeManagedMetadata.name, () => {
         name: metadataFixture.name,
         optional: metadataFixture.optional,
         tags: metadataFixture.tags,
-        targetName: metadataFixture.targetName,
         value: serviceIdentifierFixture,
       };
 

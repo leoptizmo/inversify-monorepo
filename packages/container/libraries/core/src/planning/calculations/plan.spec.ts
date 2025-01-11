@@ -399,7 +399,6 @@ describe(plan.name, () => {
           name: undefined,
           optional: false,
           tags: new Map(),
-          targetName: undefined,
           value: 'constructor-param-service-id',
         };
         propertyKey = 'property-key';
@@ -408,7 +407,6 @@ describe(plan.name, () => {
           name: undefined,
           optional: false,
           tags: new Map(),
-          targetName: undefined,
           value: 'property-param-service-id',
         };
         classMetadataFixture = {
@@ -607,7 +605,6 @@ describe(plan.name, () => {
           name: undefined,
           optional: false,
           tags: new Map(),
-          targetName: undefined,
           value: new LazyServiceIdentifier(
             () => 'constructor-param-service-id',
           ),
@@ -618,7 +615,6 @@ describe(plan.name, () => {
           name: undefined,
           optional: false,
           tags: new Map(),
-          targetName: undefined,
           value: new LazyServiceIdentifier(() => 'property-param-service-id'),
         };
         classMetadataFixture = {
@@ -823,7 +819,6 @@ describe(plan.name, () => {
           name: undefined,
           optional: false,
           tags: new Map(),
-          targetName: undefined,
           value: 'constructor-param-service-id',
         };
         propertyKey = 'property-key';
@@ -832,7 +827,6 @@ describe(plan.name, () => {
           name: undefined,
           optional: false,
           tags: new Map(),
-          targetName: undefined,
           value: 'property-param-service-id',
         };
         classMetadataFixture = {

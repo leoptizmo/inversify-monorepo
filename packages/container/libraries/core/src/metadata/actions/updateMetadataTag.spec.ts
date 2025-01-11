@@ -22,7 +22,6 @@ describe(updateMetadataTag.name, () => {
         name: undefined,
         optional: false,
         tags: new Map(),
-        targetName: undefined,
         value: 'service-id',
       };
       keyFixture = 'tag-fixture';
@@ -62,7 +61,6 @@ describe(updateMetadataTag.name, () => {
         name: undefined,
         optional: false,
         tags: new Map([['tag-fixture', Symbol()]]),
-        targetName: undefined,
         value: 'service-id',
       };
       keyFixture = 'tag-fixture';

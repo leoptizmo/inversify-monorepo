@@ -26,7 +26,6 @@ describe(buildClassElementMetadataFromTypescriptParameterType.name, () => {
         name: undefined,
         optional: false,
         tags: new Map(),
-        targetName: undefined,
         value: typeFixture,
       };
 

@@ -18,7 +18,6 @@ describe(buildDefaultMaybeClassElementMetadata.name, () => {
         name: undefined,
         optional: false,
         tags: new Map(),
-        targetName: undefined,
       };
 
       expect(result).toStrictEqual(expected);

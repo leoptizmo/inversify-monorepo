@@ -37,15 +37,12 @@ export function setInstanceProperties(
       }
 
       if (metadata.kind !== ClassElementMetadataKind.unmanaged) {
-        const propertyName: string | symbol =
-          metadata.targetName ?? propertyKey;
+        instance[propertyKey] = resolveServiceNode(params, propertyNode);
 
-        instance[propertyName] = resolveServiceNode(params, propertyNode);
-
-        if (isPromise(instance[propertyName])) {
+        if (isPromise(instance[propertyKey])) {
           propertyAssignmentPromises.push(
             (async () => {
-              instance[propertyName] = await instance[propertyName];
+              instance[propertyKey] = await instance[propertyKey];
             })(),
           );
         }

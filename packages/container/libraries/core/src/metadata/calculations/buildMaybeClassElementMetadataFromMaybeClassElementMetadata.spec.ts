@@ -72,7 +72,6 @@ describe(
           name: undefined,
           optional: false,
           tags: new Map([['foo', 'bar']]),
-          targetName: undefined,
           value: 'service-identifier',
         };
         updateMetadataMock = jest.fn();

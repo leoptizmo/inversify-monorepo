@@ -40,14 +40,12 @@ describe(tagged.name, () => {
             name: undefined,
             optional: false,
             tags: new Map([['firstParam', 'firstParam-value']]),
-            targetName: undefined,
           },
           {
             kind: MaybeClassElementMetadataKind.unknown,
             name: undefined,
             optional: false,
             tags: new Map([['secondParam', 'secondParam-value']]),
-            targetName: undefined,
           },
         ],
         lifecycle: {
@@ -62,7 +60,6 @@ describe(tagged.name, () => {
               name: undefined,
               optional: false,
               tags: new Map([['bar', 'bar-value']]),
-              targetName: undefined,
             },
           ],
           [
@@ -72,7 +69,6 @@ describe(tagged.name, () => {
               name: undefined,
               optional: false,
               tags: new Map([['baz', 'baz-value']]),
-              targetName: undefined,
             },
           ],
         ]),

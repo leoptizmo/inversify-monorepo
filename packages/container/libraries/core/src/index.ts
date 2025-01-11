@@ -38,7 +38,6 @@ import { optional } from './metadata/decorators/optional';
 import { postConstruct } from './metadata/decorators/postConstruct';
 import { preDestroy } from './metadata/decorators/preDestroy';
 import { tagged } from './metadata/decorators/tagged';
-import { targetName } from './metadata/decorators/targetName';
 import { unmanaged } from './metadata/decorators/unmanaged';
 import { ClassElementMetadata } from './metadata/models/ClassElementMetadata';
 import { ClassElementMetadataKind } from './metadata/models/ClassElementMetadataKind';
@@ -47,7 +46,6 @@ import { ClassMetadataLifecycle } from './metadata/models/ClassMetadataLifecycle
 import { ManagedClassElementMetadata } from './metadata/models/ManagedClassElementMetadata';
 import { MetadataName } from './metadata/models/MetadataName';
 import { MetadataTag } from './metadata/models/MetadataTag';
-import { MetadataTargetName } from './metadata/models/MetadataTargetName';
 import { UnmanagedClassElementMetadata } from './metadata/models/UnmanagedClassElementMetadata';
 import { plan } from './planning/calculations/plan';
 import { BaseBindingNode } from './planning/models/BaseBindingNode';
@@ -101,7 +99,6 @@ export type {
   ManagedClassElementMetadata,
   MetadataName,
   MetadataTag,
-  MetadataTargetName,
   OptionalGetOptions,
   PlanBindingNode,
   PlanParams,
@@ -144,6 +141,5 @@ export {
   resolveModuleDeactivations,
   resolveServiceDeactivations,
   tagged,
-  targetName,
   unmanaged,
 };

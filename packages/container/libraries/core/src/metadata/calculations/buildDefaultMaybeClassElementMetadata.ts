@@ -7,6 +7,5 @@ export function buildDefaultMaybeClassElementMetadata(): MaybeManagedClassElemen
     name: undefined,
     optional: false,
     tags: new Map(),
-    targetName: undefined,
   };
 }

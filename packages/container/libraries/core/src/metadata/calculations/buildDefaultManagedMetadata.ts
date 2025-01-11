@@ -14,7 +14,6 @@ export function buildDefaultManagedMetadata(
     name: undefined,
     optional: false,
     tags: new Map(),
-    targetName: undefined,
     value: serviceIdentifier,
   };
 }

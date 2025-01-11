@@ -19,7 +19,6 @@ describe(updateMetadataOptional.name, () => {
         name: undefined,
         optional: false,
         tags: new Map(),
-        targetName: undefined,
         value: 'service-id',
       };
     });
@@ -55,7 +54,6 @@ describe(updateMetadataOptional.name, () => {
         name: undefined,
         optional: true,
         tags: new Map(),
-        targetName: undefined,
         value: 'service-id',
       };
     });

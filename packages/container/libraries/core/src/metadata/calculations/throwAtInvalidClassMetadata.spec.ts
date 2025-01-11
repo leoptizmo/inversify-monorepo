@@ -71,7 +71,6 @@ This might be caused by one of the following reasons:
         name: undefined,
         optional: false,
         tags: new Map(),
-        targetName: undefined,
       };
 
       constructorClassMetadata[invalidConstructorIndex] =
