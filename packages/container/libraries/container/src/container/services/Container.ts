@@ -185,28 +185,17 @@ export class Container {
     const bindings: Iterable<Binding<unknown>> | undefined =
       this.#bindingService.get(serviceIdentifier);
 
-    if (bindings === undefined) {
-      return false;
-    }
+    return this.#isAnyValidBinding(serviceIdentifier, bindings, options);
+  }
 
-    const bindingMetadata: BindingMetadata = {
-      getAncestor: () => undefined,
-      name: options?.name,
-      serviceIdentifier,
-      tags: new Map(),
-    };
+  public isCurrentBound(
+    serviceIdentifier: ServiceIdentifier,
+    options?: IsBoundOptions,
+  ): boolean {
+    const bindings: Iterable<Binding<unknown>> | undefined =
+      this.#bindingService.getNonParentBindings(serviceIdentifier);
 
-    if (options?.tag !== undefined) {
-      bindingMetadata.tags.set(options.tag.key, options.tag.value);
-    }
-
-    for (const binding of bindings) {
-      if (binding.isSatisfiedBy(bindingMetadata)) {
-        return true;
-      }
-    }
-
-    return false;
+    return this.#isAnyValidBinding(serviceIdentifier, bindings, options);
   }
 
   public async load(...modules: ContainerModule[]): Promise<void> {
@@ -443,5 +432,34 @@ export class Container {
         value: options.tag.value,
       };
     }
+  }
+
+  #isAnyValidBinding(
+    serviceIdentifier: ServiceIdentifier,
+    bindings: Iterable<Binding<unknown>> | undefined,
+    options?: IsBoundOptions,
+  ): boolean {
+    if (bindings === undefined) {
+      return false;
+    }
+
+    const bindingMetadata: BindingMetadata = {
+      getAncestor: () => undefined,
+      name: options?.name,
+      serviceIdentifier,
+      tags: new Map(),
+    };
+
+    if (options?.tag !== undefined) {
+      bindingMetadata.tags.set(options.tag.key, options.tag.value);
+    }
+
+    for (const binding of bindings) {
+      if (binding.isSatisfiedBy(bindingMetadata)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
