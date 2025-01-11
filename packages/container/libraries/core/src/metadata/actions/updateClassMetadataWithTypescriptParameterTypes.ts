@@ -8,6 +8,7 @@ import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadat
 import { typescriptParameterTypesReflectKey } from '../../reflectMetadata/data/typescriptDesignParameterTypesReflectKey';
 import { buildClassElementMetadataFromTypescriptParameterType } from '../calculations/buildClassElementMetadataFromTypescriptParameterType';
 import { getDefaultClassMetadata } from '../calculations/getDefaultClassMetadata';
+import { isUserlandEmittedType } from '../calculations/isUserlandEmittedType';
 import { MaybeClassMetadata } from '../models/MaybeClassMetadata';
 
 export function updateClassMetadataWithTypescriptParameterTypes(
@@ -34,7 +35,10 @@ function updateMaybeClassMetadataWithTypescriptClassMetadata(
   return (classMetadata: MaybeClassMetadata): MaybeClassMetadata => {
     typescriptConstructorArguments.forEach(
       (constructorArgumentType: Newable, index: number): void => {
-        if (classMetadata.constructorArguments[index] === undefined) {
+        if (
+          classMetadata.constructorArguments[index] === undefined &&
+          isUserlandEmittedType(constructorArgumentType)
+        ) {
           classMetadata.constructorArguments[index] =
             buildClassElementMetadataFromTypescriptParameterType(
               constructorArgumentType,
