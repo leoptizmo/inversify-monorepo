@@ -209,6 +209,35 @@ describe(BindingService.name, () => {
     });
   });
 
+  describe('.getNonParentBoundServices', () => {
+    describe('when called', () => {
+      let serviceIdsFixture: ServiceIdentifier[];
+
+      let result: Iterable<ServiceIdentifier>;
+
+      beforeAll(() => {
+        serviceIdsFixture = ['service-id-1', 'service-id-2'];
+
+        bindingMapsMock.getAllKeys.mockReturnValueOnce(serviceIdsFixture);
+
+        result = bindingService.getNonParentBoundServices();
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should return the non-parent bound services', () => {
+        expect(result).toStrictEqual(serviceIdsFixture);
+      });
+
+      it('should call bindingMaps.getAllKeys()', () => {
+        expect(bindingMapsMock.getAllKeys).toHaveBeenCalledTimes(1);
+        expect(bindingMapsMock.getAllKeys).toHaveBeenCalledWith('serviceId');
+      });
+    });
+  });
+
   describe('.removeAllByModuleId', () => {
     let moduleIdFixture: number;
 

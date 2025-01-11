@@ -59,6 +59,7 @@ describe(Container.name, () => {
     bindingServiceMock = {
       clone: jest.fn(),
       get: jest.fn(),
+      getNonParentBoundServices: jest.fn(),
       removeAllByModuleId: jest.fn(),
       removeAllByServiceId: jest.fn(),
       set: jest.fn(),
@@ -1145,6 +1146,75 @@ describe(Container.name, () => {
         expect(
           deactivationServiceMock.removeAllByServiceId,
         ).toHaveBeenCalledWith(serviceIdentifierFixture);
+      });
+
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe('.unbindAll', () => {
+    describe('when called', () => {
+      let serviceIdsFixture: string[];
+      let result: unknown;
+
+      beforeAll(async () => {
+        serviceIdsFixture = ['service1', 'service2'];
+        bindingServiceMock.getNonParentBoundServices.mockReturnValueOnce(
+          serviceIdsFixture,
+        );
+
+        result = await new Container().unbindAll();
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call resolveServiceDeactivations for each service', () => {
+        expect(resolveServiceDeactivations).toHaveBeenCalledTimes(
+          serviceIdsFixture.length,
+        );
+        for (const serviceId of serviceIdsFixture) {
+          expect(resolveServiceDeactivations).toHaveBeenCalledWith(
+            expect.any(Object),
+            serviceId,
+          );
+        }
+      });
+
+      it('should call removeAllByServiceId on activationService for each service', () => {
+        expect(
+          activationServiceMock.removeAllByServiceId,
+        ).toHaveBeenCalledTimes(serviceIdsFixture.length);
+        for (const serviceId of serviceIdsFixture) {
+          expect(
+            activationServiceMock.removeAllByServiceId,
+          ).toHaveBeenCalledWith(serviceId);
+        }
+      });
+
+      it('should call removeAllByServiceId on bindingService for each service', () => {
+        expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledTimes(
+          serviceIdsFixture.length,
+        );
+        for (const serviceId of serviceIdsFixture) {
+          expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledWith(
+            serviceId,
+          );
+        }
+      });
+
+      it('should call removeAllByServiceId on deactivationService for each service', () => {
+        expect(
+          deactivationServiceMock.removeAllByServiceId,
+        ).toHaveBeenCalledTimes(serviceIdsFixture.length);
+        for (const serviceId of serviceIdsFixture) {
+          expect(
+            deactivationServiceMock.removeAllByServiceId,
+          ).toHaveBeenCalledWith(serviceId);
+        }
       });
 
       it('should return undefined', () => {

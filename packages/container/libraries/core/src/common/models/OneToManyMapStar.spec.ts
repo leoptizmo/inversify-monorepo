@@ -127,6 +127,46 @@ describe(OneToManyMapStar.name, () => {
     });
   });
 
+  describe('.getAllKeys', () => {
+    describe('having a OneToManyMapStart with a single model', () => {
+      let modelFixture: unknown;
+      let relationFixture: Required<RelationTest>;
+      let relationKeyFixture: RelationKey.foo;
+      let oneToManyMapStar: OneToManyMapStar<unknown, RelationTest>;
+
+      beforeAll(() => {
+        modelFixture = Symbol();
+        relationFixture = {
+          bar: 3,
+          foo: 'foo',
+        };
+        relationKeyFixture = RelationKey.foo;
+        oneToManyMapStar = new OneToManyMapStar<unknown, RelationTest>({
+          bar: {
+            isOptional: true,
+          },
+          foo: {
+            isOptional: false,
+          },
+        });
+
+        oneToManyMapStar.set(modelFixture, relationFixture);
+      });
+
+      describe('when called', () => {
+        let result: unknown;
+
+        beforeAll(() => {
+          result = [...oneToManyMapStar.getAllKeys(relationKeyFixture)];
+        });
+
+        it('should return expected result', () => {
+          expect(result).toStrictEqual([relationFixture[relationKeyFixture]]);
+        });
+      });
+    });
+  });
+
   describe('.removeByRelation', () => {
     describe('having a OneToManyMapStart with a no models', () => {
       let relationFixture: Required<RelationTest>;
