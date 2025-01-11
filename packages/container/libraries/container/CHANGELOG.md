@@ -9,11 +9,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [e708d1e]
-- Updated dependencies [f487c1b]
-- Updated dependencies [5fac244]
-- Updated dependencies [2d74b3f]
-- Updated dependencies [9d5ac91]
+- Updated dependencies
   - @inversifyjs/core@2.2.0
 
 ## 1.1.1
