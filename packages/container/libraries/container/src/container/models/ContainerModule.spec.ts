@@ -36,14 +36,23 @@ describe(ContainerModule.name, () => {
 
   describe('.load', () => {
     describe('when called', () => {
+      let optionsFixture: ContainerModuleLoadOptions;
+
       let result: unknown;
 
-      beforeAll(() => {
-        result = new ContainerModule(loadMock).load;
+      beforeAll(async () => {
+        optionsFixture = Symbol() as unknown as ContainerModuleLoadOptions;
+
+        result = await new ContainerModule(loadMock).load(optionsFixture);
+      });
+
+      it('should call load()', () => {
+        expect(loadMock).toHaveBeenCalledTimes(1);
+        expect(loadMock).toHaveBeenCalledWith(optionsFixture);
       });
 
       it('should return expected value', () => {
-        expect(result).toBe(loadMock);
+        expect(result).toBeUndefined();
       });
     });
   });

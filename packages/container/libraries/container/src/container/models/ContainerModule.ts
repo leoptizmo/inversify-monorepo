@@ -24,9 +24,11 @@ export interface ContainerModuleLoadOptions {
 
 export class ContainerModule {
   readonly #id: number;
-  readonly #load: (options: ContainerModuleLoadOptions) => Promise<void>;
+  readonly #load: (options: ContainerModuleLoadOptions) => void | Promise<void>;
 
-  constructor(load: (options: ContainerModuleLoadOptions) => Promise<void>) {
+  constructor(
+    load: (options: ContainerModuleLoadOptions) => void | Promise<void>,
+  ) {
     this.#id = getContainerModuleId();
     this.#load = load;
   }
@@ -35,7 +37,7 @@ export class ContainerModule {
     return this.#id;
   }
 
-  public get load(): (options: ContainerModuleLoadOptions) => Promise<void> {
-    return this.#load;
+  public async load(options: ContainerModuleLoadOptions): Promise<void> {
+    await this.#load(options);
   }
 }
