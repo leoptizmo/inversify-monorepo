@@ -1,5 +1,18 @@
 # @inversifyjs/core
 
+## 2.2.0
+
+### Minor Changes
+
+- f487c1b: Updated `BindingService` with `getNonParentBoundServices`
+- 5fac244: Updated `injectFromBase` options to be optional.
+
+### Patch Changes
+
+- e708d1e: Updated `injectable` to filter out non userland emitted metadata
+- 2d74b3f: Updated BindingActivation with missing `ResolutionContext` param
+- 9d5ac91: Updated `injectable` to throw on duplicated call
+
 ## 2.1.0
 
 ### Minor Changes
