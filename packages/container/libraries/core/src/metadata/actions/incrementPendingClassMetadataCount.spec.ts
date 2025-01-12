@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
 jest.mock('@inversifyjs/reflect-metadata-utils');
 
-import { updateReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { updateOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { pendingClassMetadataCountReflectKey } from '../../reflectMetadata/data/pendingClassMetadataCountReflectKey';
 import { getDefaultPendingClassMetadataCount } from '../calculations/getDefaultPendingClassMetadataCount';
@@ -38,8 +38,8 @@ describe(incrementPendingClassMetadataCount.name, () => {
         jest.clearAllMocks();
       });
 
-      it('should not call updateReflectMetadata', () => {
-        expect(updateReflectMetadata).not.toHaveBeenCalled();
+      it('should not call updateOwnReflectMetadata', () => {
+        expect(updateOwnReflectMetadata).not.toHaveBeenCalled();
       });
 
       it('should return expected value', () => {
@@ -67,9 +67,9 @@ describe(incrementPendingClassMetadataCount.name, () => {
         jest.clearAllMocks();
       });
 
-      it('should call updateReflectMetadata', () => {
-        expect(updateReflectMetadata).toHaveBeenCalledTimes(1);
-        expect(updateReflectMetadata).toHaveBeenCalledWith(
+      it('should call updateOwnReflectMetadata', () => {
+        expect(updateOwnReflectMetadata).toHaveBeenCalledTimes(1);
+        expect(updateOwnReflectMetadata).toHaveBeenCalledWith(
           typeFixture,
           pendingClassMetadataCountReflectKey,
           getDefaultPendingClassMetadataCount,

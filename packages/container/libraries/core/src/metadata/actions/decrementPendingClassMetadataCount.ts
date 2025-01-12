@@ -1,4 +1,4 @@
-import { updateReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { updateOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { pendingClassMetadataCountReflectKey } from '../../reflectMetadata/data/pendingClassMetadataCountReflectKey';
 import { getDefaultPendingClassMetadataCount } from '../calculations/getDefaultPendingClassMetadataCount';
@@ -13,7 +13,7 @@ export function decrementPendingClassMetadataCount(
       metadata !== undefined &&
       metadata.kind === MaybeClassElementMetadataKind.unknown
     ) {
-      updateReflectMetadata(
+      updateOwnReflectMetadata(
         type,
         pendingClassMetadataCountReflectKey,
         getDefaultPendingClassMetadataCount,

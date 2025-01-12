@@ -1,7 +1,7 @@
 import { Newable } from '@inversifyjs/common';
 import {
-  getReflectMetadata,
-  updateReflectMetadata,
+  getOwnReflectMetadata,
+  updateOwnReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
@@ -15,10 +15,10 @@ export function updateClassMetadataWithTypescriptParameterTypes(
   target: object,
 ): void {
   const typescriptConstructorArguments: Newable[] | undefined =
-    getReflectMetadata(target, typescriptParameterTypesReflectKey);
+    getOwnReflectMetadata(target, typescriptParameterTypesReflectKey);
 
   if (typescriptConstructorArguments !== undefined) {
-    updateReflectMetadata(
+    updateOwnReflectMetadata(
       target,
       classMetadataReflectKey,
       getDefaultClassMetadata,

@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 jest.mock('@inversifyjs/reflect-metadata-utils');
 
 import {
-  getReflectMetadata,
+  getOwnReflectMetadata,
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
@@ -20,11 +20,11 @@ describe('setIsInjectableFlag', () => {
     targetFixture = class {};
   });
 
-  describe('when called, and getReflectMetadata() returns undefined', () => {
+  describe('when called, and getOwnReflectMetadata() returns undefined', () => {
     let result: unknown;
 
     beforeAll(() => {
-      (getReflectMetadata as jest.Mock).mockReturnValueOnce(undefined);
+      (getOwnReflectMetadata as jest.Mock).mockReturnValueOnce(undefined);
 
       result = setIsInjectableFlag(targetFixture);
     });
@@ -33,9 +33,9 @@ describe('setIsInjectableFlag', () => {
       jest.clearAllMocks();
     });
 
-    it('should call getReflectMetadata', () => {
-      expect(getReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(getReflectMetadata).toHaveBeenCalledWith(
+    it('should call getOwnReflectMetadata', () => {
+      expect(getOwnReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(getOwnReflectMetadata).toHaveBeenCalledWith(
         targetFixture,
         classIsInjectableFlagReflectKey,
       );
@@ -55,11 +55,11 @@ describe('setIsInjectableFlag', () => {
     });
   });
 
-  describe('when called, and getReflectMetadata() returns boolean', () => {
+  describe('when called, and getOwnReflectMetadata() returns boolean', () => {
     let result: unknown;
 
     beforeAll(() => {
-      (getReflectMetadata as jest.Mock).mockReturnValueOnce(true);
+      (getOwnReflectMetadata as jest.Mock).mockReturnValueOnce(true);
 
       try {
         setIsInjectableFlag(targetFixture);

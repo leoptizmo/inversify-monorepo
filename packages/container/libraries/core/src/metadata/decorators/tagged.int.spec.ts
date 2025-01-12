@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from '@jest/globals';
 
 import 'reflect-metadata';
 
-import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { getOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
 import { MaybeClassElementMetadataKind } from '../models/MaybeClassElementMetadataKind';
@@ -29,7 +29,7 @@ describe(tagged.name, () => {
         ) {}
       }
 
-      result = getReflectMetadata(Foo, classMetadataReflectKey);
+      result = getOwnReflectMetadata(Foo, classMetadataReflectKey);
     });
 
     it('should return expected metadata', () => {

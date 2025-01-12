@@ -1,4 +1,4 @@
-import { updateReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { updateOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
 import { updateMaybeClassMetadataPreDestroy } from '../actions/updateMaybeClassMetadataPreDestroy';
@@ -12,7 +12,7 @@ export function preDestroy(): MethodDecorator {
     _descriptor: TypedPropertyDescriptor<T>,
   ): void => {
     try {
-      updateReflectMetadata(
+      updateOwnReflectMetadata(
         target.constructor,
         classMetadataReflectKey,
         getDefaultClassMetadata,

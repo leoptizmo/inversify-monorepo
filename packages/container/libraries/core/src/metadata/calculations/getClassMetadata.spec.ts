@@ -5,7 +5,7 @@ jest.mock('./getDefaultClassMetadata');
 jest.mock('@inversifyjs/reflect-metadata-utils');
 
 import { Newable } from '@inversifyjs/common';
-import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { getOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 jest.mock('./getDefaultClassMetadata');
 jest.mock('./isPendingClassMetadata');
@@ -28,7 +28,7 @@ describe(getClassMetadata.name, () => {
     typeFixture = class Foo {};
   });
 
-  describe('when called, and getReflectMetadata() returns ClassMetadata and isPendingClassMetadata() returns true', () => {
+  describe('when called, and getOwnReflectMetadata() returns ClassMetadata and isPendingClassMetadata() returns true', () => {
     let errorFixture: Error;
     let metadataFixture: ClassMetadata;
 
@@ -39,7 +39,7 @@ describe(getClassMetadata.name, () => {
       metadataFixture = ClassMetadataFixtures.any;
 
       (
-        getReflectMetadata as jest.Mock<typeof getReflectMetadata>
+        getOwnReflectMetadata as jest.Mock<typeof getOwnReflectMetadata>
       ).mockReturnValueOnce(metadataFixture);
 
       (
@@ -65,9 +65,9 @@ describe(getClassMetadata.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call getReflectMetadata()', () => {
-      expect(getReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(getReflectMetadata).toHaveBeenCalledWith(
+    it('should call getOwnReflectMetadata()', () => {
+      expect(getOwnReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(getOwnReflectMetadata).toHaveBeenCalledWith(
         typeFixture,
         classMetadataReflectKey,
       );
@@ -90,7 +90,7 @@ describe(getClassMetadata.name, () => {
     });
   });
 
-  describe('when called, and getReflectMetadata() returns undefined, and isPendingClassMetadata() returns false', () => {
+  describe('when called, and getOwnReflectMetadata() returns undefined, and isPendingClassMetadata() returns false', () => {
     let metadataFixture: ClassMetadata;
 
     let result: unknown;
@@ -121,9 +121,9 @@ describe(getClassMetadata.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call getReflectMetadata()', () => {
-      expect(getReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(getReflectMetadata).toHaveBeenCalledWith(
+    it('should call getOwnReflectMetadata()', () => {
+      expect(getOwnReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(getOwnReflectMetadata).toHaveBeenCalledWith(
         typeFixture,
         classMetadataReflectKey,
       );

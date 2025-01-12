@@ -1,5 +1,5 @@
 import {
-  getReflectMetadata,
+  getOwnReflectMetadata,
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
@@ -9,7 +9,7 @@ import { classIsInjectableFlagReflectKey } from '../../reflectMetadata/data/clas
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export function setIsInjectableFlag(target: Function): void {
-  const isInjectableFlag: boolean | undefined = getReflectMetadata<boolean>(
+  const isInjectableFlag: boolean | undefined = getOwnReflectMetadata<boolean>(
     target,
     classIsInjectableFlagReflectKey,
   );

@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
 jest.mock('@inversifyjs/reflect-metadata-utils');
 
-import { updateReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { updateOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 jest.mock('../actions/updateMaybeClassMetadataPostConstructor');
 jest.mock('../calculations/handleInjectionError');
@@ -59,9 +59,9 @@ describe(postConstruct.name, () => {
       );
     });
 
-    it('should call updateReflectMetadata()', () => {
-      expect(updateReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(updateReflectMetadata).toHaveBeenCalledWith(
+    it('should call updateOwnReflectMetadata()', () => {
+      expect(updateOwnReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(updateOwnReflectMetadata).toHaveBeenCalledWith(
         targetFixture.constructor,
         classMetadataReflectKey,
         getDefaultClassMetadata,
@@ -74,7 +74,7 @@ describe(postConstruct.name, () => {
     });
   });
 
-  describe('when caled, and updateReflectMetadata throws an Error', () => {
+  describe('when caled, and updateOwnReflectMetadata throws an Error', () => {
     let errorFixture: Error;
 
     let updateMaybeClassMetadataPostConstructorResult: jest.Mock<
@@ -95,7 +95,7 @@ describe(postConstruct.name, () => {
       ).mockReturnValueOnce(updateMaybeClassMetadataPostConstructorResult);
 
       (
-        updateReflectMetadata as jest.Mock<typeof updateReflectMetadata>
+        updateOwnReflectMetadata as jest.Mock<typeof updateOwnReflectMetadata>
       ).mockImplementation((): never => {
         throw errorFixture;
       });
@@ -118,9 +118,9 @@ describe(postConstruct.name, () => {
       );
     });
 
-    it('should call updateReflectMetadata()', () => {
-      expect(updateReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(updateReflectMetadata).toHaveBeenCalledWith(
+    it('should call updateOwnReflectMetadata()', () => {
+      expect(updateOwnReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(updateOwnReflectMetadata).toHaveBeenCalledWith(
         targetFixture.constructor,
         classMetadataReflectKey,
         getDefaultClassMetadata,

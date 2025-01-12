@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it } from '@jest/globals';
 import 'reflect-metadata';
 
 import { Newable, ServiceIdentifier } from '@inversifyjs/common';
-import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { getOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
 import { getDefaultClassMetadata } from '../calculations/getDefaultClassMetadata';
@@ -39,11 +39,14 @@ describe(injectFrom.name, () => {
         destinationType = DestinationType;
       });
 
-      describe('when called getReflectMetadata', () => {
+      describe('when called getOwnReflectMetadata', () => {
         let result: unknown;
 
         beforeAll(() => {
-          result = getReflectMetadata(destinationType, classMetadataReflectKey);
+          result = getOwnReflectMetadata(
+            destinationType,
+            classMetadataReflectKey,
+          );
         });
 
         it('should return default metadata', () => {
@@ -92,11 +95,14 @@ describe(injectFrom.name, () => {
         destinationType = DestinationType;
       });
 
-      describe('when called getReflectMetadata', () => {
+      describe('when called getOwnReflectMetadata', () => {
         let result: unknown;
 
         beforeAll(() => {
-          result = getReflectMetadata(destinationType, classMetadataReflectKey);
+          result = getOwnReflectMetadata(
+            destinationType,
+            classMetadataReflectKey,
+          );
         });
 
         it('should return metadata', () => {
@@ -160,11 +166,14 @@ describe(injectFrom.name, () => {
         destinationType = DestinationType;
       });
 
-      describe('when called getReflectMetadata', () => {
+      describe('when called getOwnReflectMetadata', () => {
         let result: unknown;
 
         beforeAll(() => {
-          result = getReflectMetadata(destinationType, classMetadataReflectKey);
+          result = getOwnReflectMetadata(
+            destinationType,
+            classMetadataReflectKey,
+          );
         });
 
         it('should return metadata', () => {
@@ -217,11 +226,11 @@ describe(injectFrom.name, () => {
           destinationType = DestinationType;
         });
 
-        describe('when called getReflectMetadata', () => {
+        describe('when called getOwnReflectMetadata', () => {
           let result: unknown;
 
           beforeAll(() => {
-            result = getReflectMetadata(
+            result = getOwnReflectMetadata(
               destinationType,
               classMetadataReflectKey,
             );
@@ -307,11 +316,14 @@ describe(injectFrom.name, () => {
         destinationType = DestinationType;
       });
 
-      describe('when called getReflectMetadata', () => {
+      describe('when called getOwnReflectMetadata', () => {
         let result: unknown;
 
         beforeAll(() => {
-          result = getReflectMetadata(destinationType, classMetadataReflectKey);
+          result = getOwnReflectMetadata(
+            destinationType,
+            classMetadataReflectKey,
+          );
         });
 
         it('should return default metadata', () => {
@@ -354,11 +366,14 @@ describe(injectFrom.name, () => {
         destinationType = DestinationType;
       });
 
-      describe('when called getReflectMetadata', () => {
+      describe('when called getOwnReflectMetadata', () => {
         let result: unknown;
 
         beforeAll(() => {
-          result = getReflectMetadata(destinationType, classMetadataReflectKey);
+          result = getOwnReflectMetadata(
+            destinationType,
+            classMetadataReflectKey,
+          );
         });
 
         it('should return metadata', () => {
@@ -422,11 +437,14 @@ describe(injectFrom.name, () => {
         destinationType = DestinationType;
       });
 
-      describe('when called getReflectMetadata', () => {
+      describe('when called getOwnReflectMetadata', () => {
         let result: unknown;
 
         beforeAll(() => {
-          result = getReflectMetadata(destinationType, classMetadataReflectKey);
+          result = getOwnReflectMetadata(
+            destinationType,
+            classMetadataReflectKey,
+          );
         });
 
         it('should return metadata', () => {
@@ -508,11 +526,14 @@ describe(injectFrom.name, () => {
         destinationType = DestinationType;
       });
 
-      describe('when called getReflectMetadata', () => {
+      describe('when called getOwnReflectMetadata', () => {
         let result: unknown;
 
         beforeAll(() => {
-          result = getReflectMetadata(destinationType, classMetadataReflectKey);
+          result = getOwnReflectMetadata(
+            destinationType,
+            classMetadataReflectKey,
+          );
         });
 
         it('should return metadata', () => {

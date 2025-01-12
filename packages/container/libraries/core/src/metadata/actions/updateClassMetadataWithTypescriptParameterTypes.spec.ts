@@ -4,8 +4,8 @@ jest.mock('@inversifyjs/reflect-metadata-utils');
 
 import { Newable } from '@inversifyjs/common';
 import {
-  getReflectMetadata,
-  updateReflectMetadata,
+  getOwnReflectMetadata,
+  updateOwnReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
@@ -14,7 +14,7 @@ import { getDefaultClassMetadata } from '../calculations/getDefaultClassMetadata
 import { updateClassMetadataWithTypescriptParameterTypes } from './updateClassMetadataWithTypescriptParameterTypes';
 
 describe(updateClassMetadataWithTypescriptParameterTypes.name, () => {
-  describe('when called and getReflectMetadata() returns undefined', () => {
+  describe('when called and getOwnReflectMetadata() returns undefined', () => {
     let targetFixture: object;
 
     let result: unknown;
@@ -29,9 +29,9 @@ describe(updateClassMetadataWithTypescriptParameterTypes.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call getReflectMetadata()', () => {
-      expect(getReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(getReflectMetadata).toHaveBeenCalledWith(
+    it('should call getOwnReflectMetadata()', () => {
+      expect(getOwnReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(getOwnReflectMetadata).toHaveBeenCalledWith(
         targetFixture,
         typescriptParameterTypesReflectKey,
       );
@@ -42,7 +42,7 @@ describe(updateClassMetadataWithTypescriptParameterTypes.name, () => {
     });
   });
 
-  describe('when called and getReflectMetadata() returns Newable[]', () => {
+  describe('when called and getOwnReflectMetadata() returns Newable[]', () => {
     let targetFixture: object;
 
     let newableListFixture: Newable[];
@@ -55,7 +55,7 @@ describe(updateClassMetadataWithTypescriptParameterTypes.name, () => {
       newableListFixture = [];
 
       (
-        getReflectMetadata as jest.Mock<typeof getReflectMetadata>
+        getOwnReflectMetadata as jest.Mock<typeof getOwnReflectMetadata>
       ).mockReturnValueOnce(newableListFixture);
 
       result = updateClassMetadataWithTypescriptParameterTypes(targetFixture);
@@ -65,17 +65,17 @@ describe(updateClassMetadataWithTypescriptParameterTypes.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call getReflectMetadata()', () => {
-      expect(getReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(getReflectMetadata).toHaveBeenCalledWith(
+    it('should call getOwnReflectMetadata()', () => {
+      expect(getOwnReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(getOwnReflectMetadata).toHaveBeenCalledWith(
         targetFixture,
         typescriptParameterTypesReflectKey,
       );
     });
 
-    it('should call updateReflectMetadata()', () => {
-      expect(updateReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(updateReflectMetadata).toHaveBeenCalledWith(
+    it('should call updateOwnReflectMetadata()', () => {
+      expect(updateOwnReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(updateOwnReflectMetadata).toHaveBeenCalledWith(
         targetFixture,
         classMetadataReflectKey,
         getDefaultClassMetadata,

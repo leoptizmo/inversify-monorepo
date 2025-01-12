@@ -1,4 +1,4 @@
-import { updateReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { updateOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
 import { updateMaybeClassMetadataConstructorArgument } from '../actions/updateMaybeClassMetadataConstructorArgument';
@@ -90,7 +90,7 @@ function injectParameter(
     parameterIndex: number,
   ): void => {
     if (isConstructorParameter(target, propertyKey)) {
-      updateReflectMetadata(
+      updateOwnReflectMetadata(
         target,
         classMetadataReflectKey,
         getDefaultClassMetadata,
@@ -128,7 +128,7 @@ function injectProperty(
   );
 
   return (target: object, propertyKey: string | symbol): void => {
-    updateReflectMetadata(
+    updateOwnReflectMetadata(
       target.constructor,
       classMetadataReflectKey,
       getDefaultClassMetadata,
