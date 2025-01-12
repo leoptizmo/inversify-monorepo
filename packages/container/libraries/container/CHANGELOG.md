@@ -1,5 +1,25 @@
 # @inversifyjs/container
 
+## 1.3.0
+
+### Minor Changes
+
+- 1285db1: Updated `BindWhenFluentSyntax` with `whenNoParentIs`
+- df484d3: Updated `BindWhenFluentSyntax` with `whenNoAncestorTagged`
+- 1285db1: Updated `BindWhenFluentSyntax` with `whenNoParent`
+- 1285db1: Updated `BindWhenFluentSyntax` with `whenNoParentNamed`
+- df484d3: Updated `BindWhenFluentSyntax` with `whenNoAncestorIs`
+- 1285db1: Updated `BindWhenFluentSyntax` with `whenNoParentTagged`
+- df484d3: Updated `BindWhenFluentSyntax` with `whenNoAncestorNamed`
+- 600a752: Updated `decorate` to allow single decorator
+- df484d3: Updated `BindWhenFluentSyntax` with `whenNoAncestor`
+- bbbc83f: Updated `Container` with `isCurrentBound`
+
+### Patch Changes
+
+- Updated dependencies
+  - @inversifyjs/core@3.0.0
+
 ## 1.2.0
 
 ### Minor Changes
