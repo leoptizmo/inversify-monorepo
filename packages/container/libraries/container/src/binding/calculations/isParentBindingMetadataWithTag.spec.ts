@@ -14,7 +14,7 @@ describe(isParentBindingMetadataWithTag.name, () => {
   let tagValueFixture: unknown;
 
   beforeAll(() => {
-    tagFixture = 'name-fixture';
+    tagFixture = 'tag-fixture';
     tagValueFixture = Symbol();
   });
 
