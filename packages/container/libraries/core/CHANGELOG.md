@@ -7,8 +7,7 @@
 - 0dadb6a: Updated `MaybeClassElementMetadataKind` values to avoid collisions
 - 7e751e2: Updated resolve flow to keep default values on optional property injection
 - 5c9ebca: Updated decorator metadata access to avoid conflicts with base type metadata
-- Updated dependencies [68b15b1]
-- Updated dependencies [d75544b]
+- Updated dependencies
   - @inversifyjs/reflect-metadata-utils@1.1.0
 
 ## 3.0.0
