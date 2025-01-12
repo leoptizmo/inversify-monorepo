@@ -2,10 +2,10 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
 import { BindingMetadata } from '@inversifyjs/core';
 
+jest.mock('./isAnyAncestorBindingMetadata');
+
 import { isAnyAncestorBindingMetadata } from './isAnyAncestorBindingMetadata';
 import { isNoAncestorBindingMetadata } from './isNoAncestorBindingMetadata';
-
-jest.mock('./isAnyAncestorBindingMetadata');
 
 describe(isNoAncestorBindingMetadata.name, () => {
   let constraintMock: jest.Mock<(metadata: BindingMetadata) => boolean>;
