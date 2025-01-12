@@ -1,5 +1,12 @@
 # @inversifyjs/reflect-metadata-utils
 
+## 1.1.0
+
+### Minor Changes
+
+- 68b15b1: Added `getOwnReflectMetadata`
+- d75544b: Added `updateOwnReflectMetadata`
+
 ## 1.0.0
 
 ### Major Changes

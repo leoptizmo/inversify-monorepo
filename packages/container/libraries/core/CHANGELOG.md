@@ -1,5 +1,15 @@
 # @inversifyjs/core
 
+## 3.0.1
+
+### Patch Changes
+
+- 0dadb6a: Updated `MaybeClassElementMetadataKind` values to avoid collisions
+- 7e751e2: Updated resolve flow to keep default values on optional property injection
+- 5c9ebca: Updated decorator metadata access to avoid conflicts with base type metadata
+- Updated dependencies
+  - @inversifyjs/reflect-metadata-utils@1.1.0
+
 ## 3.0.0
 
 ### Major Changes
