@@ -75,7 +75,8 @@ describe('setIsInjectableFlag', () => {
     it('should throw an InversifyCoreError', () => {
       const expectedErrorProperties: Partial<InversifyCoreError> = {
         kind: InversifyCoreErrorKind.injectionDecoratorConflict,
-        message: 'Cannot apply @injectable decorator multiple times',
+        message:
+          'Cannot apply @injectable decorator multiple times at class "targetFixture"',
       };
 
       expect(result).toBeInstanceOf(InversifyCoreError);
