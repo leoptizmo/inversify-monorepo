@@ -36,6 +36,10 @@ import { isAnyAncestorBindingMetadataWithTag } from '../calculations/isAnyAncest
 import { isBindingMetadataWithName } from '../calculations/isBindingMetadataWithName';
 import { isBindingMetadataWithNoNameNorTags } from '../calculations/isBindingMetadataWithNoNameNorTags';
 import { isBindingMetadataWithTag } from '../calculations/isBindingMetadataWithTag';
+import { isNoAncestorBindingMetadata } from '../calculations/isNoAncestorBindingMetadata';
+import { isNoAncestorBindingMetadataWithName } from '../calculations/isNoAncestorBindingMetadataWithName';
+import { isNoAncestorBindingMetadataWithServiceId } from '../calculations/isNoAncestorBindingMetadataWithServiceId';
+import { isNoAncestorBindingMetadataWithTag } from '../calculations/isNoAncestorBindingMetadataWithTag';
 import { isNotParentBindingMetadata } from '../calculations/isNotParentBindingMetadata';
 import { isNotParentBindingMetadataWithName } from '../calculations/isNotParentBindingMetadataWithName';
 import { isNotParentBindingMetadataWithServiceId } from '../calculations/isNotParentBindingMetadataWithServiceId';
@@ -382,6 +386,31 @@ export class BindWhenFluentSyntaxImplementation<T>
     tagValue: unknown,
   ): BindOnFluentSyntax<T> {
     return this.when(isBindingMetadataWithTag(tag, tagValue));
+  }
+
+  public whenNoAncestor(
+    constraint: (metadata: BindingMetadata) => boolean,
+  ): BindOnFluentSyntax<T> {
+    return this.when(isNoAncestorBindingMetadata(constraint));
+  }
+
+  public whenNoAncestorIs(
+    serviceIdentifier: ServiceIdentifier,
+  ): BindOnFluentSyntax<T> {
+    return this.when(
+      isNoAncestorBindingMetadataWithServiceId(serviceIdentifier),
+    );
+  }
+
+  public whenNoAncestorNamed(name: MetadataName): BindOnFluentSyntax<T> {
+    return this.when(isNoAncestorBindingMetadataWithName(name));
+  }
+
+  public whenNoAncestorTagged(
+    tag: MetadataTag,
+    tagValue: unknown,
+  ): BindOnFluentSyntax<T> {
+    return this.when(isNoAncestorBindingMetadataWithTag(tag, tagValue));
   }
 }
 
