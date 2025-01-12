@@ -23,6 +23,7 @@ import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
 import { getDefaultClassMetadata } from '../../metadata/calculations/getDefaultClassMetadata';
 import { inject } from '../../metadata/decorators/inject';
+import { optional } from '../../metadata/decorators/optional';
 import { ClassMetadata } from '../../metadata/models/ClassMetadata';
 import { plan } from '../../planning/calculations/plan';
 import { PlanParams } from '../../planning/models/PlanParams';
@@ -42,6 +43,7 @@ enum ServiceIds {
   factory = 'factory-service-id',
   instance = 'instance-service-id',
   nonExistent = 'non-existent-service-id',
+  priest = 'priest-instance-service-id',
   provider = 'provider-service-id',
   serviceRedirection = 'service-redirection-service-id',
   serviceRedirectionToNonExistent = 'service-redirection-to-non-existent-service-id',
@@ -57,6 +59,12 @@ class Foo {
   ) {}
 }
 
+class Priest {
+  @inject(ServiceIds.nonExistent)
+  @optional()
+  public relic: unknown = Symbol.for('relic');
+}
+
 describe(resolve.name, () => {
   let activatedResolvedResult: unknown;
 
@@ -65,6 +73,7 @@ describe(resolve.name, () => {
   let dynamicValueBinding: DynamicValueBinding<unknown>;
   let factoryBinding: FactoryBinding<Factory<unknown>>;
   let instanceBinding: InstanceBinding<unknown>;
+  let priestInstanceBinding: InstanceBinding<Priest>;
   let providerBinding: ProviderBinding<Provider<unknown>>;
   let serviceRedirectionBinding: ServiceRedirectionBinding<unknown>;
   let serviceRedirectionToNonExistentBinding: ServiceRedirectionBinding<unknown>;
@@ -160,6 +169,22 @@ describe(resolve.name, () => {
       type: bindingTypeValues.Instance,
     };
 
+    priestInstanceBinding = {
+      cache: {
+        isRight: false,
+        value: undefined,
+      },
+      id: 4,
+      implementationType: Priest,
+      isSatisfiedBy: () => true,
+      moduleId: undefined,
+      onActivation: undefined,
+      onDeactivation: undefined,
+      scope: bindingScopeValues.Singleton,
+      serviceIdentifier: ServiceIds.priest,
+      type: bindingTypeValues.Instance,
+    };
+
     const provider: Provider<unknown> = async () => Symbol();
 
     providerBinding = {
@@ -167,7 +192,7 @@ describe(resolve.name, () => {
         isRight: false,
         value: undefined,
       },
-      id: 4,
+      id: 5,
       isSatisfiedBy: () => true,
       moduleId: undefined,
       onActivation: undefined,
@@ -179,7 +204,7 @@ describe(resolve.name, () => {
     };
 
     serviceRedirectionBinding = {
-      id: 5,
+      id: 6,
       isSatisfiedBy: () => true,
       moduleId: undefined,
       serviceIdentifier: ServiceIds.serviceRedirection,
@@ -188,7 +213,7 @@ describe(resolve.name, () => {
     };
 
     serviceRedirectionToNonExistentBinding = {
-      id: 6,
+      id: 7,
       isSatisfiedBy: () => true,
       moduleId: undefined,
       serviceIdentifier: ServiceIds.serviceRedirectionToNonExistent,
@@ -211,6 +236,7 @@ describe(resolve.name, () => {
     bindingService.set(dynamicValueBinding);
     bindingService.set(factoryBinding);
     bindingService.set(instanceBinding);
+    bindingService.set(priestInstanceBinding);
     bindingService.set(providerBinding);
     bindingService.set(serviceRedirectionBinding);
     bindingService.set(serviceRedirectionToNonExistentBinding);
@@ -417,7 +443,7 @@ describe(resolve.name, () => {
       () => providerBinding.provider(resolutionContext),
     ],
     [
-      'with instance binding provider',
+      'with instance binding service',
       (): PlanParamsConstraint => ({
         isMultiple: false,
         serviceIdentifier: instanceBinding.serviceIdentifier,
@@ -432,6 +458,14 @@ describe(resolve.name, () => {
 
           return instance;
         })(),
+    ],
+    [
+      'with priest instance binding service',
+      (): PlanParamsConstraint => ({
+        isMultiple: false,
+        serviceIdentifier: priestInstanceBinding.serviceIdentifier,
+      }),
+      () => new Priest(),
     ],
     [
       'with service redirection bound service',

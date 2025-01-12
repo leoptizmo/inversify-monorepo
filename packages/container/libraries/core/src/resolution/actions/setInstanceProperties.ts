@@ -36,7 +36,10 @@ export function setInstanceProperties(
         );
       }
 
-      if (metadata.kind !== ClassElementMetadataKind.unmanaged) {
+      if (
+        metadata.kind !== ClassElementMetadataKind.unmanaged &&
+        propertyNode.bindings !== undefined
+      ) {
         instance[propertyKey] = resolveServiceNode(params, propertyNode);
 
         if (isPromise(instance[propertyKey])) {
