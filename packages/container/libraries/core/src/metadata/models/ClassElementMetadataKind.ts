@@ -1,5 +1,5 @@
 export enum ClassElementMetadataKind {
-  multipleInjection,
-  singleInjection,
-  unmanaged,
+  multipleInjection = 0,
+  singleInjection = 1,
+  unmanaged = 2,
 }
