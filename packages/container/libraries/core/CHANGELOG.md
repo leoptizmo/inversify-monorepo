@@ -1,5 +1,20 @@
 # @inversifyjs/core
 
+## 3.0.0
+
+### Major Changes
+
+- 7f97e76: Removed `MetadataTargetName`
+- 7f97e76: Updated `ManagedClassElementMetadata` with no `targetName`
+- 7f97e76: Updated `MaybeManagedClassElementMetadata` with no `targetName`
+- 7f97e76: Removed `targetName`
+
+### Minor Changes
+
+- 50fa92a: Updated `BindingService` with `getNonParentBindings`
+- 6c381a8: Updated `BindingToSyntax` with more flexible factory and provider constraints
+- bbddebc: Updated `Provider` with right args.
+
 ## 2.2.0
 
 ### Minor Changes
