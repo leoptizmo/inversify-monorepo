@@ -4,6 +4,7 @@ import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
 import { ClassElementMetadataKind } from '../../metadata/models/ClassElementMetadataKind';
 import { InstanceBindingNode } from '../../planning/models/InstanceBindingNode';
+import { PlanBindingNode } from '../../planning/models/PlanBindingNode';
 import { PlanServiceNode } from '../../planning/models/PlanServiceNode';
 import { ResolutionParams } from '../models/ResolutionParams';
 import { setInstanceProperties } from './setInstanceProperties';
@@ -111,7 +112,7 @@ describe(setInstanceProperties.name, () => {
     });
   });
 
-  describe('having node with properties and matching managed metadata', () => {
+  describe('having node with properties with bindings and matching managed metadata', () => {
     let propertyKeyFixture: string | symbol;
 
     let resolveServiceNodeMock: jest.Mock<
@@ -127,6 +128,10 @@ describe(setInstanceProperties.name, () => {
       resolveServiceNodeMock = jest.fn();
 
       paramsFixture = Symbol() as unknown as ResolutionParams;
+
+      const propertyServiceNodeFixture: PlanServiceNode = {
+        bindings: Symbol() as unknown as PlanBindingNode,
+      } as Partial<PlanServiceNode> as PlanServiceNode;
 
       nodeFixture = {
         classMetadata: {
@@ -144,7 +149,7 @@ describe(setInstanceProperties.name, () => {
           ]),
         },
         propertyParams: new Map([
-          [propertyKeyFixture, Symbol() as unknown as PlanServiceNode],
+          [propertyKeyFixture, propertyServiceNodeFixture],
         ]),
       } as Partial<InstanceBindingNode> as InstanceBindingNode;
     });
