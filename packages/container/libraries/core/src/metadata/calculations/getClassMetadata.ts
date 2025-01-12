@@ -1,5 +1,5 @@
 import { Newable } from '@inversifyjs/common';
-import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { getOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
 import { ClassMetadata } from '../models/ClassMetadata';
@@ -10,7 +10,7 @@ import { validateConstructorMetadataArray } from './validateConstructorMetadataA
 
 export function getClassMetadata(type: Newable): ClassMetadata {
   const classMetadata: ClassMetadata =
-    getReflectMetadata(type, classMetadataReflectKey) ??
+    getOwnReflectMetadata(type, classMetadataReflectKey) ??
     getDefaultClassMetadata();
 
   if (isPendingClassMetadata(type)) {

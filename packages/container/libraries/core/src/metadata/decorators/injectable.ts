@@ -1,4 +1,4 @@
-import { updateReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { updateOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { BindingScope } from '../../binding/models/BindingScope';
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
@@ -15,7 +15,7 @@ export function injectable(scope?: BindingScope): ClassDecorator {
     updateClassMetadataWithTypescriptParameterTypes(target);
 
     if (scope !== undefined) {
-      updateReflectMetadata<MaybeClassMetadata>(
+      updateOwnReflectMetadata<MaybeClassMetadata>(
         target,
         classMetadataReflectKey,
         getDefaultClassMetadata,

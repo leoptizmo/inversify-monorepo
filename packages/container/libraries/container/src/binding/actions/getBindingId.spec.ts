@@ -3,20 +3,20 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 jest.mock('@inversifyjs/reflect-metadata-utils');
 
 import {
-  getReflectMetadata,
+  getOwnReflectMetadata,
   setReflectMetadata,
-  updateReflectMetadata,
+  updateOwnReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
 import { getBindingId } from './getBindingId';
 
 describe(getBindingId.name, () => {
-  describe('when called, and getReflectMetadata() returns undefined', () => {
+  describe('when called, and getOwnReflectMetadata() returns undefined', () => {
     let result: unknown;
 
     beforeAll(() => {
       (
-        getReflectMetadata as jest.Mock<typeof getReflectMetadata>
+        getOwnReflectMetadata as jest.Mock<typeof getOwnReflectMetadata>
       ).mockReturnValueOnce(0);
 
       result = getBindingId();
@@ -26,17 +26,17 @@ describe(getBindingId.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call getReflectMetadata()', () => {
-      expect(getReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(getReflectMetadata).toHaveBeenCalledWith(
+    it('should call getOwnReflectMetadata()', () => {
+      expect(getOwnReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(getOwnReflectMetadata).toHaveBeenCalledWith(
         Object,
         '@inversifyjs/container/bindingId',
       );
     });
 
-    it('should call updateReflectMetadata()', () => {
-      expect(updateReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(updateReflectMetadata).toHaveBeenCalledWith(
+    it('should call updateOwnReflectMetadata()', () => {
+      expect(updateOwnReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(updateOwnReflectMetadata).toHaveBeenCalledWith(
         Object,
         '@inversifyjs/container/bindingId',
         expect.any(Function),
@@ -49,12 +49,12 @@ describe(getBindingId.name, () => {
     });
   });
 
-  describe('when called, and getReflectMetadata() returns Number.MAX_SAFE_INTEGER', () => {
+  describe('when called, and getOwnReflectMetadata() returns Number.MAX_SAFE_INTEGER', () => {
     let result: unknown;
 
     beforeAll(() => {
       (
-        getReflectMetadata as jest.Mock<typeof getReflectMetadata>
+        getOwnReflectMetadata as jest.Mock<typeof getOwnReflectMetadata>
       ).mockReturnValueOnce(Number.MAX_SAFE_INTEGER);
 
       result = getBindingId();
@@ -64,9 +64,9 @@ describe(getBindingId.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call getReflectMetadata()', () => {
-      expect(getReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(getReflectMetadata).toHaveBeenCalledWith(
+    it('should call getOwnReflectMetadata()', () => {
+      expect(getOwnReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(getOwnReflectMetadata).toHaveBeenCalledWith(
         Object,
         '@inversifyjs/container/bindingId',
       );

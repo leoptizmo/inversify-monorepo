@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 jest.mock('@inversifyjs/reflect-metadata-utils');
 
 import { Newable } from '@inversifyjs/common';
-import { updateReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { updateOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 jest.mock('../calculations/getClassMetadata');
 
@@ -42,9 +42,9 @@ describe(injectFrom.name, () => {
       expect(getClassMetadata).toHaveBeenCalledWith(optionsFixture.type);
     });
 
-    it('should call updateReflectMetadata()', () => {
-      expect(updateReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(updateReflectMetadata).toHaveBeenCalledWith(
+    it('should call updateOwnReflectMetadata()', () => {
+      expect(updateOwnReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(updateOwnReflectMetadata).toHaveBeenCalledWith(
         typeFixture,
         classMetadataReflectKey,
         getDefaultClassMetadata,

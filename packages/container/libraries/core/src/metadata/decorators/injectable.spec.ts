@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
 jest.mock('@inversifyjs/reflect-metadata-utils');
 
-import { updateReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { updateOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 jest.mock('../actions/setIsInjectableFlag');
 jest.mock('../actions/updateClassMetadataWithTypescriptParameterTypes');
@@ -49,8 +49,8 @@ describe(injectable.name, () => {
         expect(setIsInjectableFlag).toHaveBeenCalledWith(targetFixture);
       });
 
-      it('should not call updateReflectMetadata()', () => {
-        expect(updateReflectMetadata).not.toHaveBeenCalled();
+      it('should not call updateOwnReflectMetadata()', () => {
+        expect(updateOwnReflectMetadata).not.toHaveBeenCalled();
       });
 
       it('should return undefined', () => {
@@ -97,9 +97,9 @@ describe(injectable.name, () => {
         ).toHaveBeenCalledWith(Foo);
       });
 
-      it('should call updateReflectMetadata()', () => {
-        expect(updateReflectMetadata).toHaveBeenCalledTimes(1);
-        expect(updateReflectMetadata).toHaveBeenCalledWith(
+      it('should call updateOwnReflectMetadata()', () => {
+        expect(updateOwnReflectMetadata).toHaveBeenCalledTimes(1);
+        expect(updateOwnReflectMetadata).toHaveBeenCalledWith(
           Foo,
           classMetadataReflectKey,
           getDefaultClassMetadata,

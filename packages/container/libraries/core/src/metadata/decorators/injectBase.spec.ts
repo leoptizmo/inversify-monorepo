@@ -13,7 +13,7 @@ jest.mock('../actions/updateMaybeClassMetadataProperty', () => ({
 }));
 
 import { Newable } from '@inversifyjs/common';
-import { updateReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { updateOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
 import { updateMaybeClassMetadataConstructorArgument } from '../actions/updateMaybeClassMetadataConstructorArgument';
@@ -72,9 +72,9 @@ describe(injectBase.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call updateReflectMetadata()', () => {
-      expect(updateReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(updateReflectMetadata).toHaveBeenCalledWith(
+    it('should call updateOwnReflectMetadata()', () => {
+      expect(updateOwnReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(updateOwnReflectMetadata).toHaveBeenCalledWith(
         targetFixture,
         classMetadataReflectKey,
         getDefaultClassMetadata,
@@ -112,9 +112,9 @@ describe(injectBase.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call updateReflectMetadata()', () => {
-      expect(updateReflectMetadata).toHaveBeenCalledTimes(1);
-      expect(updateReflectMetadata).toHaveBeenCalledWith(
+    it('should call updateOwnReflectMetadata()', () => {
+      expect(updateOwnReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(updateOwnReflectMetadata).toHaveBeenCalledWith(
         targetFixture,
         classMetadataReflectKey,
         getDefaultClassMetadata,

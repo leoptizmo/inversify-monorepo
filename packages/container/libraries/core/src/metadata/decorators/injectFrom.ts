@@ -1,4 +1,4 @@
-import { updateReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { updateOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
 import { getClassMetadata } from '../calculations/getClassMetadata';
@@ -13,7 +13,7 @@ export function injectFrom(options: InjectFromOptions): ClassDecorator {
   const decorator: ClassDecorator = (target: Function): void => {
     const baseTypeClassMetadata: ClassMetadata = getClassMetadata(options.type);
 
-    updateReflectMetadata(
+    updateOwnReflectMetadata(
       target,
       classMetadataReflectKey,
       getDefaultClassMetadata,

@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it } from '@jest/globals';
 import 'reflect-metadata';
 
 import { Newable } from '@inversifyjs/common';
-import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { getOwnReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
 import { bindingScopeValues } from '../../binding/models/BindingScope';
 import { bindingTypeValues } from '../../binding/models/BindingType';
@@ -315,7 +315,7 @@ describe(plan.name, () => {
     bindingService.set(serviceRedirectionToNonExistentBinding);
 
     getClassMetadataFunction = (type: Newable): ClassMetadata =>
-      getReflectMetadata(type, classMetadataReflectKey) ??
+      getOwnReflectMetadata(type, classMetadataReflectKey) ??
       getDefaultClassMetadata();
   });
 
