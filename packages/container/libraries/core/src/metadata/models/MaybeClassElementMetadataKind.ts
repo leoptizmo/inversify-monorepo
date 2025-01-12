@@ -1,3 +1,3 @@
 export enum MaybeClassElementMetadataKind {
-  unknown,
+  unknown = 32,
 }

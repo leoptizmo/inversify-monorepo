@@ -17,7 +17,7 @@ export function setIsInjectableFlag(target: Function): void {
   if (isInjectableFlag !== undefined) {
     throw new InversifyCoreError(
       InversifyCoreErrorKind.injectionDecoratorConflict,
-      'Cannot apply @injectable decorator multiple times',
+      `Cannot apply @injectable decorator multiple times at class "${target.name}"`,
     );
   }
 
