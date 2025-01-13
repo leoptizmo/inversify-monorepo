@@ -26,7 +26,7 @@ describe(OneToManyMapStar.name, () => {
         },
       });
 
-      oneToManyMapStar.set(Symbol(), {
+      oneToManyMapStar.add(Symbol(), {
         [RelationKey.bar]: 2,
         [RelationKey.foo]: 'foo-value-fixture',
       });
@@ -67,7 +67,7 @@ describe(OneToManyMapStar.name, () => {
           },
         });
 
-        oneToManyMapStar.set(modelFixture, {
+        oneToManyMapStar.add(modelFixture, {
           [relationKeyFixture]: relationValueFixture,
         });
       });
@@ -125,6 +125,54 @@ describe(OneToManyMapStar.name, () => {
         });
       });
     });
+
+    describe('having a OneToManyMapStartSpec with twice a model', () => {
+      let modelFixture: unknown;
+      let relationKeyFixture: RelationKey.foo;
+      let relationValueFixture: string;
+
+      let oneToManyMapStar: OneToManyMapStar<unknown, RelationTest>;
+
+      beforeAll(() => {
+        modelFixture = Symbol();
+        relationKeyFixture = RelationKey.foo;
+        relationValueFixture = 'value-fixture';
+
+        oneToManyMapStar = new OneToManyMapStar<unknown, RelationTest>({
+          bar: {
+            isOptional: true,
+          },
+          foo: {
+            isOptional: false,
+          },
+        });
+
+        oneToManyMapStar.add(modelFixture, {
+          [relationKeyFixture]: relationValueFixture,
+        });
+
+        oneToManyMapStar.add(modelFixture, {
+          [relationKeyFixture]: relationValueFixture,
+        });
+      });
+
+      describe('when called', () => {
+        let result: unknown;
+
+        beforeAll(() => {
+          result = [
+            ...(oneToManyMapStar.get(
+              relationKeyFixture,
+              relationValueFixture,
+            ) ?? []),
+          ];
+        });
+
+        it('should return expected result', () => {
+          expect(result).toStrictEqual([modelFixture, modelFixture]);
+        });
+      });
+    });
   });
 
   describe('.getAllKeys', () => {
@@ -150,7 +198,7 @@ describe(OneToManyMapStar.name, () => {
           },
         });
 
-        oneToManyMapStar.set(modelFixture, relationFixture);
+        oneToManyMapStar.add(modelFixture, relationFixture);
       });
 
       describe('when called', () => {
@@ -168,7 +216,7 @@ describe(OneToManyMapStar.name, () => {
   });
 
   describe('.removeByRelation', () => {
-    describe('having a OneToManyMapStart with a no models', () => {
+    describe('having a OneToManyMapStart with no models', () => {
       let relationFixture: Required<RelationTest>;
       let oneToManyMapStar: OneToManyMapStar<unknown, RelationTest>;
 
@@ -247,7 +295,7 @@ describe(OneToManyMapStar.name, () => {
           },
         });
 
-        oneToManyMapStar.set(modelFixture, relationFixture);
+        oneToManyMapStar.add(modelFixture, relationFixture);
       });
 
       describe('when called', () => {
@@ -289,6 +337,79 @@ describe(OneToManyMapStar.name, () => {
         });
       });
     });
+
+    describe('having a OneToManyMapStart with twice a model with different relations', () => {
+      let modelFixture: unknown;
+      let firstRelationFixture: Required<RelationTest>;
+      let secondRelationFixture: Required<RelationTest>;
+      let oneToManyMapStar: OneToManyMapStar<unknown, RelationTest>;
+
+      beforeAll(() => {
+        modelFixture = Symbol();
+        firstRelationFixture = {
+          bar: 3,
+          foo: 'foo',
+        };
+        secondRelationFixture = {
+          bar: 4,
+          foo: firstRelationFixture[RelationKey.foo],
+        };
+        oneToManyMapStar = new OneToManyMapStar<unknown, RelationTest>({
+          bar: {
+            isOptional: true,
+          },
+          foo: {
+            isOptional: false,
+          },
+        });
+
+        oneToManyMapStar.add(modelFixture, firstRelationFixture);
+        oneToManyMapStar.add(modelFixture, secondRelationFixture);
+      });
+
+      describe('when called', () => {
+        beforeAll(() => {
+          oneToManyMapStar.removeByRelation(
+            RelationKey.bar,
+            firstRelationFixture[RelationKey.bar],
+          );
+        });
+
+        describe('when called .get()', () => {
+          let results: {
+            [TKey in RelationKey]-?: Iterable<unknown> | undefined;
+          };
+
+          beforeAll(() => {
+            results = {
+              [RelationKey.bar]: [
+                ...(oneToManyMapStar.get(
+                  RelationKey.bar,
+                  firstRelationFixture[RelationKey.bar],
+                ) ?? []),
+              ],
+              [RelationKey.foo]: [
+                ...(oneToManyMapStar.get(
+                  RelationKey.foo,
+                  firstRelationFixture[RelationKey.foo],
+                ) ?? []),
+              ],
+            };
+          });
+
+          it('should return expected results', () => {
+            const expectedResults: {
+              [TKey in RelationKey]-?: Iterable<unknown> | undefined;
+            } = {
+              [RelationKey.bar]: [],
+              [RelationKey.foo]: [modelFixture],
+            };
+
+            expect(results).toStrictEqual(expectedResults);
+          });
+        });
+      });
+    });
   });
 
   describe('.set', () => {
@@ -314,7 +435,7 @@ describe(OneToManyMapStar.name, () => {
 
     describe('when called', () => {
       beforeAll(() => {
-        oneToManyMapStar.set(modelFixture, relationFixture);
+        oneToManyMapStar.add(modelFixture, relationFixture);
       });
 
       describe('when called .get() with relation values', () => {

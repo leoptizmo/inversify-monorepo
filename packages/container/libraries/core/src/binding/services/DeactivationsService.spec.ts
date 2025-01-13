@@ -66,9 +66,9 @@ describe(DeactivationsService.name, () => {
         jest.clearAllMocks();
       });
 
-      it('should call deactivationMaps.set()', () => {
-        expect(deactivationMapsMock.set).toHaveBeenCalledTimes(1);
-        expect(deactivationMapsMock.set).toHaveBeenCalledWith(
+      it('should call deactivationMaps.add()', () => {
+        expect(deactivationMapsMock.add).toHaveBeenCalledTimes(1);
+        expect(deactivationMapsMock.add).toHaveBeenCalledWith(
           deactivationFixture,
           relationFixture,
         );

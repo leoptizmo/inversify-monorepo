@@ -54,7 +54,7 @@ export class DeactivationsService implements Cloneable<DeactivationsService> {
     deactivation: BindingDeactivation,
     relation: BindingDeactivationRelation,
   ): void {
-    this.#deactivationMaps.set(deactivation, relation);
+    this.#deactivationMaps.add(deactivation, relation);
   }
 
   public clone(): DeactivationsService {

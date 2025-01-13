@@ -1,5 +1,7 @@
 import { Cloneable } from './Cloneable';
 
+const NOT_FOUND_INDEX: number = -1;
+
 export type OneToManyMapStartSpec<TRelation extends object> = {
   [TKey in keyof TRelation]: {
     isOptional: undefined extends TRelation[TKey] ? true : false;
@@ -7,7 +9,7 @@ export type OneToManyMapStartSpec<TRelation extends object> = {
 };
 
 type RelationToModelMap<TModel, TRelation extends object> = {
-  [TKey in keyof TRelation]-?: Map<TRelation[TKey], Set<TModel>>;
+  [TKey in keyof TRelation]-?: Map<TRelation[TKey], TModel[]>;
 };
 
 /**
@@ -16,7 +18,7 @@ type RelationToModelMap<TModel, TRelation extends object> = {
 export class OneToManyMapStar<TModel, TRelation extends object>
   implements Cloneable<OneToManyMapStar<TModel, TRelation>>
 {
-  readonly #modelToRelationMap: Map<TModel, TRelation>;
+  readonly #modelToRelationMap: Map<TModel, TRelation[]>;
   readonly #relationToModelsMaps: RelationToModelMap<TModel, TRelation>;
   readonly #spec: OneToManyMapStartSpec<TRelation>;
 
@@ -30,6 +32,18 @@ export class OneToManyMapStar<TModel, TRelation extends object>
     }
 
     this.#spec = spec;
+  }
+
+  public add(model: TModel, relation: TRelation): void {
+    this.#buildOrGetModelArray(model).push(relation);
+
+    for (const relationKey of Reflect.ownKeys(
+      relation,
+    ) as (keyof TRelation)[]) {
+      this.#buildOrGetRelationModelSet(relationKey, relation[relationKey]).push(
+        model,
+      );
+    }
   }
 
   public clone(): OneToManyMapStar<TModel, TRelation> {
@@ -60,7 +74,7 @@ export class OneToManyMapStar<TModel, TRelation extends object>
     key: TKey,
     value: Required<TRelation>[TKey],
   ): Iterable<TModel> | undefined {
-    return this.#relationToModelsMaps[key].get(value)?.values();
+    return this.#relationToModelsMaps[key].get(value);
   }
 
   public getAllKeys<TKey extends keyof TRelation>(
@@ -80,39 +94,45 @@ export class OneToManyMapStar<TModel, TRelation extends object>
     }
 
     for (const model of models) {
-      const relation: TRelation | undefined =
+      const relations: TRelation[] | undefined =
         this.#modelToRelationMap.get(model);
 
-      if (relation === undefined) {
+      if (relations === undefined) {
         throw new Error('Expecting model relation, none found');
       }
 
-      this.#removeModelFromRelationMaps(model, relation);
+      for (const relation of relations) {
+        if (relation[key] === value) {
+          this.#removeModelFromRelationMaps(model, relation);
+        }
+      }
+
       this.#modelToRelationMap.delete(model);
     }
   }
 
-  public set(model: TModel, relation: TRelation): void {
-    this.#modelToRelationMap.set(model, relation);
+  #buildOrGetModelArray(model: TModel): TRelation[] {
+    let relations: TRelation[] | undefined =
+      this.#modelToRelationMap.get(model);
 
-    for (const relationKey of Reflect.ownKeys(
-      relation,
-    ) as (keyof TRelation)[]) {
-      this.#buildOrGetRelationModelSet(relationKey, relation[relationKey]).add(
-        model,
-      );
+    if (relations === undefined) {
+      relations = [];
+
+      this.#modelToRelationMap.set(model, relations);
     }
+
+    return relations;
   }
 
   #buildOrGetRelationModelSet<TKey extends keyof TRelation>(
     relationKey: TKey,
     relationValue: TRelation[TKey],
-  ): Set<TModel> {
-    let modelSet: Set<TModel> | undefined =
+  ): TModel[] {
+    let modelSet: TModel[] | undefined =
       this.#relationToModelsMaps[relationKey].get(relationValue);
 
     if (modelSet === undefined) {
-      modelSet = new Set();
+      modelSet = [];
 
       this.#relationToModelsMaps[relationKey].set(relationValue, modelSet);
     }
@@ -146,13 +166,17 @@ export class OneToManyMapStar<TModel, TRelation extends object>
     relationKey: TKey,
     relationValue: TRelation[TKey],
   ): void {
-    const modelSet: Set<TModel> | undefined =
+    const modelSet: TModel[] | undefined =
       this.#relationToModelsMaps[relationKey].get(relationValue);
 
     if (modelSet !== undefined) {
-      modelSet.delete(model);
+      const index: number = modelSet.indexOf(model);
 
-      if (modelSet.size === 0) {
+      if (index !== NOT_FOUND_INDEX) {
+        modelSet.splice(index, 1);
+      }
+
+      if (modelSet.length === 0) {
         this.#relationToModelsMaps[relationKey].delete(relationValue);
       }
     }

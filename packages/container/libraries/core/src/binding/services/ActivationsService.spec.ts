@@ -65,9 +65,9 @@ describe(ActivationsService.name, () => {
         jest.clearAllMocks();
       });
 
-      it('should call activationMaps.set()', () => {
-        expect(activationMapsMock.set).toHaveBeenCalledTimes(1);
-        expect(activationMapsMock.set).toHaveBeenCalledWith(
+      it('should call activationMaps.add()', () => {
+        expect(activationMapsMock.add).toHaveBeenCalledTimes(1);
+        expect(activationMapsMock.add).toHaveBeenCalledWith(
           activationFixture,
           relationFixture,
         );

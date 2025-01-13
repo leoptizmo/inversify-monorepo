@@ -54,7 +54,7 @@ export class ActivationsService implements Cloneable<ActivationsService> {
     activation: BindingActivation,
     relation: BindingActivationRelation,
   ): void {
-    this.#activationMaps.set(activation, relation);
+    this.#activationMaps.add(activation, relation);
   }
 
   public clone(): ActivationsService {
