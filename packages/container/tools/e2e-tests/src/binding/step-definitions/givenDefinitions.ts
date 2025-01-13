@@ -200,6 +200,19 @@ Given<InversifyWorld>(
 );
 
 Given<InversifyWorld>(
+  'a {warriorRelatedType} type binding as {string}',
+  function (warriorRelatedType: Newable, bindingAlias: string): void {
+    givenTypeBinding.bind(this)(
+      warriorRelatedType,
+      undefined,
+      undefined,
+      undefined,
+      bindingAlias,
+    );
+  },
+);
+
+Given<InversifyWorld>(
   'a {warriorRelatedType} type binding as {string} in {bindingScope} scope',
   function (
     warriorRelatedType: Newable,
