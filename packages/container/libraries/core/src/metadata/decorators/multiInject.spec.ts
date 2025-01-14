@@ -134,9 +134,9 @@ describe(multiInject.name, () => {
           handleInjectionError as jest.Mock<typeof handleInjectionError>
         ).mockImplementation(
           (
-            _target: object,
-            _propertyKey: string | symbol | undefined,
-            _parameterIndex: number | undefined,
+            _target: unknown,
+            _propertyKey: unknown,
+            _parameterIndex: unknown,
             error: unknown,
           ): never => {
             throw error;
@@ -313,9 +313,9 @@ describe(multiInject.name, () => {
           handleInjectionError as jest.Mock<typeof handleInjectionError>
         ).mockImplementation(
           (
-            _target: object,
-            _propertyKey: string | symbol | undefined,
-            _parameterIndex: number | undefined,
+            _target: unknown,
+            _propertyKey: unknown,
+            _parameterIndex: unknown,
             error: unknown,
           ): never => {
             throw error;

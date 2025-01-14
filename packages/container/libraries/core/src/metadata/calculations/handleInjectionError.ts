@@ -4,10 +4,10 @@ import { DecoratorInfo } from '../../decorator/models/DecoratorInfo';
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
 
-export function handleInjectionError(
+export function handleInjectionError<T>(
   target: object,
   propertyKey: string | symbol | undefined,
-  parameterIndex: number | undefined,
+  parameterIndex: number | TypedPropertyDescriptor<T> | undefined,
   error: unknown,
 ): never {
   if (

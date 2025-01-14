@@ -1,12 +1,37 @@
 import { beforeAll, describe, expect, it } from '@jest/globals';
 
 import { DecoratorInfoKind } from '../models/DecoratorInfoKind';
+import { MethodDecoratorInfo } from '../models/MethodDecoratorInfo';
 import { ParameterDecoratorInfo } from '../models/ParameterDecoratorInfo';
 import { PropertyDecoratorInfo } from '../models/PropertyDecoratorInfo';
 import { stringifyDecoratorInfo } from './stringifyDecoratorInfo';
 
 describe(stringifyDecoratorInfo.name, () => {
-  describe('having decoratorTargetInfo with kind parameters', () => {
+  describe('having decoratorTargetInfo with kind method', () => {
+    let decoratorTargetInfoFixture: MethodDecoratorInfo;
+
+    beforeAll(() => {
+      decoratorTargetInfoFixture = {
+        kind: DecoratorInfoKind.method,
+        method: 'method-fixture',
+        targetClass: class Name {},
+      };
+    });
+
+    describe('when called', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        result = stringifyDecoratorInfo(decoratorTargetInfoFixture);
+      });
+
+      it('should return expected string', () => {
+        expect(result).toBe('[class: "Name", method: "method-fixture"]');
+      });
+    });
+  });
+
+  describe('having decoratorTargetInfo with kind parameter', () => {
     let decoratorTargetInfoFixture: ParameterDecoratorInfo;
 
     beforeAll(() => {
