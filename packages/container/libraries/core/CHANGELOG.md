@@ -1,5 +1,12 @@
 # @inversifyjs/core
 
+## 3.0.2
+
+### Patch Changes
+
+- c346802: Updated `DeactivationService` to allow duplicated deactivations
+- c346802: Updated `ActivationService` to allow duplicated activations
+
 ## 3.0.1
 
 ### Patch Changes
