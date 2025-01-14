@@ -83,7 +83,7 @@ describe(getDecoratorInfo.name, () => {
     });
   });
 
-  describe('having a propertyKey undefined and parameterIndex not undefined', () => {
+  describe('having a propertyKey undefined and parameterIndex number', () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     let targetFixture: Function;
     let propertyKeyFixture: undefined;
@@ -110,6 +110,46 @@ describe(getDecoratorInfo.name, () => {
         const expected: DecoratorInfo = {
           index: parameterIndexFixture,
           kind: DecoratorInfoKind.parameter,
+          targetClass: targetFixture,
+        };
+
+        expect(result).toStrictEqual(expected);
+      });
+    });
+  });
+
+  describe('having a propertyKey not undefined and descriptor', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    let targetFixture: Function;
+    let propertyKeyFixture: string | symbol;
+    let descriptorFixture: TypedPropertyDescriptor<unknown>;
+
+    beforeAll(() => {
+      targetFixture = class {};
+      propertyKeyFixture = Symbol.for('method-fixture');
+      descriptorFixture = {
+        configurable: true,
+        enumerable: true,
+        value: Symbol(),
+        writable: true,
+      };
+    });
+
+    describe('when called', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        result = getDecoratorInfo(
+          targetFixture,
+          propertyKeyFixture,
+          descriptorFixture,
+        );
+      });
+
+      it('should return DecoratorInfo', () => {
+        const expected: DecoratorInfo = {
+          kind: DecoratorInfoKind.method,
+          method: propertyKeyFixture,
           targetClass: targetFixture,
         };
 
