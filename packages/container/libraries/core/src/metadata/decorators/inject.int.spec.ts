@@ -21,12 +21,23 @@ describe(inject.name, () => {
         @inject('baz')
         public readonly baz!: string;
 
+        #someField!: string;
+
         constructor(
           @inject('firstParam')
           public firstParam: number,
           @inject('secondParam')
           public secondParam: number,
         ) {}
+
+        public get someField(): string {
+          return this.#someField;
+        }
+
+        @inject('someField')
+        public set someField(value: string) {
+          this.#someField = value;
+        }
       }
 
       result = getOwnReflectMetadata(Foo, classMetadataReflectKey);
@@ -73,6 +84,16 @@ describe(inject.name, () => {
               optional: false,
               tags: new Map(),
               value: 'baz',
+            },
+          ],
+          [
+            'someField',
+            {
+              kind: ClassElementMetadataKind.singleInjection,
+              name: undefined,
+              optional: false,
+              tags: new Map(),
+              value: 'someField',
             },
           ],
         ]),

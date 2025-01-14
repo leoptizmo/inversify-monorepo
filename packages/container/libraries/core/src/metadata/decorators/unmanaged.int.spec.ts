@@ -21,12 +21,23 @@ describe(unmanaged.name, () => {
         @unmanaged()
         public readonly baz!: string;
 
+        #someField!: string;
+
         constructor(
           @unmanaged()
           public firstParam: number,
           @unmanaged()
           public secondParam: number,
         ) {}
+
+        public get someField(): string {
+          return this.#someField;
+        }
+
+        @unmanaged()
+        public set someField(value: string) {
+          this.#someField = value;
+        }
       }
 
       result = getOwnReflectMetadata(Foo, classMetadataReflectKey);
@@ -55,6 +66,12 @@ describe(unmanaged.name, () => {
           ],
           [
             'baz',
+            {
+              kind: ClassElementMetadataKind.unmanaged,
+            },
+          ],
+          [
+            'someField',
             {
               kind: ClassElementMetadataKind.unmanaged,
             },

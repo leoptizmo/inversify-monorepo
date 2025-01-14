@@ -21,12 +21,23 @@ describe(tagged.name, () => {
         @tagged('baz', 'baz-value')
         public readonly baz!: string;
 
+        #someField!: string;
+
         constructor(
           @tagged('firstParam', 'firstParam-value')
           public firstParam: number,
           @tagged('secondParam', 'secondParam-value')
           public secondParam: number,
         ) {}
+
+        public get someField(): string {
+          return this.#someField;
+        }
+
+        @tagged('someField', 'some-field-value')
+        public set someField(value: string) {
+          this.#someField = value;
+        }
       }
 
       result = getOwnReflectMetadata(Foo, classMetadataReflectKey);
@@ -69,6 +80,15 @@ describe(tagged.name, () => {
               name: undefined,
               optional: false,
               tags: new Map([['baz', 'baz-value']]),
+            },
+          ],
+          [
+            'someField',
+            {
+              kind: MaybeClassElementMetadataKind.unknown,
+              name: undefined,
+              optional: false,
+              tags: new Map([['someField', 'some-field-value']]),
             },
           ],
         ]),

@@ -21,12 +21,23 @@ describe(multiInject.name, () => {
         @multiInject('baz')
         public readonly baz!: string;
 
+        #someField!: string;
+
         constructor(
           @multiInject('firstParam')
           public firstParam: number,
           @multiInject('secondParam')
           public secondParam: number,
         ) {}
+
+        public get someField(): string {
+          return this.#someField;
+        }
+
+        @multiInject('someField')
+        public set someField(value: string) {
+          this.#someField = value;
+        }
       }
 
       result = getOwnReflectMetadata(Foo, classMetadataReflectKey);
@@ -73,6 +84,16 @@ describe(multiInject.name, () => {
               optional: false,
               tags: new Map(),
               value: 'baz',
+            },
+          ],
+          [
+            'someField',
+            {
+              kind: ClassElementMetadataKind.multipleInjection,
+              name: undefined,
+              optional: false,
+              tags: new Map(),
+              value: 'someField',
             },
           ],
         ]),

@@ -21,12 +21,23 @@ describe(named.name, () => {
         @named('baz')
         public readonly baz!: string;
 
+        #someField!: string;
+
         constructor(
           @named('firstParam')
           public firstParam: number,
           @named('secondParam')
           public secondParam: number,
         ) {}
+
+        public get someField(): string {
+          return this.#someField;
+        }
+
+        @named('someField')
+        public set someField(value: string) {
+          this.#someField = value;
+        }
       }
 
       result = getOwnReflectMetadata(Foo, classMetadataReflectKey);
@@ -67,6 +78,15 @@ describe(named.name, () => {
             {
               kind: MaybeClassElementMetadataKind.unknown,
               name: 'baz',
+              optional: false,
+              tags: new Map(),
+            },
+          ],
+          [
+            'someField',
+            {
+              kind: MaybeClassElementMetadataKind.unknown,
+              name: 'someField',
               optional: false,
               tags: new Map(),
             },
