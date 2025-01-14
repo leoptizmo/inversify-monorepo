@@ -1,6 +1,8 @@
 import { jest } from '@jest/globals';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+const addMock: jest.Mock<any> = jest.fn();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const cloneMock: jest.Mock<any> = jest.fn();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getMock: jest.Mock<any> = jest.fn();
@@ -8,10 +10,9 @@ const getMock: jest.Mock<any> = jest.fn();
 const getAllKeysMock: jest.Mock<any> = jest.fn();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const removeByRelationMock: jest.Mock<any> = jest.fn();
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const setMock: jest.Mock<any> = jest.fn();
 
 export class OneToManyMapStar<TModel, TRelation extends object> {
+  public readonly add: (model: TModel, relation: TRelation) => void;
   public readonly clone: () => OneToManyMapStar<TModel, TRelation>;
   public readonly get: <TKey extends keyof TRelation>(
     key: TKey,
@@ -27,13 +28,11 @@ export class OneToManyMapStar<TModel, TRelation extends object> {
     value: Required<TRelation>[TKey],
   ) => void;
 
-  public readonly set: (model: TModel, relation: TRelation) => void;
-
   constructor() {
+    this.add = addMock;
     this.clone = cloneMock;
     this.get = getMock;
     this.getAllKeys = getAllKeysMock;
     this.removeByRelation = removeByRelationMock;
-    this.set = setMock;
   }
 }

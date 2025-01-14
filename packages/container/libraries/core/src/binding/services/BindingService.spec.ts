@@ -359,13 +359,13 @@ describe(BindingService.name, () => {
           jest.clearAllMocks();
         });
 
-        it('should call bindingMaps.set()', () => {
+        it('should call bindingMaps.add()', () => {
           const expectedRelation: BindingRelation = {
             serviceId: bindingFixture.serviceIdentifier,
           };
 
-          expect(bindingMapsMock.set).toHaveBeenCalledTimes(1);
-          expect(bindingMapsMock.set).toHaveBeenCalledWith(
+          expect(bindingMapsMock.add).toHaveBeenCalledTimes(1);
+          expect(bindingMapsMock.add).toHaveBeenCalledWith(
             bindingFixture,
             expectedRelation,
           );
@@ -395,14 +395,14 @@ describe(BindingService.name, () => {
           jest.clearAllMocks();
         });
 
-        it('should call bindingMaps.set()', () => {
+        it('should call bindingMaps.add()', () => {
           const expectedRelation: BindingRelation = {
             moduleId: bindingFixture.moduleId as number,
             serviceId: bindingFixture.serviceIdentifier,
           };
 
-          expect(bindingMapsMock.set).toHaveBeenCalledTimes(1);
-          expect(bindingMapsMock.set).toHaveBeenCalledWith(
+          expect(bindingMapsMock.add).toHaveBeenCalledTimes(1);
+          expect(bindingMapsMock.add).toHaveBeenCalledWith(
             bindingFixture,
             expectedRelation,
           );

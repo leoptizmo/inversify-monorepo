@@ -122,3 +122,14 @@ Then<InversifyWorld>(
     assert.equal(value.damage, 12);
   },
 );
+
+Then<InversifyWorld>(
+  'value is a sword with improved damage \\(x{int}\\)',
+  function (times: number): void {
+    const value: unknown =
+      getContainerGetRequestOrFail.bind(this)(defaultAlias);
+
+    assert.ok(value instanceof Sword);
+    assert.equal(value.damage, 10 + 2 * times);
+  },
+);

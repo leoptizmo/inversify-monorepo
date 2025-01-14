@@ -100,6 +100,6 @@ export class BindingService implements Cloneable<BindingService> {
       relation[BindingRelationKind.moduleId] = binding.moduleId;
     }
 
-    this.#bindingMaps.set(binding as Binding<unknown>, relation);
+    this.#bindingMaps.add(binding as Binding<unknown>, relation);
   }
 }
