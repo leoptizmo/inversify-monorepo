@@ -40,7 +40,7 @@ export class OneToManyMapStar<TModel, TRelation extends object>
     for (const relationKey of Reflect.ownKeys(
       relation,
     ) as (keyof TRelation)[]) {
-      this.#buildOrGetRelationModelSet(relationKey, relation[relationKey]).push(
+      this.#buildOrGetRelationModels(relationKey, relation[relationKey]).push(
         model,
       );
     }
@@ -93,7 +93,9 @@ export class OneToManyMapStar<TModel, TRelation extends object>
       return;
     }
 
-    for (const model of models) {
+    const uniqueModelsSet: Set<TModel> = new Set(models);
+
+    for (const model of uniqueModelsSet) {
       const relations: TRelation[] | undefined =
         this.#modelToRelationMap.get(model);
 
@@ -124,20 +126,20 @@ export class OneToManyMapStar<TModel, TRelation extends object>
     return relations;
   }
 
-  #buildOrGetRelationModelSet<TKey extends keyof TRelation>(
+  #buildOrGetRelationModels<TKey extends keyof TRelation>(
     relationKey: TKey,
     relationValue: TRelation[TKey],
   ): TModel[] {
-    let modelSet: TModel[] | undefined =
+    let models: TModel[] | undefined =
       this.#relationToModelsMaps[relationKey].get(relationValue);
 
-    if (modelSet === undefined) {
-      modelSet = [];
+    if (models === undefined) {
+      models = [];
 
-      this.#relationToModelsMaps[relationKey].set(relationValue, modelSet);
+      this.#relationToModelsMaps[relationKey].set(relationValue, models);
     }
 
-    return modelSet;
+    return models;
   }
 
   #pushEntriesIntoMap<TKey, TValue>(
@@ -166,17 +168,17 @@ export class OneToManyMapStar<TModel, TRelation extends object>
     relationKey: TKey,
     relationValue: TRelation[TKey],
   ): void {
-    const modelSet: TModel[] | undefined =
+    const relationModels: TModel[] | undefined =
       this.#relationToModelsMaps[relationKey].get(relationValue);
 
-    if (modelSet !== undefined) {
-      const index: number = modelSet.indexOf(model);
+    if (relationModels !== undefined) {
+      const index: number = relationModels.indexOf(model);
 
       if (index !== NOT_FOUND_INDEX) {
-        modelSet.splice(index, 1);
+        relationModels.splice(index, 1);
       }
 
-      if (modelSet.length === 0) {
+      if (relationModels.length === 0) {
         this.#relationToModelsMaps[relationKey].delete(relationValue);
       }
     }
