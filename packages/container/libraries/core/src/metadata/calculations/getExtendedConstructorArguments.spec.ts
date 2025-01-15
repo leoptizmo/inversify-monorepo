@@ -17,8 +17,33 @@ describe(getExtendedConstructorArguments.name, () => {
         type: class {},
       };
 
-      baseTypeClassMetadataFixture = ClassMetadataFixtures.any;
-      typeMetadataFixture = ClassMetadataFixtures.any;
+      baseTypeClassMetadataFixture = {
+        ...ClassMetadataFixtures.any,
+        constructorArguments: [
+          {
+            kind: ClassElementMetadataKind.unmanaged,
+          },
+          {
+            kind: ClassElementMetadataKind.singleInjection,
+            name: undefined,
+            optional: false,
+            tags: new Map(),
+            value: 'service-identifier-2',
+          },
+        ],
+      };
+      typeMetadataFixture = {
+        ...ClassMetadataFixtures.any,
+        constructorArguments: [
+          {
+            kind: ClassElementMetadataKind.singleInjection,
+            name: undefined,
+            optional: false,
+            tags: new Map(),
+            value: 'service-identifier-1',
+          },
+        ],
+      };
     });
 
     describe('when called', () => {
@@ -33,7 +58,22 @@ describe(getExtendedConstructorArguments.name, () => {
       });
 
       it('should return expected metadata', () => {
-        expect(result).toBe(typeMetadataFixture.constructorArguments);
+        expect(result).toStrictEqual([
+          {
+            kind: ClassElementMetadataKind.singleInjection,
+            name: undefined,
+            optional: false,
+            tags: new Map(),
+            value: 'service-identifier-1',
+          },
+          {
+            kind: ClassElementMetadataKind.singleInjection,
+            name: undefined,
+            optional: false,
+            tags: new Map(),
+            value: 'service-identifier-2',
+          },
+        ]);
       });
     });
   });
@@ -106,6 +146,63 @@ describe(getExtendedConstructorArguments.name, () => {
             value: 'service-identifier-2',
           },
         ]);
+      });
+    });
+  });
+
+  describe('having options with extendConstructorArguments false', () => {
+    let optionsFixture: InjectFromOptions;
+    let baseTypeClassMetadataFixture: ClassMetadata;
+    let typeMetadataFixture: ClassMetadata;
+
+    beforeAll(() => {
+      optionsFixture = {
+        extendConstructorArguments: false,
+        type: class {},
+      };
+
+      baseTypeClassMetadataFixture = {
+        ...ClassMetadataFixtures.any,
+        constructorArguments: [
+          {
+            kind: ClassElementMetadataKind.unmanaged,
+          },
+          {
+            kind: ClassElementMetadataKind.singleInjection,
+            name: undefined,
+            optional: false,
+            tags: new Map(),
+            value: 'service-identifier-2',
+          },
+        ],
+      };
+      typeMetadataFixture = {
+        ...ClassMetadataFixtures.any,
+        constructorArguments: [
+          {
+            kind: ClassElementMetadataKind.singleInjection,
+            name: undefined,
+            optional: false,
+            tags: new Map(),
+            value: 'service-identifier-1',
+          },
+        ],
+      };
+    });
+
+    describe('when called', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        result = getExtendedConstructorArguments(
+          optionsFixture,
+          baseTypeClassMetadataFixture,
+          typeMetadataFixture,
+        );
+      });
+
+      it('should return expected metadata', () => {
+        expect(result).toBe(typeMetadataFixture.constructorArguments);
       });
     });
   });
