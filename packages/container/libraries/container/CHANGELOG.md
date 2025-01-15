@@ -5,21 +5,14 @@
 ### Patch Changes
 
 - 6511d66: Updated `ActivationService` and `DeactivationService` to fix an issue involving a service deactivation edge case
-- Updated dependencies [c80459d]
-- Updated dependencies [1c93440]
-- Updated dependencies [1c93440]
-- Updated dependencies [1c93440]
-- Updated dependencies [1c93440]
-- Updated dependencies [1c93440]
-- Updated dependencies [1c93440]
+- Updated dependencies
   - @inversifyjs/core@3.1.0
 
 ## 1.3.2
 
 ### Patch Changes
 
-- Updated dependencies [c346802]
-- Updated dependencies [c346802]
+- Updated dependencies
   - @inversifyjs/core@3.0.2
 
 ## 1.3.1
