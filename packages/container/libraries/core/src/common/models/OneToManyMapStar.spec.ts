@@ -14,6 +14,9 @@ interface RelationTest {
 
 describe(OneToManyMapStar.name, () => {
   describe('.clone', () => {
+    let modelFixture: unknown;
+    let relationFixture: Required<RelationTest>;
+
     let oneToManyMapStar: OneToManyMapStar<unknown, RelationTest>;
 
     beforeAll(() => {
@@ -26,21 +29,82 @@ describe(OneToManyMapStar.name, () => {
         },
       });
 
-      oneToManyMapStar.add(Symbol(), {
+      modelFixture = Symbol();
+
+      relationFixture = {
         [RelationKey.bar]: 2,
         [RelationKey.foo]: 'foo-value-fixture',
-      });
+      };
+
+      oneToManyMapStar.add(modelFixture, relationFixture);
     });
 
     describe('when called', () => {
+      let modelsFromRelationResult: unknown;
+
       let result: unknown;
 
       beforeAll(() => {
-        result = oneToManyMapStar.clone();
+        const clone: OneToManyMapStar<unknown, RelationTest> =
+          oneToManyMapStar.clone();
+
+        modelsFromRelationResult = [
+          ...(clone.get(RelationKey.bar, relationFixture[RelationKey.bar]) ??
+            []),
+        ];
+
+        result = clone;
       });
 
-      it('should return a clone', () => {
-        expect(result).toStrictEqual(oneToManyMapStar);
+      it('should return a OneToManyMapStar', () => {
+        expect(result).toBeInstanceOf(OneToManyMapStar);
+      });
+
+      it('should provide expected model', () => {
+        expect(modelsFromRelationResult).toStrictEqual([modelFixture]);
+      });
+    });
+
+    describe('when called, and a value is added', () => {
+      let originalModelsFromRelationResult: unknown;
+      let cloneModelsFromRelationResult: unknown;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        const clone: OneToManyMapStar<unknown, RelationTest> =
+          oneToManyMapStar.clone();
+
+        clone.add(modelFixture, relationFixture);
+
+        cloneModelsFromRelationResult = [
+          ...(clone.get(RelationKey.bar, relationFixture[RelationKey.bar]) ??
+            []),
+        ];
+
+        originalModelsFromRelationResult = [
+          ...(oneToManyMapStar.get(
+            RelationKey.bar,
+            relationFixture[RelationKey.bar],
+          ) ?? []),
+        ];
+
+        result = clone;
+      });
+
+      it('should return a OneToManyMapStar', () => {
+        expect(result).toBeInstanceOf(OneToManyMapStar);
+      });
+
+      it('should provide expected models from clone', () => {
+        expect(cloneModelsFromRelationResult).toStrictEqual([
+          modelFixture,
+          modelFixture,
+        ]);
+      });
+
+      it('should provide expected models from original', () => {
+        expect(originalModelsFromRelationResult).toStrictEqual([modelFixture]);
       });
     });
   });

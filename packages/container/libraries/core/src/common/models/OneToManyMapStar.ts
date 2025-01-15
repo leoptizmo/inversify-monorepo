@@ -143,11 +143,11 @@ export class OneToManyMapStar<TModel, TRelation extends object>
   }
 
   #pushEntriesIntoMap<TKey, TValue>(
-    source: Map<TKey, TValue>,
-    target: Map<TKey, TValue>,
+    source: Map<TKey, TValue[]>,
+    target: Map<TKey, TValue[]>,
   ): void {
     for (const [key, value] of source) {
-      target.set(key, value);
+      target.set(key, [...value]);
     }
   }
 
