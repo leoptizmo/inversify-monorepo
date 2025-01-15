@@ -8,7 +8,7 @@ export function getExtendedConstructorArguments(
   typeMetadata: ClassMetadata,
 ): ClassElementMetadata[] {
   const extendConstructorArguments: boolean =
-    options.extendConstructorArguments ?? false;
+    options.extendConstructorArguments ?? true;
 
   let extendedConstructorArguments: ClassElementMetadata[];
 

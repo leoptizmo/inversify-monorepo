@@ -8,7 +8,7 @@ export function getExtendedProperties(
   baseTypeClassMetadata: ClassMetadata,
   typeMetadata: ClassMetadata,
 ): Map<string | symbol, ClassElementMetadata> {
-  const extendProperties: boolean = options.extendProperties ?? false;
+  const extendProperties: boolean = options.extendProperties ?? true;
 
   let extendedProperties: Map<string | symbol, ClassElementMetadata>;
 
