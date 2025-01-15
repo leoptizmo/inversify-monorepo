@@ -1,5 +1,20 @@
 # @inversifyjs/core
 
+## 3.1.0
+
+### Minor Changes
+
+- 1c93440: Updated `unmanaged` to support method decoration
+- 1c93440: Updated `inject` to support method decoration
+- 1c93440: Updated `optional` to support method decoration
+- 1c93440: Updated `named` to support method decoration
+- 1c93440: Updated `tagged` to support method decoration
+- 1c93440: Updated `multiInject` to support method decoration
+
+### Patch Changes
+
+- c80459d: Updated `OneToManyMapStar` to fix an issue involving a deletion use case
+
 ## 3.0.2
 
 ### Patch Changes
