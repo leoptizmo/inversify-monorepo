@@ -174,7 +174,7 @@ export class BindToFluentSyntaxImplementation<T>
       moduleId: this.#containerModuleId,
       onActivation: undefined,
       onDeactivation: undefined,
-      scope: bindingScopeValues.Singleton,
+      scope: this.#defaultScope,
       serviceIdentifier: this.#serviceIdentifier,
       type: bindingTypeValues.DynamicValue,
       value: builder,
