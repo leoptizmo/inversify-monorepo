@@ -5,7 +5,8 @@
   },
   "description": "InversifyJs docs code examples package",
   "dependencies": {
-    "inversify": "6.2.1"
+    "inversify": "6.2.1",
+    "inversify7": "npm:inversify@7.0.0-alpha.0"
   },
   "devDependencies": {
     "@eslint/js": "9.18.0",
