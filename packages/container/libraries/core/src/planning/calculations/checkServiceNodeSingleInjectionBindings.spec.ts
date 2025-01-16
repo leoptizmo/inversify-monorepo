@@ -4,6 +4,8 @@ jest.mock('./checkPlanServiceRedirectionBindingNodeSingleInjectionBindings');
 jest.mock('./isPlanServiceRedirectionBindingNode');
 jest.mock('./throwErrorWhenUnexpectedBindingsAmountFound');
 
+import { BindingMetadata } from '../../binding/models/BindingMetadata';
+import { MetadataTag } from '../../metadata/models/MetadataTag';
 import { PlanBindingNode } from '../models/PlanBindingNode';
 import { PlanServiceNode } from '../models/PlanServiceNode';
 import { PlanServiceNodeParent } from '../models/PlanServiceNodeParent';
@@ -16,6 +18,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
   describe('having a PlanServiceNode with no bindings', () => {
     let nodeFixture: PlanServiceNode;
     let isOptionalFixture: boolean;
+    let bindingMetadataFixture: BindingMetadata;
 
     beforeAll(() => {
       nodeFixture = {
@@ -24,6 +27,15 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
         serviceIdentifier: 'service-id',
       };
       isOptionalFixture = false;
+      bindingMetadataFixture = {
+        getAncestor: () => undefined,
+        name: 'binding-name',
+        serviceIdentifier: 'service-identifier',
+        tags: new Map<MetadataTag, unknown>([
+          ['tag1', 'value1'],
+          ['tag2', 'value2'],
+        ]),
+      };
     });
 
     describe('when called', () => {
@@ -33,6 +45,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
         result = checkServiceNodeSingleInjectionBindings(
           nodeFixture,
           isOptionalFixture,
+          bindingMetadataFixture,
         );
       });
 
@@ -50,6 +63,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
           nodeFixture.bindings,
           isOptionalFixture,
           nodeFixture,
+          bindingMetadataFixture,
         );
       });
 
@@ -63,6 +77,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
     let nodeFixtureBinding: PlanBindingNode;
     let nodeFixture: PlanServiceNode;
     let isOptionalFixture: boolean;
+    let bindingMetadataFixture: BindingMetadata;
 
     beforeAll(() => {
       nodeFixtureBinding = Symbol() as unknown as PlanBindingNode;
@@ -72,6 +87,15 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
         serviceIdentifier: 'service-id',
       };
       isOptionalFixture = false;
+      bindingMetadataFixture = {
+        getAncestor: () => undefined,
+        name: 'binding-name',
+        serviceIdentifier: 'service-identifier',
+        tags: new Map<MetadataTag, unknown>([
+          ['tag1', 'value1'],
+          ['tag2', 'value2'],
+        ]),
+      };
     });
 
     describe('when called, and isPlanServiceRedirectionBindingNode() returns false', () => {
@@ -87,6 +111,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
         result = checkServiceNodeSingleInjectionBindings(
           nodeFixture,
           isOptionalFixture,
+          bindingMetadataFixture,
         );
       });
 
@@ -118,6 +143,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
         result = checkServiceNodeSingleInjectionBindings(
           nodeFixture,
           isOptionalFixture,
+          bindingMetadataFixture,
         );
       });
 
@@ -131,7 +157,11 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
         ).toHaveBeenCalledTimes(1);
         expect(
           checkPlanServiceRedirectionBindingNodeSingleInjectionBindings,
-        ).toHaveBeenCalledWith(nodeFixtureBinding, isOptionalFixture);
+        ).toHaveBeenCalledWith(
+          nodeFixtureBinding,
+          isOptionalFixture,
+          bindingMetadataFixture,
+        );
       });
 
       it('should not call throwErrorWhenUnexpectedBindingsAmountFound()', () => {

@@ -414,7 +414,11 @@ describe(plan.name, () => {
         kind: InversifyCoreErrorKind.planning,
         message: `No bindings found for service: "${ServiceIds.nonExistent}".
 
-Trying to resolve bindings for "${ServiceIds.nonExistent} (Root service)".`,
+Trying to resolve bindings for "${ServiceIds.nonExistent} (Root service)".
+
+Binding metadata:
+- service identifier: non-existent-service-id
+- name: -`,
       },
     ],
     [
@@ -427,7 +431,11 @@ Trying to resolve bindings for "${ServiceIds.nonExistent} (Root service)".`,
         kind: InversifyCoreErrorKind.planning,
         message: `No bindings found for service: "${ServiceIds.nonExistent}".
 
-Trying to resolve bindings for "${ServiceIds.serviceRedirectionToNonExistent}".`,
+Trying to resolve bindings for "${ServiceIds.serviceRedirectionToNonExistent}".
+
+Binding metadata:
+- service identifier: service-redirection-to-non-existent-service-id
+- name: -`,
       },
     ],
   ])(

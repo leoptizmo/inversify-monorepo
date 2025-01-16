@@ -5,13 +5,12 @@ jest.mock('./checkServiceNodeSingleInjectionBindings');
 
 import { LazyServiceIdentifier, ServiceIdentifier } from '@inversifyjs/common';
 
-import { InternalBindingMetadata } from '../../binding/models/BindingMetadataImplementation';
+import { BindingMetadataImplementation } from '../../binding/models/BindingMetadataImplementation';
 import { bindingScopeValues } from '../../binding/models/BindingScope';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { ConstantValueBinding } from '../../binding/models/ConstantValueBinding';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
-import { SingleInmutableLinkedList } from '../../common/models/SingleInmutableLinkedList';
 import { Writable } from '../../common/models/Writable';
 import { ClassMetadataFixtures } from '../../metadata/fixtures/ClassMetadataFixtures';
 import { ClassElementMetadataKind } from '../../metadata/models/ClassElementMetadataKind';
@@ -89,26 +88,10 @@ describe(plan.name, () => {
       });
 
       it('should call buildFilteredServiceBindings()', () => {
-        const expectedBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          new SingleInmutableLinkedList({
-            elem: {
-              name: planParamsMock.rootConstraints.name,
-              serviceIdentifier:
-                planParamsMock.rootConstraints.serviceIdentifier,
-              tags: new Map([
-                [
-                  planParamsMock.rootConstraints.tag?.key as string,
-                  planParamsMock.rootConstraints.tag?.value as string,
-                ],
-              ]),
-            },
-            previous: undefined,
-          });
-
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(1);
         expect(buildFilteredServiceBindings).toHaveBeenCalledWith(
           planParamsMock,
-          expectedBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
       });
 
@@ -170,21 +153,10 @@ describe(plan.name, () => {
       });
 
       it('should call buildFilteredServiceBindings()', () => {
-        const expectedBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          new SingleInmutableLinkedList({
-            elem: {
-              name: planParamsMock.rootConstraints.name,
-              serviceIdentifier:
-                planParamsMock.rootConstraints.serviceIdentifier,
-              tags: new Map(),
-            },
-            previous: undefined,
-          });
-
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(1);
         expect(buildFilteredServiceBindings).toHaveBeenCalledWith(
           planParamsMock,
-          expectedBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
       });
 
@@ -239,21 +211,10 @@ describe(plan.name, () => {
       });
 
       it('should call buildFilteredServiceBindings()', () => {
-        const expectedBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          new SingleInmutableLinkedList({
-            elem: {
-              name: planParamsMock.rootConstraints.name,
-              serviceIdentifier:
-                planParamsMock.rootConstraints.serviceIdentifier,
-              tags: new Map(),
-            },
-            previous: undefined,
-          });
-
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(1);
         expect(buildFilteredServiceBindings).toHaveBeenCalledWith(
           planParamsMock,
-          expectedBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
       });
 
@@ -322,21 +283,10 @@ describe(plan.name, () => {
       });
 
       it('should call buildFilteredServiceBindings()', () => {
-        const expectedBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          new SingleInmutableLinkedList({
-            elem: {
-              name: planParamsMock.rootConstraints.name,
-              serviceIdentifier:
-                planParamsMock.rootConstraints.serviceIdentifier,
-              tags: new Map(),
-            },
-            previous: undefined,
-          });
-
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(1);
         expect(buildFilteredServiceBindings).toHaveBeenCalledWith(
           planParamsMock,
-          expectedBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
       });
 
@@ -455,32 +405,6 @@ describe(plan.name, () => {
       });
 
       it('should call buildFilteredServiceBindings()', () => {
-        const expectedFirstBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          new SingleInmutableLinkedList({
-            elem: {
-              name: planParamsMock.rootConstraints.name,
-              serviceIdentifier:
-                planParamsMock.rootConstraints.serviceIdentifier,
-              tags: new Map(),
-            },
-            previous: undefined,
-          });
-
-        const expectedSecondBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          expectedFirstBindingMetadataList.concat({
-            name: constructorArgumentMetadata.name,
-            serviceIdentifier:
-              constructorArgumentMetadata.value as ServiceIdentifier,
-            tags: constructorArgumentMetadata.tags,
-          });
-
-        const expectedThirdBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          expectedFirstBindingMetadataList.concat({
-            name: propertyMetadata.name,
-            serviceIdentifier: propertyMetadata.value as ServiceIdentifier,
-            tags: propertyMetadata.tags,
-          });
-
         const expectedSublan: jest.Mocked<SubplanParams> = {
           getBindings: planParamsMock.getBindings,
           getClassMetadata: planParamsMock.getClassMetadata,
@@ -496,17 +420,17 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           1,
           planParamsMock,
-          expectedFirstBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           2,
           expectedSublan,
-          expectedSecondBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           3,
           expectedSublan,
-          expectedThirdBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
       });
 
@@ -663,35 +587,6 @@ describe(plan.name, () => {
       });
 
       it('should call buildFilteredServiceBindings()', () => {
-        const expectedFirstBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          new SingleInmutableLinkedList({
-            elem: {
-              name: planParamsMock.rootConstraints.name,
-              serviceIdentifier:
-                planParamsMock.rootConstraints.serviceIdentifier,
-              tags: new Map(),
-            },
-            previous: undefined,
-          });
-
-        const expectedSecondBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          expectedFirstBindingMetadataList.concat({
-            name: constructorArgumentMetadata.name,
-            serviceIdentifier: (
-              constructorArgumentMetadata.value as LazyServiceIdentifier
-            ).unwrap(),
-            tags: constructorArgumentMetadata.tags,
-          });
-
-        const expectedThirdBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          expectedFirstBindingMetadataList.concat({
-            name: propertyMetadata.name,
-            serviceIdentifier: (
-              propertyMetadata.value as LazyServiceIdentifier
-            ).unwrap(),
-            tags: propertyMetadata.tags,
-          });
-
         const expectedSublan: jest.Mocked<SubplanParams> = {
           getBindings: planParamsMock.getBindings,
           getClassMetadata: planParamsMock.getClassMetadata,
@@ -707,17 +602,17 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           1,
           planParamsMock,
-          expectedFirstBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           2,
           expectedSublan,
-          expectedSecondBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           3,
           expectedSublan,
-          expectedThirdBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
       });
 
@@ -875,32 +770,6 @@ describe(plan.name, () => {
       });
 
       it('should call buildFilteredServiceBindings()', () => {
-        const expectedFirstBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          new SingleInmutableLinkedList({
-            elem: {
-              name: planParamsMock.rootConstraints.name,
-              serviceIdentifier:
-                planParamsMock.rootConstraints.serviceIdentifier,
-              tags: new Map(),
-            },
-            previous: undefined,
-          });
-
-        const expectedSecondBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          expectedFirstBindingMetadataList.concat({
-            name: constructorArgumentMetadata.name,
-            serviceIdentifier:
-              constructorArgumentMetadata.value as ServiceIdentifier,
-            tags: constructorArgumentMetadata.tags,
-          });
-
-        const expectedThirdBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          expectedFirstBindingMetadataList.concat({
-            name: propertyMetadata.name,
-            serviceIdentifier: propertyMetadata.value as ServiceIdentifier,
-            tags: propertyMetadata.tags,
-          });
-
         const expectedSublan: jest.Mocked<SubplanParams> = {
           getBindings: planParamsMock.getBindings,
           getClassMetadata: planParamsMock.getClassMetadata,
@@ -916,17 +785,17 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           1,
           planParamsMock,
-          expectedFirstBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           2,
           expectedSublan,
-          expectedSecondBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           3,
           expectedSublan,
-          expectedThirdBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
       });
 
@@ -951,11 +820,13 @@ describe(plan.name, () => {
           1,
           constructorParamsPlanServiceNode,
           constructorArgumentMetadata.optional,
+          expect.any(BindingMetadataImplementation),
         );
         expect(checkServiceNodeSingleInjectionBindings).toHaveBeenNthCalledWith(
           2,
           propertyParamsPlanServiceNode,
           propertyMetadata.optional,
+          expect.any(BindingMetadataImplementation),
         );
       });
 
@@ -1082,21 +953,10 @@ describe(plan.name, () => {
       });
 
       it('should call buildFilteredServiceBindings()', () => {
-        const expectedBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          new SingleInmutableLinkedList({
-            elem: {
-              name: planParamsMock.rootConstraints.name,
-              serviceIdentifier:
-                planParamsMock.rootConstraints.serviceIdentifier,
-              tags: new Map(),
-            },
-            previous: undefined,
-          });
-
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(1);
         expect(buildFilteredServiceBindings).toHaveBeenCalledWith(
           planParamsMock,
-          expectedBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
       });
 
@@ -1159,17 +1019,6 @@ describe(plan.name, () => {
       });
 
       it('should call buildFilteredServiceBindings()', () => {
-        const expectedBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          new SingleInmutableLinkedList({
-            elem: {
-              name: planParamsMock.rootConstraints.name,
-              serviceIdentifier:
-                planParamsMock.rootConstraints.serviceIdentifier,
-              tags: new Map(),
-            },
-            previous: undefined,
-          });
-
         const expectedOptions: BuildFilteredServiceBindingsOptions = {
           customServiceIdentifier:
             serviceRedirectionBinding.targetServiceIdentifier,
@@ -1179,12 +1028,12 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           1,
           planParamsMock,
-          expectedBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           2,
           planParamsMock,
-          expectedBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
           expectedOptions,
         );
       });
@@ -1266,17 +1115,6 @@ describe(plan.name, () => {
       });
 
       it('should call buildFilteredServiceBindings()', () => {
-        const expectedBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          new SingleInmutableLinkedList({
-            elem: {
-              name: planParamsMock.rootConstraints.name,
-              serviceIdentifier:
-                planParamsMock.rootConstraints.serviceIdentifier,
-              tags: new Map(),
-            },
-            previous: undefined,
-          });
-
         const expectedOptions: BuildFilteredServiceBindingsOptions = {
           customServiceIdentifier:
             serviceRedirectionBinding.targetServiceIdentifier,
@@ -1286,12 +1124,12 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           1,
           planParamsMock,
-          expectedBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           2,
           planParamsMock,
-          expectedBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
           expectedOptions,
         );
       });
@@ -1363,21 +1201,10 @@ describe(plan.name, () => {
       });
 
       it('should call buildFilteredServiceBindings()', () => {
-        const expectedBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-          new SingleInmutableLinkedList({
-            elem: {
-              name: planParamsMock.rootConstraints.name,
-              serviceIdentifier:
-                planParamsMock.rootConstraints.serviceIdentifier,
-              tags: new Map(),
-            },
-            previous: undefined,
-          });
-
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(1);
         expect(buildFilteredServiceBindings).toHaveBeenCalledWith(
           planParamsMock,
-          expectedBindingMetadataList,
+          expect.any(BindingMetadataImplementation),
         );
       });
 
@@ -1394,6 +1221,7 @@ describe(plan.name, () => {
         expect(checkServiceNodeSingleInjectionBindings).toHaveBeenCalledWith(
           expectedServiceNode,
           false,
+          expect.any(BindingMetadataImplementation),
         );
       });
 

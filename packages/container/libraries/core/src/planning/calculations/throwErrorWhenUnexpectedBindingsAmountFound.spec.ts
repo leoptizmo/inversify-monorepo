@@ -8,10 +8,12 @@ jest.mock('../../binding/calculations/stringifyBinding');
 jest.mock('./isPlanServiceRedirectionBindingNode');
 
 import { stringifyBinding } from '../../binding/calculations/stringifyBinding';
+import { BindingMetadata } from '../../binding/models/BindingMetadata';
 import { bindingScopeValues } from '../../binding/models/BindingScope';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
+import { MetadataTag } from '../../metadata/models/MetadataTag';
 import { PlanBindingNode } from '../models/PlanBindingNode';
 import { PlanServiceNode } from '../models/PlanServiceNode';
 import { PlanServiceRedirectionBindingNode } from '../models/PlanServiceRedirectionBindingNode';
@@ -23,6 +25,7 @@ describe(throwErrorWhenUnexpectedBindingsAmountFound.name, () => {
     let bindingsFixture: undefined;
     let isOptionalFixture: false;
     let nodeFixture: PlanServiceNode;
+    let bindingMetadataFixture: BindingMetadata;
 
     beforeAll(() => {
       bindingsFixture = undefined;
@@ -31,6 +34,15 @@ describe(throwErrorWhenUnexpectedBindingsAmountFound.name, () => {
         bindings: [],
         parent: undefined,
         serviceIdentifier: 'service-identifier',
+      };
+      bindingMetadataFixture = {
+        getAncestor: () => undefined,
+        name: 'binding-name',
+        serviceIdentifier: 'service-identifier',
+        tags: new Map<MetadataTag, unknown>([
+          ['tag1', 'value1'],
+          ['tag2', 'value2'],
+        ]),
       };
     });
 
@@ -54,6 +66,7 @@ describe(throwErrorWhenUnexpectedBindingsAmountFound.name, () => {
           >
         )
           .mockReturnValueOnce(stringifiedServiceIdentifier)
+          .mockReturnValueOnce(stringifiedServiceIdentifier)
           .mockReturnValueOnce(stringifiedServiceIdentifier);
 
         try {
@@ -61,6 +74,7 @@ describe(throwErrorWhenUnexpectedBindingsAmountFound.name, () => {
             bindingsFixture,
             isOptionalFixture,
             nodeFixture,
+            bindingMetadataFixture,
           );
         } catch (error) {
           result = error;
@@ -76,7 +90,14 @@ describe(throwErrorWhenUnexpectedBindingsAmountFound.name, () => {
           kind: InversifyCoreErrorKind.planning,
           message: `No bindings found for service: "${stringifiedServiceIdentifier}".
 
-Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".`,
+Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
+
+Binding metadata:
+- service identifier: ${stringifiedServiceIdentifier}
+- name: binding-name
+- tags:
+  - tag1
+  - tag2`,
         };
 
         expect(result).toBeInstanceOf(InversifyCoreError);
@@ -91,6 +112,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
     let bindingsFixture: PlanBindingNode;
     let isOptionalFixture: false;
     let nodeFixture: PlanServiceNode;
+    let bindingMetadataFixture: BindingMetadata;
 
     beforeAll(() => {
       const parentNode: PlanServiceNode = {
@@ -123,6 +145,16 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
         parent: undefined,
         serviceIdentifier: 'service-identifier',
       };
+
+      bindingMetadataFixture = {
+        getAncestor: () => undefined,
+        name: 'binding-name',
+        serviceIdentifier: 'service-identifier',
+        tags: new Map<MetadataTag, unknown>([
+          ['tag1', 'value1'],
+          ['tag2', 'value2'],
+        ]),
+      };
     });
 
     describe('when called, and isPlanServiceRedirectionBindingNode() returns false', () => {
@@ -139,6 +171,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
           bindingsFixture,
           isOptionalFixture,
           nodeFixture,
+          bindingMetadataFixture,
         );
       });
 
@@ -156,6 +189,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
     let bindingsFixture: [];
     let isOptionalFixture: false;
     let nodeFixture: PlanServiceRedirectionBindingNode;
+    let bindingMetadataFixture: BindingMetadata;
 
     beforeAll(() => {
       bindingsFixture = [];
@@ -175,6 +209,15 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
           serviceIdentifier: 'service-id',
         },
         redirections: [],
+      };
+      bindingMetadataFixture = {
+        getAncestor: () => undefined,
+        name: 'binding-name',
+        serviceIdentifier: 'service-identifier',
+        tags: new Map<MetadataTag, unknown>([
+          ['tag1', 'value1'],
+          ['tag2', 'value2'],
+        ]),
       };
     });
 
@@ -200,6 +243,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
           >
         )
           .mockReturnValueOnce(stringifiedTargetServiceIdentifier)
+          .mockReturnValueOnce(stringifiedServiceIdentifier)
           .mockReturnValueOnce(stringifiedServiceIdentifier);
 
         try {
@@ -207,6 +251,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
             bindingsFixture,
             isOptionalFixture,
             nodeFixture,
+            bindingMetadataFixture,
           );
         } catch (error: unknown) {
           result = error;
@@ -222,7 +267,14 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
           kind: InversifyCoreErrorKind.planning,
           message: `No bindings found for service: "${stringifiedTargetServiceIdentifier}".
 
-Trying to resolve bindings for "${stringifiedServiceIdentifier}".`,
+Trying to resolve bindings for "${stringifiedServiceIdentifier}".
+
+Binding metadata:
+- service identifier: stringified-service-id
+- name: binding-name
+- tags:
+  - tag1
+  - tag2`,
         };
 
         expect(result).toBeInstanceOf(InversifyCoreError);
@@ -237,6 +289,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier}".`,
     let bindingsFixture: [];
     let isOptionalFixture: false;
     let nodeFixture: PlanServiceNode;
+    let bindingMetadataFixture: BindingMetadata;
 
     beforeAll(() => {
       bindingsFixture = [];
@@ -245,6 +298,15 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier}".`,
         bindings: [],
         parent: undefined,
         serviceIdentifier: 'service-identifier',
+      };
+      bindingMetadataFixture = {
+        getAncestor: () => undefined,
+        name: 'binding-name',
+        serviceIdentifier: 'service-identifier',
+        tags: new Map<MetadataTag, unknown>([
+          ['tag1', 'value1'],
+          ['tag2', 'value2'],
+        ]),
       };
     });
 
@@ -268,6 +330,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier}".`,
           >
         )
           .mockReturnValueOnce(stringifiedServiceIdentifier)
+          .mockReturnValueOnce(stringifiedServiceIdentifier)
           .mockReturnValueOnce(stringifiedServiceIdentifier);
 
         try {
@@ -275,6 +338,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier}".`,
             bindingsFixture,
             isOptionalFixture,
             nodeFixture,
+            bindingMetadataFixture,
           );
         } catch (error) {
           result = error;
@@ -290,7 +354,14 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier}".`,
           kind: InversifyCoreErrorKind.planning,
           message: `No bindings found for service: "${stringifiedServiceIdentifier}".
 
-Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".`,
+Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
+
+Binding metadata:
+- service identifier: stringified-service-id
+- name: binding-name
+- tags:
+  - tag1
+  - tag2`,
         };
 
         expect(result).toBeInstanceOf(InversifyCoreError);
@@ -305,6 +376,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
     let bindingsFixture: [];
     let isOptionalFixture: true;
     let nodeFixture: PlanServiceNode;
+    let bindingMetadataFixture: BindingMetadata;
 
     beforeAll(() => {
       bindingsFixture = [];
@@ -313,6 +385,15 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
         bindings: [],
         parent: undefined,
         serviceIdentifier: 'service-identifier',
+      };
+      bindingMetadataFixture = {
+        getAncestor: () => undefined,
+        name: 'binding-name',
+        serviceIdentifier: 'service-identifier',
+        tags: new Map<MetadataTag, unknown>([
+          ['tag1', 'value1'],
+          ['tag2', 'value2'],
+        ]),
       };
     });
 
@@ -330,6 +411,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
           bindingsFixture,
           isOptionalFixture,
           nodeFixture,
+          bindingMetadataFixture,
         );
       });
 
@@ -347,6 +429,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
     let bindingsFixture: PlanBindingNode[];
     let isOptionalFixture: boolean;
     let nodeFixture: PlanServiceRedirectionBindingNode;
+    let bindingMetadataFixture: BindingMetadata;
 
     beforeAll(() => {
       const parentNode: PlanServiceNode = {
@@ -410,6 +493,16 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
         },
         redirections: [],
       };
+
+      bindingMetadataFixture = {
+        getAncestor: () => undefined,
+        name: 'binding-name',
+        serviceIdentifier: 'service-identifier',
+        tags: new Map<MetadataTag, unknown>([
+          ['tag1', 'value1'],
+          ['tag2', 'value2'],
+        ]),
+      };
     });
 
     describe('when called, and isPlanServiceRedirectionBindingNode() returns true', () => {
@@ -439,6 +532,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
           >
         )
           .mockReturnValueOnce(stringifiedTargetServiceIdentifierFixture)
+          .mockReturnValueOnce(stringifiedServiceIdentifierFixture)
           .mockReturnValueOnce(stringifiedServiceIdentifierFixture);
 
         (stringifyBinding as jest.Mock<typeof stringifyBinding>)
@@ -450,6 +544,7 @@ Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
             bindingsFixture,
             isOptionalFixture,
             nodeFixture,
+            bindingMetadataFixture,
           );
         } catch (error: unknown) {
           result = error;
@@ -470,7 +565,14 @@ Registered bindings:
 ${stringifiedBindingFixture}
 ${stringifiedBindingFixture}
 
-Trying to resolve bindings for "${stringifiedServiceIdentifierFixture}".`,
+Trying to resolve bindings for "${stringifiedServiceIdentifierFixture}".
+
+Binding metadata:
+- service identifier: stringified-service-id
+- name: binding-name
+- tags:
+  - tag1
+  - tag2`,
         };
 
         expect(result).toBeInstanceOf(InversifyCoreError);

@@ -1,3 +1,4 @@
+import { BindingMetadata } from '../../binding/models/BindingMetadata';
 import { PlanBindingNode } from '../models/PlanBindingNode';
 import { PlanServiceRedirectionBindingNode } from '../models/PlanServiceRedirectionBindingNode';
 import { isPlanServiceRedirectionBindingNode } from './isPlanServiceRedirectionBindingNode';
@@ -8,6 +9,7 @@ const SINGLE_INJECTION_BINDINGS: number = 1;
 export function checkPlanServiceRedirectionBindingNodeSingleInjectionBindings(
   serviceRedirectionBindingNode: PlanServiceRedirectionBindingNode,
   isOptional: boolean,
+  bindingMetadata: BindingMetadata,
 ): void {
   if (
     serviceRedirectionBindingNode.redirections.length ===
@@ -20,6 +22,7 @@ export function checkPlanServiceRedirectionBindingNodeSingleInjectionBindings(
       checkPlanServiceRedirectionBindingNodeSingleInjectionBindings(
         planBindingNode,
         isOptional,
+        bindingMetadata,
       );
     }
 
@@ -30,5 +33,6 @@ export function checkPlanServiceRedirectionBindingNodeSingleInjectionBindings(
     serviceRedirectionBindingNode.redirections,
     isOptional,
     serviceRedirectionBindingNode,
+    bindingMetadata,
   );
 }

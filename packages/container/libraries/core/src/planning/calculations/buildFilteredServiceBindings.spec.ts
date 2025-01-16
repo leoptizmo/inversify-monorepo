@@ -1,10 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
 import { Binding } from '../../binding/models/Binding';
-import { InternalBindingMetadata } from '../../binding/models/BindingMetadataImplementation';
+import { BindingMetadata } from '../../binding/models/BindingMetadata';
 import { bindingScopeValues } from '../../binding/models/BindingScope';
 import { bindingTypeValues } from '../../binding/models/BindingType';
-import { SingleInmutableLinkedList } from '../../common/models/SingleInmutableLinkedList';
 import { BasePlanParams } from '../models/BasePlanParams';
 import {
   buildFilteredServiceBindings,
@@ -14,24 +13,18 @@ import {
 describe(buildFilteredServiceBindings.name, () => {
   describe('having no options', () => {
     let paramsMock: jest.Mocked<BasePlanParams>;
-    let bindingMetadataListFixture: SingleInmutableLinkedList<InternalBindingMetadata>;
+    let bindingMetadataFixture: BindingMetadata;
 
     beforeAll(() => {
       paramsMock = {
         getBindings: jest.fn(),
       } as Partial<jest.Mocked<BasePlanParams>> as jest.Mocked<BasePlanParams>;
-      bindingMetadataListFixture = {
-        last: {
-          elem: {
-            name: 'name',
-            serviceIdentifier: 'service-id',
-            tags: new Map(),
-          },
-          previous: undefined,
-        },
-      } as Partial<
-        SingleInmutableLinkedList<InternalBindingMetadata>
-      > as SingleInmutableLinkedList<InternalBindingMetadata>;
+      bindingMetadataFixture = {
+        getAncestor: () => undefined,
+        name: 'name',
+        serviceIdentifier: 'service-id',
+        tags: new Map(),
+      };
     });
 
     describe('when called, and params.getBinding() returns undefined', () => {
@@ -40,7 +33,7 @@ describe(buildFilteredServiceBindings.name, () => {
       beforeAll(() => {
         result = buildFilteredServiceBindings(
           paramsMock,
-          bindingMetadataListFixture,
+          bindingMetadataFixture,
         );
       });
 
@@ -51,7 +44,7 @@ describe(buildFilteredServiceBindings.name, () => {
       it('should call params.getBinding()', () => {
         expect(paramsMock.getBindings).toHaveBeenCalledTimes(1);
         expect(paramsMock.getBindings).toHaveBeenCalledWith(
-          bindingMetadataListFixture.last.elem.serviceIdentifier,
+          bindingMetadataFixture.serviceIdentifier,
         );
       });
 
@@ -86,7 +79,7 @@ describe(buildFilteredServiceBindings.name, () => {
 
         result = buildFilteredServiceBindings(
           paramsMock,
-          bindingMetadataListFixture,
+          bindingMetadataFixture,
         );
       });
 
@@ -97,7 +90,7 @@ describe(buildFilteredServiceBindings.name, () => {
       it('should call params.getBinding()', () => {
         expect(paramsMock.getBindings).toHaveBeenCalledTimes(1);
         expect(paramsMock.getBindings).toHaveBeenCalledWith(
-          bindingMetadataListFixture.last.elem.serviceIdentifier,
+          bindingMetadataFixture.serviceIdentifier,
         );
       });
 
@@ -109,25 +102,19 @@ describe(buildFilteredServiceBindings.name, () => {
 
   describe('having options with customServiceIdentifier', () => {
     let paramsMock: jest.Mocked<BasePlanParams>;
-    let bindingMetadataListFixture: SingleInmutableLinkedList<InternalBindingMetadata>;
+    let bindingMetadataFixture: BindingMetadata;
     let optionsFixture: BuildFilteredServiceBindingsOptions;
 
     beforeAll(() => {
       paramsMock = {
         getBindings: jest.fn(),
       } as Partial<jest.Mocked<BasePlanParams>> as jest.Mocked<BasePlanParams>;
-      bindingMetadataListFixture = {
-        last: {
-          elem: {
-            name: 'name',
-            serviceIdentifier: 'service-id',
-            tags: new Map(),
-          },
-          previous: undefined,
-        },
-      } as Partial<
-        SingleInmutableLinkedList<InternalBindingMetadata>
-      > as SingleInmutableLinkedList<InternalBindingMetadata>;
+      bindingMetadataFixture = {
+        getAncestor: () => undefined,
+        name: 'name',
+        serviceIdentifier: 'service-id',
+        tags: new Map(),
+      };
       optionsFixture = {
         customServiceIdentifier: 'custom-service-id',
       };
@@ -139,7 +126,7 @@ describe(buildFilteredServiceBindings.name, () => {
       beforeAll(() => {
         result = buildFilteredServiceBindings(
           paramsMock,
-          bindingMetadataListFixture,
+          bindingMetadataFixture,
           optionsFixture,
         );
       });

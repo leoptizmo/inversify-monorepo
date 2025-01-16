@@ -3,9 +3,11 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 jest.mock('./isPlanServiceRedirectionBindingNode');
 jest.mock('./throwErrorWhenUnexpectedBindingsAmountFound');
 
+import { BindingMetadata } from '../../binding/models/BindingMetadata';
 import { bindingScopeValues } from '../../binding/models/BindingScope';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
+import { MetadataTag } from '../../metadata/models/MetadataTag';
 import { BindingNodeParent } from '../models/BindingNodeParent';
 import { PlanServiceRedirectionBindingNode } from '../models/PlanServiceRedirectionBindingNode';
 import { checkPlanServiceRedirectionBindingNodeSingleInjectionBindings } from './checkPlanServiceRedirectionBindingNodeSingleInjectionBindings';
@@ -18,6 +20,7 @@ describe(
     describe('having a PlanServiceRedirectionBindingNode with no redirections', () => {
       let planServiceRedirectionBindingNodeFixture: PlanServiceRedirectionBindingNode;
       let isOptionalFixture: boolean;
+      let bindingMetadataFixture: BindingMetadata;
 
       beforeAll(() => {
         planServiceRedirectionBindingNodeFixture = {
@@ -27,6 +30,15 @@ describe(
           redirections: [],
         };
         isOptionalFixture = false;
+        bindingMetadataFixture = {
+          getAncestor: () => undefined,
+          name: 'binding-name',
+          serviceIdentifier: 'service-identifier',
+          tags: new Map<MetadataTag, unknown>([
+            ['tag1', 'value1'],
+            ['tag2', 'value2'],
+          ]),
+        };
       });
 
       describe('when called', () => {
@@ -37,6 +49,7 @@ describe(
             checkPlanServiceRedirectionBindingNodeSingleInjectionBindings(
               planServiceRedirectionBindingNodeFixture,
               isOptionalFixture,
+              bindingMetadataFixture,
             );
         });
 
@@ -54,6 +67,7 @@ describe(
             planServiceRedirectionBindingNodeFixture.redirections,
             isOptionalFixture,
             planServiceRedirectionBindingNodeFixture,
+            bindingMetadataFixture,
           );
         });
 
@@ -66,6 +80,7 @@ describe(
     describe('having a PlanServiceRedirectionBindingNode with a single redirection to a leaf node', () => {
       let planServiceRedirectionBindingNodeFixture: PlanServiceRedirectionBindingNode;
       let isOptionalFixture: boolean;
+      let bindingMetadataFixture: BindingMetadata;
 
       beforeAll(() => {
         planServiceRedirectionBindingNodeFixture = {
@@ -94,6 +109,15 @@ describe(
           ],
         };
         isOptionalFixture = false;
+        bindingMetadataFixture = {
+          getAncestor: () => undefined,
+          name: 'binding-name',
+          serviceIdentifier: 'service-identifier',
+          tags: new Map<MetadataTag, unknown>([
+            ['tag1', 'value1'],
+            ['tag2', 'value2'],
+          ]),
+        };
       });
 
       describe('when called, and isPlanServiceRedirectionBindingNode() returns false', () => {
@@ -110,6 +134,7 @@ describe(
             checkPlanServiceRedirectionBindingNodeSingleInjectionBindings(
               planServiceRedirectionBindingNodeFixture,
               isOptionalFixture,
+              bindingMetadataFixture,
             );
         });
 
@@ -133,6 +158,7 @@ describe(
       let planServiceRedirectionBindingNodeRedirectionFixture: PlanServiceRedirectionBindingNode;
       let planServiceRedirectionBindingNodeFixture: PlanServiceRedirectionBindingNode;
       let isOptionalFixture: boolean;
+      let bindingMetadataFixture: BindingMetadata;
 
       beforeAll(() => {
         planServiceRedirectionBindingNodeRedirectionFixture = {
@@ -148,6 +174,15 @@ describe(
           redirections: [planServiceRedirectionBindingNodeRedirectionFixture],
         };
         isOptionalFixture = false;
+        bindingMetadataFixture = {
+          getAncestor: () => undefined,
+          name: 'binding-name',
+          serviceIdentifier: 'service-identifier',
+          tags: new Map<MetadataTag, unknown>([
+            ['tag1', 'value1'],
+            ['tag2', 'value2'],
+          ]),
+        };
       });
 
       describe('when called, and isPlanServiceRedirectionBindingNode() returns true', () => {
@@ -164,6 +199,7 @@ describe(
             checkPlanServiceRedirectionBindingNodeSingleInjectionBindings(
               planServiceRedirectionBindingNodeFixture,
               isOptionalFixture,
+              bindingMetadataFixture,
             );
         });
 
@@ -181,6 +217,7 @@ describe(
             planServiceRedirectionBindingNodeRedirectionFixture.redirections,
             isOptionalFixture,
             planServiceRedirectionBindingNodeRedirectionFixture,
+            bindingMetadataFixture,
           );
         });
 
