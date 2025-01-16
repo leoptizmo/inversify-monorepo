@@ -1,5 +1,17 @@
 # @inversifyjs/core
 
+## 3.2.0
+
+### Minor Changes
+
+- 7743276: Updated plan related error messages with binding metadata details
+
+### Patch Changes
+
+- 7572767: Updated `OneToManyMapStar.clone` to properly clone map array values
+- 9621865: Updated `injectBase` default values to be true
+- 559efd8: Updated `BindToFluentSyntaxImplementation.toDynamicValue` with right default scope
+
 ## 3.1.0
 
 ### Minor Changes
