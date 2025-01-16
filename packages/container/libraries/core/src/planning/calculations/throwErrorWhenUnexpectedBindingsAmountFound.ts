@@ -4,8 +4,10 @@ import {
 } from '@inversifyjs/common';
 
 import { stringifyBinding } from '../../binding/calculations/stringifyBinding';
+import { BindingMetadata } from '../../binding/models/BindingMetadata';
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
+import { MetadataTag } from '../../metadata/models/MetadataTag';
 import { BindingNodeParent } from '../models/BindingNodeParent';
 import { PlanBindingNode } from '../models/PlanBindingNode';
 import { isPlanServiceRedirectionBindingNode } from './isPlanServiceRedirectionBindingNode';
@@ -14,6 +16,7 @@ export function throwErrorWhenUnexpectedBindingsAmountFound(
   bindings: PlanBindingNode[] | PlanBindingNode | undefined,
   isOptional: boolean,
   node: BindingNodeParent,
+  bindingMetadata: BindingMetadata,
 ): void {
   let serviceIdentifier: ServiceIdentifier;
   let parentServiceIdentifier: ServiceIdentifier | undefined;
@@ -32,6 +35,7 @@ export function throwErrorWhenUnexpectedBindingsAmountFound(
       isOptional,
       serviceIdentifier,
       parentServiceIdentifier,
+      bindingMetadata,
     );
   } else {
     throwErrorWhenSingleUnexpectedBindingFound(
@@ -39,6 +43,7 @@ export function throwErrorWhenUnexpectedBindingsAmountFound(
       isOptional,
       serviceIdentifier,
       parentServiceIdentifier,
+      bindingMetadata,
     );
   }
 }
@@ -46,10 +51,13 @@ export function throwErrorWhenUnexpectedBindingsAmountFound(
 function throwBindingNotFoundError(
   serviceIdentifier: ServiceIdentifier,
   parentServiceIdentifier: ServiceIdentifier | undefined,
+  bindingMetadata: BindingMetadata,
 ): never {
   const errorMessage: string = `No bindings found for service: "${stringifyServiceIdentifier(serviceIdentifier)}".
 
-Trying to resolve bindings for "${stringifyParentServiceIdentifier(serviceIdentifier, parentServiceIdentifier)}".`;
+Trying to resolve bindings for "${stringifyParentServiceIdentifier(serviceIdentifier, parentServiceIdentifier)}".
+
+${stringifyBindingMetadata(bindingMetadata)}`;
 
   throw new InversifyCoreError(InversifyCoreErrorKind.planning, errorMessage);
 }
@@ -59,10 +67,15 @@ function throwErrorWhenMultipleUnexpectedBindingsAmountFound(
   isOptional: boolean,
   serviceIdentifier: ServiceIdentifier,
   parentServiceIdentifier: ServiceIdentifier | undefined,
+  bindingMetadata: BindingMetadata,
 ): void {
   if (bindings.length === 0) {
     if (!isOptional) {
-      throwBindingNotFoundError(serviceIdentifier, parentServiceIdentifier);
+      throwBindingNotFoundError(
+        serviceIdentifier,
+        parentServiceIdentifier,
+        bindingMetadata,
+      );
     }
   } else {
     const errorMessage: string = `Ambiguous bindings found for service: "${stringifyServiceIdentifier(serviceIdentifier)}".
@@ -71,7 +84,9 @@ Registered bindings:
 
 ${bindings.map((binding: PlanBindingNode): string => stringifyBinding(binding.binding)).join('\n')}
 
-Trying to resolve bindings for "${stringifyParentServiceIdentifier(serviceIdentifier, parentServiceIdentifier)}".`;
+Trying to resolve bindings for "${stringifyParentServiceIdentifier(serviceIdentifier, parentServiceIdentifier)}".
+
+${stringifyBindingMetadata(bindingMetadata)}`;
 
     throw new InversifyCoreError(InversifyCoreErrorKind.planning, errorMessage);
   }
@@ -82,9 +97,14 @@ function throwErrorWhenSingleUnexpectedBindingFound(
   isOptional: boolean,
   serviceIdentifier: ServiceIdentifier,
   parentServiceIdentifier: ServiceIdentifier | undefined,
+  bindingMetadata: BindingMetadata,
 ): void {
   if (bindings === undefined && !isOptional) {
-    throwBindingNotFoundError(serviceIdentifier, parentServiceIdentifier);
+    throwBindingNotFoundError(
+      serviceIdentifier,
+      parentServiceIdentifier,
+      bindingMetadata,
+    );
   } else {
     return;
   }
@@ -97,4 +117,17 @@ function stringifyParentServiceIdentifier(
   return parentServiceIdentifier === undefined
     ? `${stringifyServiceIdentifier(serviceIdentifier)} (Root service)`
     : stringifyServiceIdentifier(parentServiceIdentifier);
+}
+
+function stringifyBindingMetadata(bindingMetadata: BindingMetadata): string {
+  const stringifiedTags: string =
+    bindingMetadata.tags.size === 0
+      ? ''
+      : `
+- tags:
+  - ${[...bindingMetadata.tags.keys()].map((key: MetadataTag) => key.toString()).join('\n  - ')}`;
+
+  return `Binding metadata:
+- service identifier: ${stringifyServiceIdentifier(bindingMetadata.serviceIdentifier)}
+- name: ${bindingMetadata.name?.toString() ?? '-'}${stringifiedTags}`;
 }

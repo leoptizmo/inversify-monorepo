@@ -1,7 +1,11 @@
 import { LazyServiceIdentifier, ServiceIdentifier } from '@inversifyjs/common';
 
 import { Binding } from '../../binding/models/Binding';
-import { InternalBindingMetadata } from '../../binding/models/BindingMetadataImplementation';
+import { BindingMetadata } from '../../binding/models/BindingMetadata';
+import {
+  BindingMetadataImplementation,
+  InternalBindingMetadata,
+} from '../../binding/models/BindingMetadataImplementation';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
@@ -42,8 +46,12 @@ export function plan(params: PlanParams): PlanResult {
       previous: undefined,
     });
 
+  const bindingMetadata: BindingMetadata = new BindingMetadataImplementation(
+    bindingMetadataList.last,
+  );
+
   const filteredServiceBindings: Binding<unknown>[] =
-    buildFilteredServiceBindings(params, bindingMetadataList);
+    buildFilteredServiceBindings(params, bindingMetadata);
 
   const serviceNodeBindings: PlanBindingNode[] = [];
 
@@ -66,6 +74,7 @@ export function plan(params: PlanParams): PlanResult {
     checkServiceNodeSingleInjectionBindings(
       serviceNode,
       params.rootConstraints.isOptional ?? false,
+      bindingMetadata,
     );
 
     const [planBindingNode]: PlanBindingNode[] = serviceNodeBindings;
@@ -130,8 +139,12 @@ function buildPlanServiceNodeFromClassElementMetadata(
       tags: elementMetadata.tags,
     });
 
+  const bindingMetadata: BindingMetadata = new BindingMetadataImplementation(
+    updatedBindingMetadataList.last,
+  );
+
   const filteredServiceBindings: Binding<unknown>[] =
-    buildFilteredServiceBindings(params, updatedBindingMetadataList);
+    buildFilteredServiceBindings(params, bindingMetadata);
 
   const serviceNodeBindings: PlanBindingNode[] = [];
 
@@ -154,6 +167,7 @@ function buildPlanServiceNodeFromClassElementMetadata(
     checkServiceNodeSingleInjectionBindings(
       serviceNode,
       elementMetadata.optional,
+      bindingMetadata,
     );
 
     const [planBindingNode]: PlanBindingNode[] = serviceNodeBindings;
@@ -230,8 +244,12 @@ function buildServiceRedirectionPlanBindingNode(
     redirections: [],
   };
 
+  const bindingMetadata: BindingMetadata = new BindingMetadataImplementation(
+    bindingMetadataList.last,
+  );
+
   const filteredServiceBindings: Binding<unknown>[] =
-    buildFilteredServiceBindings(params, bindingMetadataList, {
+    buildFilteredServiceBindings(params, bindingMetadata, {
       customServiceIdentifier: binding.targetServiceIdentifier,
     });
 

@@ -1,11 +1,7 @@
 import { ServiceIdentifier } from '@inversifyjs/common';
 
 import { Binding } from '../../binding/models/Binding';
-import {
-  BindingMetadataImplementation,
-  InternalBindingMetadata,
-} from '../../binding/models/BindingMetadataImplementation';
-import { SingleInmutableLinkedList } from '../../common/models/SingleInmutableLinkedList';
+import { BindingMetadata } from '../../binding/models/BindingMetadata';
 import { BasePlanParams } from '../models/BasePlanParams';
 
 export interface BuildFilteredServiceBindingsOptions {
@@ -14,12 +10,9 @@ export interface BuildFilteredServiceBindingsOptions {
 
 export function buildFilteredServiceBindings(
   params: BasePlanParams,
-  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
+  bindingMetadata: BindingMetadata,
   options?: BuildFilteredServiceBindingsOptions,
 ): Binding<unknown>[] {
-  const bindingMetadata: BindingMetadataImplementation =
-    new BindingMetadataImplementation(bindingMetadataList.last);
-
   const serviceIdentifier: ServiceIdentifier =
     options?.customServiceIdentifier ?? bindingMetadata.serviceIdentifier;
 
