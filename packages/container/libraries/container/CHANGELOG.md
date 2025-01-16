@@ -1,5 +1,14 @@
 # @inversifyjs/container
 
+## 1.3.4
+
+### Patch Changes
+
+- 559efd8: Updated `Container` bind flow to properly bind dynamic values in the right default scope
+- 7572767: Updated `Container.snapshot` to properly generate clone binding services
+- Updated dependencies
+  - @inversifyjs/core@3.2.0
+
 ## 1.3.3
 
 ### Patch Changes
