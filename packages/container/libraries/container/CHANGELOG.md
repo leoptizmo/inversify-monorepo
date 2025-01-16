@@ -6,10 +6,7 @@
 
 - 559efd8: Updated `Container` bind flow to properly bind dynamic values in the right default scope
 - 7572767: Updated `Container.snapshot` to properly generate clone binding services
-- Updated dependencies [7743276]
-- Updated dependencies [7572767]
-- Updated dependencies [9621865]
-- Updated dependencies [559efd8]
+- Updated dependencies
   - @inversifyjs/core@3.2.0
 
 ## 1.3.3
