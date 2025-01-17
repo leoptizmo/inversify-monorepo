@@ -5,11 +5,16 @@ title: Binding
 import bindingScopeRequestSource from '@inversifyjs/code-examples/generated/examples/bindingScopeRequest.ts.txt';
 import bindingScopeSingletonSource from '@inversifyjs/code-examples/generated/examples/bindingScopeSingleton.ts.txt';
 import bindingScopeTransientSource from '@inversifyjs/code-examples/generated/examples/bindingScopeTransient.ts.txt';
+import fundamentalsBindingExample from '@inversifyjs/code-examples/generated/examples/v6/fundamentalsBindingExample.ts.txt';
 import CodeBlock from '@theme/CodeBlock';
 
 # Binding
 
 A binding represents the relationship between a service identifier and its resolution. Bindings are added to a container to configure it to provide services.
+
+<CodeBlock language="ts">{fundamentalsBindingExample}</CodeBlock>
+
+When the binding is added to the container, the container is configured to provide a resolved value for the service identifier `Weapon` by resolving the `Katana` class. `container.bind` creates a new binding with certain properties, which are explained below.
 
 ## Binding properties
 
