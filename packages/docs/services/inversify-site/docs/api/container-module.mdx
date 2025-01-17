@@ -2,7 +2,7 @@
 sidebar_position: 3
 title: Container Module
 ---
-import containerModuleApiExampleSource from '@inversifyjs/code-examples/generated/examples/containerModuleApiExample.ts.txt';
+import containerModuleApiExampleSource from '@inversifyjs/code-examples/generated/examples/v7/containerModuleApiExample.ts.txt';
 import CodeBlock from '@theme/CodeBlock';
 
 # ContainerModule
@@ -12,55 +12,45 @@ Container modules help manage the complexity of bindings in large applications.
 ## Constructor
 
 ```ts
-constructor(registry: interfaces.ContainerModuleCallBack)
+constructor(load: (options: ContainerModuleLoadOptions) => void | Promise<void>)
 ```
 
-The constructor argument for `ContainerModule` is a registration callback with function parameters to manage bindings within the scope of the container module.
+The constructor argument for `ContainerModule` is a load callback with function parameters to manage bindings within the scope of the container module.
+
+### Methods
+
+#### load
+
+```ts
+load(options: ContainerModuleLoadOptions): Promise<void>
+```
+
+Loads the container module with the provided options.
+
+## ContainerModuleLoadOptions
+
+Options to be passed to the load callback. It contains the following properties:
 
 ### bind
 
 ```ts
-bind: interfaces.Bind
+bind: <T>(serviceIdentifier: ServiceIdentifier<T>) => BindToFluentSyntax<T>
 ```
 
 Refer to the [docs](/docs/api/container#bind) for more information.
 
-### unbind
-
-```
-unbind: interfaces.Unbind
-```
-
-Refer to the [docs](/docs/api/container#unbind) for more information.
-
 ### isBound
 
 ```ts
-isBound: interfaces.IsBound
+isBound: (serviceIdentifier: ServiceIdentifier, options?: IsBoundOptions) => boolean
 ```
 
 Refer to the [docs](/docs/api/container#isbound) for more information.
 
-### rebind
-
-```ts
-rebind: interfaces.Rebind
-```
-
-Refer to the [docs](/docs/api/container#rebind) for more information.
-
-### unbindAsync
-
-```ts
-unbindAsync: interfaces.UnbindAsync
-```
-
-Refer to the [docs](/docs/api/container#unbindasync) for more information.
-
 ### onActivation
 
 ```ts
-onActivation: interfaces.Container['onActivation']
+onActivation: <T>(serviceIdentifier: ServiceIdentifier<T>, activation: BindingActivation<T>) => void
 ```
 
 Refer to the [docs](/docs/api/container#onactivation) for more information.
@@ -68,15 +58,23 @@ Refer to the [docs](/docs/api/container#onactivation) for more information.
 ### onDeactivation
 
 ```ts
-onDeactivation: interfaces.Container['onDeactivation']
+onDeactivation: <T>(serviceIdentifier: ServiceIdentifier<T>, deactivation: BindingDeactivation<T>) => void
 ```
 
 Refer to the [docs](/docs/api/container#ondeactivation) for more information.
 
+### unbind
+
+```ts
+unbind: (serviceIdentifier: ServiceIdentifier) => Promise<void>
+```
+
+Refer to the [docs](/docs/api/container#unbind) for more information.
+
 ## Example: binding services through ContainerModule API
 
-When a container module is loaded into a Container, the registration callback is invoked. This is the opportunity for the container module to register bindings and handlers. Use the Container `load` method for `ContainerModule` instances and the Container `loadAsync` method for `AsyncContainerModule` instances.
+When a container module is loaded into a Container, the load callback is invoked. This is the opportunity for the container module to register bindings and handlers.
 
-When a container module is unloaded from a Container, the bindings added by that container will be removed, and the [deactivation process](/docs/fundamentals/lifecycle/deactivation) will occur for each of them. Container deactivation and [activation handlers](/docs/fundamentals/lifecycle/activation) will also be removed. Use the `unloadAsync` method to unload when there will be an async deactivation handler or async [preDestroy](/docs/api/decorator#predestroy).
+When a container module is unloaded from a Container, the bindings added by that container will be removed, and the [deactivation process](/docs/fundamentals/lifecycle/deactivation) will occur for each of them. Container deactivation and [activation handlers](/docs/fundamentals/lifecycle/activation) will also be removed.
 
 <CodeBlock language="ts">{containerModuleApiExampleSource}</CodeBlock>
