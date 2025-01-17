@@ -50,6 +50,7 @@ const config: Config = {
           showReadingTime: true,
         },
         docs: {
+          includeCurrentVersion: true,
           sidebarPath: './sidebars.ts',
         },
         theme: {
@@ -114,6 +115,10 @@ const config: Config = {
           type: 'docSidebar',
         },
         { label: 'Blog', position: 'left', to: '/blog' },
+        {
+          position: 'right',
+          type: 'docsVersionDropdown',
+        },
         {
           href: 'https://github.com/inversify/monorepo',
           label: 'GitHub',
