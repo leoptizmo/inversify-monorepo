@@ -2,28 +2,25 @@
 sidebar_position: 1
 title: Binding Syntax
 ---
-import bindingOnSyntaxApiOnActivationSource from '@inversifyjs/code-examples/generated/examples/bindingOnSyntaxApiOnActivation.ts.txt';
-import bindingToSyntaxApiToSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiTo.ts.txt';
-import bindingToSyntaxApiToAutoFactorySource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToAutoFactory.ts.txt';
-import bindingToSyntaxApiToAutoNamedFactorySource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToAutoNamedFactory.ts.txt';
-import bindingToSyntaxApiToConstantValueSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToConstantValue.ts.txt';
-import bindingToSyntaxApiToConstructorSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToConstructor.ts.txt';
-import bindingToSyntaxApiToDynamicValueSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToDynamicValue.ts.txt';
-import bindingToSyntaxApiToFactorySource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToFactory.ts.txt';
-import bindingToSyntaxApiToProviderSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToProvider.ts.txt';
-import bindingToSyntaxApiToSelfSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToSelf.ts.txt';
-import bindingToSyntaxApiToServiceSource from '@inversifyjs/code-examples/generated/examples/bindingToSyntaxApiToService.ts.txt';
-import bindingWhenSyntaxApiWhenSource from '@inversifyjs/code-examples/generated/examples/bindingWhenSyntaxApiWhen.ts.txt';
+import bindingOnSyntaxApiOnActivationSource from '@inversifyjs/code-examples/generated/examples/v7/bindingOnSyntaxApiOnActivation.ts.txt';
+import bindingToSyntaxApiToSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiTo.ts.txt';
+import bindingToSyntaxApiToConstantValueSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToConstantValue.ts.txt';
+import bindingToSyntaxApiToDynamicValueSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToDynamicValue.ts.txt';
+import bindingToSyntaxApiToFactorySource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToFactory.ts.txt';
+import bindingToSyntaxApiToProviderSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToProvider.ts.txt';
+import bindingToSyntaxApiToSelfSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToSelf.ts.txt';
+import bindingToSyntaxApiToServiceSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToService.ts.txt';
+import bindingWhenSyntaxApiWhenSource from '@inversifyjs/code-examples/generated/examples/v7/bindingWhenSyntaxApiWhen.ts.txt';
 import CodeBlock from '@theme/CodeBlock';
 
 # Binding Syntax
 
 Binding syntax is provided as a fluent interface resulting from using the [container API](/docs/api/container#bind) or the [container module API](/docs/api/container-module#bind).
 
-## BindingToSyntax
+## BindToFluentSyntax
 
 ```ts
-interface BindingToSyntax<T> {
+interface BindToFluentSyntax<T> {
   // ...
 }
 ```
@@ -39,7 +36,7 @@ Further documentation refers to this service identifier as the "given service id
 ### to
 
 ```ts
-to(constructor: interfaces.Newable<T>): interfaces.BindingInWhenOnSyntax<T>;
+to(type: Newable<T>): BindInWhenOnFluentSyntax<T>;
 ```
 
 Binds a class instantiation to the given service binding. Whenever the service is resolved, the class constructor will be invoked to build the resolved value.
@@ -49,7 +46,7 @@ Binds a class instantiation to the given service binding. Whenever the service i
 ### toSelf
 
 ```ts
-toSelf(): interfaces.BindingInWhenOnSyntax<T>;
+toSelf(): BindInWhenOnFluentSyntax<T>;
 ```
 
 If the given service identifier is a class, establish a type binding to that class.
@@ -59,7 +56,7 @@ If the given service identifier is a class, establish a type binding to that cla
 ### toConstantValue
 
 ```ts
-toConstantValue(value: T): interfaces.BindingWhenOnSyntax<T>;
+toConstantValue(value: T): BindWhenOnFluentSyntax<T>;
 ```
 
 Binds a value in singleton scope to the given service identifier.
@@ -69,10 +66,10 @@ Binds a value in singleton scope to the given service identifier.
 ### toDynamicValue
 
 ```ts
-toDynamicValue(func: interfaces.DynamicValue<T>): interfaces.BindingInWhenOnSyntax<T>;
+toDynamicValue(builder: DynamicValueBuilder<T>): BindInWhenOnFluentSyntax<T>;
 ```
 
-Binds a function to the given service id. Whenever the service is resolved, the function passed will be invoked to build the resolved value.
+Binds a function to the given service identifier. Whenever the service is resolved, the function passed will be invoked to build the resolved value.
 
 :::info
 
@@ -82,58 +79,28 @@ Keep in mind a service is not resolved if it's cached in the current scope.
 
 <CodeBlock language="ts">{bindingToSyntaxApiToDynamicValueSource}</CodeBlock>
 
-### toConstructor
-
-```ts
-toConstructor<T2>(constructor: interfaces.Newable<T2>): interfaces.BindingWhenOnSyntax<T>;
-```
-
-Binds a class to the given service id. Whenever the service is resolved, the class constructor will be passed as the resolved value.
-
-<CodeBlock language="ts">{bindingToSyntaxApiToConstructorSource}</CodeBlock>
-
 ### toFactory
 
 ```ts
-toFactory<T2>(factory: interfaces.FactoryCreator<T2>): interfaces.BindingWhenOnSyntax<T>;
+toFactory(
+  factory: T extends Factory<unknown, any>
+    ? (context: ResolutionContext) => T
+    : never,
+): BindWhenOnFluentSyntax<T>;
 ```
 
 Binds a factory to the given service identifier. Whenever the service is resolved, the factory will be passed as the resolved value.
 
 <CodeBlock language="ts">{bindingToSyntaxApiToFactorySource}</CodeBlock>
 
-### toFunction
-
-```ts
-toFunction(func: T): interfaces.BindingWhenOnSyntax<T>;
-```
-
-An alias of `BindingToSyntax.toConstantValue` restricted to functions.
-
-### toAutoFactory
-
-```ts
-toAutoFactory<T2>(serviceIdentifier: interfaces.ServiceIdentifier<T2>): interfaces.BindingWhenOnSyntax<T>;
-```
-
-Binds a factory of services associated with a target service identifier to the given service identifier.
-
-<CodeBlock language="ts">{bindingToSyntaxApiToAutoFactorySource}</CodeBlock>
-
-### toAutoNamedFactory
-
-```ts
-toAutoNamedFactory<T2>(serviceIdentifier: interfaces.ServiceIdentifier<T2>): BindingWhenOnSyntax<T>;
-```
-
-Binds a factory of services associated with a target service identifier and a name to the given service identifier.
-
-<CodeBlock language="ts">{bindingToSyntaxApiToAutoNamedFactorySource}</CodeBlock>
-
 ### toProvider
 
 ```ts
-toProvider<T2>(provider: interfaces.ProviderCreator<T2>): interfaces.BindingWhenOnSyntax<T>;
+toProvider(
+  provider: T extends Provider<unknown, any>
+    ? (context: ResolutionContext) => T
+    : never,
+): BindWhenOnFluentSyntax<T>;
 ```
 
 Binds a provider of services associated with a target service identifier to the given service identifier. A provider is just an asynchronous factory.
@@ -143,17 +110,17 @@ Binds a provider of services associated with a target service identifier to the 
 ### toService
 
 ```ts
-toService(service: interfaces.ServiceIdentifier<T>): void;
+toService(service: ServiceIdentifier<T>): void;
 ```
 
 Binds the services bound to a target service identifier to the given service identifier.
 
 <CodeBlock language="ts">{bindingToSyntaxApiToServiceSource}</CodeBlock>
 
-## BindingInSyntax
+## BindInFluentSyntax
 
 ```ts
-interface BindingInSyntax<T> {
+interface BindInFluentSyntax<T> {
   // ...
 }
 ```
@@ -163,7 +130,7 @@ Represents a service binding given a service identifier and a service resolution
 ### inSingletonScope
 
 ```ts
-inSingletonScope(): BindingWhenOnSyntax<T>;
+inSingletonScope(): BindWhenOnFluentSyntax<T>;
 ```
 
 Sets the binding scope to singleton. Refer to the [docs](/docs/fundamentals/binding#singleton) for more information.
@@ -171,7 +138,7 @@ Sets the binding scope to singleton. Refer to the [docs](/docs/fundamentals/bind
 ### inTransientScope
 
 ```ts
-inTransientScope(): BindingWhenOnSyntax<T>;
+inTransientScope(): BindWhenOnFluentSyntax<T>;
 ```
 
 Sets the binding scope to transient. Refer to the [docs](/docs/fundamentals/binding#transient) for more information.
@@ -179,15 +146,15 @@ Sets the binding scope to transient. Refer to the [docs](/docs/fundamentals/bind
 ### inRequestScope
 
 ```ts
-inRequestScope(): BindingWhenOnSyntax<T>;
+inRequestScope(): BindWhenOnFluentSyntax<T>;
 ```
 
 Sets the binding scope to request. Refer to the [docs](/docs/fundamentals/binding#request) for more information.
 
-## BindingOnSyntax
+## BindOnFluentSyntax
 
 ```ts
-interface BindingOnSyntax<T> {
+interface BindOnFluentSyntax<T> {
   // ...
 }
 ```
@@ -197,7 +164,7 @@ Allows setting binding activation and deactivation handlers.
 ### onActivation
 
 ```ts
-onActivation(fn: (context: Context, injectable: T) => T | Promise<T>): BindingWhenSyntax<T>;
+onActivation(activation: BindingActivation<T>): BindWhenFluentSyntax<T>;
 ```
 
 Sets a binding activation handler. The activation handler is invoked after a dependency has been resolved and before it is added to a scope cache. The activation handler will not be invoked if the dependency is taken from a scope cache.
@@ -207,15 +174,15 @@ Sets a binding activation handler. The activation handler is invoked after a dep
 ### onDeactivation
 
 ```ts
-onDeactivation(fn: (injectable: T) => void | Promise<void>): BindingWhenSyntax<T>;
+onDeactivation(deactivation: BindingDeactivation<T>): BindWhenFluentSyntax<T>;
 ```
 
 Sets a binding deactivation handler on a singleton scope binding. The deactivation handler is called when the binding is unbound from a container.
 
-## BindingWhenSyntax
+## BindWhenFluentSyntax
 
 ```ts
-interface BindingWhenSyntax<T> {
+interface BindWhenFluentSyntax<T> {
   // ...
 }
 ```
@@ -227,141 +194,202 @@ Allows setting binding constraints.
 Sets a constraint for the current binding.
 
 ```ts
-when(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
+when(
+  constraint: (metadata: BindingMetadata) => boolean,
+): BindOnFluentSyntax<T>;
 ```
 
 <CodeBlock language="ts">{bindingWhenSyntaxApiWhenSource}</CodeBlock>
 
 In the previous example, a custom constraint is implemented to use the binding if and only if the target name is a certain one.
 
-### whenTargetNamed
-
-Constrains the binding to be used if and only if the target name is a certain one.
+### whenAnyAncestor
 
 ```ts
-whenTargetNamed(name: string | number | symbol): BindingOnSyntax<T>;
+whenAnyAncestor(
+  constraint: (metadata: BindingMetadata) => boolean,
+): BindOnFluentSyntax<T>;
 ```
 
-### whenTargetIsDefault
-
-```ts
-whenTargetIsDefault(): BindingOnSyntax<T>;
-```
-
-Constrains the binding to be used if and only if the target has no name nor tags.
-
-### whenTargetTagged
-
-```ts
-whenTargetTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
-```
-
-Constrains the binding to be used if and only if the target tag is a certain one.
-
-### whenInjectedInto
-
-```ts
-whenInjectedInto(parent: NewableFunction | string): BindingOnSyntax<T>;
-```
-
-Constrains the binding to be used if and only if the parent target service identifier is a certain one.
-
-### whenParentNamed
-
-```ts
-whenParentNamed(name: string | number | symbol): BindingOnSyntax<T>;
-```
-
-Constrains the binding to be used if and only if the parent target name is a certain one.
-
-### whenParentTagged
-
-```ts
-whenParentTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
-```
-
-Constrains the binding to be used if and only if the parent target tag is a certain one.
+Constrains the binding to be used if and only if, given a constraint, any ancestor service matches the given constraint.
 
 ### whenAnyAncestorIs
 
 ```ts
-whenAnyAncestorIs(ancestor: NewableFunction | string): BindingOnSyntax<T>;
+whenAnyAncestorIs(
+  serviceIdentifier: ServiceIdentifier,
+): BindOnFluentSyntax<T>;
 ```
 
-Constrains the binding to be used if and only if any ancestor target service identifier is a certain one.
-
-### whenNoAncestorIs
-
-```ts
-whenNoAncestorIs(ancestor: NewableFunction | string): BindingOnSyntax<T>;
-```
-
-Constrains the binding to be used if and only if no ancestor target service identifier is a certain one.
+Constrains the binding to be used if and only if, given a service identifier, any ancestor service was requested with the given identifier.
 
 ### whenAnyAncestorNamed
 
 ```ts
-whenAnyAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
+whenAnyAncestorNamed(name: MetadataName): BindOnFluentSyntax<T>;
 ```
 
-Constrains the binding to be used if and only if any ancestor target name is a certain one.
+Constrains the binding to be used if and only if, given a name, a named parent service was requested with the given name.
 
 ### whenAnyAncestorTagged
 
 ```ts
-whenAnyAncestorTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
+whenAnyAncestorTagged(
+  tag: MetadataTag,
+  tagValue: unknown,
+): BindOnFluentSyntax<T>;
 ```
 
-Constrains the binding to be used if and only if any ancestor target tag is a certain one.
+Constrains the binding to be used if and only if, given a tag, a tagged parent service was requested with the given tag.
+
+### whenDefault
+
+```ts
+whenDefault(): BindOnFluentSyntax<T>;
+```
+
+Constrains the binding to be used if and only if the service is not requested with any name nor tags.
+
+### whenNamed
+
+Constrains the binding to be used if and only if, given a name, a named service is requested with the given name.
+
+```ts
+whenNamed(name: MetadataName): BindOnFluentSyntax<T>;
+```
+
+### whenNoAncestor
+
+```ts
+whenNoAncestor(
+  constraint: (metadata: BindingMetadata) => boolean,
+): BindOnFluentSyntax<T>;
+```
+
+Constrains the binding to be used if and only if, given a constraint, no ancestor service matches the given constraint.
+
+### whenNoAncestorIs
+
+```ts
+whenNoAncestorIs(serviceIdentifier: ServiceIdentifier): BindOnFluentSyntax<T>;
+```
+
+Constrains the binding to be used if and only if, given a service identifier, no ancestor service was requested with the given identifier.
 
 ### whenNoAncestorNamed
 
 ```ts
-whenNoAncestorNamed(name: string | number | symbol): BindingOnSyntax<T>;
+whenNoAncestorNamed(name: MetadataName): BindOnFluentSyntax<T>;
 ```
 
-Constrains the binding to be used if and only if no ancestor target name is a certain one.
+Constrains the binding to be used if and only if, given a name, no ancestor service was requested with the given name.
 
 ### whenNoAncestorTagged
 
 ```ts
-whenNoAncestorTagged(tag: string | number | symbol, value: unknown): BindingOnSyntax<T>;
+whenNoAncestorTagged(
+  tag: MetadataTag,
+  tagValue: unknown,
+): BindOnFluentSyntax<T>;
 ```
 
-Constrains the binding to be used if and only if no ancestor target tag is a certain one.
+Constrains the binding to be used if and only if, given a tag, no ancestor service was requested with the given tag.
 
-### whenAnyAncestorMatches
+### whenNoParent
 
 ```ts
-whenAnyAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
+whenNoParent(
+  constraint: (metadata: BindingMetadata) => boolean,
+): BindOnFluentSyntax<T>;
 ```
 
-Constrains the binding to be used if and only if any ancestor matches a certain constraint.
+Constrains the binding to be used if and only if, given a constraint, no parent service matches the given constraint.
 
-### whenNoAncestorMatches
+### whenNoParentIs
 
 ```ts
-whenNoAncestorMatches(constraint: (request: Request) => boolean): BindingOnSyntax<T>;
+whenNoParentIs(serviceIdentifier: ServiceIdentifier): BindOnFluentSyntax<T>;
 ```
 
-Constrains the binding to be used if and only if no ancestor matches a certain constraint.
+Constrains the binding to be used if and only if, given a service identifier, no parent service was requested with the given identifier.
 
-## BindingWhenOnSyntax
-
-The union of [BindingWhenSyntax](#bindingwhensyntax) and [BindingOnSyntax](#bindingonsyntax).
+### whenNoParentNamed
 
 ```ts
-export interface BindingWhenOnSyntax<T>
-  extends BindingWhenSyntax<T>,
-    BindingOnSyntax<T> {}
+whenNoParentNamed(name: MetadataName): BindOnFluentSyntax<T>;
 ```
 
-## BindingInWhenOnSyntax
+Constrains the binding to be used if and only if, given a name, no parent service was requested with the given name.
 
-The union of [BindingInSyntax](#bindinginsyntax) and [BindingWhenOnSyntax](#bindingwhenonsyntax).
+### whenNoParentTagged
 
 ```ts
-export interface BindingInWhenOnSyntax<T>
-  extends BindingInSyntax<T>,
-    BindingWhenOnSyntax<T> {}
+whenNoParentTagged(
+  tag: MetadataTag,
+  tagValue: unknown,
+): BindOnFluentSyntax<T>;
+```
+
+Constrains the binding to be used if and only if, given a tag, no parent service was requested with the given tag.
+
+### whenParent
+
+```ts
+whenParent(
+  constraint: (metadata: BindingMetadata) => boolean,
+): BindOnFluentSyntax<T>;
+```
+
+Constrains the binding to be used if and only if, given a constraint, the parent service matches the given constraint.
+
+### whenParentIs
+
+```ts
+whenParentIs(serviceIdentifier: ServiceIdentifier): BindOnFluentSyntax<T>;
+```
+
+Constrains the binding to be used if and only if, given a service identifier, the parent service was requested with the given identifier.
+
+### whenParentNamed
+
+```ts
+whenParentNamed(name: MetadataName): BindOnFluentSyntax<T>;
+```
+
+Constrains the binding to be used if and only if, given a name, the parent service was requested with the given name.
+
+### whenParentTagged
+
+```ts
+whenParentTagged(tag: MetadataTag, tagValue: unknown): BindOnFluentSyntax<T>;
+```
+
+Constrains the binding to be used if and only if, given a tag, the parent service was requested with the given tag.
+
+### whenTagged
+
+```ts
+whenTagged(tag: MetadataTag, tagValue: unknown): BindOnFluentSyntax<T>;
+```
+
+Constrains the binding to be used if and only if, given a tag, a tagged service is requested with the given tag.
+
+## BindWhenOnFluentSyntax
+
+The union of [BindWhenFluentSyntax](#bindwhenfluentsyntax) and [BindOnFluentSyntax](#bindonfluentsyntax).
+
+```ts
+export interface BindWhenOnFluentSyntax<T>
+  extends BindWhenFluentSyntax<T>,
+    BindOnFluentSyntax<T> {}
+```
+
+## BindInWhenOnFluentSyntax
+
+The union of [BindInFluentSyntax](#bindinfluentsyntax) and [BindWhenOnFluentSyntax](#bindwhenonfluentsyntax).
+
+```ts
+export interface BindInWhenOnFluentSyntax<T>
+  extends BindInFluentSyntax<T>,
+    BindWhenOnFluentSyntax<T> {}
 ```
