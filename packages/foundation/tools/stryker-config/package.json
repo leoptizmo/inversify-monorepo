@@ -5,7 +5,8 @@
   },
   "description": "Stryker config for monorepo packages",
   "devDependencies": {
-    "@stryker-mutator/api": "8.7.1"
+    "@stryker-mutator/api": "8.7.1",
+    "prettier": "3.4.2"
   },
   "exports": "./lib/index.js",
   "homepage": "https://github.com/inversify/monorepo#readme",

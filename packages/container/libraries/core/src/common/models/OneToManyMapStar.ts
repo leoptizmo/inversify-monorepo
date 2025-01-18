@@ -2,7 +2,7 @@ import { Cloneable } from './Cloneable';
 
 const NOT_FOUND_INDEX: number = -1;
 
-export type OneToManyMapStartSpec<TRelation extends object> = {
+type OneToManyMapStartSpec<TRelation extends object> = {
   [TKey in keyof TRelation]: {
     isOptional: undefined extends TRelation[TKey] ? true : false;
   };

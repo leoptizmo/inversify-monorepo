@@ -3,12 +3,12 @@ import { Container } from '@inversifyjs/container';
 
 import { BindingParameter } from '../../binding/models/BindingParameter';
 
-export interface EntitiesMap {
+interface EntitiesMap {
   bindings: Map<string, BindingParameter>;
   containers: Map<string, Container>;
 }
 
-export interface ContainerRequests {
+interface ContainerRequests {
   get: Map<string, unknown>;
 }
 

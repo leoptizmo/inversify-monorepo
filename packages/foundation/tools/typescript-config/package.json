@@ -2,6 +2,9 @@
   "author": "Roberto Pintos López",
   "name": "@inversifyjs/foundation-typescript-config",
   "description": "Common typescript config for inversify monorepo packages",
+  "devDependencies": {
+    "prettier": "3.4.2"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/inversify/monorepo/issues"
