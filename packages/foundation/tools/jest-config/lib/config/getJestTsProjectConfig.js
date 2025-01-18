@@ -5,7 +5,7 @@ import getTestMatch from './getTestMatch.js';
  * @param { !string } projectName Jest project's name
  * @param { !Array<string> } testPathIgnorePatterns Expressions to match to ignored file paths by jest
  * @param { ?string } extension Test extension to match
- * @returns @returns { !import("jest").Config } Jest config
+ * @returns @returns { !import("@jest/types").Config.ProjectConfig } Jest config
  */
 function getJestTsProjectConfig(
   projectName,

@@ -1,6 +1,6 @@
 import { InversifyContainerErrorKind } from './InversifyContainerErrorKind';
 
-export const isAppErrorSymbol: unique symbol = Symbol.for(
+const isAppErrorSymbol: unique symbol = Symbol.for(
   '@inversifyjs/container/InversifyContainerError',
 );
 

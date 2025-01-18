@@ -1,6 +1,6 @@
 import { InversifyCoreErrorKind } from './InversifyCoreErrorKind';
 
-export const isAppErrorSymbol: unique symbol = Symbol.for(
+const isAppErrorSymbol: unique symbol = Symbol.for(
   '@inversifyjs/core/InversifyCoreError',
 );
 

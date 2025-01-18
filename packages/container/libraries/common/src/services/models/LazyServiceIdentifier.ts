@@ -1,6 +1,6 @@
 import { ServiceIdentifier } from './ServiceIdentifier';
 
-export const islazyServiceIdentifierSymbol: unique symbol = Symbol.for(
+const islazyServiceIdentifierSymbol: unique symbol = Symbol.for(
   '@inversifyjs/common/islazyServiceIdentifier',
 );
 

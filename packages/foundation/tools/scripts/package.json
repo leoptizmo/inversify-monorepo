@@ -2,6 +2,9 @@
   "name": "@inversifyjs/foundation-scripts",
   "private": true,
   "description": "Common scripts for monorepo packages",
+  "devDependencies": {
+    "prettier": "3.4.2"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/inversify/monorepo.git"
