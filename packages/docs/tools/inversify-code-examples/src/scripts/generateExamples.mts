@@ -10,56 +10,84 @@ const SRC_FOLDER: string = './src';
 const EXAMPLES_GLOB_PATTERN: string = `${SRC_FOLDER}/examples/**/*.ts`;
 const TEST_EXAMPLES_GLOB_PATTERN: string = `${SRC_FOLDER}/examples/**/*.spec.ts`;
 
-enum RelevanCommentKind {
+enum RelevantCommentKind {
   begin,
   end,
   exclude,
+  isInversifyImport,
 }
 
-interface RelevanCommentPositions {
-  [RelevanCommentKind.begin]: [ts.CommentRange, ts.Node][];
-  [RelevanCommentKind.end]: [ts.CommentRange, ts.Node][];
-  [RelevanCommentKind.exclude]: [ts.CommentRange, ts.Node][];
+interface RelevantCommentPosition<
+  TKind extends RelevantCommentKind = RelevantCommentKind,
+> {
+  kind: TKind;
+  node: ts.Node;
+  range: ts.CommentRange;
+}
+
+interface RelevantCommentPositions {
+  kindToPositionsMap: {
+    [TKind in RelevantCommentKind]: RelevantCommentPosition<TKind>[];
+  };
+  list: RelevantCommentPosition[];
+}
+
+interface ReplaceRange {
+  deleteRange: [number, number];
+  replacement: string | ((text: string) => string) | undefined;
 }
 
 const BEGIN_EXAMPLE_COMMENT: string = '// Begin-example';
 const END_EXAMPLE_COMMENT: string = '// End-example';
 const EXCLUDE_FROM_EXAMPLE_COMMENT: string = '// Exclude-from-example';
+const IS_INVERSIFY_IMPORT_EXAMPLE_COMMENT: string =
+  '// Is-inversify-import-example';
+
+const NODE_IMPORT_REXEP: RegExp = /^(.*)(import.*)(['"])([^'"]+)(['"])(.*)$/gms;
+const INVERSIFY_NODE_IMPORT_REPLACE: string = '$2$3inversify$5$6';
 
 const commentToRelevantCommentKindMap: {
-  [key: string]: RelevanCommentKind;
+  [key: string]: RelevantCommentKind;
 } = {
-  [BEGIN_EXAMPLE_COMMENT]: RelevanCommentKind.begin,
-  [END_EXAMPLE_COMMENT]: RelevanCommentKind.end,
-  [EXCLUDE_FROM_EXAMPLE_COMMENT]: RelevanCommentKind.exclude,
+  [BEGIN_EXAMPLE_COMMENT]: RelevantCommentKind.begin,
+  [END_EXAMPLE_COMMENT]: RelevantCommentKind.end,
+  [EXCLUDE_FROM_EXAMPLE_COMMENT]: RelevantCommentKind.exclude,
+  [IS_INVERSIFY_IMPORT_EXAMPLE_COMMENT]: RelevantCommentKind.isInversifyImport,
 };
 
 function findRelevantCommentPositions(
   fileContent: string,
-  sourceFileNode: ts.Node,
-): RelevanCommentPositions {
-  const positions: RelevanCommentPositions = {
-    [RelevanCommentKind.begin]: [],
-    [RelevanCommentKind.end]: [],
-    [RelevanCommentKind.exclude]: [],
+  sourceFileNode: ts.SourceFile,
+): RelevantCommentPositions {
+  const positions: RelevantCommentPositions = {
+    kindToPositionsMap: {
+      [RelevantCommentKind.begin]: [],
+      [RelevantCommentKind.end]: [],
+      [RelevantCommentKind.exclude]: [],
+      [RelevantCommentKind.isInversifyImport]: [],
+    },
+    list: [],
   };
 
-  visitRelevantCommentPositions(fileContent, sourceFileNode, positions);
+  // Do not visit the source file node
+  for (const childNode of sourceFileNode.getChildren()) {
+    visitRelevantCommentPositions(fileContent, childNode, positions);
+  }
 
   return positions;
 }
 
 function visitRelevantCommentPositions(
   fileContent: string,
-  sourceFileNode: ts.Node,
-  positions: RelevanCommentPositions,
+  node: ts.Node,
+  positions: RelevantCommentPositions,
 ): void {
   // sourceFileNode.getSourceFile() might return undefined!
-  if (sourceFileNode.getSourceFile() === undefined) {
+  if (node.getSourceFile() === undefined) {
     return;
   }
 
-  for (const childNode of sourceFileNode.getChildren()) {
+  for (const childNode of node.getChildren()) {
     for (const comment of ts.getLeadingCommentRanges(
       fileContent,
       childNode.getFullStart(),
@@ -69,11 +97,24 @@ function visitRelevantCommentPositions(
         comment.end,
       );
 
-      const relevanCommentKind: RelevanCommentKind | undefined =
+      const relevanCommentKind: RelevantCommentKind | undefined =
         commentToRelevantCommentKindMap[commentContent];
 
       if (relevanCommentKind !== undefined) {
-        positions[relevanCommentKind].push([comment, childNode]);
+        const relevantCommentPosition: RelevantCommentPosition = {
+          kind: relevanCommentKind,
+          node: childNode,
+          range: comment,
+        };
+
+        (
+          positions.kindToPositionsMap as Record<
+            RelevantCommentKind,
+            RelevantCommentPosition[]
+          >
+        )[relevanCommentKind].push(relevantCommentPosition);
+
+        positions.list.push(relevantCommentPosition);
       }
     }
 
@@ -96,7 +137,7 @@ async function generateExampleFromSourceCode(
     ts.ScriptTarget.Latest,
   );
 
-  const relevantCommentPositions: RelevanCommentPositions =
+  const relevantCommentPositions: RelevantCommentPositions =
     findRelevantCommentPositions(fileContent, sourceFile);
 
   return transformSourceFile(sourceFile, relevantCommentPositions);
@@ -136,56 +177,107 @@ async function run(): Promise<void> {
 
 await run();
 
-function getExcludeRanges(
+function getReplaceRanges(
   sourceFile: ts.SourceFile,
-  positions: RelevanCommentPositions,
-): [number, number][] {
-  const [firstBeginOfExamplePosition]: [ts.CommentRange, ts.Node][] =
-    positions[RelevanCommentKind.begin];
+  positions: RelevantCommentPositions,
+): ReplaceRange[] {
+  const [firstBeginOfExamplePosition]: RelevantCommentPosition[] =
+    positions.kindToPositionsMap[RelevantCommentKind.begin];
 
-  const lastEndOfExamplePosition: [ts.CommentRange, ts.Node] | undefined =
-    positions[RelevanCommentKind.end].at(-1);
+  const lastEndOfExamplePosition: RelevantCommentPosition | undefined =
+    positions.kindToPositionsMap[RelevantCommentKind.end].at(-1);
 
-  const excludedRanges: [number, number][] = [];
+  const replaceRanges: ReplaceRange[] = [];
 
+  const relevantCommentPositions: RelevantCommentPosition[] = positions.list;
+
+  let index: number = 0;
+
+  // 1. Iterate until the first begin example comment is found in case there's at least one.
   if (firstBeginOfExamplePosition !== undefined) {
-    const [commentNode] = firstBeginOfExamplePosition;
+    while (relevantCommentPositions[index] !== firstBeginOfExamplePosition) {
+      ++index;
+    }
 
-    excludedRanges.push([0, commentNode.end]);
+    replaceRanges.push({
+      deleteRange: [0, firstBeginOfExamplePosition.range.end],
+      replacement: undefined,
+    });
+
+    ++index;
   }
 
-  for (const [, node] of positions[RelevanCommentKind.exclude]) {
-    excludedRanges.push([node.pos, node.end]);
+  // 2. Iterate over the rest of the relevant comments until the last end of example comment is found, if any.
+  while (index < relevantCommentPositions.length) {
+    const currentRelevantCommentPosition: RelevantCommentPosition =
+      relevantCommentPositions[index] as RelevantCommentPosition;
+
+    switch (currentRelevantCommentPosition.kind) {
+      case RelevantCommentKind.end:
+        if (currentRelevantCommentPosition === lastEndOfExamplePosition) {
+          replaceRanges.push({
+            deleteRange: [lastEndOfExamplePosition.node.pos, sourceFile.end],
+            replacement: undefined,
+          });
+
+          return replaceRanges;
+        }
+
+        break;
+      case RelevantCommentKind.exclude:
+        replaceRanges.push({
+          deleteRange: [
+            currentRelevantCommentPosition.node.pos,
+            currentRelevantCommentPosition.node.end,
+          ],
+          replacement: undefined,
+        });
+        break;
+      case RelevantCommentKind.isInversifyImport:
+        replaceRanges.push({
+          deleteRange: [
+            currentRelevantCommentPosition.node.pos,
+            currentRelevantCommentPosition.node.end,
+          ],
+          replacement: (text: string) =>
+            text.replace(NODE_IMPORT_REXEP, INVERSIFY_NODE_IMPORT_REPLACE),
+        });
+        break;
+      default:
+    }
+
+    ++index;
   }
 
-  if (lastEndOfExamplePosition !== undefined) {
-    const [, node] = lastEndOfExamplePosition;
-
-    excludedRanges.push([node.pos, sourceFile.end]);
-  }
-
-  return excludedRanges;
+  return replaceRanges;
 }
 
 function transformSourceFile(
   sourceFile: ts.SourceFile,
-  positions: RelevanCommentPositions,
+  positions: RelevantCommentPositions,
 ): string {
-  const excludedRanges: [number, number][] = getExcludeRanges(
-    sourceFile,
-    positions,
-  );
+  const replaceRanges: ReplaceRange[] = getReplaceRanges(sourceFile, positions);
 
   let transformedSourceCode: string = '';
   let currentIndex: number = 0;
 
-  for (const [min, max] of excludedRanges) {
-    while (currentIndex <= max) {
+  for (const {
+    deleteRange: [min, max],
+    replacement,
+  } of replaceRanges) {
+    while (currentIndex < max) {
       if (currentIndex < min) {
         transformedSourceCode += sourceFile.text[currentIndex];
       }
 
       ++currentIndex;
+    }
+
+    if (replacement !== undefined) {
+      transformedSourceCode +=
+        replacement instanceof Function
+          ? replacement(sourceFile.text.slice(min, max))
+          : replacement;
     }
   }
 

@@ -1,35 +1,27 @@
 // Is-inversify-import-example
 import { Container, inject, injectable } from 'inversify7';
 
-interface Weapon {
-  damage: number;
-}
-
-const weaponServiceId: symbol = Symbol.for('WeaponServiceId');
-
 @injectable()
 class Katana {
   public readonly damage: number = 10;
 }
 
-// Begin-example
 @injectable()
 class Ninja {
   constructor(
-    @inject(weaponServiceId)
-    public readonly weapon: Weapon,
+    @inject(Katana)
+    public readonly katana: Katana,
   ) {}
 }
 
 const container: Container = new Container();
 
 container.bind(Ninja).toSelf();
-container.bind(weaponServiceId).to(Katana);
+container.bind(Katana).toSelf();
 
 const ninja: Ninja = container.get(Ninja);
 
-// Returns 10
-const ninjaWeaponDamage: number = ninja.weapon.damage;
+console.log(ninja.katana.damage); // Prints 10
 // End-example
 
-export { ninjaWeaponDamage };
+export { ninja };

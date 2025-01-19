@@ -1,3 +1,4 @@
+// Is-inversify-import-example
 import { Container } from 'inversify7';
 
 interface CardCatalogProvider<TCard> {

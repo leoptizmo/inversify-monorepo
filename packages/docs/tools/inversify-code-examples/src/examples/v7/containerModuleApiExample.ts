@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+// Is-inversify-import-example
 import {
   Container,
   ContainerModule,
