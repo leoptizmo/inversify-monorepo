@@ -13,7 +13,9 @@
         "docs/**",
         "src/**/*.{cts,mts,ts}",
         "docusaurus.config.ts",
-        "sidebars.ts"
+        "sidebars.ts",
+        "versioned_docs/**",
+        "versioned_sidebars/**"
       ],
       "outputs": ["build/**"]
     },
