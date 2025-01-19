@@ -35,7 +35,6 @@
     "build": "turbo run build",
     "commit": "commit",
     "format": "turbo run format",
-    "knip": "knip",
     "lint": "turbo run lint",
     "prepare": "husky && turbo telemetry disable",
     "prerelease": "pnpm run build",
@@ -49,6 +48,7 @@
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
     "test:e2e:cjs": "turbo run test:e2e:cjs",
-    "test:e2e:esm": "turbo run test:e2e:esm"
+    "test:e2e:esm": "turbo run test:e2e:esm",
+    "unused": "knip"
   }
 }
