@@ -89,7 +89,7 @@ Creates a new Container containing the bindings ( cloned bindings ) of two or mo
 applyCustomMetadataReader(metadataReader: interfaces.MetadataReader): void;
 ```
 
-Sets a custom metadata reader. See [middleware](/docs/fundamentals/lifecycle/middleware).
+Sets a custom metadata reader. See [middleware](../fundamentals/lifecycle/middleware.mdx).
 
 ## applyMiddleware
 
@@ -97,7 +97,7 @@ Sets a custom metadata reader. See [middleware](/docs/fundamentals/lifecycle/mid
 applyMiddleware(...middleware: interfaces.Middleware[]): void;
 ```
 
-An advanced feature that can be used for cross cutting concerns. See [middleware](/docs/fundamentals/lifecycle/middleware).
+An advanced feature that can be used for cross cutting concerns. See [middleware](../fundamentals/lifecycle/middleware.mdx).
 
 ## bind
 
@@ -113,7 +113,7 @@ Sets a new binding.
 createChild(containerOptions?: interfaces.ContainerOptions): Container;
 ```
 
-Create a [container hierarchy](/docs/fundamentals/di-hierarchy). Parent `ContainerOptions` are provided by default.
+Create a [container hierarchy](../fundamentals/di-hierarchy.mdx). Parent `ContainerOptions` are provided by default.
 
 ## get
 
@@ -290,7 +290,7 @@ You can use the `isBoundTagged` method to check if there are registered bindings
 load(...modules: interfaces.ContainerModule[]): void;
 ```
 
-Calls the registration method of each module. See [ContainerModule API docs](/docs/api/container-module)
+Calls the registration method of each module. See [ContainerModule API docs](./container-module.mdx)
 
 ## loadAsync
 
@@ -356,7 +356,7 @@ Adds a deactivation handler for a service identifier.
 restore(): void;
 ```
 
-Restore container state to last snapshot. Refer to the [docs](/docs/fundamentals/snapshot) for more information.
+Restore container state to last snapshot. Refer to the [docs](../fundamentals/snapshot.mdx) for more information.
 
 ## snapshot
 
@@ -364,7 +364,7 @@ Restore container state to last snapshot. Refer to the [docs](/docs/fundamentals
 snapshot(): void;
 ```
 
-Save the state of the container to be later restored with the restore method. Refer to the [docs](/docs/fundamentals/snapshot) for more information.
+Save the state of the container to be later restored with the restore method. Refer to the [docs](../fundamentals/snapshot.mdx) for more information.
 
 ## tryGet
 
@@ -468,7 +468,7 @@ Same as `container.getAllTaggedAsync`, but returns `Promise<[]>` in the event no
 unbind(serviceIdentifier: interfaces.ServiceIdentifier): void;
 ```
 
-Remove all bindings binded in this container to the service identifier.  This will result in the [deactivation process](/docs/fundamentals/lifecycle/deactivation).
+Remove all bindings binded in this container to the service identifier.  This will result in the [deactivation process](../fundamentals/lifecycle/deactivation.mdx).
 
 ## unbindAsync
 
@@ -484,7 +484,7 @@ This is the asynchronous version of unbind. If any deactivation realated to this
 unbindAll(): void;
 ```
 
-Remove all bindings binded in this container.  This will result in the [deactivation process](/docs/fundamentals/lifecycle/deactivation).
+Remove all bindings binded in this container.  This will result in the [deactivation process](../fundamentals/lifecycle/deactivation.mdx).
 
 ## unbindAllAsync
 
@@ -500,8 +500,8 @@ This is the asynchronous version of unbindAll. If any of the container's deactiv
 unload(...modules: interfaces.ContainerModuleBase[]): void;
 ```
 
-Removes bindings and handlers added by the modules. This will result in the [deactivation process](/docs/fundamentals/lifecycle/deactivation).
-See [ContainerModule API docs](/docs/api/container-module).
+Removes bindings and handlers added by the modules. This will result in the [deactivation process](../fundamentals/lifecycle/deactivation.mdx).
+See [ContainerModule API docs](./container-module.mdx).
 
 ## unloadAsync
 

@@ -23,7 +23,7 @@ The constructor argument for `ContainerModule` is a registration callback with f
 bind: interfaces.Bind
 ```
 
-Refer to the [docs](/docs/api/container#bind) for more information.
+Refer to the [docs](./container.mdx#bind) for more information.
 
 ### unbind
 
@@ -31,7 +31,7 @@ Refer to the [docs](/docs/api/container#bind) for more information.
 unbind: interfaces.Unbind
 ```
 
-Refer to the [docs](/docs/api/container#unbind) for more information.
+Refer to the [docs](./container.mdx#unbind) for more information.
 
 ### isBound
 
@@ -39,7 +39,7 @@ Refer to the [docs](/docs/api/container#unbind) for more information.
 isBound: interfaces.IsBound
 ```
 
-Refer to the [docs](/docs/api/container#isbound) for more information.
+Refer to the [docs](./container.mdx#isbound) for more information.
 
 ### rebind
 
@@ -47,7 +47,7 @@ Refer to the [docs](/docs/api/container#isbound) for more information.
 rebind: interfaces.Rebind
 ```
 
-Refer to the [docs](/docs/api/container#rebind) for more information.
+Refer to the [docs](./container.mdx#rebind) for more information.
 
 ### unbindAsync
 
@@ -55,7 +55,7 @@ Refer to the [docs](/docs/api/container#rebind) for more information.
 unbindAsync: interfaces.UnbindAsync
 ```
 
-Refer to the [docs](/docs/api/container#unbindasync) for more information.
+Refer to the [docs](./container.mdx#unbindasync) for more information.
 
 ### onActivation
 
@@ -63,7 +63,7 @@ Refer to the [docs](/docs/api/container#unbindasync) for more information.
 onActivation: interfaces.Container['onActivation']
 ```
 
-Refer to the [docs](/docs/api/container#onactivation) for more information.
+Refer to the [docs](./container.mdx#onactivation) for more information.
 
 ### onDeactivation
 
@@ -71,12 +71,12 @@ Refer to the [docs](/docs/api/container#onactivation) for more information.
 onDeactivation: interfaces.Container['onDeactivation']
 ```
 
-Refer to the [docs](/docs/api/container#ondeactivation) for more information.
+Refer to the [docs](./container.mdx#ondeactivation) for more information.
 
 ## Example: binding services through ContainerModule API
 
 When a container module is loaded into a Container, the registration callback is invoked. This is the opportunity for the container module to register bindings and handlers. Use the Container `load` method for `ContainerModule` instances and the Container `loadAsync` method for `AsyncContainerModule` instances.
 
-When a container module is unloaded from a Container, the bindings added by that container will be removed, and the [deactivation process](/docs/fundamentals/lifecycle/deactivation) will occur for each of them. Container deactivation and [activation handlers](/docs/fundamentals/lifecycle/activation) will also be removed. Use the `unloadAsync` method to unload when there will be an async deactivation handler or async [preDestroy](/docs/api/decorator#predestroy).
+When a container module is unloaded from a Container, the bindings added by that container will be removed, and the [deactivation process](../fundamentals/lifecycle/deactivation.mdx) will occur for each of them. Container deactivation and [activation handlers](../fundamentals/lifecycle/activation.mdx) will also be removed. Use the `unloadAsync` method to unload when there will be an async deactivation handler or async [preDestroy](./decorator.mdx#predestroy).
 
 <CodeBlock language="ts">{containerModuleApiExampleSource}</CodeBlock>

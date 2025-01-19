@@ -7,7 +7,7 @@ title: Inheritance
 Inheritance can be achieved as long as constructor parameters are properly decorated. There are two ways to ensure this:
 
 - The number of decorated constructor arguments in a derived class is greater than or equal to the number of constructor arguments in its base class.
-- The [skipBaseClassChecks](/docs/api/container#skipbaseclasschecks) option is enabled.
+- The [skipBaseClassChecks](../api/container.mdx#skipbaseclasschecks) option is enabled.
 
 ## Example of incorrect inheritance injection
 
@@ -32,7 +32,7 @@ When trying to get a `SamuraiMaster`, the container throws an error indicating t
 
 ## Using the @unmanaged decorator
 
-The [unmanaged](/docs/api/decorator#unmanaged) decorator tells Inversify that a base type constructor parameter should not be managed. This is often the case when dealing with inheritance hierarchies where only leaf types are injected.
+The [unmanaged](../api/decorator.mdx#unmanaged) decorator tells Inversify that a base type constructor parameter should not be managed. This is often the case when dealing with inheritance hierarchies where only leaf types are injected.
 
 ```ts
 @injectable()
