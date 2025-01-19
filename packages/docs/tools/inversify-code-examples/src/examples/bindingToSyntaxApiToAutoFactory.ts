@@ -1,3 +1,4 @@
+// Is-inversify-import-example
 import { Container, inject, injectable, interfaces } from 'inversify';
 
 interface Weapon {
