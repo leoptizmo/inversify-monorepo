@@ -33,7 +33,7 @@ Options can be changed after construction and will be shared by child containers
 parent?: Container | undefined;
 ```
 
-The parent container, if any. Refer to the [container hierarchy docs](/docs/fundamentals/di-hierarchy) for more information.
+The parent container, if any. Refer to the [container hierarchy docs](../fundamentals/di-hierarchy.mdx) for more information.
 
 ### defaultScope
 
@@ -120,7 +120,7 @@ You can use the `isCurrentBound` method to check if there are registered binding
 load(...modules: ContainerModule[]): Promise<void>;
 ```
 
-Calls the registration method of each module. See [ContainerModule API docs](/docs/api/container-module).
+Calls the registration method of each module. See [ContainerModule API docs](./container-module.mdx).
 
 ## onActivation
 
@@ -148,7 +148,7 @@ Adds a deactivation handler for a service identifier.
 restore(): void;
 ```
 
-Restore container state to last snapshot. Refer to the [docs](/docs/fundamentals/snapshot) for more information.
+Restore container state to last snapshot. Refer to the [docs](../fundamentals/snapshot.mdx) for more information.
 
 ## snapshot
 
@@ -156,7 +156,7 @@ Restore container state to last snapshot. Refer to the [docs](/docs/fundamentals
 snapshot(): void;
 ```
 
-Save the state of the container to be later restored with the restore method. Refer to the [docs](/docs/fundamentals/snapshot) for more information.
+Save the state of the container to be later restored with the restore method. Refer to the [docs](../fundamentals/snapshot.mdx) for more information.
 
 ## unbind
 
@@ -164,7 +164,7 @@ Save the state of the container to be later restored with the restore method. Re
 unbind(serviceIdentifier: ServiceIdentifier): Promise<void>;
 ```
 
-Remove all bindings binded in this container to the service identifier. This will result in the [deactivation process](/docs/fundamentals/lifecycle/deactivation).
+Remove all bindings binded in this container to the service identifier. This will result in the [deactivation process](../fundamentals/lifecycle/deactivation.mdx).
 
 ## unbindAll
 
@@ -172,7 +172,7 @@ Remove all bindings binded in this container to the service identifier. This wil
 unbindAll(): Promise<void>;
 ```
 
-Remove all bindings binded in this container.  This will result in the [deactivation process](/docs/fundamentals/lifecycle/deactivation).
+Remove all bindings binded in this container.  This will result in the [deactivation process](../fundamentals/lifecycle/deactivation.mdx).
 
 ## unload
 
@@ -180,5 +180,5 @@ Remove all bindings binded in this container.  This will result in the [deactiva
 unload(...modules: ContainerModule[]): Promise<void>;
 ```
 
-Removes bindings and handlers added by the modules. This will result in the [deactivation process](/docs/fundamentals/lifecycle/deactivation).
-See [ContainerModule API docs](/docs/api/container-module).
+Removes bindings and handlers added by the modules. This will result in the [deactivation process](../fundamentals/lifecycle/deactivation.mdx).
+See [ContainerModule API docs](./container-module.mdx).

@@ -87,7 +87,7 @@ This time, no class metadata is emitted even if the `emitDecoratorMetadata` Type
 
 Decorator used to establish a relation between a constructor argument or a class property and a service ID.
 
-When resolving an instance of the class, the target constructor argument or property will be resolved in the same way [container.get](/docs/api/container#get) behaves.
+When resolving an instance of the class, the target constructor argument or property will be resolved in the same way [container.get](./container.mdx#get) behaves.
 
 ### Example: decorating a class constructor argument
 
@@ -101,7 +101,7 @@ When resolving an instance of the class, the target constructor argument or prop
 
 Decorator used to establish a relation between a constructor argument or a class property and a service ID.
 
-When resolving an instance of the class, the target constructor argument or property will be resolved in the same way [container.getAll](/docs/api/container#getall) behaves.
+When resolving an instance of the class, the target constructor argument or property will be resolved in the same way [container.getAll](./container.mdx#getall) behaves.
 
 ### Example: decorating a property
 
@@ -121,13 +121,13 @@ Decorator used to establish that a target constructor argument or property is op
 
 ## postConstruct
 
-Decorator used to establish an activation handler for the target class. Refer to the [docs](/docs/fundamentals/lifecycle/activation) for more information.
+Decorator used to establish an activation handler for the target class. Refer to the [docs](../fundamentals/lifecycle/activation.mdx) for more information.
 
 <CodeBlock language="ts">{decoratorApiPostConstructSource}</CodeBlock>
 
 ## preDestroy
 
-Decorator used to establish a deactivation handler for the target class. Refer to the [docs](/docs/fundamentals/lifecycle/deactivation) for more information.
+Decorator used to establish a deactivation handler for the target class. Refer to the [docs](../fundamentals/lifecycle/deactivation.mdx) for more information.
 
 <CodeBlock language="ts">{decoratorApiPreDestroySource}</CodeBlock>
 
