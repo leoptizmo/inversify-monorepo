@@ -7,6 +7,7 @@
     "esModuleInterop": true,
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
     "lib": ["ES2022"],
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
