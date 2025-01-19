@@ -1,3 +1,4 @@
+// Is-inversify-import-example
 import { Container, preDestroy } from 'inversify7';
 
 void (async () => {
