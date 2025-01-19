@@ -1,3 +1,4 @@
+// Is-inversify-import-example
 import { Container } from 'inversify';
 
 type Warrior = unknown;

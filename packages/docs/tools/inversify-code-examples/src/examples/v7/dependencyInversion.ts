@@ -1,5 +1,5 @@
 // Is-inversify-import-example
-import { Container, inject, injectable } from 'inversify';
+import { Container, inject, injectable } from 'inversify7';
 
 interface Weapon {
   damage: number;
@@ -12,7 +12,6 @@ class Katana {
   public readonly damage: number = 10;
 }
 
-// Begin-example
 @injectable()
 class Ninja {
   constructor(
@@ -28,8 +27,7 @@ container.bind(weaponServiceId).to(Katana);
 
 const ninja: Ninja = container.get(Ninja);
 
-// Returns 10
-const ninjaWeaponDamage: number = ninja.weapon.damage;
+console.log(ninja.weapon.damage); // Prints 10
 // End-example
 
-export { ninjaWeaponDamage };
+export { ninja };

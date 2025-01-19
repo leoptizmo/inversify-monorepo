@@ -1,3 +1,4 @@
+// Is-inversify-import-example
 import { Container, injectable, unmanaged } from 'inversify';
 
 @injectable()

@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 
+// Is-inversify-import-example
 import { Container, preDestroy } from 'inversify';
 
 // Begin-example

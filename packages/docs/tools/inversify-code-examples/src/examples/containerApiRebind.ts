@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
+// Is-inversify-import-example
 import { Container } from 'inversify';
 
 // Begin-example
