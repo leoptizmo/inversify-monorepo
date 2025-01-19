@@ -32,6 +32,7 @@ export class InversifyContainerError extends Error {
     value: unknown,
     kind: InversifyContainerErrorKind,
   ): value is InversifyContainerError {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     return InversifyContainerError.is(value) && value.kind === kind;
   }
 }
