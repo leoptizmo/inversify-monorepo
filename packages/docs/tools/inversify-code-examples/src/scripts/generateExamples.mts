@@ -69,10 +69,23 @@ function findRelevantCommentPositions(
     list: [],
   };
 
-  // Do not visit the source file node
+  /*
+   * Do not visit the source file node.
+   * A source file node has two children: a root node and an end of file token node.
+   * Visit grandchildren nodes so that the root node is not visited.
+   */
   for (const childNode of sourceFileNode.getChildren()) {
-    visitRelevantCommentPositions(fileContent, childNode, positions);
+    for (const granchildNode of childNode.getChildren()) {
+      visitRelevantCommentPositions(fileContent, granchildNode, positions);
+    }
   }
+
+  // Visit the end of file token node.
+  visitRelevantCommentPositions(
+    fileContent,
+    sourceFileNode.endOfFileToken,
+    positions,
+  );
 
   return positions;
 }
@@ -82,42 +95,42 @@ function visitRelevantCommentPositions(
   node: ts.Node,
   positions: RelevantCommentPositions,
 ): void {
+  for (const comment of ts.getLeadingCommentRanges(
+    fileContent,
+    node.getFullStart(),
+  ) ?? []) {
+    const commentContent: string = fileContent.substring(
+      comment.pos,
+      comment.end,
+    );
+
+    const relevanCommentKind: RelevantCommentKind | undefined =
+      commentToRelevantCommentKindMap[commentContent];
+
+    if (relevanCommentKind !== undefined) {
+      const relevantCommentPosition: RelevantCommentPosition = {
+        kind: relevanCommentKind,
+        node,
+        range: comment,
+      };
+
+      (
+        positions.kindToPositionsMap as Record<
+          RelevantCommentKind,
+          RelevantCommentPosition[]
+        >
+      )[relevanCommentKind].push(relevantCommentPosition);
+
+      positions.list.push(relevantCommentPosition);
+    }
+  }
+
   // sourceFileNode.getSourceFile() might return undefined!
   if (node.getSourceFile() === undefined) {
     return;
   }
 
   for (const childNode of node.getChildren()) {
-    for (const comment of ts.getLeadingCommentRanges(
-      fileContent,
-      childNode.getFullStart(),
-    ) ?? []) {
-      const commentContent: string = fileContent.substring(
-        comment.pos,
-        comment.end,
-      );
-
-      const relevanCommentKind: RelevantCommentKind | undefined =
-        commentToRelevantCommentKindMap[commentContent];
-
-      if (relevanCommentKind !== undefined) {
-        const relevantCommentPosition: RelevantCommentPosition = {
-          kind: relevanCommentKind,
-          node: childNode,
-          range: comment,
-        };
-
-        (
-          positions.kindToPositionsMap as Record<
-            RelevantCommentKind,
-            RelevantCommentPosition[]
-          >
-        )[relevanCommentKind].push(relevantCommentPosition);
-
-        positions.list.push(relevantCommentPosition);
-      }
-    }
-
     visitRelevantCommentPositions(fileContent, childNode, positions);
   }
 }
@@ -200,7 +213,10 @@ function getReplaceRanges(
     }
 
     replaceRanges.push({
-      deleteRange: [0, firstBeginOfExamplePosition.range.end],
+      deleteRange: [
+        0,
+        firstBeginOfExamplePosition.node.getStart(sourceFile, true),
+      ],
       replacement: undefined,
     });
 

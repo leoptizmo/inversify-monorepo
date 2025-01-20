@@ -3,6 +3,8 @@ sidebar_position: 4
 title: Decorator
 ---
 import decoratorApiInjectConstructorArgumentSource from '@inversifyjs/code-examples/generated/examples/v7/decoratorApiInjectConstructorArgument.ts.txt';
+import decoratorApiInjectFromBaseConstructorArgumentSource from '@inversifyjs/code-examples/generated/examples/v7/decoratorApiInjectFromBaseConstructorArguments.ts.txt';
+import decoratorApiInjectFromBasePropertiesSource from '@inversifyjs/code-examples/generated/examples/v7/decoratorApiInjectFromBaseProperties.ts.txt';
 import decoratorApiInjectPropertySource from '@inversifyjs/code-examples/generated/examples/v7/decoratorApiInjectProperty.ts.txt';
 import decoratorApiMultiInjectPropertySource from '@inversifyjs/code-examples/generated/examples/v7/decoratorApiMultiInjectProperty.ts.txt';
 import decoratorApiNamedSource from '@inversifyjs/code-examples/generated/examples/v7/decoratorApiNamed.ts.txt';
@@ -96,6 +98,25 @@ When resolving an instance of the class, the target constructor argument or prop
 ### Example: decorating a property
 
 <CodeBlock language="ts">{decoratorApiInjectPropertySource}</CodeBlock>
+
+## injectFromBase
+
+Decorator used to inject dependencies from a base class. Child class injections take precedence over base class injections.
+
+### Arguments
+
+The `injectFromBase` decorator accepts an optional `InjectFromBaseOptions` object with the following properties:
+
+- `extendConstructorArguments` (boolean, defaults to true): If true, constructor arguments from the base class will be injected.
+- `extendProperties` (boolean, defaults to true): If true, properties from the base class will be injected.
+
+### Example: decorating base class constructor arguments
+
+<CodeBlock language="ts">{decoratorApiInjectFromBaseConstructorArgumentSource}</CodeBlock>
+
+### Example: decorating base class properties
+
+<CodeBlock language="ts">{decoratorApiInjectFromBasePropertiesSource}</CodeBlock>
 
 ## multiInject
 
