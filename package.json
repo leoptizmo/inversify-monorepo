@@ -18,7 +18,7 @@
     "@inversifyjs/foundation-typescript-config": "workspace:*",
     "husky": "9.1.7",
     "knip": "5.43.1",
-    "lint-staged": "15.4.1",
+    "lint-staged": "15.4.2",
     "turbo": "2.3.3"
   },
   "homepage": "https://inversify.io",
