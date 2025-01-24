@@ -1,5 +1,16 @@
 # @inversifyjs/container
 
+## 1.4.0
+
+### Minor Changes
+
+- 3b47b67: Updated `ContainerOptions` with `autobind`
+
+### Patch Changes
+
+- Updated dependencies
+  - @inversifyjs/core@3.3.0
+
 ## 1.3.4
 
 ### Patch Changes
