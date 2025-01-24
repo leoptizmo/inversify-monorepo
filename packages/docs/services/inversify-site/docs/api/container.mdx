@@ -25,6 +25,14 @@ For testing, state can be saved as a snapshot on a stack and later restored.
 Container options can be passed to the Container constructor, and defaults will be provided if you do not or if you do but omit an option.
 Options can be changed after construction and will be shared by child containers created from the Container if you do not provide options for them.
 
+### autoBind
+
+```ts
+autoBind?: true;
+```
+
+Option to automatically bind unbound class services to themselves. Whenever an instance is resolve, the container attempts to add a binding if no binding is found for the requested service.
+
 ### parent
 
 ```ts
@@ -180,3 +188,33 @@ unload(...modules: ContainerModule[]): Promise<void>;
 
 Removes bindings and handlers added by the modules. This will result in the [deactivation process](../fundamentals/lifecycle/deactivation.mdx).
 See [ContainerModule API docs](./container-module.mdx).
+
+## GetOptions
+
+Options that can be passed to the `get`, `getAll`, `getAsync`, and `getAllAsync` methods.
+
+```ts
+interface GetOptions {
+  autobind?: boolean;
+  name?: MetadataName;
+  optional?: boolean;
+  tag?: GetOptionsTagConstraint;
+}
+```
+
+- `autobind` (boolean): Option to automatically bind unbound class services to themselves.
+- `name` (MetadataName): The name metadata to match bindings.
+- `optional` (boolean): If true, the method will return `undefined` or empty array if no binding is found.
+- `tag` (GetOptionsTagConstraint): The tag metadata to match bindings.
+
+## OptionalGetOptions
+
+Options that can be passed to the `get` and `getAsync` methods when the result is optional.
+
+```ts
+interface OptionalGetOptions extends GetOptions {
+  optional: true;
+}
+```
+
+- `optional` (true): Indicates that the result is optional and the method will return `undefined` if no binding is found.
