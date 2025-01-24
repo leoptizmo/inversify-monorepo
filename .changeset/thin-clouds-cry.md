@@ -2,4 +2,4 @@
 "@inversifyjs/core": minor
 ---
 
-Updated `GetOptions` with autobind.
+Updated `GetOptions` with autobind

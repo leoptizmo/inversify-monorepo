@@ -3,11 +3,13 @@ import { Newable } from '@inversifyjs/common';
 
 import { Archer } from '../models/Archer';
 import { Bow } from '../models/Bow';
+import { DualWieldSwordsman } from '../models/DualWieldSwordsman';
 import { Sword } from '../models/Sword';
 
 enum WarriorRelatedType {
   archer = 'archer',
   bow = 'bow',
+  dualWieldSwordsman = 'dual wield swordsman',
   sword = 'sword',
 }
 
@@ -20,6 +22,8 @@ defineParameterType({
         return Archer;
       case WarriorRelatedType.bow:
         return Bow;
+      case WarriorRelatedType.dualWieldSwordsman:
+        return DualWieldSwordsman;
       case WarriorRelatedType.sword:
         return Sword;
       default:
