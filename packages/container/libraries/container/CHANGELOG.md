@@ -8,7 +8,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [9c713eb]
+- Updated dependencies
   - @inversifyjs/core@3.3.0
 
 ## 1.3.4
