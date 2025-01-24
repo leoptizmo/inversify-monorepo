@@ -1,5 +1,11 @@
 # @inversifyjs/core
 
+## 3.3.0
+
+### Minor Changes
+
+- 9c713eb: Updated `GetOptions` with autobind
+
 ## 3.2.0
 
 ### Minor Changes
