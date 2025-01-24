@@ -37,11 +37,13 @@ import {
 import { IsBoundOptions } from '../models/isBoundOptions';
 
 export interface ContainerOptions {
+  autobind?: true;
   defaultScope?: BindingScope | undefined;
   parent?: Container | undefined;
 }
 
 interface InternalContainerOptions {
+  autobind: boolean;
   defaultScope: BindingScope;
 }
 
@@ -72,6 +74,7 @@ export class Container {
     }
 
     this.#options = {
+      autobind: options?.autobind ?? false,
       defaultScope: options?.defaultScope ?? DEFAULT_DEFAULT_SCOPE,
     };
     this.#snapshots = [];
@@ -376,6 +379,12 @@ export class Container {
     options: GetOptions | undefined,
   ): PlanResult {
     const planParams: PlanParams = {
+      autobindOptions:
+        (options?.autobind ?? this.#options.autobind)
+          ? {
+              scope: this.#options.defaultScope,
+            }
+          : undefined,
       getBindings: this.#bindingService.get.bind(this.#bindingService),
       getClassMetadata,
       rootConstraints: {
@@ -383,6 +392,7 @@ export class Container {
         serviceIdentifier,
       },
       servicesBranch: new Set(),
+      setBinding: this.#bindingService.set.bind(this.#bindingService),
     };
 
     this.#handlePlanParamsRootConstraints(planParams, options);

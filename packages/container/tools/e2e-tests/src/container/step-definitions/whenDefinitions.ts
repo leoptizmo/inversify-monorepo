@@ -1,5 +1,6 @@
 import { When } from '@cucumber/cucumber';
 import { Newable, ServiceIdentifier } from '@inversifyjs/common';
+import { GetOptions } from '@inversifyjs/core';
 
 import { defaultAlias } from '../../common/models/defaultAlias';
 import { InversifyWorld } from '../../common/models/InversifyWorld';
@@ -9,6 +10,7 @@ import { getContainerOrFail } from '../calculations/getContainerOrFail';
 function whenContainerGetsValueForService(
   this: InversifyWorld,
   serviceId: ServiceIdentifier,
+  options?: GetOptions,
   containerAlias?: string,
   valueAlias?: string,
 ): void {
@@ -17,7 +19,7 @@ function whenContainerGetsValueForService(
 
   setContainerGetRequest.bind(this)(
     parsedValueAlias,
-    getContainerOrFail.bind(this)(parsedContainerAlias).get(serviceId),
+    getContainerOrFail.bind(this)(parsedContainerAlias).get(serviceId, options),
   );
 }
 
@@ -36,10 +38,18 @@ When<InversifyWorld>(
 );
 
 When<InversifyWorld>(
+  'container gets a {warriorRelatedType} type value with autobind mode',
+  function (serviceId: Newable): void {
+    whenContainerGetsValueForService.bind(this)(serviceId, { autobind: true });
+  },
+);
+
+When<InversifyWorld>(
   'container gets a {string} value for service {string}',
   function (valueAlias: string, serviceId: string): void {
     whenContainerGetsValueForService.bind(this)(
       serviceId,
+      undefined,
       undefined,
       valueAlias,
     );

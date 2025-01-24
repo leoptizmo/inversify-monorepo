@@ -132,6 +132,7 @@ describe(plan.name, () => {
           serviceIdentifier: 'service-id',
         },
         servicesBranch: new Set(),
+        setBinding: jest.fn() as unknown,
       } as Partial<jest.Mocked<PlanParams>> as jest.Mocked<PlanParams>;
     });
 
@@ -406,6 +407,7 @@ describe(plan.name, () => {
 
       it('should call buildFilteredServiceBindings()', () => {
         const expectedSublan: jest.Mocked<SubplanParams> = {
+          autobindOptions: planParamsMock.autobindOptions,
           getBindings: planParamsMock.getBindings,
           getClassMetadata: planParamsMock.getClassMetadata,
           node: expect.any(
@@ -414,6 +416,7 @@ describe(plan.name, () => {
           servicesBranch: expect.any(Set) as unknown as jest.Mocked<
             Set<ServiceIdentifier>
           >,
+          setBinding: planParamsMock.setBinding,
         };
 
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(3);
@@ -588,6 +591,7 @@ describe(plan.name, () => {
 
       it('should call buildFilteredServiceBindings()', () => {
         const expectedSublan: jest.Mocked<SubplanParams> = {
+          autobindOptions: planParamsMock.autobindOptions,
           getBindings: planParamsMock.getBindings,
           getClassMetadata: planParamsMock.getClassMetadata,
           node: expect.any(
@@ -596,6 +600,7 @@ describe(plan.name, () => {
           servicesBranch: expect.any(Set) as unknown as jest.Mocked<
             Set<ServiceIdentifier>
           >,
+          setBinding: planParamsMock.setBinding,
         };
 
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(3);
@@ -771,6 +776,7 @@ describe(plan.name, () => {
 
       it('should call buildFilteredServiceBindings()', () => {
         const expectedSublan: jest.Mocked<SubplanParams> = {
+          autobindOptions: planParamsMock.autobindOptions,
           getBindings: planParamsMock.getBindings,
           getClassMetadata: planParamsMock.getClassMetadata,
           node: expect.any(
@@ -779,6 +785,7 @@ describe(plan.name, () => {
           servicesBranch: expect.any(Set) as unknown as jest.Mocked<
             Set<ServiceIdentifier>
           >,
+          setBinding: planParamsMock.setBinding,
         };
 
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(3);

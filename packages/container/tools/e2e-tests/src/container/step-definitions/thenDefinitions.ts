@@ -49,6 +49,21 @@ function thenDualWieldSworsdmanSwordsAreEqual(
   assert.ok(dualWieldSwordsman.leftSword === dualWieldSwordsman.rightSword);
 }
 
+function thenValueIsDualWieldSworsdmanWithTwoSwords(
+  this: InversifyWorld,
+  valueAlias?: string,
+): void {
+  const parsedValueAlias: string = valueAlias ?? defaultAlias;
+
+  const dualWieldSwordsman: DualWieldSwordsman =
+    getContainerGetRequestOrFail.bind(this)(
+      parsedValueAlias,
+    ) as DualWieldSwordsman;
+
+  assert.ok(dualWieldSwordsman.leftSword instanceof Sword);
+  assert.ok(dualWieldSwordsman.rightSword instanceof Sword);
+}
+
 function thenValuesAreDistinct(
   this: InversifyWorld,
   valueAliases: string[],
@@ -102,6 +117,13 @@ Then<InversifyWorld>(
   'dual wield swordsman swords are equal',
   function (): void {
     thenDualWieldSworsdmanSwordsAreEqual.bind(this)();
+  },
+);
+
+Then<InversifyWorld>(
+  'value is a dual wield swordsman with two swords',
+  function (): void {
+    thenValueIsDualWieldSworsdmanWithTwoSwords.bind(this)();
   },
 );
 

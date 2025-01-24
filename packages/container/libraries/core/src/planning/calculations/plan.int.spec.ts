@@ -389,10 +389,12 @@ describe(plan.name, () => {
 
         beforeAll(() => {
           result = plan({
+            autobindOptions: undefined,
             getBindings: bindingService.get.bind(bindingService),
             getClassMetadata: getClassMetadataFunction,
             rootConstraints: planParamsConstraint,
             servicesBranch: new Set(),
+            setBinding: bindingService.set.bind(bindingService),
           });
         });
 
@@ -451,10 +453,12 @@ Binding metadata:
         beforeAll(() => {
           try {
             plan({
+              autobindOptions: undefined,
               getBindings: bindingService.get.bind(bindingService),
               getClassMetadata: getClassMetadataFunction,
               rootConstraints: planParamsConstraint,
               servicesBranch: new Set(),
+              setBinding: bindingService.set.bind(bindingService),
             });
           } catch (error: unknown) {
             result = error;

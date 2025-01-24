@@ -172,182 +172,405 @@ describe(Container.name, () => {
   });
 
   describe('.get', () => {
-    describe('when called', () => {
-      let serviceIdentifierFixture: ServiceIdentifier;
-      let getOptionsFixture: GetOptions;
-
-      let planResultFixture: PlanResult;
-
-      let resolvedValueFixture: unknown;
-
-      let result: unknown;
+    describe('having a container with options with no autobind', () => {
+      let container: Container;
 
       beforeAll(() => {
-        serviceIdentifierFixture = 'service-id';
-        getOptionsFixture = {
-          name: 'name',
-          optional: true,
-          tag: {
-            key: 'tag-key',
-            value: Symbol(),
-          },
-        };
-
-        planResultFixture = Symbol() as unknown as PlanResult;
-
-        resolvedValueFixture = Symbol();
-
-        (plan as jest.Mock<typeof plan>).mockReturnValueOnce(planResultFixture);
-
-        (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce(
-          resolvedValueFixture,
-        );
-
-        result = new Container().get(
-          serviceIdentifierFixture,
-          getOptionsFixture,
-        );
+        container = new Container();
       });
 
-      afterAll(() => {
-        jest.clearAllMocks();
+      describe('when called', () => {
+        let serviceIdentifierFixture: ServiceIdentifier;
+        let getOptionsFixture: GetOptions;
+
+        let planResultFixture: PlanResult;
+
+        let resolvedValueFixture: unknown;
+
+        let result: unknown;
+
+        beforeAll(() => {
+          serviceIdentifierFixture = 'service-id';
+          getOptionsFixture = {
+            name: 'name',
+            optional: true,
+            tag: {
+              key: 'tag-key',
+              value: Symbol(),
+            },
+          };
+
+          planResultFixture = Symbol() as unknown as PlanResult;
+
+          resolvedValueFixture = Symbol();
+
+          (plan as jest.Mock<typeof plan>).mockReturnValueOnce(
+            planResultFixture,
+          );
+
+          (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce(
+            resolvedValueFixture,
+          );
+
+          result = container.get(serviceIdentifierFixture, getOptionsFixture);
+        });
+
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call plan()', () => {
+          const expectedPlanParams: PlanParams = {
+            autobindOptions: undefined,
+            getBindings: expect.any(Function) as unknown as <TInstance>(
+              serviceIdentifier: ServiceIdentifier<TInstance>,
+            ) => Binding<TInstance>[] | undefined,
+            getClassMetadata,
+            rootConstraints: {
+              isMultiple: false,
+              isOptional: getOptionsFixture.optional as true,
+              name: getOptionsFixture.name as string,
+              serviceIdentifier: serviceIdentifierFixture,
+              tag: getOptionsFixture.tag as GetOptionsTagConstraint,
+            },
+            servicesBranch: new Set(),
+            setBinding: expect.any(Function) as unknown as <TInstance>(
+              binding: Binding<TInstance>,
+            ) => void,
+          };
+
+          expect(plan).toHaveBeenCalledTimes(1);
+          expect(plan).toHaveBeenCalledWith(expectedPlanParams);
+        });
+
+        it('should call resolve()', () => {
+          const expectedResolveParams: ResolutionParams = {
+            context: {
+              get: expect.any(Function),
+              getAll: expect.any(Function),
+              getAllAsync: expect.any(Function),
+              getAsync: expect.any(Function),
+            } as unknown as ResolutionContext,
+            getActivations: expect.any(Function) as unknown as <TActivated>(
+              serviceIdentifier: ServiceIdentifier<TActivated>,
+            ) => Iterable<BindingActivation<TActivated>> | undefined,
+            planResult: planResultFixture,
+            requestScopeCache: new Map(),
+          };
+
+          expect(resolve).toHaveBeenCalledTimes(1);
+          expect(resolve).toHaveBeenCalledWith(expectedResolveParams);
+        });
+
+        it('should return expected value', () => {
+          expect(result).toBe(resolvedValueFixture);
+        });
       });
 
-      it('should call plan()', () => {
-        const expectedPlanParams: PlanParams = {
-          getBindings: expect.any(Function) as unknown as <TInstance>(
-            serviceIdentifier: ServiceIdentifier<TInstance>,
-          ) => Binding<TInstance>[] | undefined,
-          getClassMetadata,
-          rootConstraints: {
-            isMultiple: false,
-            isOptional: getOptionsFixture.optional as true,
-            name: getOptionsFixture.name as string,
-            serviceIdentifier: serviceIdentifierFixture,
-            tag: getOptionsFixture.tag as GetOptionsTagConstraint,
-          },
-          servicesBranch: new Set(),
-        };
+      describe('when called, and resolve returns Promise', () => {
+        let serviceIdentifierFixture: ServiceIdentifier;
+        let getOptionsFixture: GetOptions;
 
-        expect(plan).toHaveBeenCalledTimes(1);
-        expect(plan).toHaveBeenCalledWith(expectedPlanParams);
-      });
+        let planResultFixture: PlanResult;
 
-      it('should call resolve()', () => {
-        const expectedResolveParams: ResolutionParams = {
-          context: {
-            get: expect.any(Function),
-            getAll: expect.any(Function),
-            getAllAsync: expect.any(Function),
-            getAsync: expect.any(Function),
-          } as unknown as ResolutionContext,
-          getActivations: expect.any(Function) as unknown as <TActivated>(
-            serviceIdentifier: ServiceIdentifier<TActivated>,
-          ) => Iterable<BindingActivation<TActivated>> | undefined,
-          planResult: planResultFixture,
-          requestScopeCache: new Map(),
-        };
+        let resolvedValueFixture: unknown;
 
-        expect(resolve).toHaveBeenCalledTimes(1);
-        expect(resolve).toHaveBeenCalledWith(expectedResolveParams);
-      });
+        let result: unknown;
 
-      it('should return expected value', () => {
-        expect(result).toBe(resolvedValueFixture);
+        beforeAll(() => {
+          serviceIdentifierFixture = 'service-id';
+          getOptionsFixture = {
+            name: 'name',
+            optional: true,
+            tag: {
+              key: 'tag-key',
+              value: Symbol(),
+            },
+          };
+
+          planResultFixture = Symbol() as unknown as PlanResult;
+
+          resolvedValueFixture = Symbol();
+
+          (plan as jest.Mock<typeof plan>).mockReturnValueOnce(
+            planResultFixture,
+          );
+
+          (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce(
+            Promise.resolve(resolvedValueFixture),
+          );
+
+          try {
+            container.get(serviceIdentifierFixture, getOptionsFixture);
+          } catch (error: unknown) {
+            result = error;
+          }
+        });
+
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call plan()', () => {
+          const expectedPlanParams: PlanParams = {
+            autobindOptions: undefined,
+            getBindings: expect.any(Function) as unknown as <TInstance>(
+              serviceIdentifier: ServiceIdentifier<TInstance>,
+            ) => Binding<TInstance>[] | undefined,
+            getClassMetadata,
+            rootConstraints: {
+              isMultiple: false,
+              isOptional: getOptionsFixture.optional as true,
+              name: getOptionsFixture.name as string,
+              serviceIdentifier: serviceIdentifierFixture,
+              tag: getOptionsFixture.tag as GetOptionsTagConstraint,
+            },
+            servicesBranch: new Set(),
+            setBinding: expect.any(Function) as unknown as <TInstance>(
+              binding: Binding<TInstance>,
+            ) => void,
+          };
+
+          expect(plan).toHaveBeenCalledTimes(1);
+          expect(plan).toHaveBeenCalledWith(expectedPlanParams);
+        });
+
+        it('should call resolve()', () => {
+          const expectedResolveParams: ResolutionParams = {
+            context: {
+              get: expect.any(Function),
+              getAll: expect.any(Function),
+              getAllAsync: expect.any(Function),
+              getAsync: expect.any(Function),
+            } as unknown as ResolutionContext,
+            getActivations: expect.any(Function) as unknown as <TActivated>(
+              serviceIdentifier: ServiceIdentifier<TActivated>,
+            ) => Iterable<BindingActivation<TActivated>> | undefined,
+            planResult: planResultFixture,
+            requestScopeCache: new Map(),
+          };
+
+          expect(resolve).toHaveBeenCalledTimes(1);
+          expect(resolve).toHaveBeenCalledWith(expectedResolveParams);
+        });
+
+        it('should throw an InversifyContainerError', () => {
+          const expectedErrorProperties: Partial<InversifyContainerError> = {
+            kind: InversifyContainerErrorKind.invalidOperation,
+            message: `Unexpected asyncronous service when resolving service "${serviceIdentifierFixture as string}"`,
+          };
+
+          expect(result).toBeInstanceOf(InversifyContainerError);
+          expect(result).toStrictEqual(
+            expect.objectContaining(expectedErrorProperties),
+          );
+        });
       });
     });
 
-    describe('when called, and resolve returns Promise', () => {
-      let serviceIdentifierFixture: ServiceIdentifier;
-      let getOptionsFixture: GetOptions;
-
-      let planResultFixture: PlanResult;
-
-      let resolvedValueFixture: unknown;
-
-      let result: unknown;
+    describe('having a container with options with autobind true and default scope', () => {
+      let defaultScopeFixture: BindingScope;
+      let container: Container;
 
       beforeAll(() => {
-        serviceIdentifierFixture = 'service-id';
-        getOptionsFixture = {
-          name: 'name',
-          optional: true,
-          tag: {
-            key: 'tag-key',
-            value: Symbol(),
-          },
-        };
-
-        planResultFixture = Symbol() as unknown as PlanResult;
-
-        resolvedValueFixture = Symbol();
-
-        (plan as jest.Mock<typeof plan>).mockReturnValueOnce(planResultFixture);
-
-        (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce(
-          Promise.resolve(resolvedValueFixture),
-        );
-
-        try {
-          new Container().get(serviceIdentifierFixture, getOptionsFixture);
-        } catch (error: unknown) {
-          result = error;
-        }
+        defaultScopeFixture = bindingScopeValues.Singleton;
+        container = new Container({
+          autobind: true,
+          defaultScope: defaultScopeFixture,
+        });
       });
 
-      afterAll(() => {
-        jest.clearAllMocks();
+      describe('when called', () => {
+        let serviceIdentifierFixture: ServiceIdentifier;
+        let getOptionsFixture: GetOptions;
+
+        let planResultFixture: PlanResult;
+
+        let resolvedValueFixture: unknown;
+
+        let result: unknown;
+
+        beforeAll(() => {
+          serviceIdentifierFixture = 'service-id';
+          getOptionsFixture = {
+            name: 'name',
+            optional: true,
+            tag: {
+              key: 'tag-key',
+              value: Symbol(),
+            },
+          };
+
+          planResultFixture = Symbol() as unknown as PlanResult;
+
+          resolvedValueFixture = Symbol();
+
+          (plan as jest.Mock<typeof plan>).mockReturnValueOnce(
+            planResultFixture,
+          );
+
+          (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce(
+            resolvedValueFixture,
+          );
+
+          result = container.get(serviceIdentifierFixture, getOptionsFixture);
+        });
+
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call plan()', () => {
+          const expectedPlanParams: PlanParams = {
+            autobindOptions: {
+              scope: defaultScopeFixture,
+            },
+            getBindings: expect.any(Function) as unknown as <TInstance>(
+              serviceIdentifier: ServiceIdentifier<TInstance>,
+            ) => Binding<TInstance>[] | undefined,
+            getClassMetadata,
+            rootConstraints: {
+              isMultiple: false,
+              isOptional: getOptionsFixture.optional as true,
+              name: getOptionsFixture.name as string,
+              serviceIdentifier: serviceIdentifierFixture,
+              tag: getOptionsFixture.tag as GetOptionsTagConstraint,
+            },
+            servicesBranch: new Set(),
+            setBinding: expect.any(Function) as unknown as <TInstance>(
+              binding: Binding<TInstance>,
+            ) => void,
+          };
+
+          expect(plan).toHaveBeenCalledTimes(1);
+          expect(plan).toHaveBeenCalledWith(expectedPlanParams);
+        });
+
+        it('should call resolve()', () => {
+          const expectedResolveParams: ResolutionParams = {
+            context: {
+              get: expect.any(Function),
+              getAll: expect.any(Function),
+              getAllAsync: expect.any(Function),
+              getAsync: expect.any(Function),
+            } as unknown as ResolutionContext,
+            getActivations: expect.any(Function) as unknown as <TActivated>(
+              serviceIdentifier: ServiceIdentifier<TActivated>,
+            ) => Iterable<BindingActivation<TActivated>> | undefined,
+            planResult: planResultFixture,
+            requestScopeCache: new Map(),
+          };
+
+          expect(resolve).toHaveBeenCalledTimes(1);
+          expect(resolve).toHaveBeenCalledWith(expectedResolveParams);
+        });
+
+        it('should return expected value', () => {
+          expect(result).toBe(resolvedValueFixture);
+        });
+      });
+    });
+
+    describe('having a container with options no autobind and default scope and GetOptions with scope', () => {
+      let defaultScopeFixture: BindingScope;
+      let container: Container;
+
+      beforeAll(() => {
+        defaultScopeFixture = bindingScopeValues.Singleton;
+        container = new Container({
+          defaultScope: defaultScopeFixture,
+        });
       });
 
-      it('should call plan()', () => {
-        const expectedPlanParams: PlanParams = {
-          getBindings: expect.any(Function) as unknown as <TInstance>(
-            serviceIdentifier: ServiceIdentifier<TInstance>,
-          ) => Binding<TInstance>[] | undefined,
-          getClassMetadata,
-          rootConstraints: {
-            isMultiple: false,
-            isOptional: getOptionsFixture.optional as true,
-            name: getOptionsFixture.name as string,
-            serviceIdentifier: serviceIdentifierFixture,
-            tag: getOptionsFixture.tag as GetOptionsTagConstraint,
-          },
-          servicesBranch: new Set(),
-        };
+      describe('when called', () => {
+        let serviceIdentifierFixture: ServiceIdentifier;
+        let getOptionsFixture: GetOptions;
 
-        expect(plan).toHaveBeenCalledTimes(1);
-        expect(plan).toHaveBeenCalledWith(expectedPlanParams);
-      });
+        let planResultFixture: PlanResult;
 
-      it('should call resolve()', () => {
-        const expectedResolveParams: ResolutionParams = {
-          context: {
-            get: expect.any(Function),
-            getAll: expect.any(Function),
-            getAllAsync: expect.any(Function),
-            getAsync: expect.any(Function),
-          } as unknown as ResolutionContext,
-          getActivations: expect.any(Function) as unknown as <TActivated>(
-            serviceIdentifier: ServiceIdentifier<TActivated>,
-          ) => Iterable<BindingActivation<TActivated>> | undefined,
-          planResult: planResultFixture,
-          requestScopeCache: new Map(),
-        };
+        let resolvedValueFixture: unknown;
 
-        expect(resolve).toHaveBeenCalledTimes(1);
-        expect(resolve).toHaveBeenCalledWith(expectedResolveParams);
-      });
+        let result: unknown;
 
-      it('should throw an InversifyContainerError', () => {
-        const expectedErrorProperties: Partial<InversifyContainerError> = {
-          kind: InversifyContainerErrorKind.invalidOperation,
-          message: `Unexpected asyncronous service when resolving service "${serviceIdentifierFixture as string}"`,
-        };
+        beforeAll(() => {
+          serviceIdentifierFixture = 'service-id';
+          getOptionsFixture = {
+            autobind: true,
+            name: 'name',
+            optional: true,
+            tag: {
+              key: 'tag-key',
+              value: Symbol(),
+            },
+          };
 
-        expect(result).toBeInstanceOf(InversifyContainerError);
-        expect(result).toStrictEqual(
-          expect.objectContaining(expectedErrorProperties),
-        );
+          planResultFixture = Symbol() as unknown as PlanResult;
+
+          resolvedValueFixture = Symbol();
+
+          (plan as jest.Mock<typeof plan>).mockReturnValueOnce(
+            planResultFixture,
+          );
+
+          (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce(
+            resolvedValueFixture,
+          );
+
+          result = container.get(serviceIdentifierFixture, getOptionsFixture);
+        });
+
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call plan()', () => {
+          const expectedPlanParams: PlanParams = {
+            autobindOptions: {
+              scope: defaultScopeFixture,
+            },
+            getBindings: expect.any(Function) as unknown as <TInstance>(
+              serviceIdentifier: ServiceIdentifier<TInstance>,
+            ) => Binding<TInstance>[] | undefined,
+            getClassMetadata,
+            rootConstraints: {
+              isMultiple: false,
+              isOptional: getOptionsFixture.optional as true,
+              name: getOptionsFixture.name as string,
+              serviceIdentifier: serviceIdentifierFixture,
+              tag: getOptionsFixture.tag as GetOptionsTagConstraint,
+            },
+            servicesBranch: new Set(),
+            setBinding: expect.any(Function) as unknown as <TInstance>(
+              binding: Binding<TInstance>,
+            ) => void,
+          };
+
+          expect(plan).toHaveBeenCalledTimes(1);
+          expect(plan).toHaveBeenCalledWith(expectedPlanParams);
+        });
+
+        it('should call resolve()', () => {
+          const expectedResolveParams: ResolutionParams = {
+            context: {
+              get: expect.any(Function),
+              getAll: expect.any(Function),
+              getAllAsync: expect.any(Function),
+              getAsync: expect.any(Function),
+            } as unknown as ResolutionContext,
+            getActivations: expect.any(Function) as unknown as <TActivated>(
+              serviceIdentifier: ServiceIdentifier<TActivated>,
+            ) => Iterable<BindingActivation<TActivated>> | undefined,
+            planResult: planResultFixture,
+            requestScopeCache: new Map(),
+          };
+
+          expect(resolve).toHaveBeenCalledTimes(1);
+          expect(resolve).toHaveBeenCalledWith(expectedResolveParams);
+        });
+
+        it('should return expected value', () => {
+          expect(result).toBe(resolvedValueFixture);
+        });
       });
     });
   });
@@ -396,6 +619,7 @@ describe(Container.name, () => {
 
       it('should call plan()', () => {
         const expectedPlanParams: PlanParams = {
+          autobindOptions: undefined,
           getBindings: expect.any(Function) as unknown as <TInstance>(
             serviceIdentifier: ServiceIdentifier<TInstance>,
           ) => Binding<TInstance>[] | undefined,
@@ -408,6 +632,9 @@ describe(Container.name, () => {
             tag: getOptionsFixture.tag as GetOptionsTagConstraint,
           },
           servicesBranch: new Set(),
+          setBinding: expect.any(Function) as unknown as <TInstance>(
+            binding: Binding<TInstance>,
+          ) => void,
         };
 
         expect(plan).toHaveBeenCalledTimes(1);
@@ -482,6 +709,7 @@ describe(Container.name, () => {
 
       it('should call plan()', () => {
         const expectedPlanParams: PlanParams = {
+          autobindOptions: undefined,
           getBindings: expect.any(Function) as unknown as <TInstance>(
             serviceIdentifier: ServiceIdentifier<TInstance>,
           ) => Binding<TInstance>[] | undefined,
@@ -494,6 +722,9 @@ describe(Container.name, () => {
             tag: getOptionsFixture.tag as GetOptionsTagConstraint,
           },
           servicesBranch: new Set(),
+          setBinding: expect.any(Function) as unknown as <TInstance>(
+            binding: Binding<TInstance>,
+          ) => void,
         };
 
         expect(plan).toHaveBeenCalledTimes(1);
@@ -577,6 +808,7 @@ describe(Container.name, () => {
 
       it('should call plan()', () => {
         const expectedPlanParams: PlanParams = {
+          autobindOptions: undefined,
           getBindings: expect.any(Function) as unknown as <TInstance>(
             serviceIdentifier: ServiceIdentifier<TInstance>,
           ) => Binding<TInstance>[] | undefined,
@@ -589,6 +821,9 @@ describe(Container.name, () => {
             tag: getOptionsFixture.tag as GetOptionsTagConstraint,
           },
           servicesBranch: new Set(),
+          setBinding: expect.any(Function) as unknown as <TInstance>(
+            binding: Binding<TInstance>,
+          ) => void,
         };
 
         expect(plan).toHaveBeenCalledTimes(1);
@@ -664,6 +899,7 @@ describe(Container.name, () => {
 
       it('should call plan()', () => {
         const expectedPlanParams: PlanParams = {
+          autobindOptions: undefined,
           getBindings: expect.any(Function) as unknown as <TInstance>(
             serviceIdentifier: ServiceIdentifier<TInstance>,
           ) => Binding<TInstance>[] | undefined,
@@ -676,6 +912,9 @@ describe(Container.name, () => {
             tag: getOptionsFixture.tag as GetOptionsTagConstraint,
           },
           servicesBranch: new Set(),
+          setBinding: expect.any(Function) as unknown as <TInstance>(
+            binding: Binding<TInstance>,
+          ) => void,
         };
 
         expect(plan).toHaveBeenCalledTimes(1);
