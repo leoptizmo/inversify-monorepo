@@ -1,8 +1,11 @@
-import { ServiceIdentifier } from '@inversifyjs/common';
+import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 
 import { Binding } from '../../binding/models/Binding';
 import { BindingMetadata } from '../../binding/models/BindingMetadata';
+import { bindingTypeValues } from '../../binding/models/BindingType';
+import { InstanceBinding } from '../../binding/models/InstanceBinding';
 import { BasePlanParams } from '../models/BasePlanParams';
+import { BasePlanParamsAutobindOptions } from '../models/BasePlanParamsAutobindOptions';
 
 export interface BuildFilteredServiceBindingsOptions {
   customServiceIdentifier?: ServiceIdentifier;
@@ -20,7 +23,46 @@ export function buildFilteredServiceBindings(
     ...(params.getBindings(serviceIdentifier) ?? []),
   ];
 
-  return serviceBindings.filter((binding: Binding<unknown>): boolean =>
-    binding.isSatisfiedBy(bindingMetadata),
+  const filteredBindings: Binding<unknown>[] = serviceBindings.filter(
+    (binding: Binding<unknown>): boolean =>
+      binding.isSatisfiedBy(bindingMetadata),
   );
+
+  if (
+    filteredBindings.length === 0 &&
+    params.autobindOptions !== undefined &&
+    typeof serviceIdentifier === 'function'
+  ) {
+    const binding: InstanceBinding<unknown> = buildInstanceBinding(
+      params.autobindOptions,
+      serviceIdentifier as Newable,
+    );
+
+    params.setBinding(binding);
+
+    filteredBindings.push(binding);
+  }
+
+  return filteredBindings;
+}
+
+function buildInstanceBinding(
+  autobindOptions: BasePlanParamsAutobindOptions,
+  serviceIdentifier: Newable,
+): InstanceBinding<unknown> {
+  return {
+    cache: {
+      isRight: false,
+      value: undefined,
+    },
+    id: 0,
+    implementationType: serviceIdentifier,
+    isSatisfiedBy: () => true,
+    moduleId: undefined,
+    onActivation: undefined,
+    onDeactivation: undefined,
+    scope: autobindOptions.scope,
+    serviceIdentifier,
+    type: bindingTypeValues.Instance,
+  };
 }

@@ -108,10 +108,12 @@ function buildInstancePlanBindingNode(
   };
 
   const subplanParams: SubplanParams = {
+    autobindOptions: params.autobindOptions,
     getBindings: params.getBindings,
     getClassMetadata: params.getClassMetadata,
     node: childNode,
     servicesBranch: params.servicesBranch,
+    setBinding: params.setBinding,
   };
 
   return subplan(subplanParams, bindingMetadataList);

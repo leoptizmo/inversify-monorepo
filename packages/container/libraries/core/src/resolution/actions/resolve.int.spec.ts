@@ -251,6 +251,7 @@ describe(resolve.name, () => {
       options: GetOptions | undefined,
     ): PlanResult {
       const planParams: PlanParams = {
+        autobindOptions: undefined,
         getBindings: bindingService.get.bind(bindingService),
         getClassMetadata: getClassMetadataFunction,
         rootConstraints: {
@@ -258,6 +259,7 @@ describe(resolve.name, () => {
           serviceIdentifier,
         },
         servicesBranch: new Set(),
+        setBinding: bindingService.set.bind(bindingService),
       };
 
       handlePlanParamsRootConstraints(planParams, options);
@@ -491,10 +493,12 @@ describe(resolve.name, () => {
           expectedResult = expectedResultBuilder();
 
           const planResult: PlanResult = plan({
+            autobindOptions: undefined,
             getBindings: bindingService.get.bind(bindingService),
             getClassMetadata: getClassMetadataFunction,
             rootConstraints: planParamsConstraint(),
             servicesBranch: new Set(),
+            setBinding: bindingService.set.bind(bindingService),
           });
 
           result = resolve({
