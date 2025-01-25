@@ -60,7 +60,10 @@ import { PlanServiceNode } from './planning/models/PlanServiceNode';
 import { PlanServiceNodeParent } from './planning/models/PlanServiceNodeParent';
 import { PlanServiceRedirectionBindingNode } from './planning/models/PlanServiceRedirectionBindingNode';
 import { PlanTree } from './planning/models/PlanTree';
-import { PlanResultCacheService } from './planning/services/PlanResultCacheService';
+import {
+  GetPlanOptions,
+  PlanResultCacheService,
+} from './planning/services/PlanResultCacheService';
 import { resolve } from './resolution/actions/resolve';
 import { resolveModuleDeactivations } from './resolution/actions/resolveModuleDeactivations';
 import { resolveServiceDeactivations } from './resolution/actions/resolveServiceDeactivations';
@@ -93,6 +96,7 @@ export type {
   DynamicValueBuilder,
   Factory,
   FactoryBinding,
+  GetPlanOptions,
   GetOptions,
   GetOptionsTagConstraint,
   InstanceBinding,
@@ -106,7 +110,6 @@ export type {
   PlanParamsConstraint,
   PlanParamsTagConstraint,
   PlanResult,
-  PlanResultCacheService,
   PlanServiceNode,
   PlanServiceNodeParent,
   PlanServiceRedirectionBindingNode,
@@ -139,6 +142,7 @@ export {
   postConstruct,
   plan,
   preDestroy,
+  PlanResultCacheService,
   resolve,
   resolveModuleDeactivations,
   resolveServiceDeactivations,

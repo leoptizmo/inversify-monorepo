@@ -13,32 +13,40 @@ describe(PlanResultCacheService.name, () => {
         'isMultiple false and optional false',
         {
           isMultiple: false,
+          name: undefined,
           optional: false,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
+          tag: undefined,
         },
       ],
       [
         'isMultiple false and optional true',
         {
           isMultiple: false,
+          name: undefined,
           optional: true,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
+          tag: undefined,
         },
       ],
       [
         'isMultiple true and optional false',
         {
           isMultiple: true,
+          name: undefined,
           optional: false,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
+          tag: undefined,
         },
       ],
       [
         'isMultiple true and optional true',
         {
           isMultiple: true,
+          name: undefined,
           optional: true,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
+          tag: undefined,
         },
       ],
       [
@@ -47,7 +55,8 @@ describe(PlanResultCacheService.name, () => {
           isMultiple: false,
           name: 'name',
           optional: false,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
+          tag: undefined,
         },
       ],
       [
@@ -56,7 +65,8 @@ describe(PlanResultCacheService.name, () => {
           isMultiple: false,
           name: 'name',
           optional: true,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
+          tag: undefined,
         },
       ],
       [
@@ -65,7 +75,8 @@ describe(PlanResultCacheService.name, () => {
           isMultiple: true,
           name: 'name',
           optional: false,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
+          tag: undefined,
         },
       ],
       [
@@ -74,15 +85,17 @@ describe(PlanResultCacheService.name, () => {
           isMultiple: true,
           name: 'name',
           optional: true,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
+          tag: undefined,
         },
       ],
       [
         'isMultiple false, optional false and tag',
         {
           isMultiple: false,
+          name: undefined,
           optional: false,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
           tag: {
             key: 'key',
             value: 'value',
@@ -93,8 +106,9 @@ describe(PlanResultCacheService.name, () => {
         'isMultiple false, optional true and tag',
         {
           isMultiple: false,
+          name: undefined,
           optional: true,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
           tag: {
             key: 'key',
             value: 'value',
@@ -105,8 +119,9 @@ describe(PlanResultCacheService.name, () => {
         'isMultiple true, optional false and tag',
         {
           isMultiple: true,
+          name: undefined,
           optional: false,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
           tag: {
             key: 'key',
             value: 'value',
@@ -117,8 +132,9 @@ describe(PlanResultCacheService.name, () => {
         'isMultiple true, optional true and tag',
         {
           isMultiple: true,
+          name: undefined,
           optional: true,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
           tag: {
             key: 'key',
             value: 'value',
@@ -131,7 +147,7 @@ describe(PlanResultCacheService.name, () => {
           isMultiple: false,
           name: 'name',
           optional: false,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
           tag: {
             key: 'key',
             value: 'value',
@@ -144,7 +160,7 @@ describe(PlanResultCacheService.name, () => {
           isMultiple: false,
           name: 'name',
           optional: true,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
           tag: {
             key: 'key',
             value: 'value',
@@ -157,7 +173,7 @@ describe(PlanResultCacheService.name, () => {
           isMultiple: true,
           name: 'name',
           optional: false,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
           tag: {
             key: 'key',
             value: 'value',
@@ -170,7 +186,7 @@ describe(PlanResultCacheService.name, () => {
           isMultiple: true,
           name: 'name',
           optional: true,
-          serviceId: 'service-id',
+          serviceIdentifier: 'service-id',
           tag: {
             key: 'key',
             value: 'value',
@@ -203,8 +219,10 @@ describe(PlanResultCacheService.name, () => {
     beforeAll(() => {
       options = {
         isMultiple: false,
+        name: undefined,
         optional: false,
-        serviceId: 'service-id',
+        serviceIdentifier: 'service-id',
+        tag: undefined,
       };
     });
 
