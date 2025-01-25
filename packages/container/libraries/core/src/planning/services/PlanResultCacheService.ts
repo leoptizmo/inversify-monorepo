@@ -13,7 +13,7 @@ enum GetPlanBooleanOptionsMask {
   length = 4,
 }
 
-export interface GetPlanOptionsTagConstraint {
+interface GetPlanOptionsTagConstraint {
   key: MetadataTag;
   value: unknown;
 }
