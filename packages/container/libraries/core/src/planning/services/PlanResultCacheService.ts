@@ -19,11 +19,11 @@ interface GetPlanOptionsTagConstraint {
 }
 
 export interface GetPlanOptions {
-  serviceId: ServiceIdentifier;
+  serviceIdentifier: ServiceIdentifier;
   isMultiple: boolean;
-  name?: MetadataName;
-  optional?: boolean;
-  tag?: GetPlanOptionsTagConstraint;
+  name: MetadataName | undefined;
+  optional: boolean | undefined;
+  tag: GetPlanOptionsTagConstraint | undefined;
 }
 
 /**
@@ -81,13 +81,13 @@ export class PlanResultCacheService {
         return this.#getMapFromMapArray(
           this.#serviceIdToValuePlanMap,
           options,
-        ).get(options.serviceId);
+        ).get(options.serviceIdentifier);
       } else {
         return this.#getMapFromMapArray(
           this.#taggedServiceIdToValuePlanMap,
           options,
         )
-          .get(options.serviceId)
+          .get(options.serviceIdentifier)
           ?.get(options.tag.key)
           ?.get(options.tag.value);
       }
@@ -97,14 +97,14 @@ export class PlanResultCacheService {
           this.#namedServiceIdToValuePlanMap,
           options,
         )
-          .get(options.serviceId)
+          .get(options.serviceIdentifier)
           ?.get(options.name);
       } else {
         return this.#getMapFromMapArray(
           this.#namedTaggedServiceIdToValuePlanMap,
           options,
         )
-          .get(options.serviceId)
+          .get(options.serviceIdentifier)
           ?.get(options.name)
           ?.get(options.tag.key)
           ?.get(options.tag.value);
@@ -116,7 +116,7 @@ export class PlanResultCacheService {
     if (options.name === undefined) {
       if (options.tag === undefined) {
         this.#getMapFromMapArray(this.#serviceIdToValuePlanMap, options).set(
-          options.serviceId,
+          options.serviceIdentifier,
           planResult,
         );
       } else {
@@ -126,7 +126,7 @@ export class PlanResultCacheService {
               this.#taggedServiceIdToValuePlanMap,
               options,
             ),
-            options.serviceId,
+            options.serviceIdentifier,
           ),
           options.tag.key,
         ).set(options.tag.value, planResult);
@@ -135,7 +135,7 @@ export class PlanResultCacheService {
       if (options.tag === undefined) {
         this.#getOrBuildMapValueFromMapMap(
           this.#getMapFromMapArray(this.#namedServiceIdToValuePlanMap, options),
-          options.serviceId,
+          options.serviceIdentifier,
         ).set(options.name, planResult);
       } else {
         this.#getOrBuildMapValueFromMapMap(
@@ -145,7 +145,7 @@ export class PlanResultCacheService {
                 this.#namedTaggedServiceIdToValuePlanMap,
                 options,
               ),
-              options.serviceId,
+              options.serviceIdentifier,
             ),
             options.name,
           ),
