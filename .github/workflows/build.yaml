@@ -83,7 +83,7 @@ jobs:
             \`\`\`bash
             ${{steps.run-cjs-benchmarks.outputs.result}}
             \`\`\`
-            `\`\`\`bash
+            \`\`\`bash
             ${{steps.run-esm-benchmarks.outputs.result}}
             \`\`\``
             })
