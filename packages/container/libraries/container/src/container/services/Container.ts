@@ -94,7 +94,7 @@ export class Container {
   ): BindToFluentSyntax<T> {
     return new BindToFluentSyntaxImplementation(
       (binding: Binding): void => {
-        this.#bindingService.set(binding);
+        this.#setBinding(binding);
       },
       undefined,
       this.#options.defaultScope,
@@ -343,7 +343,7 @@ export class Container {
       ): BindToFluentSyntax<T> => {
         return new BindToFluentSyntaxImplementation(
           (binding: Binding): void => {
-            this.#bindingService.set(binding);
+            this.#setBinding(binding);
           },
           moduleId,
           this.#options.defaultScope,
@@ -423,7 +423,7 @@ export class Container {
         serviceIdentifier,
       },
       servicesBranch: new Set(),
-      setBinding: this.#bindingService.set.bind(this.#bindingService),
+      setBinding: this.#setBinding.bind(this),
     };
 
     this.#handlePlanParamsRootConstraints(planParams, options);
@@ -529,5 +529,11 @@ export class Container {
     }
 
     return false;
+  }
+
+  #setBinding(binding: Binding): void {
+    this.#bindingService.set(binding);
+
+    this.#planResultCacheService.clearCache();
   }
 }
