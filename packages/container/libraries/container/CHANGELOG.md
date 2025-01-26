@@ -1,5 +1,11 @@
 # @inversifyjs/container
 
+## 1.4.2
+
+### Patch Changes
+
+- 1f659f7: Updated `Container` to properly clear planning cache after new bindings are bound
+
 ## 1.4.1
 
 ### Patch Changes
