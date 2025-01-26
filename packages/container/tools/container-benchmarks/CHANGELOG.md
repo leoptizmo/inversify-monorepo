@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [1f659f7]
+- Updated dependencies
   - @inversifyjs/container@1.4.2
 
 ## 3.3.1
