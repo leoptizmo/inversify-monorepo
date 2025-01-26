@@ -38,10 +38,11 @@ jobs:
       - name: Check for unused code
         run: pnpm run unused --no-config-hints
 
-  run-benchmarks:
+  run-container-benchmarks:
     name: Run benchmarks
     needs: build
     runs-on: ubuntu-latest
+    if: ${{ contains(needs.build.outputs.affectedPackages, '@inversifyjs/container') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
