@@ -55,11 +55,19 @@ jobs:
 
       - name: Run benchmarks (CommonJS)
         id: run-cjs-benchmarks
-        run: echo "result=$(pnpm exec container-benchmarks-run-cjs)" >> $GITHUB_OUTPUT
+        run: |
+              EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+              echo "result<<$EOF" >> $GITHUB_OUTPUT
+              echo "$(pnpm exec container-benchmarks-run-cjs)" >> $GITHUB_OUTPUT
+              echo "$EOF" >> $GITHUB_OUTPUT
 
       - name: Run benchmarks (ESM)
         id: run-esm-benchmarks
-        run: echo "result=$(pnpm exec container-benchmarks-run-esm)" >> $GITHUB_OUTPUT
+        run: |
+              EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+              echo "result<<$EOF" >> $GITHUB_OUTPUT
+              echo "$(pnpm exec container-benchmarks-run-esm)" >> $GITHUB_OUTPUT
+              echo "$EOF" >> $GITHUB_OUTPUT
 
       - uses: actions/github-script@v7
         with:
