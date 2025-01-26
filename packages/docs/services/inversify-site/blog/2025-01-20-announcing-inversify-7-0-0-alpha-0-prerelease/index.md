@@ -2,7 +2,7 @@
 slug: announcing-inversify-7-0-0-alpha-0-prerelease
 title: Announcing 7.0.0-alpha.0
 authors: [notaphplover]
-tags: []
+tags: [releases]
 ---
 
 It's been a while since the last time `inversify` released a major version. Some exciting changes are on their way, and we are announcing them in a prerelease so you can participate and [discuss](https://github.com/inversify/InversifyJS/discussions/1712) them before it's finally released.
