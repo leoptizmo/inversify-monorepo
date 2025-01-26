@@ -177,14 +177,10 @@ async function run(): Promise<void> {
   const codeExamplePaths: string[] = await getExamplePaths();
 
   for (const codeExamplePath of codeExamplePaths) {
-    console.log(`Generating code example at ${codeExamplePath}...`);
-
     await writeSourceCodeExample(
       codeExamplePath,
       await generateExampleFromSourceCode(codeExamplePath),
     );
-
-    console.log('Code example generated successfully');
   }
 }
 
