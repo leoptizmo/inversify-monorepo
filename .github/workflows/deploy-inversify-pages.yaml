@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy Inversify docs to GitHub Pages
 
 on:
   workflow_dispatch:
