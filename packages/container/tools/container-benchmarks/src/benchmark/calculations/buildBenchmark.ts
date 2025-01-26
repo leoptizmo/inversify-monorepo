@@ -2,7 +2,7 @@ import { Bench, BenchOptions } from 'tinybench';
 
 import { Scenario } from '../../scenario/models/Scenario';
 
-export interface BuildBenchmarkOptions {
+interface BuildBenchmarkOptions {
   benchOptions?: BenchOptions;
   scenarios: Scenario[];
 }

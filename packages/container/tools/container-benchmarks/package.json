@@ -9,7 +9,6 @@
     "container-benchmarks-run-esm": "./bin/run-esm.mjs"
   },
   "dependencies": {
-    "@inversifyjs/common": "workspace:*",
     "@inversifyjs/container": "workspace:*",
     "@inversifyjs/core": "workspace:*",
     "inversify6": "npm:inversify@6.2.1",
