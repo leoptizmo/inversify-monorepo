@@ -9,6 +9,7 @@
     "@commitlint/cli": "19.6.1",
     "@commitlint/config-conventional": "19.6.0",
     "@commitlint/prompt-cli": "19.7.0",
+    "@inversifyjs/container-benchmarks": "workspace:*",
     "@inversifyjs/foundation-eslint-config": "workspace:*",
     "@inversifyjs/foundation-jest-config": "workspace:*",
     "@inversifyjs/foundation-prettier-config": "workspace:*",
