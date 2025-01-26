@@ -5,8 +5,8 @@ import { themes as prismThemes } from 'prism-react-renderer';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  baseUrl: '/monorepo',
-  deploymentBranch: 'gh-pages',
+  baseUrl: '/',
+  deploymentBranch: 'master',
   favicon: 'img/favicon.ico',
   future: {
     experimental_faster: true,
@@ -59,7 +59,7 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
-  projectName: 'monorepo',
+  projectName: 'inversify.github.io',
   tagline:
     'A powerful and lightweight inversion of control container for JavaScript & Node.js apps powered by TypeScript',
   themeConfig: {
