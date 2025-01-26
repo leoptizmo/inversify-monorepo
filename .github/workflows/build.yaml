@@ -77,9 +77,14 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `${{steps.run-cjs-benchmarks.outputs.result}}
-
-            ${{steps.run-esm-benchmarks.outputs.result}}`
+              body: `Benchmarks results:
+            ---
+            \`\`\`bash
+            ${{steps.run-cjs-benchmarks.outputs.result}}
+            \`\`\`
+            `\`\`\`bash
+            ${{steps.run-esm-benchmarks.outputs.result}}
+            \`\`\``
             })
 
   test-package:
