@@ -19,6 +19,9 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - name: Compile source files
+        run: pnpm run build --filter @inversifyjs/inversify-docs-site
+
       - uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.ROOT_DOC_PAGES_DEPLOYMENT_PRIVATE_KEY }}
@@ -26,8 +29,6 @@ jobs:
         env:
           USE_SSH: true
         run: |
-          git config --global user.email "actions@github.com"
+          git config --global user.email "inversify.github.io.deploy@github.com"
           git config --global user.name "gh-actions"
-          pnpm install
-          pnpm run build --filter @inversifyjs/inversify-docs-site
           pnpm deploy:inversify:pages
