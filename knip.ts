@@ -13,7 +13,11 @@ const defaultWorkspaceProjectConfig: WorkspaceProjectConfig & {
     "{index,cli,main}.{js,cjs,mjs,jsx,ts,cts,mts,tsx}",
     "src/{index,cli,main}.{js,cjs,mjs,jsx,ts,cts,mts,tsx}",
   ],
-  ignoreDependencies: ["ts-loader", "tslib"],
+  ignoreDependencies: [
+    "@inversifyjs/container-benchmarks",
+    "ts-loader",
+    "tslib",
+  ],
   project: [
     "**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}!",
     "!jest.config.stryker.mjs",

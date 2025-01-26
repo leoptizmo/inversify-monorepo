@@ -38,10 +38,55 @@ jobs:
       - name: Check for unused code
         run: pnpm run unused --no-config-hints
 
-      - name: Get current git commit hash
-        id: get-git-commit-hash
+  run-container-benchmarks:
+    name: Run benchmarks
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ contains(needs.build.outputs.affectedPackages, '@inversifyjs/container') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Compile source files
+        run: pnpm run build
+
+      - name: Run benchmarks (CommonJS)
+        id: run-cjs-benchmarks
         run: |
-          echo "gitCommitHash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+              EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+              echo "result<<$EOF" >> $GITHUB_OUTPUT
+              echo "$(pnpm exec container-benchmarks-run-cjs)" >> $GITHUB_OUTPUT
+              echo "$EOF" >> $GITHUB_OUTPUT
+
+      - name: Run benchmarks (ESM)
+        id: run-esm-benchmarks
+        run: |
+              EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+              echo "result<<$EOF" >> $GITHUB_OUTPUT
+              echo "$(pnpm exec container-benchmarks-run-esm)" >> $GITHUB_OUTPUT
+              echo "$EOF" >> $GITHUB_OUTPUT
+
+      - uses: actions/github-script@v7
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Benchmarks results:
+            ---
+            \`\`\`bash
+            ${{steps.run-cjs-benchmarks.outputs.result}}
+            \`\`\`
+            \`\`\`bash
+            ${{steps.run-esm-benchmarks.outputs.result}}
+            \`\`\``
+            })
 
   test-package:
     name: Test package
@@ -59,11 +104,6 @@ jobs:
           fetch-depth: 0
 
       - uses: ./.github/actions/setup
-
-      - name: Get current git commit hash
-        id: get-git-commit-hash
-        run: |
-          echo "gitCommitHash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Launch Unit Tests
         run: pnpm run test:unit:js --filter ${{ join(matrix.packages, ' --filter ') }}
