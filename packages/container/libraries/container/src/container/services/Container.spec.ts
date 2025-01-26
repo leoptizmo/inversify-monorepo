@@ -21,9 +21,11 @@ import {
   getClassMetadata,
   GetOptions,
   GetOptionsTagConstraint,
+  GetPlanOptions,
   plan,
   PlanParams,
   PlanResult,
+  PlanResultCacheService,
   ResolutionContext,
   ResolutionParams,
   resolve,
@@ -46,6 +48,14 @@ describe(Container.name, () => {
   let activationServiceMock: jest.Mocked<ActivationsService>;
   let bindingServiceMock: jest.Mocked<BindingService>;
   let deactivationServiceMock: jest.Mocked<DeactivationsService>;
+
+  let clearCacheMock: jest.Mock<() => void>;
+  let getPlanResultMock: jest.Mock<
+    (options: GetPlanOptions) => PlanResult | undefined
+  >;
+  let setPlanResultMock: jest.Mock<
+    (options: GetPlanOptions, planResult: PlanResult) => void
+  >;
 
   beforeAll(() => {
     activationServiceMock = {
@@ -74,6 +84,10 @@ describe(Container.name, () => {
       jest.Mocked<DeactivationsService>
     > as jest.Mocked<DeactivationsService>;
 
+    clearCacheMock = jest.fn();
+    getPlanResultMock = jest.fn();
+    setPlanResultMock = jest.fn();
+
     (
       ActivationsService.build as jest.Mock<() => ActivationsService>
     ).mockReturnValue(activationServiceMock);
@@ -84,6 +98,18 @@ describe(Container.name, () => {
     (
       DeactivationsService.build as jest.Mock<() => DeactivationsService>
     ).mockReturnValue(deactivationServiceMock);
+
+    (
+      PlanResultCacheService as jest.Mock<() => PlanResultCacheService>
+    ).mockImplementation(function (
+      this: PlanResultCacheService,
+    ): PlanResultCacheService {
+      this.clearCache = clearCacheMock;
+      this.get = getPlanResultMock;
+      this.set = setPlanResultMock;
+
+      return this;
+    });
   });
 
   describe('.constructor', () => {
@@ -219,6 +245,21 @@ describe(Container.name, () => {
           jest.clearAllMocks();
         });
 
+        it('should call planResultCacheService.get()', () => {
+          const expectedGetPlanOptions: GetPlanOptions = {
+            isMultiple: false,
+            name: getOptionsFixture.name,
+            optional: getOptionsFixture.optional,
+            serviceIdentifier: serviceIdentifierFixture,
+            tag: getOptionsFixture.tag,
+          };
+
+          expect(getPlanResultMock).toHaveBeenCalledTimes(1);
+          expect(getPlanResultMock).toHaveBeenCalledWith(
+            expectedGetPlanOptions,
+          );
+        });
+
         it('should call plan()', () => {
           const expectedPlanParams: PlanParams = {
             autobindOptions: undefined,
@@ -241,6 +282,107 @@ describe(Container.name, () => {
 
           expect(plan).toHaveBeenCalledTimes(1);
           expect(plan).toHaveBeenCalledWith(expectedPlanParams);
+        });
+
+        it('should call planResultCacheService.set()', () => {
+          const expectedGetPlanOptions: GetPlanOptions = {
+            isMultiple: false,
+            name: getOptionsFixture.name,
+            optional: getOptionsFixture.optional,
+            serviceIdentifier: serviceIdentifierFixture,
+            tag: getOptionsFixture.tag,
+          };
+
+          expect(setPlanResultMock).toHaveBeenCalledTimes(1);
+          expect(setPlanResultMock).toHaveBeenCalledWith(
+            expectedGetPlanOptions,
+            planResultFixture,
+          );
+        });
+
+        it('should call resolve()', () => {
+          const expectedResolveParams: ResolutionParams = {
+            context: {
+              get: expect.any(Function),
+              getAll: expect.any(Function),
+              getAllAsync: expect.any(Function),
+              getAsync: expect.any(Function),
+            } as unknown as ResolutionContext,
+            getActivations: expect.any(Function) as unknown as <TActivated>(
+              serviceIdentifier: ServiceIdentifier<TActivated>,
+            ) => Iterable<BindingActivation<TActivated>> | undefined,
+            planResult: planResultFixture,
+            requestScopeCache: new Map(),
+          };
+
+          expect(resolve).toHaveBeenCalledTimes(1);
+          expect(resolve).toHaveBeenCalledWith(expectedResolveParams);
+        });
+
+        it('should return expected value', () => {
+          expect(result).toBe(resolvedValueFixture);
+        });
+      });
+
+      describe('when called, and planResultCacheService.get() returns a plan', () => {
+        let serviceIdentifierFixture: ServiceIdentifier;
+        let getOptionsFixture: GetOptions;
+
+        let planResultFixture: PlanResult;
+
+        let resolvedValueFixture: unknown;
+
+        let result: unknown;
+
+        beforeAll(() => {
+          serviceIdentifierFixture = 'service-id';
+          getOptionsFixture = {
+            name: 'name',
+            optional: true,
+            tag: {
+              key: 'tag-key',
+              value: Symbol(),
+            },
+          };
+
+          planResultFixture = Symbol() as unknown as PlanResult;
+
+          resolvedValueFixture = Symbol();
+
+          getPlanResultMock.mockReturnValueOnce(planResultFixture);
+
+          (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce(
+            resolvedValueFixture,
+          );
+
+          result = container.get(serviceIdentifierFixture, getOptionsFixture);
+        });
+
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call planResultCacheService.get()', () => {
+          const expectedGetPlanOptions: GetPlanOptions = {
+            isMultiple: false,
+            name: getOptionsFixture.name,
+            optional: getOptionsFixture.optional,
+            serviceIdentifier: serviceIdentifierFixture,
+            tag: getOptionsFixture.tag,
+          };
+
+          expect(getPlanResultMock).toHaveBeenCalledTimes(1);
+          expect(getPlanResultMock).toHaveBeenCalledWith(
+            expectedGetPlanOptions,
+          );
+        });
+
+        it('should not call plan', () => {
+          expect(plan).not.toHaveBeenCalled();
+        });
+
+        it('should not call planResultCacheService.set', () => {
+          expect(setPlanResultMock).not.toHaveBeenCalled();
         });
 
         it('should call resolve()', () => {
@@ -311,6 +453,21 @@ describe(Container.name, () => {
           jest.clearAllMocks();
         });
 
+        it('should call planResultCacheService.get()', () => {
+          const expectedGetPlanOptions: GetPlanOptions = {
+            isMultiple: false,
+            name: getOptionsFixture.name,
+            optional: getOptionsFixture.optional,
+            serviceIdentifier: serviceIdentifierFixture,
+            tag: getOptionsFixture.tag,
+          };
+
+          expect(getPlanResultMock).toHaveBeenCalledTimes(1);
+          expect(getPlanResultMock).toHaveBeenCalledWith(
+            expectedGetPlanOptions,
+          );
+        });
+
         it('should call plan()', () => {
           const expectedPlanParams: PlanParams = {
             autobindOptions: undefined,
@@ -333,6 +490,22 @@ describe(Container.name, () => {
 
           expect(plan).toHaveBeenCalledTimes(1);
           expect(plan).toHaveBeenCalledWith(expectedPlanParams);
+        });
+
+        it('should call planResultCacheService.set()', () => {
+          const expectedGetPlanOptions: GetPlanOptions = {
+            isMultiple: false,
+            name: getOptionsFixture.name,
+            optional: getOptionsFixture.optional,
+            serviceIdentifier: serviceIdentifierFixture,
+            tag: getOptionsFixture.tag,
+          };
+
+          expect(setPlanResultMock).toHaveBeenCalledTimes(1);
+          expect(setPlanResultMock).toHaveBeenCalledWith(
+            expectedGetPlanOptions,
+            planResultFixture,
+          );
         });
 
         it('should call resolve()', () => {
@@ -420,6 +593,21 @@ describe(Container.name, () => {
           jest.clearAllMocks();
         });
 
+        it('should call planResultCacheService.get()', () => {
+          const expectedGetPlanOptions: GetPlanOptions = {
+            isMultiple: false,
+            name: getOptionsFixture.name,
+            optional: getOptionsFixture.optional,
+            serviceIdentifier: serviceIdentifierFixture,
+            tag: getOptionsFixture.tag,
+          };
+
+          expect(getPlanResultMock).toHaveBeenCalledTimes(1);
+          expect(getPlanResultMock).toHaveBeenCalledWith(
+            expectedGetPlanOptions,
+          );
+        });
+
         it('should call plan()', () => {
           const expectedPlanParams: PlanParams = {
             autobindOptions: {
@@ -444,6 +632,22 @@ describe(Container.name, () => {
 
           expect(plan).toHaveBeenCalledTimes(1);
           expect(plan).toHaveBeenCalledWith(expectedPlanParams);
+        });
+
+        it('should call planResultCacheService.set()', () => {
+          const expectedGetPlanOptions: GetPlanOptions = {
+            isMultiple: false,
+            name: getOptionsFixture.name,
+            optional: getOptionsFixture.optional,
+            serviceIdentifier: serviceIdentifierFixture,
+            tag: getOptionsFixture.tag,
+          };
+
+          expect(setPlanResultMock).toHaveBeenCalledTimes(1);
+          expect(setPlanResultMock).toHaveBeenCalledWith(
+            expectedGetPlanOptions,
+            planResultFixture,
+          );
         });
 
         it('should call resolve()', () => {
@@ -471,7 +675,7 @@ describe(Container.name, () => {
       });
     });
 
-    describe('having a container with options no autobind and default scope and GetOptions with scope', () => {
+    describe('having a container with options with no autobind and default scope and GetOptions with scope', () => {
       let defaultScopeFixture: BindingScope;
       let container: Container;
 
@@ -523,6 +727,21 @@ describe(Container.name, () => {
           jest.clearAllMocks();
         });
 
+        it('should call planResultCacheService.get()', () => {
+          const expectedGetPlanOptions: GetPlanOptions = {
+            isMultiple: false,
+            name: getOptionsFixture.name,
+            optional: getOptionsFixture.optional,
+            serviceIdentifier: serviceIdentifierFixture,
+            tag: getOptionsFixture.tag,
+          };
+
+          expect(getPlanResultMock).toHaveBeenCalledTimes(1);
+          expect(getPlanResultMock).toHaveBeenCalledWith(
+            expectedGetPlanOptions,
+          );
+        });
+
         it('should call plan()', () => {
           const expectedPlanParams: PlanParams = {
             autobindOptions: {
@@ -547,6 +766,22 @@ describe(Container.name, () => {
 
           expect(plan).toHaveBeenCalledTimes(1);
           expect(plan).toHaveBeenCalledWith(expectedPlanParams);
+        });
+
+        it('should call planResultCacheService.set()', () => {
+          const expectedGetPlanOptions: GetPlanOptions = {
+            isMultiple: false,
+            name: getOptionsFixture.name,
+            optional: getOptionsFixture.optional,
+            serviceIdentifier: serviceIdentifierFixture,
+            tag: getOptionsFixture.tag,
+          };
+
+          expect(setPlanResultMock).toHaveBeenCalledTimes(1);
+          expect(setPlanResultMock).toHaveBeenCalledWith(
+            expectedGetPlanOptions,
+            planResultFixture,
+          );
         });
 
         it('should call resolve()', () => {
@@ -617,6 +852,19 @@ describe(Container.name, () => {
         jest.clearAllMocks();
       });
 
+      it('should call planResultCacheService.get()', () => {
+        const expectedGetPlanOptions: GetPlanOptions = {
+          isMultiple: true,
+          name: getOptionsFixture.name,
+          optional: getOptionsFixture.optional,
+          serviceIdentifier: serviceIdentifierFixture,
+          tag: getOptionsFixture.tag,
+        };
+
+        expect(getPlanResultMock).toHaveBeenCalledTimes(1);
+        expect(getPlanResultMock).toHaveBeenCalledWith(expectedGetPlanOptions);
+      });
+
       it('should call plan()', () => {
         const expectedPlanParams: PlanParams = {
           autobindOptions: undefined,
@@ -639,6 +887,22 @@ describe(Container.name, () => {
 
         expect(plan).toHaveBeenCalledTimes(1);
         expect(plan).toHaveBeenCalledWith(expectedPlanParams);
+      });
+
+      it('should call planResultCacheService.set()', () => {
+        const expectedGetPlanOptions: GetPlanOptions = {
+          isMultiple: true,
+          name: getOptionsFixture.name,
+          optional: getOptionsFixture.optional,
+          serviceIdentifier: serviceIdentifierFixture,
+          tag: getOptionsFixture.tag,
+        };
+
+        expect(setPlanResultMock).toHaveBeenCalledTimes(1);
+        expect(setPlanResultMock).toHaveBeenCalledWith(
+          expectedGetPlanOptions,
+          planResultFixture,
+        );
       });
 
       it('should call resolve()', () => {
@@ -707,6 +971,19 @@ describe(Container.name, () => {
         jest.clearAllMocks();
       });
 
+      it('should call planResultCacheService.get()', () => {
+        const expectedGetPlanOptions: GetPlanOptions = {
+          isMultiple: true,
+          name: getOptionsFixture.name,
+          optional: getOptionsFixture.optional,
+          serviceIdentifier: serviceIdentifierFixture,
+          tag: getOptionsFixture.tag,
+        };
+
+        expect(getPlanResultMock).toHaveBeenCalledTimes(1);
+        expect(getPlanResultMock).toHaveBeenCalledWith(expectedGetPlanOptions);
+      });
+
       it('should call plan()', () => {
         const expectedPlanParams: PlanParams = {
           autobindOptions: undefined,
@@ -729,6 +1006,22 @@ describe(Container.name, () => {
 
         expect(plan).toHaveBeenCalledTimes(1);
         expect(plan).toHaveBeenCalledWith(expectedPlanParams);
+      });
+
+      it('should call planResultCacheService.set()', () => {
+        const expectedGetPlanOptions: GetPlanOptions = {
+          isMultiple: true,
+          name: getOptionsFixture.name,
+          optional: getOptionsFixture.optional,
+          serviceIdentifier: serviceIdentifierFixture,
+          tag: getOptionsFixture.tag,
+        };
+
+        expect(setPlanResultMock).toHaveBeenCalledTimes(1);
+        expect(setPlanResultMock).toHaveBeenCalledWith(
+          expectedGetPlanOptions,
+          planResultFixture,
+        );
       });
 
       it('should call resolve()', () => {
@@ -806,6 +1099,19 @@ describe(Container.name, () => {
         jest.clearAllMocks();
       });
 
+      it('should call planResultCacheService.get()', () => {
+        const expectedGetPlanOptions: GetPlanOptions = {
+          isMultiple: true,
+          name: getOptionsFixture.name,
+          optional: getOptionsFixture.optional,
+          serviceIdentifier: serviceIdentifierFixture,
+          tag: getOptionsFixture.tag,
+        };
+
+        expect(getPlanResultMock).toHaveBeenCalledTimes(1);
+        expect(getPlanResultMock).toHaveBeenCalledWith(expectedGetPlanOptions);
+      });
+
       it('should call plan()', () => {
         const expectedPlanParams: PlanParams = {
           autobindOptions: undefined,
@@ -828,6 +1134,22 @@ describe(Container.name, () => {
 
         expect(plan).toHaveBeenCalledTimes(1);
         expect(plan).toHaveBeenCalledWith(expectedPlanParams);
+      });
+
+      it('should call planResultCacheService.set()', () => {
+        const expectedGetPlanOptions: GetPlanOptions = {
+          isMultiple: true,
+          name: getOptionsFixture.name,
+          optional: getOptionsFixture.optional,
+          serviceIdentifier: serviceIdentifierFixture,
+          tag: getOptionsFixture.tag,
+        };
+
+        expect(setPlanResultMock).toHaveBeenCalledTimes(1);
+        expect(setPlanResultMock).toHaveBeenCalledWith(
+          expectedGetPlanOptions,
+          planResultFixture,
+        );
       });
 
       it('should call resolve()', () => {
@@ -897,6 +1219,19 @@ describe(Container.name, () => {
         jest.clearAllMocks();
       });
 
+      it('should call planResultCacheService.get()', () => {
+        const expectedGetPlanOptions: GetPlanOptions = {
+          isMultiple: false,
+          name: getOptionsFixture.name,
+          optional: getOptionsFixture.optional,
+          serviceIdentifier: serviceIdentifierFixture,
+          tag: getOptionsFixture.tag,
+        };
+
+        expect(getPlanResultMock).toHaveBeenCalledTimes(1);
+        expect(getPlanResultMock).toHaveBeenCalledWith(expectedGetPlanOptions);
+      });
+
       it('should call plan()', () => {
         const expectedPlanParams: PlanParams = {
           autobindOptions: undefined,
@@ -919,6 +1254,22 @@ describe(Container.name, () => {
 
         expect(plan).toHaveBeenCalledTimes(1);
         expect(plan).toHaveBeenCalledWith(expectedPlanParams);
+      });
+
+      it('should call planResultCacheService.set()', () => {
+        const expectedGetPlanOptions: GetPlanOptions = {
+          isMultiple: false,
+          name: getOptionsFixture.name,
+          optional: getOptionsFixture.optional,
+          serviceIdentifier: serviceIdentifierFixture,
+          tag: getOptionsFixture.tag,
+        };
+
+        expect(setPlanResultMock).toHaveBeenCalledTimes(1);
+        expect(setPlanResultMock).toHaveBeenCalledWith(
+          expectedGetPlanOptions,
+          planResultFixture,
+        );
       });
 
       it('should call resolve()', () => {
@@ -1453,6 +1804,10 @@ describe(Container.name, () => {
           }
         });
 
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
         it('should throw an InversifyContainerError', () => {
           const expectedErrorProperties: Partial<InversifyContainerError> = {
             kind: InversifyContainerErrorKind.invalidOperation,
@@ -1463,6 +1818,37 @@ describe(Container.name, () => {
           expect(result).toStrictEqual(
             expect.objectContaining(expectedErrorProperties),
           );
+        });
+      });
+    });
+
+    describe('having a container with a snapshot', () => {
+      let container: Container;
+
+      beforeAll(() => {
+        container = new Container();
+      });
+
+      describe('when called', () => {
+        let result: unknown;
+
+        beforeAll(() => {
+          container.snapshot();
+
+          result = container.restore();
+        });
+
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call planResultCacheService.clearCache()', () => {
+          expect(clearCacheMock).toHaveBeenCalledTimes(1);
+          expect(clearCacheMock).toHaveBeenCalledWith();
+        });
+
+        it('should return undefined', () => {
+          expect(result).toBeUndefined();
         });
       });
     });
@@ -1569,6 +1955,11 @@ describe(Container.name, () => {
         ).toHaveBeenCalledWith(serviceIdentifierFixture);
       });
 
+      it('should call planResultCacheService.clearCache()', () => {
+        expect(clearCacheMock).toHaveBeenCalledTimes(1);
+        expect(clearCacheMock).toHaveBeenCalledWith();
+      });
+
       it('should return undefined', () => {
         expect(result).toBeUndefined();
       });
@@ -1638,6 +2029,11 @@ describe(Container.name, () => {
         }
       });
 
+      it('should call planResultCacheService.clearCache()', () => {
+        expect(clearCacheMock).toHaveBeenCalledTimes(1);
+        expect(clearCacheMock).toHaveBeenCalledWith();
+      });
+
       it('should return undefined', () => {
         expect(result).toBeUndefined();
       });
@@ -1685,6 +2081,11 @@ describe(Container.name, () => {
           expectedParams,
           containerModuleFixture.id,
         );
+      });
+
+      it('should call planResultCacheService.clearCache()', () => {
+        expect(clearCacheMock).toHaveBeenCalledTimes(1);
+        expect(clearCacheMock).toHaveBeenCalledWith();
       });
 
       it('should return undefined', () => {

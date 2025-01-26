@@ -16,10 +16,12 @@ import {
   DeactivationsService,
   getClassMetadata,
   GetOptions,
+  GetPlanOptions,
   OptionalGetOptions,
   plan,
   PlanParams,
   PlanResult,
+  PlanResultCacheService,
   resolve,
   resolveModuleDeactivations,
   resolveServiceDeactivations,
@@ -54,10 +56,17 @@ export class Container {
   #bindingService: BindingService;
   #deactivationService: DeactivationsService;
   readonly #options: InternalContainerOptions;
+  readonly #planResultCacheService: PlanResultCacheService;
   readonly #snapshots: Snapshot[];
 
   constructor(options?: ContainerOptions) {
-    if (options?.parent !== undefined) {
+    this.#planResultCacheService = new PlanResultCacheService();
+
+    if (options?.parent === undefined) {
+      this.#activationService = ActivationsService.build(undefined);
+      this.#bindingService = BindingService.build(undefined);
+      this.#deactivationService = DeactivationsService.build(undefined);
+    } else {
       this.#activationService = ActivationsService.build(
         options.parent.#activationService,
       );
@@ -67,10 +76,10 @@ export class Container {
       this.#deactivationService = DeactivationsService.build(
         options.parent.#deactivationService,
       );
-    } else {
-      this.#activationService = ActivationsService.build(undefined);
-      this.#bindingService = BindingService.build(undefined);
-      this.#deactivationService = DeactivationsService.build(undefined);
+
+      options.parent.#planResultCacheService.subscribe(
+        this.#planResultCacheService,
+      );
     }
 
     this.#options = {
@@ -85,7 +94,7 @@ export class Container {
   ): BindToFluentSyntax<T> {
     return new BindToFluentSyntaxImplementation(
       (binding: Binding): void => {
-        this.#bindingService.set(binding);
+        this.#setBinding(binding);
       },
       undefined,
       this.#options.defaultScope,
@@ -241,6 +250,8 @@ export class Container {
     this.#activationService = snapshot.activationService;
     this.#bindingService = snapshot.bindingService;
     this.#deactivationService = snapshot.deactivationService;
+
+    this.#planResultCacheService.clearCache();
   }
 
   public snapshot(): void {
@@ -260,6 +271,8 @@ export class Container {
     this.#activationService.removeAllByServiceId(serviceIdentifier);
     this.#bindingService.removeAllByServiceId(serviceIdentifier);
     this.#deactivationService.removeAllByServiceId(serviceIdentifier);
+
+    this.#planResultCacheService.clearCache();
   }
 
   public async unbindAll(): Promise<void> {
@@ -290,6 +303,8 @@ export class Container {
       this.#bindingService.removeAllByServiceId(serviceId);
       this.#deactivationService.removeAllByServiceId(serviceId);
     }
+
+    this.#planResultCacheService.clearCache();
   }
 
   public async unload(...modules: ContainerModule[]): Promise<void> {
@@ -315,6 +330,8 @@ export class Container {
       this.#bindingService.removeAllByModuleId(module.id);
       this.#deactivationService.removeAllByModuleId(module.id);
     }
+
+    this.#planResultCacheService.clearCache();
   }
 
   #buildContainerModuleLoadOptions(
@@ -326,7 +343,7 @@ export class Container {
       ): BindToFluentSyntax<T> => {
         return new BindToFluentSyntaxImplementation(
           (binding: Binding): void => {
-            this.#bindingService.set(binding);
+            this.#setBinding(binding);
           },
           moduleId,
           this.#options.defaultScope,
@@ -373,11 +390,25 @@ export class Container {
     };
   }
 
-  #buildPlanResult(
+  #buildGetPlanOptions(
     isMultiple: boolean,
     serviceIdentifier: ServiceIdentifier,
     options: GetOptions | undefined,
-  ): PlanResult {
+  ): GetPlanOptions {
+    return {
+      isMultiple,
+      name: options?.name,
+      optional: options?.optional,
+      serviceIdentifier,
+      tag: options?.tag,
+    };
+  }
+
+  #buildPlanParams(
+    isMultiple: boolean,
+    serviceIdentifier: ServiceIdentifier,
+    options: GetOptions | undefined,
+  ): PlanParams {
     const planParams: PlanParams = {
       autobindOptions:
         (options?.autobind ?? this.#options.autobind)
@@ -392,12 +423,39 @@ export class Container {
         serviceIdentifier,
       },
       servicesBranch: new Set(),
-      setBinding: this.#bindingService.set.bind(this.#bindingService),
+      setBinding: this.#setBinding.bind(this),
     };
 
     this.#handlePlanParamsRootConstraints(planParams, options);
 
-    return plan(planParams);
+    return planParams;
+  }
+
+  #buildPlanResult(
+    isMultiple: boolean,
+    serviceIdentifier: ServiceIdentifier,
+    options: GetOptions | undefined,
+  ): PlanResult {
+    const getPlanOptions: GetPlanOptions = this.#buildGetPlanOptions(
+      isMultiple,
+      serviceIdentifier,
+      options,
+    );
+
+    const planResultFromCache: PlanResult | undefined =
+      this.#planResultCacheService.get(getPlanOptions);
+
+    if (planResultFromCache !== undefined) {
+      return planResultFromCache;
+    }
+
+    const planResult: PlanResult = plan(
+      this.#buildPlanParams(isMultiple, serviceIdentifier, options),
+    );
+
+    this.#planResultCacheService.set(getPlanOptions, planResult);
+
+    return planResult;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
@@ -471,5 +529,11 @@ export class Container {
     }
 
     return false;
+  }
+
+  #setBinding(binding: Binding): void {
+    this.#bindingService.set(binding);
+
+    this.#planResultCacheService.clearCache();
   }
 }
