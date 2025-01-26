@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy Inversify docs to GitHub Pages
 
 on:
   workflow_dispatch:
@@ -29,6 +29,6 @@ jobs:
         env:
           USE_SSH: true
         run: |
-          git config --global user.email "inversify.github.io.deploy@github.com"
-          git config --global user.name "gh-actions"
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           pnpm deploy:inversify:pages
