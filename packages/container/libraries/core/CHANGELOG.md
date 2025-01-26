@@ -1,5 +1,11 @@
 # @inversifyjs/core
 
+## 3.4.0
+
+### Minor Changes
+
+- b1a18b6: Added `PlanResultCacheService`
+
 ## 3.3.0
 
 ### Minor Changes
