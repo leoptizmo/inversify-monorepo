@@ -50,6 +50,9 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - name: Compile source files
+        run: pnpm run build
+
       - name: Run benchmarks (CommonJS)
         id: run-cjs-benchmarks
         run: echo "result=$(pnpm exec container-benchmarks-run-cjs)" >> $GITHUB_OUTPUT
@@ -67,7 +70,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `${{steps.run-cjs-benchmarks.outputs.result}}
-            
+
             ${{steps.run-esm-benchmarks.outputs.result}}`
             })
 
