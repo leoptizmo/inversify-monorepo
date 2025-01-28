@@ -5,43 +5,23 @@ import fs from 'node:fs/promises';
 import { glob } from 'glob';
 import ts from 'typescript';
 import path from 'node:path';
+import {
+  RelevantCommentKind,
+  RelevantCommentPosition,
+  RelevantCommentPositions,
+  ReplaceRange,
+} from './types.mjs';
 
 const SRC_FOLDER: string = './src';
 const EXAMPLES_GLOB_PATTERN: string = `${SRC_FOLDER}/examples/**/*.ts`;
 const TEST_EXAMPLES_GLOB_PATTERN: string = `${SRC_FOLDER}/examples/**/*.spec.ts`;
-
-enum RelevantCommentKind {
-  begin,
-  end,
-  exclude,
-  isInversifyImport,
-}
-
-interface RelevantCommentPosition<
-  TKind extends RelevantCommentKind = RelevantCommentKind,
-> {
-  kind: TKind;
-  node: ts.Node;
-  range: ts.CommentRange;
-}
-
-interface RelevantCommentPositions {
-  kindToPositionsMap: {
-    [TKind in RelevantCommentKind]: RelevantCommentPosition<TKind>[];
-  };
-  list: RelevantCommentPosition[];
-}
-
-interface ReplaceRange {
-  deleteRange: [number, number];
-  replacement: string | ((text: string) => string) | undefined;
-}
 
 const BEGIN_EXAMPLE_COMMENT: string = '// Begin-example';
 const END_EXAMPLE_COMMENT: string = '// End-example';
 const EXCLUDE_FROM_EXAMPLE_COMMENT: string = '// Exclude-from-example';
 const IS_INVERSIFY_IMPORT_EXAMPLE_COMMENT: string =
   '// Is-inversify-import-example';
+const SHIFT_LINES_SPACES_2_COMMENT: string = '// Shift-line-spaces-2';
 
 const NODE_IMPORT_REXEP: RegExp = /^(.*)(import.*)(['"])([^'"]+)(['"])(.*)$/gms;
 const INVERSIFY_NODE_IMPORT_REPLACE: string = '$2$3inversify$5$6';
@@ -53,6 +33,7 @@ const commentToRelevantCommentKindMap: {
   [END_EXAMPLE_COMMENT]: RelevantCommentKind.end,
   [EXCLUDE_FROM_EXAMPLE_COMMENT]: RelevantCommentKind.exclude,
   [IS_INVERSIFY_IMPORT_EXAMPLE_COMMENT]: RelevantCommentKind.isInversifyImport,
+  [SHIFT_LINES_SPACES_2_COMMENT]: RelevantCommentKind.shiftLineSpaces2,
 };
 
 function findRelevantCommentPositions(
@@ -65,6 +46,7 @@ function findRelevantCommentPositions(
       [RelevantCommentKind.end]: [],
       [RelevantCommentKind.exclude]: [],
       [RelevantCommentKind.isInversifyImport]: [],
+      [RelevantCommentKind.shiftLineSpaces2]: [],
     },
     list: [],
   };
@@ -76,67 +58,24 @@ function findRelevantCommentPositions(
    */
   for (const childNode of sourceFileNode.getChildren()) {
     for (const granchildNode of childNode.getChildren()) {
-      visitRelevantCommentPositions(fileContent, granchildNode, positions);
+      visitRelevantCommentPositions(
+        sourceFileNode,
+        fileContent,
+        granchildNode,
+        positions,
+      );
     }
   }
 
   // Visit the end of file token node.
   visitRelevantCommentPositions(
+    sourceFileNode,
     fileContent,
     sourceFileNode.endOfFileToken,
     positions,
   );
 
   return positions;
-}
-
-function visitRelevantCommentPositions(
-  fileContent: string,
-  node: ts.Node,
-  positions: RelevantCommentPositions,
-): void {
-  for (const comment of ts.getLeadingCommentRanges(
-    fileContent,
-    node.getFullStart(),
-  ) ?? []) {
-    const commentContent: string = fileContent.substring(
-      comment.pos,
-      comment.end,
-    );
-
-    const relevanCommentKind: RelevantCommentKind | undefined =
-      commentToRelevantCommentKindMap[commentContent];
-
-    if (relevanCommentKind !== undefined) {
-      const relevantCommentPosition: RelevantCommentPosition = {
-        kind: relevanCommentKind,
-        node,
-        range: comment,
-      };
-
-      (
-        positions.kindToPositionsMap as Record<
-          RelevantCommentKind,
-          RelevantCommentPosition[]
-        >
-      )[relevanCommentKind].push(relevantCommentPosition);
-
-      positions.list.push(relevantCommentPosition);
-    }
-  }
-
-  // sourceFileNode.getSourceFile() might return undefined!
-  if (node.getSourceFile() === undefined) {
-    return;
-  }
-
-  for (const childNode of node.getChildren()) {
-    visitRelevantCommentPositions(fileContent, childNode, positions);
-  }
-}
-
-async function getExamplePaths(): Promise<string[]> {
-  return glob(EXAMPLES_GLOB_PATTERN, { ignore: TEST_EXAMPLES_GLOB_PATTERN });
 }
 
 async function generateExampleFromSourceCode(
@@ -156,35 +95,9 @@ async function generateExampleFromSourceCode(
   return transformSourceFile(sourceFile, relevantCommentPositions);
 }
 
-async function writeSourceCodeExample(
-  sourcePath: string,
-  sourceContent: string,
-): Promise<void> {
-  const destinationPath: string = `${sourcePath.replace('src', 'generated')}.txt`;
-
-  const directory = path.dirname(destinationPath);
-
-  try {
-    await fs.stat(directory);
-  } catch (_error: unknown) {
-    await fs.mkdir(directory, { recursive: true });
-  }
-
-  await fs.writeFile(destinationPath, sourceContent);
+async function getExamplePaths(): Promise<string[]> {
+  return glob(EXAMPLES_GLOB_PATTERN, { ignore: TEST_EXAMPLES_GLOB_PATTERN });
 }
-
-async function run(): Promise<void> {
-  const codeExamplePaths: string[] = await getExamplePaths();
-
-  for (const codeExamplePath of codeExamplePaths) {
-    await writeSourceCodeExample(
-      codeExamplePath,
-      await generateExampleFromSourceCode(codeExamplePath),
-    );
-  }
-}
-
-await run();
 
 function getReplaceRanges(
   sourceFile: ts.SourceFile,
@@ -264,6 +177,17 @@ function getReplaceRanges(
   return replaceRanges;
 }
 
+async function run(): Promise<void> {
+  const codeExamplePaths: string[] = await getExamplePaths();
+
+  for (const codeExamplePath of codeExamplePaths) {
+    await writeSourceCodeExample(
+      codeExamplePath,
+      await generateExampleFromSourceCode(codeExamplePath),
+    );
+  }
+}
+
 function transformSourceFile(
   sourceFile: ts.SourceFile,
   positions: RelevantCommentPositions,
@@ -297,3 +221,68 @@ function transformSourceFile(
 
   return transformedSourceCode;
 }
+
+function visitRelevantCommentPositions(
+  sourceFileNode: ts.SourceFile,
+  fileContent: string,
+  node: ts.Node,
+  positions: RelevantCommentPositions,
+): void {
+  for (const comment of ts.getLeadingCommentRanges(
+    fileContent,
+    node.getFullStart(),
+  ) ?? []) {
+    const commentContent: string = fileContent.substring(
+      comment.pos,
+      comment.end,
+    );
+
+    const relevanCommentKind: RelevantCommentKind | undefined =
+      commentToRelevantCommentKindMap[commentContent];
+
+    if (relevanCommentKind !== undefined) {
+      const relevantCommentPosition: RelevantCommentPosition = {
+        kind: relevanCommentKind,
+        node,
+        range: comment,
+      };
+
+      (
+        positions.kindToPositionsMap as Record<
+          RelevantCommentKind,
+          RelevantCommentPosition[]
+        >
+      )[relevanCommentKind].push(relevantCommentPosition);
+
+      positions.list.push(relevantCommentPosition);
+    }
+  }
+
+  for (const childNode of node.getChildren(sourceFileNode)) {
+    visitRelevantCommentPositions(
+      sourceFileNode,
+      fileContent,
+      childNode,
+      positions,
+    );
+  }
+}
+
+async function writeSourceCodeExample(
+  sourcePath: string,
+  sourceContent: string,
+): Promise<void> {
+  const destinationPath: string = `${sourcePath.replace('src', 'generated')}.txt`;
+
+  const directory = path.dirname(destinationPath);
+
+  try {
+    await fs.stat(directory);
+  } catch (_error: unknown) {
+    await fs.mkdir(directory, { recursive: true });
+  }
+
+  await fs.writeFile(destinationPath, sourceContent);
+}
+
+await run();
