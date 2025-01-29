@@ -79,7 +79,7 @@ function buildBaseConfig() {
       '@typescript-eslint/no-magic-numbers': [
         'warn',
         {
-          ignore: [0, 1],
+          ignore: [-1, 0, 1],
           ignoreArrayIndexes: true,
           ignoreEnums: true,
           ignoreReadonlyClassProperties: true,
@@ -163,8 +163,8 @@ const baseRules = buildBaseConfig();
 export default tseslint.config(
   {
     ...baseRules,
-    files: ['**/*.{ts,tsx}'],
-    ignores: ['**/*.spec.{ts,tsx}'],
+    files: ['**/*.{cjs,mts,ts,tsx}'],
+    ignores: ['**/*.spec.{cjs,mts,ts,tsx}'],
   },
   {
     ...baseRules,
@@ -173,7 +173,7 @@ export default tseslint.config(
       jestPlugin.configs['flat/recommended'],
       jestPlugin.configs['flat/style'],
     ],
-    files: ['**/*.spec.{ts,tsx}'],
+    files: ['**/*.spec.{cjs,mts,ts,tsx}'],
     plugins: {
       ...(baseRules.plugins ?? {}),
       jest: jestPlugin,

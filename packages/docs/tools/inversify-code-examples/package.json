@@ -51,7 +51,7 @@
     "build:cjs": "tsc --build tsconfig.cjs.json && pnpm exec foundation-ts-package-cjs ./lib/cjs",
     "build:clean": "rimraf generated lib",
     "format": "prettier --write ./src/**/*.ts",
-    "generate:examples": "node ./lib/cjs/scripts/generateExamples.mjs",
+    "generate:examples": "node ./lib/cjs/scripts/generateExamples/index.mjs",
     "lint": "eslint ./src",
     "prebuild": "pnpm run build:clean",
     "test": "jest --config=jest.config.mjs --runInBand",

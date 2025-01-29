@@ -41,7 +41,7 @@ export default {
     "packages/docs/services/*": defaultWorkspaceProjectConfig,
     "packages/docs/tools/*": defaultWorkspaceProjectConfig,
     "packages/docs/tools/inversify-code-examples": {
-      entry: ["src/examples/**/*.ts", "src/scripts/generateExamples.mts"],
+      entry: ["src/examples/**/*.ts", "src/scripts/generateExamples/index.mts"],
       ignoreDependencies: [
         ...defaultWorkspaceProjectConfig.ignoreDependencies,
         "@docusaurus/Link",
