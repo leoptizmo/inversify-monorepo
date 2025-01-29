@@ -27,9 +27,3 @@ export interface ReplaceRange {
   deleteRange: [number, number];
   replacement: string | ((text: string) => string) | undefined;
 }
-
-export interface ShiftLinesSpacesRange {
-  end: number;
-  offset: number;
-  start: number;
-}

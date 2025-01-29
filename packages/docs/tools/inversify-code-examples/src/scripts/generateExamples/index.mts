@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
 import fs from 'node:fs/promises';
+import path from 'node:path';
 
 import { glob } from 'glob';
 import ts from 'typescript';
-import path from 'node:path';
+
+import getReplaceRanges from './getReplaceRanges.mjs';
 import {
   RelevantCommentKind,
   RelevantCommentPosition,
@@ -22,9 +24,7 @@ const EXCLUDE_FROM_EXAMPLE_COMMENT: string = '// Exclude-from-example';
 const IS_INVERSIFY_IMPORT_EXAMPLE_COMMENT: string =
   '// Is-inversify-import-example';
 const SHIFT_LINES_SPACES_2_COMMENT: string = '// Shift-line-spaces-2';
-
-const NODE_IMPORT_REXEP: RegExp = /^(.*)(import.*)(['"])([^'"]+)(['"])(.*)$/gms;
-const INVERSIFY_NODE_IMPORT_REPLACE: string = '$2$3inversify$5$6';
+const SHIFT_LINES_SPACES_2_OFFSET: number = 2;
 
 const commentToRelevantCommentKindMap: {
   [key: string]: RelevantCommentKind;
@@ -99,82 +99,17 @@ async function getExamplePaths(): Promise<string[]> {
   return glob(EXAMPLES_GLOB_PATTERN, { ignore: TEST_EXAMPLES_GLOB_PATTERN });
 }
 
-function getReplaceRanges(
-  sourceFile: ts.SourceFile,
-  positions: RelevantCommentPositions,
-): ReplaceRange[] {
-  const [firstBeginOfExamplePosition]: RelevantCommentPosition[] =
-    positions.kindToPositionsMap[RelevantCommentKind.begin];
+function getShiftOffet(positions: RelevantCommentPositions): number {
+  let shiftOffset: number = 0;
 
-  const lastEndOfExamplePosition: RelevantCommentPosition | undefined =
-    positions.kindToPositionsMap[RelevantCommentKind.end].at(-1);
-
-  const replaceRanges: ReplaceRange[] = [];
-
-  const relevantCommentPositions: RelevantCommentPosition[] = positions.list;
-
-  let index: number = 0;
-
-  // 1. Iterate until the first begin example comment is found in case there's at least one.
-  if (firstBeginOfExamplePosition !== undefined) {
-    while (relevantCommentPositions[index] !== firstBeginOfExamplePosition) {
-      ++index;
-    }
-
-    replaceRanges.push({
-      deleteRange: [
-        0,
-        firstBeginOfExamplePosition.node.getStart(sourceFile, true),
-      ],
-      replacement: undefined,
-    });
-
-    ++index;
+  if (
+    positions.kindToPositionsMap[RelevantCommentKind.shiftLineSpaces2].length >
+    0
+  ) {
+    shiftOffset = SHIFT_LINES_SPACES_2_OFFSET;
   }
 
-  // 2. Iterate over the rest of the relevant comments until the last end of example comment is found, if any.
-  while (index < relevantCommentPositions.length) {
-    const currentRelevantCommentPosition: RelevantCommentPosition =
-      relevantCommentPositions[index] as RelevantCommentPosition;
-
-    switch (currentRelevantCommentPosition.kind) {
-      case RelevantCommentKind.end:
-        if (currentRelevantCommentPosition === lastEndOfExamplePosition) {
-          replaceRanges.push({
-            deleteRange: [lastEndOfExamplePosition.node.pos, sourceFile.end],
-            replacement: undefined,
-          });
-
-          return replaceRanges;
-        }
-
-        break;
-      case RelevantCommentKind.exclude:
-        replaceRanges.push({
-          deleteRange: [
-            currentRelevantCommentPosition.node.pos,
-            currentRelevantCommentPosition.node.end,
-          ],
-          replacement: undefined,
-        });
-        break;
-      case RelevantCommentKind.isInversifyImport:
-        replaceRanges.push({
-          deleteRange: [
-            currentRelevantCommentPosition.node.pos,
-            currentRelevantCommentPosition.node.end,
-          ],
-          replacement: (text: string) =>
-            text.replace(NODE_IMPORT_REXEP, INVERSIFY_NODE_IMPORT_REPLACE),
-        });
-        break;
-      default:
-    }
-
-    ++index;
-  }
-
-  return replaceRanges;
+  return shiftOffset;
 }
 
 async function run(): Promise<void> {
@@ -188,11 +123,42 @@ async function run(): Promise<void> {
   }
 }
 
+function shift(offset: number, text: string): string {
+  if (offset === 0) {
+    return text;
+  }
+
+  let transformedText: string = '';
+
+  for (let i: number = 0; i < text.length; ++i) {
+    const currentChar: string = text[i] as string;
+
+    transformedText += currentChar;
+
+    if (currentChar === '\n') {
+      let spacesFound: number = 0;
+
+      for (let j: number = 1; j <= offset && i + j < text.length; ++j) {
+        if (text[i + j] === ' ') {
+          ++spacesFound;
+        } else {
+          break;
+        }
+      }
+
+      i += spacesFound;
+    }
+  }
+
+  return transformedText;
+}
+
 function transformSourceFile(
   sourceFile: ts.SourceFile,
   positions: RelevantCommentPositions,
 ): string {
   const replaceRanges: ReplaceRange[] = getReplaceRanges(sourceFile, positions);
+  const shiftOffset: number = getShiftOffet(positions);
 
   let transformedSourceCode: string = '';
   let currentIndex: number = 0;
@@ -219,7 +185,7 @@ function transformSourceFile(
 
   transformedSourceCode += sourceFile.text.slice(currentIndex);
 
-  return transformedSourceCode;
+  return shift(shiftOffset, transformedSourceCode);
 }
 
 function visitRelevantCommentPositions(
@@ -247,14 +213,24 @@ function visitRelevantCommentPositions(
         range: comment,
       };
 
-      (
+      const kindToPositionsMapEntry: RelevantCommentPosition[] = (
         positions.kindToPositionsMap as Record<
           RelevantCommentKind,
           RelevantCommentPosition[]
         >
-      )[relevanCommentKind].push(relevantCommentPosition);
+      )[relevanCommentKind];
 
-      positions.list.push(relevantCommentPosition);
+      const lastKindToPositionsMapEntry: RelevantCommentPosition | undefined =
+        kindToPositionsMapEntry[kindToPositionsMapEntry.length - 1];
+
+      if (
+        lastKindToPositionsMapEntry === undefined ||
+        lastKindToPositionsMapEntry.range.pos !==
+          relevantCommentPosition.range.pos
+      ) {
+        kindToPositionsMapEntry.push(relevantCommentPosition);
+        positions.list.push(relevantCommentPosition);
+      }
     }
   }
 
@@ -274,7 +250,7 @@ async function writeSourceCodeExample(
 ): Promise<void> {
   const destinationPath: string = `${sourcePath.replace('src', 'generated')}.txt`;
 
-  const directory = path.dirname(destinationPath);
+  const directory: string = path.dirname(destinationPath);
 
   try {
     await fs.stat(directory);

@@ -1,3 +1,4 @@
+// Shift-line-spaces-2
 // Is-inversify-import-example
 import { Container } from 'inversify7';
 
