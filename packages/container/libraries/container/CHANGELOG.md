@@ -1,5 +1,19 @@
 # @inversifyjs/container
 
+## 1.5.0
+
+### Minor Changes
+
+- 9ba2c64: Updated `BindToFluentSyntax` with `.toResolvedValue`
+
+### Patch Changes
+
+- Updated dependencies [e11ad62]
+- Updated dependencies [e11ad62]
+- Updated dependencies [e11ad62]
+- Updated dependencies [e11ad62]
+  - @inversifyjs/core@3.5.0
+
 ## 1.4.2
 
 ### Patch Changes
