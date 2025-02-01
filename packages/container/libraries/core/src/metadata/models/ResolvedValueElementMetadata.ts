@@ -6,10 +6,7 @@ import { MetadataTag } from './MetadataTag';
 import { ResolvedValueElementMetadataKind } from './ResolvedValueElementMetadataKind';
 
 export interface ResolvedValueElementMetadata
-  extends BaseResolvedValueElementMetadata<
-    | ResolvedValueElementMetadataKind.singleInjection
-    | ResolvedValueElementMetadataKind.multipleInjection
-  > {
+  extends BaseResolvedValueElementMetadata<ResolvedValueElementMetadataKind> {
   name: MetadataName | undefined;
   optional: boolean;
   tags: Map<MetadataTag, unknown>;
