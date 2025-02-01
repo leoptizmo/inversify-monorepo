@@ -11,6 +11,8 @@ import {
   ResolutionContext,
 } from '@inversifyjs/core';
 
+import { ResolvedValueInjectOptions } from './ResolvedValueInjectOptions';
+
 export interface BindToFluentSyntax<T> {
   to(type: Newable<T>): BindInWhenOnFluentSyntax<T>;
   toSelf(): BindInWhenOnFluentSyntax<T>;
@@ -28,6 +30,11 @@ export interface BindToFluentSyntax<T> {
       ? (context: ResolutionContext) => T
       : never,
   ): BindWhenOnFluentSyntax<T>;
+  toResolvedValue(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    factory: (...args: any[]) => T,
+    injectOptions?: ResolvedValueInjectOptions<T>[],
+  ): BindInWhenOnFluentSyntax<T>;
   toService(service: ServiceIdentifier<T>): void;
 }
 

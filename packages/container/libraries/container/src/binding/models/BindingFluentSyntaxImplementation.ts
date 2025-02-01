@@ -22,6 +22,10 @@ import {
   ProviderBinding,
   ResolutionContext,
   Resolved,
+  ResolvedValueBinding,
+  ResolvedValueElementMetadata,
+  ResolvedValueElementMetadataKind,
+  ResolvedValueMetadata,
   ScopedBinding,
   ServiceRedirectionBinding,
 } from '@inversifyjs/core';
@@ -48,6 +52,7 @@ import { isParentBindingMetadata } from '../calculations/isParentBindingMetadata
 import { isParentBindingMetadataWithName } from '../calculations/isParentBindingMetadataWithName';
 import { isParentBindingMetadataWithServiceId } from '../calculations/isParentBindingMetadataWithServiceId';
 import { isParentBindingMetadataWithTag } from '../calculations/isParentBindingMetadataWithTag';
+import { isResolvedValueMetadataInjectOptions } from '../calculations/isResolvedValueMetadataInjectOptions';
 import {
   BindInFluentSyntax,
   BindInWhenOnFluentSyntax,
@@ -56,6 +61,10 @@ import {
   BindWhenFluentSyntax,
   BindWhenOnFluentSyntax,
 } from './BindingFluentSyntax';
+import {
+  ResolvedValueInjectOptions,
+  ResolvedValueMetadataInjectTagOptions,
+} from './ResolvedValueInjectOptions';
 
 export class BindInFluentSyntaxImplementation<T>
   implements BindInFluentSyntax<T>
@@ -185,6 +194,33 @@ export class BindToFluentSyntaxImplementation<T>
     return new BindInWhenOnFluentSyntaxImplementation(binding);
   }
 
+  public toResolvedValue(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    factory: (...args: any[]) => T,
+    injectOptions?: ResolvedValueInjectOptions<T>[],
+  ): BindInWhenOnFluentSyntax<T> {
+    const binding: ResolvedValueBinding<T> = {
+      cache: {
+        isRight: false,
+        value: undefined,
+      },
+      factory,
+      id: getBindingId(),
+      isSatisfiedBy: BindingConstraintUtils.always,
+      metadata: this.#buildResolvedValueMetadata(injectOptions),
+      moduleId: this.#containerModuleId,
+      onActivation: undefined,
+      onDeactivation: undefined,
+      scope: this.#defaultScope,
+      serviceIdentifier: this.#serviceIdentifier,
+      type: bindingTypeValues.ResolvedValue,
+    };
+
+    this.#callback(binding);
+
+    return new BindInWhenOnFluentSyntaxImplementation(binding);
+  }
+
   public toFactory(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     builder: T extends Factory<unknown, any>
@@ -254,6 +290,48 @@ export class BindToFluentSyntaxImplementation<T>
     };
 
     this.#callback(binding);
+  }
+
+  #buildResolvedValueMetadata(
+    options: ResolvedValueInjectOptions<T>[] | undefined,
+  ): ResolvedValueMetadata {
+    const resolvedValueMetadata: ResolvedValueMetadata = {
+      arguments: (options ?? []).map(
+        (
+          injectOption: ResolvedValueInjectOptions<T>,
+        ): ResolvedValueElementMetadata => {
+          if (isResolvedValueMetadataInjectOptions(injectOption)) {
+            return {
+              kind:
+                injectOption.isMultiple === true
+                  ? ResolvedValueElementMetadataKind.multipleInjection
+                  : ResolvedValueElementMetadataKind.singleInjection,
+              name: injectOption.name,
+              optional: injectOption.optional ?? false,
+              tags: new Map<MetadataTag, unknown>(
+                (injectOption.tags ?? []).map(
+                  (tag: ResolvedValueMetadataInjectTagOptions) => [
+                    tag.key,
+                    tag.value,
+                  ],
+                ),
+              ),
+              value: injectOption.serviceIdentifier,
+            };
+          } else {
+            return {
+              kind: ResolvedValueElementMetadataKind.singleInjection,
+              name: undefined,
+              optional: false,
+              tags: new Map(),
+              value: injectOption,
+            };
+          }
+        },
+      ),
+    };
+
+    return resolvedValueMetadata;
   }
 }
 

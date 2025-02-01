@@ -30,6 +30,16 @@ Feature: Get
         And container gets a value for service "warrior"
         Then value is an archer with a bow
 
+      Scenario: A resolved value binding is bound to a container and value is properly resolved
+        Given a service "army" resolved value binding as "army" depending on "warrior"
+        And a service "weapon" bow type binding as "bow"
+        And a service "warrior" archer type binding as "archer"
+        When "army" binding is bound to container
+        And "bow" binding is bound to container
+        And "archer" binding is bound to container
+        And container gets a value for service "army"
+        Then value is an array with an archer with a bow
+
     Rule: container provides an activated value given a service identifier
 
       Scenario: A binding with activation is bound to a container and value is properly resolved

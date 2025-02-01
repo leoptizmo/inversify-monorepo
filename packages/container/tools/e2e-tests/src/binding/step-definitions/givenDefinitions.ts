@@ -7,6 +7,7 @@ import {
   BindWhenFluentSyntax,
   BindWhenOnFluentSyntax,
   Container,
+  ResolvedValueInjectOptions,
 } from '@inversifyjs/container';
 import {
   BindingActivation,
@@ -119,6 +120,25 @@ function givenBindingToDynamicValue(
   });
 }
 
+function givenBindingToResolvedValue(
+  this: InversifyWorld,
+  serviceId: string,
+  injections: ResolvedValueInjectOptions<unknown>[],
+  bindingAlias: string | undefined,
+): void {
+  const parsedBindingAlias: string = bindingAlias ?? defaultAlias;
+
+  setBinding.bind(this)(parsedBindingAlias, {
+    bind: (container: Container): void => {
+      container
+        .bind(serviceId)
+        .toResolvedValue((...args: unknown[]) => args, injections);
+    },
+    kind: BindingParameterKind.dynamicValue,
+    serviceIdentifier: serviceId,
+  });
+}
+
 function givenDualWieldSwordmanTypeBinding(
   this: InversifyWorld,
   serviceId: string,
@@ -189,6 +209,17 @@ Given<InversifyWorld>(
   'a service {string} binding to dynamic value in {bindingScope} scope',
   function (serviceId: string, scope: BindingScope): void {
     givenBindingToDynamicValue.bind(this)(serviceId, scope);
+  },
+);
+
+Given<InversifyWorld>(
+  'a service {string} resolved value binding as {string} depending on {stringList}',
+  function (
+    serviceId: string,
+    bindingAlias: string,
+    injections: string[],
+  ): void {
+    givenBindingToResolvedValue.bind(this)(serviceId, injections, bindingAlias);
   },
 );
 
