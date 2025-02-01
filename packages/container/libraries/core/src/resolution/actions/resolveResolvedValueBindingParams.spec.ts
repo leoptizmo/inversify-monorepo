@@ -1,0 +1,102 @@
+import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
+
+import { ResolvedValueBinding } from '../../binding/models/ResolvedValueBinding';
+import { PlanServiceNode } from '../../planning/models/PlanServiceNode';
+import { ResolvedValueBindingNode } from '../../planning/models/ResolvedValueBindingNode';
+import { ResolutionParams } from '../models/ResolutionParams';
+import { resolveResolvedValueBindingParams } from './resolveResolvedValueBindingParams';
+
+describe(resolveResolvedValueBindingParams.name, () => {
+  describe('having ResolvedValueBindingNode with constructor param with PlanServiceNode value', () => {
+    let paramNodeFixture: PlanServiceNode;
+    let resolveServiceNodeMock: jest.Mock<
+      (params: ResolutionParams, serviceNode: PlanServiceNode) => unknown
+    >;
+
+    let paramsFixture: ResolutionParams;
+    let nodeFixture: ResolvedValueBindingNode<ResolvedValueBinding<unknown>>;
+
+    beforeAll(() => {
+      paramNodeFixture = {
+        bindings: undefined,
+        parent: undefined,
+        serviceIdentifier: 'service-id',
+      };
+      resolveServiceNodeMock = jest.fn();
+      paramsFixture = Symbol() as unknown as ResolutionParams;
+      nodeFixture = {
+        params: [paramNodeFixture],
+      } as Partial<
+        ResolvedValueBindingNode<ResolvedValueBinding<unknown>>
+      > as ResolvedValueBindingNode<ResolvedValueBinding<unknown>>;
+    });
+
+    describe('when called, and resolveServiceNode() return non Promise value', () => {
+      let resolvedValue: unknown;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        resolvedValue = Symbol();
+
+        resolveServiceNodeMock.mockReturnValueOnce(resolvedValue);
+
+        result = resolveResolvedValueBindingParams(resolveServiceNodeMock)(
+          paramsFixture,
+          nodeFixture,
+        );
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call resolveServiceNode()', () => {
+        expect(resolveServiceNodeMock).toHaveBeenCalledTimes(1);
+        expect(resolveServiceNodeMock).toHaveBeenCalledWith(
+          paramsFixture,
+          paramNodeFixture,
+        );
+      });
+
+      it('should return expected value', () => {
+        expect(result).toStrictEqual([resolvedValue]);
+      });
+    });
+
+    describe('when called, and resolveServiceNode() return Promise value', () => {
+      let resolvedValue: unknown;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        resolvedValue = Symbol();
+
+        resolveServiceNodeMock.mockReturnValueOnce(
+          Promise.resolve(resolvedValue),
+        );
+
+        result = resolveResolvedValueBindingParams(resolveServiceNodeMock)(
+          paramsFixture,
+          nodeFixture,
+        );
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call resolveServiceNode()', () => {
+        expect(resolveServiceNodeMock).toHaveBeenCalledTimes(1);
+        expect(resolveServiceNodeMock).toHaveBeenCalledWith(
+          paramsFixture,
+          paramNodeFixture,
+        );
+      });
+
+      it('should return expected value', () => {
+        expect(result).toStrictEqual(Promise.resolve([resolvedValue]));
+      });
+    });
+  });
+});
