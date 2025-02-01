@@ -8,10 +8,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [e11ad62]
-- Updated dependencies [e11ad62]
-- Updated dependencies [e11ad62]
-- Updated dependencies [e11ad62]
+- Updated dependencies
   - @inversifyjs/core@3.5.0
 
 ## 1.4.2
