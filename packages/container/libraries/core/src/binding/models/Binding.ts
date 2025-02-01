@@ -5,6 +5,7 @@ import { FactoryBinding } from './FactoryBinding';
 import { InstanceBinding } from './InstanceBinding';
 import { Provider } from './Provider';
 import { ProviderBinding } from './ProviderBinding';
+import { ResolvedValueBinding } from './ResolvedValueBinding';
 import { ServiceRedirectionBinding } from './ServiceRedirectionBinding';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,4 +15,5 @@ export type Binding<TActivated = any> =
   | (TActivated extends Factory<unknown> ? FactoryBinding<TActivated> : never)
   | InstanceBinding<TActivated>
   | (TActivated extends Provider<unknown> ? ProviderBinding<TActivated> : never)
+  | ResolvedValueBinding<TActivated>
   | ServiceRedirectionBinding<TActivated>;
