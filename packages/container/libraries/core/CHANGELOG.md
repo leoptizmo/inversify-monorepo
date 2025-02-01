@@ -1,5 +1,14 @@
 # @inversifyjs/core
 
+## 3.5.0
+
+### Minor Changes
+
+- e11ad62: Added `ResolvedValueMetadata`
+- e11ad62: Updated `PlanServiceNodeParent` to include `ResolvedValueBindingNode`
+- e11ad62: Added `ResolvedValueBinding`
+- e11ad62: Added `ResolvedValueBindingNode`
+
 ## 3.4.0
 
 ### Minor Changes

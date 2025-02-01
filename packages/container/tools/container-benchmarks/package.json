@@ -55,6 +55,5 @@
     "format": "prettier --write ./src/**/*.ts",
     "lint": "eslint ./src",
     "prebuild": "pnpm run build:clean"
-  },
-  "version": "3.3.2"
+  }
 }
