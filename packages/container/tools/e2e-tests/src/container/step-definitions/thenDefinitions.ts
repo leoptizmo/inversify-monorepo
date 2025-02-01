@@ -135,6 +135,18 @@ Then<InversifyWorld>('value is an archer with a bow', function (): void {
 });
 
 Then<InversifyWorld>(
+  'value is an array with an archer with a bow',
+  function (): void {
+    const value: unknown =
+      getContainerGetRequestOrFail.bind(this)(defaultAlias);
+
+    assert.ok(Array.isArray(value));
+    assert.ok(value[0] instanceof Archer);
+    assert.ok(value[0].bow instanceof Bow);
+  },
+);
+
+Then<InversifyWorld>(
   'value is a sword with improved damage',
   function (): void {
     const value: unknown =
