@@ -10,12 +10,16 @@ import { bindingScopeValues } from '../../binding/models/BindingScope';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { ConstantValueBinding } from '../../binding/models/ConstantValueBinding';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
+import { ResolvedValueBinding } from '../../binding/models/ResolvedValueBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
 import { Writable } from '../../common/models/Writable';
 import { ClassMetadataFixtures } from '../../metadata/fixtures/ClassMetadataFixtures';
 import { ClassElementMetadataKind } from '../../metadata/models/ClassElementMetadataKind';
 import { ClassMetadata } from '../../metadata/models/ClassMetadata';
 import { ManagedClassElementMetadata } from '../../metadata/models/ManagedClassElementMetadata';
+import { ResolvedValueElementMetadata } from '../../metadata/models/ResolvedValueElementMetadata';
+import { ResolvedValueElementMetadataKind } from '../../metadata/models/ResolvedValueElementMetadataKind';
+import { ResolvedValueMetadata } from '../../metadata/models/ResolvedValueMetadata';
 import { UnmanagedClassElementMetadata } from '../../metadata/models/UnmanagedClassElementMetadata';
 import { InstanceBindingNode } from '../models/InstanceBindingNode';
 import { PlanBindingNode } from '../models/PlanBindingNode';
@@ -24,6 +28,7 @@ import { PlanResult } from '../models/PlanResult';
 import { PlanServiceNode } from '../models/PlanServiceNode';
 import { PlanServiceNodeParent } from '../models/PlanServiceNodeParent';
 import { PlanServiceRedirectionBindingNode } from '../models/PlanServiceRedirectionBindingNode';
+import { ResolvedValueBindingNode } from '../models/ResolvedValueBindingNode';
 import { SubplanParams } from '../models/SubplanParams';
 import {
   buildFilteredServiceBindings,
@@ -991,6 +996,484 @@ describe(plan.name, () => {
         };
 
         planServiceNodeBindings.push(instanceBindingNode);
+
+        expect(result).toStrictEqual(expected);
+      });
+    });
+
+    describe('when called, and params.getBindings() returns an array with a single ResolvedValueBinding with empty metadata', () => {
+      let resolvedValueBindingFixture: jest.Mocked<
+        ResolvedValueBinding<unknown>
+      >;
+      let result: unknown;
+
+      beforeAll(() => {
+        resolvedValueBindingFixture = {
+          cache: {
+            isRight: true,
+            value: Symbol(),
+          },
+          factory: jest.fn(),
+          id: 1,
+          isSatisfiedBy: jest.fn(() => true),
+          metadata: {
+            arguments: [],
+          },
+          moduleId: undefined,
+          onActivation: undefined,
+          onDeactivation: undefined,
+          scope: bindingScopeValues.Singleton,
+          serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
+          type: bindingTypeValues.ResolvedValue,
+        };
+
+        (
+          buildFilteredServiceBindings as jest.Mock<
+            typeof buildFilteredServiceBindings
+          >
+        ).mockReturnValueOnce([resolvedValueBindingFixture]);
+
+        result = plan(planParamsMock);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call buildFilteredServiceBindings()', () => {
+        expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(1);
+        expect(buildFilteredServiceBindings).toHaveBeenCalledWith(
+          planParamsMock,
+          expect.any(BindingMetadataImplementation),
+        );
+      });
+
+      it('should return expected PlanResult', () => {
+        const planServiceNodeBindings: PlanBindingNode[] = [];
+
+        const planServiceNode: PlanServiceNode = {
+          bindings: planServiceNodeBindings,
+          parent: undefined,
+          serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
+        };
+
+        const expected: PlanResult = {
+          tree: {
+            root: planServiceNode,
+          },
+        };
+
+        const instanceBindingNode: ResolvedValueBindingNode = {
+          binding: resolvedValueBindingFixture,
+          params: [],
+          parent: planServiceNode,
+        };
+
+        planServiceNodeBindings.push(instanceBindingNode);
+
+        expect(result).toStrictEqual(expected);
+      });
+    });
+
+    describe('when called, and params.getBindings() returns an array with a single ResolvedValueBinding with non empty metadata with multiple injection', () => {
+      let constantValueBinding: ConstantValueBinding<unknown>;
+      let resolvedValueElementMetadataFixture: ResolvedValueElementMetadata;
+      let resolvedValueMetadataFixture: ResolvedValueMetadata;
+      let resolvedValueBindingFixture: ResolvedValueBinding<unknown>;
+      let result: unknown;
+
+      beforeAll(() => {
+        constantValueBinding = {
+          cache: {
+            isRight: true,
+            value: Symbol(),
+          },
+          id: 1,
+          isSatisfiedBy: jest.fn(() => true),
+          moduleId: undefined,
+          onActivation: undefined,
+          onDeactivation: undefined,
+          scope: bindingScopeValues.Singleton,
+          serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
+          type: bindingTypeValues.ConstantValue,
+          value: Symbol(),
+        };
+        resolvedValueElementMetadataFixture = {
+          kind: ResolvedValueElementMetadataKind.multipleInjection,
+          name: undefined,
+          optional: false,
+          tags: new Map(),
+          value: 'param-service-id',
+        };
+        resolvedValueMetadataFixture = {
+          arguments: [resolvedValueElementMetadataFixture],
+        };
+        resolvedValueBindingFixture = {
+          cache: {
+            isRight: true,
+            value: Symbol(),
+          },
+          factory: jest.fn(),
+          id: 1,
+          isSatisfiedBy: jest.fn(() => true),
+          metadata: resolvedValueMetadataFixture,
+          moduleId: undefined,
+          onActivation: undefined,
+          onDeactivation: undefined,
+          scope: bindingScopeValues.Singleton,
+          serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
+          type: bindingTypeValues.ResolvedValue,
+        };
+
+        (
+          buildFilteredServiceBindings as jest.Mock<
+            typeof buildFilteredServiceBindings
+          >
+        )
+          .mockReturnValueOnce([resolvedValueBindingFixture])
+          .mockReturnValueOnce([constantValueBinding]);
+
+        result = plan(planParamsMock);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call buildFilteredServiceBindings()', () => {
+        const expectedSublan: jest.Mocked<SubplanParams> = {
+          autobindOptions: planParamsMock.autobindOptions,
+          getBindings: planParamsMock.getBindings,
+          getClassMetadata: planParamsMock.getClassMetadata,
+          node: expect.any(
+            Object,
+          ) as unknown as jest.Mocked<PlanServiceNodeParent>,
+          servicesBranch: expect.any(Set) as unknown as jest.Mocked<
+            Set<ServiceIdentifier>
+          >,
+          setBinding: planParamsMock.setBinding,
+        };
+
+        expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(2);
+        expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
+          1,
+          planParamsMock,
+          expect.any(BindingMetadataImplementation),
+        );
+        expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
+          2,
+          expectedSublan,
+          expect.any(BindingMetadataImplementation),
+        );
+      });
+
+      it('should return expected PlanResult', () => {
+        const planServiceNodeBindings: PlanBindingNode[] = [];
+
+        const planServiceNode: PlanServiceNode = {
+          bindings: planServiceNodeBindings,
+          parent: undefined,
+          serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
+        };
+
+        const expected: PlanResult = {
+          tree: {
+            root: planServiceNode,
+          },
+        };
+
+        const resolvedValueBindingNode: ResolvedValueBindingNode = {
+          binding: resolvedValueBindingFixture,
+          params: [],
+          parent: planServiceNode,
+        };
+
+        const paramsPlanServiceNodeBindings: PlanBindingNode[] = [];
+
+        const paramsPlanServiceNode: PlanServiceNode = {
+          bindings: paramsPlanServiceNodeBindings,
+          parent: resolvedValueBindingNode,
+          serviceIdentifier:
+            resolvedValueElementMetadataFixture.value as ServiceIdentifier,
+        };
+
+        paramsPlanServiceNodeBindings.push({
+          binding: constantValueBinding,
+          parent: paramsPlanServiceNode,
+        });
+
+        resolvedValueBindingNode.params.push(paramsPlanServiceNode);
+
+        planServiceNodeBindings.push(resolvedValueBindingNode);
+
+        expect(result).toStrictEqual(expected);
+      });
+    });
+
+    describe('when called, and params.getBindings() returns an array with a single ResolvedValueBinding with non empty metadata with lazy multiple injection', () => {
+      let constantValueBinding: ConstantValueBinding<unknown>;
+      let resolvedValueElementMetadataFixture: ResolvedValueElementMetadata;
+      let resolvedValueMetadataFixture: ResolvedValueMetadata;
+      let resolvedValueBindingFixture: ResolvedValueBinding<unknown>;
+      let result: unknown;
+
+      beforeAll(() => {
+        constantValueBinding = {
+          cache: {
+            isRight: true,
+            value: Symbol(),
+          },
+          id: 1,
+          isSatisfiedBy: jest.fn(() => true),
+          moduleId: undefined,
+          onActivation: undefined,
+          onDeactivation: undefined,
+          scope: bindingScopeValues.Singleton,
+          serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
+          type: bindingTypeValues.ConstantValue,
+          value: Symbol(),
+        };
+        resolvedValueElementMetadataFixture = {
+          kind: ResolvedValueElementMetadataKind.multipleInjection,
+          name: undefined,
+          optional: false,
+          tags: new Map(),
+          value: new LazyServiceIdentifier(() => 'param-service-id'),
+        };
+        resolvedValueMetadataFixture = {
+          arguments: [resolvedValueElementMetadataFixture],
+        };
+        resolvedValueBindingFixture = {
+          cache: {
+            isRight: true,
+            value: Symbol(),
+          },
+          factory: jest.fn(),
+          id: 1,
+          isSatisfiedBy: jest.fn(() => true),
+          metadata: resolvedValueMetadataFixture,
+          moduleId: undefined,
+          onActivation: undefined,
+          onDeactivation: undefined,
+          scope: bindingScopeValues.Singleton,
+          serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
+          type: bindingTypeValues.ResolvedValue,
+        };
+
+        (
+          buildFilteredServiceBindings as jest.Mock<
+            typeof buildFilteredServiceBindings
+          >
+        )
+          .mockReturnValueOnce([resolvedValueBindingFixture])
+          .mockReturnValueOnce([constantValueBinding]);
+
+        result = plan(planParamsMock);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call buildFilteredServiceBindings()', () => {
+        const expectedSublan: jest.Mocked<SubplanParams> = {
+          autobindOptions: planParamsMock.autobindOptions,
+          getBindings: planParamsMock.getBindings,
+          getClassMetadata: planParamsMock.getClassMetadata,
+          node: expect.any(
+            Object,
+          ) as unknown as jest.Mocked<PlanServiceNodeParent>,
+          servicesBranch: expect.any(Set) as unknown as jest.Mocked<
+            Set<ServiceIdentifier>
+          >,
+          setBinding: planParamsMock.setBinding,
+        };
+
+        expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(2);
+        expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
+          1,
+          planParamsMock,
+          expect.any(BindingMetadataImplementation),
+        );
+        expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
+          2,
+          expectedSublan,
+          expect.any(BindingMetadataImplementation),
+        );
+      });
+
+      it('should return expected PlanResult', () => {
+        const planServiceNodeBindings: PlanBindingNode[] = [];
+
+        const planServiceNode: PlanServiceNode = {
+          bindings: planServiceNodeBindings,
+          parent: undefined,
+          serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
+        };
+
+        const expected: PlanResult = {
+          tree: {
+            root: planServiceNode,
+          },
+        };
+
+        const resolvedValueBindingNode: ResolvedValueBindingNode = {
+          binding: resolvedValueBindingFixture,
+          params: [],
+          parent: planServiceNode,
+        };
+
+        const paramsPlanServiceNodeBindings: PlanBindingNode[] = [];
+
+        const paramsPlanServiceNode: PlanServiceNode = {
+          bindings: paramsPlanServiceNodeBindings,
+          parent: resolvedValueBindingNode,
+          serviceIdentifier: (
+            resolvedValueElementMetadataFixture.value as LazyServiceIdentifier
+          ).unwrap(),
+        };
+
+        paramsPlanServiceNodeBindings.push({
+          binding: constantValueBinding,
+          parent: paramsPlanServiceNode,
+        });
+
+        resolvedValueBindingNode.params.push(paramsPlanServiceNode);
+
+        planServiceNodeBindings.push(resolvedValueBindingNode);
+
+        expect(result).toStrictEqual(expected);
+      });
+    });
+
+    describe('when called, and params.getBindings() returns an array with a single ResolvedValueBinding with non empty metadata with single injection', () => {
+      let constantValueBinding: ConstantValueBinding<unknown>;
+      let resolvedValueElementMetadataFixture: ResolvedValueElementMetadata;
+      let resolvedValueMetadataFixture: ResolvedValueMetadata;
+      let resolvedValueBindingFixture: ResolvedValueBinding<unknown>;
+      let result: unknown;
+
+      beforeAll(() => {
+        constantValueBinding = {
+          cache: {
+            isRight: true,
+            value: Symbol(),
+          },
+          id: 1,
+          isSatisfiedBy: jest.fn(() => true),
+          moduleId: undefined,
+          onActivation: undefined,
+          onDeactivation: undefined,
+          scope: bindingScopeValues.Singleton,
+          serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
+          type: bindingTypeValues.ConstantValue,
+          value: Symbol(),
+        };
+        resolvedValueElementMetadataFixture = {
+          kind: ResolvedValueElementMetadataKind.singleInjection,
+          name: undefined,
+          optional: false,
+          tags: new Map(),
+          value: 'param-service-id',
+        };
+        resolvedValueMetadataFixture = {
+          arguments: [resolvedValueElementMetadataFixture],
+        };
+        resolvedValueBindingFixture = {
+          cache: {
+            isRight: true,
+            value: Symbol(),
+          },
+          factory: jest.fn(),
+          id: 1,
+          isSatisfiedBy: jest.fn(() => true),
+          metadata: resolvedValueMetadataFixture,
+          moduleId: undefined,
+          onActivation: undefined,
+          onDeactivation: undefined,
+          scope: bindingScopeValues.Singleton,
+          serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
+          type: bindingTypeValues.ResolvedValue,
+        };
+
+        (
+          buildFilteredServiceBindings as jest.Mock<
+            typeof buildFilteredServiceBindings
+          >
+        )
+          .mockReturnValueOnce([resolvedValueBindingFixture])
+          .mockReturnValueOnce([constantValueBinding]);
+
+        result = plan(planParamsMock);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call buildFilteredServiceBindings()', () => {
+        const expectedSublan: jest.Mocked<SubplanParams> = {
+          autobindOptions: planParamsMock.autobindOptions,
+          getBindings: planParamsMock.getBindings,
+          getClassMetadata: planParamsMock.getClassMetadata,
+          node: expect.any(
+            Object,
+          ) as unknown as jest.Mocked<PlanServiceNodeParent>,
+          servicesBranch: expect.any(Set) as unknown as jest.Mocked<
+            Set<ServiceIdentifier>
+          >,
+          setBinding: planParamsMock.setBinding,
+        };
+
+        expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(2);
+        expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
+          1,
+          planParamsMock,
+          expect.any(BindingMetadataImplementation),
+        );
+        expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
+          2,
+          expectedSublan,
+          expect.any(BindingMetadataImplementation),
+        );
+      });
+
+      it('should return expected PlanResult', () => {
+        const planServiceNodeBindings: PlanBindingNode[] = [];
+
+        const planServiceNode: PlanServiceNode = {
+          bindings: planServiceNodeBindings,
+          parent: undefined,
+          serviceIdentifier: planParamsMock.rootConstraints.serviceIdentifier,
+        };
+
+        const expected: PlanResult = {
+          tree: {
+            root: planServiceNode,
+          },
+        };
+
+        const resolvedValueBindingNode: ResolvedValueBindingNode = {
+          binding: resolvedValueBindingFixture,
+          params: [],
+          parent: planServiceNode,
+        };
+
+        const paramsPlanServiceNode: PlanServiceNode = {
+          bindings: undefined,
+          parent: resolvedValueBindingNode,
+          serviceIdentifier:
+            resolvedValueElementMetadataFixture.value as ServiceIdentifier,
+        };
+
+        (paramsPlanServiceNode as Writable<PlanServiceNode>).bindings = {
+          binding: constantValueBinding,
+          parent: paramsPlanServiceNode,
+        };
+
+        resolvedValueBindingNode.params.push(paramsPlanServiceNode);
+
+        planServiceNodeBindings.push(resolvedValueBindingNode);
 
         expect(result).toStrictEqual(expected);
       });

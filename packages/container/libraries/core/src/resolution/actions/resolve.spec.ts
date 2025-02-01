@@ -23,8 +23,17 @@ jest.mock('./resolveProviderBinding');
 jest.mock('./resolveScopedInstanceBindingNode', () => ({
   resolveScopedInstanceBindingNode: jest.fn().mockReturnValue(jest.fn()),
 }));
+jest.mock('./resolveScopedResolvedValueBindingNode', () => ({
+  resolveScopedResolvedValueBindingNode: jest.fn().mockReturnValue(jest.fn()),
+}));
 jest.mock('./resolveServiceRedirectionBindingNode', () => ({
   resolveServiceRedirectionBindingNode: jest.fn().mockReturnValue(jest.fn()),
+}));
+jest.mock('./resolveResolvedValueBindingParams', () => ({
+  resolveResolvedValueBindingParams: jest.fn().mockReturnValue(jest.fn()),
+}));
+jest.mock('./resolveResolvedValueBindingNode', () => ({
+  resolveResolvedValueBindingNode: jest.fn().mockReturnValue(jest.fn()),
 }));
 jest.mock('./setInstanceProperties', () => ({
   setInstanceProperties: jest.fn().mockReturnValue(jest.fn()),
@@ -39,6 +48,7 @@ import { FactoryBinding } from '../../binding/models/FactoryBinding';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
 import { Provider } from '../../binding/models/Provider';
 import { ProviderBinding } from '../../binding/models/ProviderBinding';
+import { ResolvedValueBinding } from '../../binding/models/ResolvedValueBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
 import { Writable } from '../../common/models/Writable';
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
@@ -48,6 +58,7 @@ import { InstanceBindingNode } from '../../planning/models/InstanceBindingNode';
 import { PlanBindingNode } from '../../planning/models/PlanBindingNode';
 import { PlanServiceNode } from '../../planning/models/PlanServiceNode';
 import { PlanServiceRedirectionBindingNode } from '../../planning/models/PlanServiceRedirectionBindingNode';
+import { ResolvedValueBindingNode } from '../../planning/models/ResolvedValueBindingNode';
 import { ResolutionParams } from '../models/ResolutionParams';
 import { resolve } from './resolve';
 import { resolveConstantValueBinding } from './resolveConstantValueBinding';
@@ -55,11 +66,15 @@ import { resolveDynamicValueBinding } from './resolveDynamicValueBinding';
 import { resolveFactoryBinding } from './resolveFactoryBinding';
 import { resolveProviderBinding } from './resolveProviderBinding';
 import { resolveScopedInstanceBindingNode } from './resolveScopedInstanceBindingNode';
+import { resolveScopedResolvedValueBindingNode } from './resolveScopedResolvedValueBindingNode';
 import { resolveServiceRedirectionBindingNode } from './resolveServiceRedirectionBindingNode';
 
 describe(resolve.name, () => {
   let resolveScopedInstanceBindingNodeMock: jest.Mock<
     ReturnType<typeof resolveScopedInstanceBindingNode>
+  >;
+  let resolveScopedResolvedValueBindingNodeMock: jest.Mock<
+    ReturnType<typeof resolveScopedResolvedValueBindingNode>
   >;
   let resolveServiceRedirectionBindingNodeMock: jest.Mock<
     ReturnType<typeof resolveServiceRedirectionBindingNode>
@@ -74,6 +89,15 @@ describe(resolve.name, () => {
         ) => unknown[] | Promise<unknown[]>
       >(),
     ) as jest.Mock<ReturnType<typeof resolveScopedInstanceBindingNode>>;
+    resolveScopedResolvedValueBindingNodeMock =
+      resolveScopedResolvedValueBindingNode(
+        jest.fn<
+          (
+            params: ResolutionParams,
+            node: ResolvedValueBindingNode,
+          ) => unknown[] | Promise<unknown[]>
+        >(),
+      ) as jest.Mock<ReturnType<typeof resolveScopedResolvedValueBindingNode>>;
     resolveServiceRedirectionBindingNodeMock =
       resolveServiceRedirectionBindingNode(jest.fn()) as jest.Mock<
         ReturnType<typeof resolveServiceRedirectionBindingNode>
@@ -554,6 +578,88 @@ describe(resolve.name, () => {
       it('should call resolveInstanceBindingNode()', () => {
         expect(resolveScopedInstanceBindingNodeMock).toHaveBeenCalledTimes(1);
         expect(resolveScopedInstanceBindingNodeMock).toHaveBeenCalledWith(
+          resolutionParamsFixture,
+          bindingNodeFixture,
+        );
+      });
+
+      it('should return expected result', () => {
+        expect(result).toBe(resolveValue);
+      });
+    });
+  });
+
+  describe('having ResolutionParams with plan tree with root with resolved value binding', () => {
+    let resolutionParamsFixture: ResolutionParams;
+    let bindingNodeFixture: ResolvedValueBindingNode;
+
+    beforeAll(() => {
+      const serviceNode: PlanServiceNode = {
+        bindings: undefined,
+        parent: undefined,
+        serviceIdentifier: 'service-id',
+      };
+
+      const bindingFixture: ResolvedValueBinding<unknown> = {
+        cache: {
+          isRight: true,
+          value: Symbol(),
+        },
+        factory: jest.fn(),
+        id: 1,
+        isSatisfiedBy: () => true,
+        metadata: { arguments: [] },
+        moduleId: undefined,
+        onActivation: undefined,
+        onDeactivation: undefined,
+        scope: bindingScopeValues.Singleton,
+        serviceIdentifier: 'service-id',
+        type: bindingTypeValues.ResolvedValue,
+      };
+
+      bindingNodeFixture = {
+        binding: bindingFixture,
+        params: [],
+        parent: serviceNode,
+      };
+
+      (serviceNode as Writable<PlanServiceNode>).bindings = bindingNodeFixture;
+
+      resolutionParamsFixture = {
+        planResult: {
+          tree: {
+            root: serviceNode,
+          },
+        },
+      } as Partial<ResolutionParams> as ResolutionParams;
+    });
+
+    describe('when called', () => {
+      let resolveValue: unknown;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        resolveValue = Symbol();
+
+        (
+          resolveScopedResolvedValueBindingNodeMock as jest.Mock<
+            typeof resolveScopedResolvedValueBindingNodeMock
+          >
+        ).mockReturnValueOnce(resolveValue);
+
+        result = resolve(resolutionParamsFixture);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call resolveResolvedValueBindingNode()', () => {
+        expect(resolveScopedResolvedValueBindingNodeMock).toHaveBeenCalledTimes(
+          1,
+        );
+        expect(resolveScopedResolvedValueBindingNodeMock).toHaveBeenCalledWith(
           resolutionParamsFixture,
           bindingNodeFixture,
         );

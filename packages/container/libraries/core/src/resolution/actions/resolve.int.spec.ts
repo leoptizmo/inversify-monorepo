@@ -15,6 +15,7 @@ import { FactoryBinding } from '../../binding/models/FactoryBinding';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
 import { Provider } from '../../binding/models/Provider';
 import { ProviderBinding } from '../../binding/models/ProviderBinding';
+import { ResolvedValueBinding } from '../../binding/models/ResolvedValueBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
 import { ActivationsService } from '../../binding/services/ActivationsService';
 import { BindingService } from '../../binding/services/BindingService';
@@ -25,6 +26,7 @@ import { getDefaultClassMetadata } from '../../metadata/calculations/getDefaultC
 import { inject } from '../../metadata/decorators/inject';
 import { optional } from '../../metadata/decorators/optional';
 import { ClassMetadata } from '../../metadata/models/ClassMetadata';
+import { ResolvedValueElementMetadataKind } from '../../metadata/models/ResolvedValueElementMetadataKind';
 import { plan } from '../../planning/calculations/plan';
 import { PlanParams } from '../../planning/models/PlanParams';
 import { PlanParamsConstraint } from '../../planning/models/PlanParamsConstraint';
@@ -45,6 +47,7 @@ enum ServiceIds {
   nonExistent = 'non-existent-service-id',
   priest = 'priest-instance-service-id',
   provider = 'provider-service-id',
+  resolvedValue = 'resolved-value-service-id',
   serviceRedirection = 'service-redirection-service-id',
   serviceRedirectionToNonExistent = 'service-redirection-to-non-existent-service-id',
 }
@@ -75,6 +78,7 @@ describe(resolve.name, () => {
   let instanceBinding: InstanceBinding<unknown>;
   let priestInstanceBinding: InstanceBinding<Priest>;
   let providerBinding: ProviderBinding<Provider<unknown>>;
+  let resolvedValueBinding: ResolvedValueBinding<unknown>;
   let serviceRedirectionBinding: ServiceRedirectionBinding<unknown>;
   let serviceRedirectionToNonExistentBinding: ServiceRedirectionBinding<unknown>;
 
@@ -203,6 +207,33 @@ describe(resolve.name, () => {
       type: bindingTypeValues.Provider,
     };
 
+    resolvedValueBinding = {
+      cache: {
+        isRight: false,
+        value: undefined,
+      },
+      factory: (param: unknown) => param,
+      id: 5,
+      isSatisfiedBy: () => true,
+      metadata: {
+        arguments: [
+          {
+            kind: ResolvedValueElementMetadataKind.singleInjection,
+            name: undefined,
+            optional: false,
+            tags: new Map(),
+            value: ServiceIds.constantValue,
+          },
+        ],
+      },
+      moduleId: undefined,
+      onActivation: undefined,
+      onDeactivation: undefined,
+      scope: bindingScopeValues.Singleton,
+      serviceIdentifier: ServiceIds.resolvedValue,
+      type: bindingTypeValues.ResolvedValue,
+    };
+
     serviceRedirectionBinding = {
       id: 6,
       isSatisfiedBy: () => true,
@@ -238,6 +269,7 @@ describe(resolve.name, () => {
     bindingService.set(instanceBinding);
     bindingService.set(priestInstanceBinding);
     bindingService.set(providerBinding);
+    bindingService.set(resolvedValueBinding);
     bindingService.set(serviceRedirectionBinding);
     bindingService.set(serviceRedirectionToNonExistentBinding);
 
@@ -468,6 +500,14 @@ describe(resolve.name, () => {
         serviceIdentifier: priestInstanceBinding.serviceIdentifier,
       }),
       () => new Priest(),
+    ],
+    [
+      'with resolved value bound service',
+      (): PlanParamsConstraint => ({
+        isMultiple: false,
+        serviceIdentifier: resolvedValueBinding.serviceIdentifier,
+      }),
+      () => constantValueBinding.value,
     ],
     [
       'with service redirection bound service',

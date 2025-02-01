@@ -14,6 +14,7 @@ import { FactoryBinding } from '../../binding/models/FactoryBinding';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
 import { Provider } from '../../binding/models/Provider';
 import { ProviderBinding } from '../../binding/models/ProviderBinding';
+import { ResolvedValueBinding } from '../../binding/models/ResolvedValueBinding';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
 import { BindingService } from '../../binding/services/BindingService';
 import { Writable } from '../../common/models/Writable';
@@ -22,12 +23,14 @@ import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKin
 import { getDefaultClassMetadata } from '../../metadata/calculations/getDefaultClassMetadata';
 import { inject } from '../../metadata/decorators/inject';
 import { ClassMetadata } from '../../metadata/models/ClassMetadata';
+import { ResolvedValueElementMetadataKind } from '../../metadata/models/ResolvedValueElementMetadataKind';
 import { classMetadataReflectKey } from '../../reflectMetadata/data/classMetadataReflectKey';
 import { InstanceBindingNode } from '../models/InstanceBindingNode';
 import { PlanParamsConstraint } from '../models/PlanParamsConstraint';
 import { PlanResult } from '../models/PlanResult';
 import { PlanServiceNode } from '../models/PlanServiceNode';
 import { PlanServiceRedirectionBindingNode } from '../models/PlanServiceRedirectionBindingNode';
+import { ResolvedValueBindingNode } from '../models/ResolvedValueBindingNode';
 import { plan } from './plan';
 
 enum ServiceIds {
@@ -37,6 +40,7 @@ enum ServiceIds {
   instance = 'instance-service-id',
   nonExistent = 'non-existent-service-id',
   provider = 'provider-service-id',
+  resolvedValue = 'resolved-value-service-id',
   serviceRedirection = 'service-redirection-service-id',
   serviceRedirectionToNonExistent = 'service-redirection-to-non-existent-service-id',
 }
@@ -156,6 +160,50 @@ function buildSimpleInstancePlanResult(
   return planResult;
 }
 
+function buildSimpleResolvedValuePlanResult(
+  parameterBinding:
+    | ConstantValueBinding<unknown>
+    | DynamicValueBinding<unknown>
+    | FactoryBinding<Factory<unknown>>
+    | ProviderBinding<Provider<unknown>>,
+  resolvedValueBinding: ResolvedValueBinding<unknown>,
+): PlanResult {
+  const planServiceNode: PlanServiceNode = {
+    bindings: [],
+    parent: undefined,
+    serviceIdentifier: resolvedValueBinding.serviceIdentifier,
+  };
+
+  const instanceBindingNode: ResolvedValueBindingNode = {
+    binding: resolvedValueBinding,
+    params: [],
+    parent: planServiceNode,
+  };
+
+  const constructorParamServiceNode: PlanServiceNode = {
+    bindings: [],
+    parent: instanceBindingNode,
+    serviceIdentifier: parameterBinding.serviceIdentifier,
+  };
+
+  (constructorParamServiceNode as Writable<PlanServiceNode>).bindings = {
+    binding: parameterBinding,
+    parent: constructorParamServiceNode,
+  };
+
+  instanceBindingNode.params.push(constructorParamServiceNode);
+
+  (planServiceNode as Writable<PlanServiceNode>).bindings = instanceBindingNode;
+
+  const planResult: PlanResult = {
+    tree: {
+      root: planServiceNode,
+    },
+  };
+
+  return planResult;
+}
+
 function buildServiceRedirectionToLeafBindingPlanResult(
   leafBinding:
     | ConstantValueBinding<unknown>
@@ -199,6 +247,7 @@ describe(plan.name, () => {
   let factoryBinding: FactoryBinding<Factory<unknown>>;
   let instanceBinding: InstanceBinding<unknown>;
   let providerBinding: ProviderBinding<Provider<unknown>>;
+  let resolvedValueBinding: ResolvedValueBinding<unknown>;
   let serviceRedirectionBinding: ServiceRedirectionBinding<unknown>;
   let serviceRedirectionToNonExistentBinding: ServiceRedirectionBinding<unknown>;
 
@@ -286,6 +335,33 @@ describe(plan.name, () => {
       type: bindingTypeValues.Provider,
     };
 
+    resolvedValueBinding = {
+      cache: {
+        isRight: true,
+        value: Symbol(),
+      },
+      factory: (param: unknown) => param,
+      id: 5,
+      isSatisfiedBy: () => true,
+      metadata: {
+        arguments: [
+          {
+            kind: ResolvedValueElementMetadataKind.singleInjection,
+            name: undefined,
+            optional: false,
+            tags: new Map(),
+            value: ServiceIds.constantValue,
+          },
+        ],
+      },
+      moduleId: undefined,
+      onActivation: undefined,
+      onDeactivation: undefined,
+      scope: bindingScopeValues.Singleton,
+      serviceIdentifier: ServiceIds.resolvedValue,
+      type: bindingTypeValues.ResolvedValue,
+    };
+
     serviceRedirectionBinding = {
       id: 5,
       isSatisfiedBy: () => true,
@@ -311,6 +387,7 @@ describe(plan.name, () => {
     bindingService.set(factoryBinding);
     bindingService.set(instanceBinding);
     bindingService.set(providerBinding);
+    bindingService.set(resolvedValueBinding);
     bindingService.set(serviceRedirectionBinding);
     bindingService.set(serviceRedirectionToNonExistentBinding);
 
@@ -364,6 +441,18 @@ describe(plan.name, () => {
         serviceIdentifier: ServiceIds.provider,
       },
       () => buildLeafBindingPlanResult(providerBinding),
+    ],
+    [
+      'with resolved value bound service',
+      {
+        isMultiple: false,
+        serviceIdentifier: ServiceIds.resolvedValue,
+      },
+      () =>
+        buildSimpleResolvedValuePlanResult(
+          constantValueBinding,
+          resolvedValueBinding,
+        ),
     ],
     [
       'with service redirection bound service',

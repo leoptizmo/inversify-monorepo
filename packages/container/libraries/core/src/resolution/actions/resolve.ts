@@ -2,6 +2,7 @@ import { isPromise } from '@inversifyjs/common';
 
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
+import { ResolvedValueBinding } from '../../binding/models/ResolvedValueBinding';
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
 import { isPlanServiceRedirectionBindingNode } from '../../planning/calculations/isPlanServiceRedirectionBindingNode';
@@ -11,6 +12,7 @@ import { PlanBindingNode } from '../../planning/models/PlanBindingNode';
 import { PlanServiceNode } from '../../planning/models/PlanServiceNode';
 import { PlanServiceNodeParent } from '../../planning/models/PlanServiceNodeParent';
 import { PlanServiceRedirectionBindingNode } from '../../planning/models/PlanServiceRedirectionBindingNode';
+import { ResolvedValueBindingNode } from '../../planning/models/ResolvedValueBindingNode';
 import { ResolutionParams } from '../models/ResolutionParams';
 import { Resolved } from '../models/Resolved';
 import { resolveConstantValueBinding } from './resolveConstantValueBinding';
@@ -21,7 +23,10 @@ import { resolveInstanceBindingNode as curryResolveInstanceBindingNode } from '.
 import { resolveInstanceBindingNodeAsyncFromConstructorParams } from './resolveInstanceBindingNodeAsyncFromConstructorParams';
 import { resolveInstanceBindingNodeFromConstructorParams } from './resolveInstanceBindingNodeFromConstructorParams';
 import { resolveProviderBinding } from './resolveProviderBinding';
+import { resolveResolvedValueBindingNode as curryResolveResolvedValueBindingNode } from './resolveResolvedValueBindingNode';
+import { resolveResolvedValueBindingParams as curryResolveResolvedValueBindingParams } from './resolveResolvedValueBindingParams';
 import { resolveScopedInstanceBindingNode as curryResolveScopedInstanceBindingNode } from './resolveScopedInstanceBindingNode';
+import { resolveScopedResolvedValueBindingNode as curryResolveScopedResolvedValueBindingNode } from './resolveScopedResolvedValueBindingNode';
 import { resolveServiceRedirectionBindingNode as curryResolveServiceRedirectionBindingNode } from './resolveServiceRedirectionBindingNode';
 import { setInstanceProperties as currySetInstanceProperties } from './setInstanceProperties';
 
@@ -52,11 +57,31 @@ const resolveInstanceBindingNode: <
   resolveInstanceBindingNodeFromConstructorParams(setInstanceProperties),
 );
 
+const resolveResolvedValueBindingNode: <
+  TActivated,
+  TBinding extends
+    ResolvedValueBinding<TActivated> = ResolvedValueBinding<TActivated>,
+>(
+  params: ResolutionParams,
+  node: ResolvedValueBindingNode<TBinding>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+) => Resolved<TActivated> = curryResolveResolvedValueBindingNode<any>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  curryResolveResolvedValueBindingParams<any>(resolveServiceNode),
+);
+
 const resolveScopedInstanceBindingNode: <TActivated>(
   params: ResolutionParams,
   node: InstanceBindingNode<InstanceBinding<TActivated>>,
 ) => Resolved<TActivated> = curryResolveScopedInstanceBindingNode(
   resolveInstanceBindingNode,
+);
+
+const resolveScopedResolvedValueBindingNode: <TActivated>(
+  params: ResolutionParams,
+  node: ResolvedValueBindingNode<ResolvedValueBinding<TActivated>>,
+) => Resolved<TActivated> = curryResolveScopedResolvedValueBindingNode(
+  resolveResolvedValueBindingNode,
 );
 
 export function resolve(params: ResolutionParams): unknown {
@@ -83,6 +108,13 @@ function resolveBindingNode<TActivated>(
       );
     case bindingTypeValues.Provider:
       return resolveProviderBinding(params, planBindingNode.binding);
+    case bindingTypeValues.ResolvedValue:
+      return resolveScopedResolvedValueBindingNode<TActivated>(
+        params,
+        planBindingNode as ResolvedValueBindingNode<
+          ResolvedValueBinding<TActivated>
+        >,
+      );
   }
 }
 

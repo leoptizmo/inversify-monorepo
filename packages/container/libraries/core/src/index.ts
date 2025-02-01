@@ -16,6 +16,7 @@ import { FactoryBinding } from './binding/models/FactoryBinding';
 import { InstanceBinding } from './binding/models/InstanceBinding';
 import { Provider } from './binding/models/Provider';
 import { ProviderBinding } from './binding/models/ProviderBinding';
+import { ResolvedValueBinding } from './binding/models/ResolvedValueBinding';
 import { ScopedBinding } from './binding/models/ScopedBinding';
 import { ServiceRedirectionBinding } from './binding/models/ServiceRedirectionBinding';
 import {
@@ -46,6 +47,9 @@ import { ClassMetadataLifecycle } from './metadata/models/ClassMetadataLifecycle
 import { ManagedClassElementMetadata } from './metadata/models/ManagedClassElementMetadata';
 import { MetadataName } from './metadata/models/MetadataName';
 import { MetadataTag } from './metadata/models/MetadataTag';
+import { ResolvedValueElementMetadata } from './metadata/models/ResolvedValueElementMetadata';
+import { ResolvedValueElementMetadataKind } from './metadata/models/ResolvedValueElementMetadataKind';
+import { ResolvedValueMetadata } from './metadata/models/ResolvedValueMetadata';
 import { UnmanagedClassElementMetadata } from './metadata/models/UnmanagedClassElementMetadata';
 import { plan } from './planning/calculations/plan';
 import { BaseBindingNode } from './planning/models/BaseBindingNode';
@@ -60,6 +64,7 @@ import { PlanServiceNode } from './planning/models/PlanServiceNode';
 import { PlanServiceNodeParent } from './planning/models/PlanServiceNodeParent';
 import { PlanServiceRedirectionBindingNode } from './planning/models/PlanServiceRedirectionBindingNode';
 import { PlanTree } from './planning/models/PlanTree';
+import { ResolvedValueBindingNode } from './planning/models/ResolvedValueBindingNode';
 import {
   GetPlanOptions,
   PlanResultCacheService,
@@ -96,9 +101,9 @@ export type {
   DynamicValueBuilder,
   Factory,
   FactoryBinding,
-  GetPlanOptions,
   GetOptions,
   GetOptionsTagConstraint,
+  GetPlanOptions,
   InstanceBinding,
   LeafBindingNode,
   ManagedClassElementMetadata,
@@ -119,6 +124,10 @@ export type {
   ResolutionContext,
   ResolutionParams,
   Resolved,
+  ResolvedValueBinding,
+  ResolvedValueBindingNode,
+  ResolvedValueElementMetadata,
+  ResolvedValueMetadata,
   ScopedBinding,
   ServiceRedirectionBinding,
   UnmanagedClassElementMetadata,
@@ -133,17 +142,18 @@ export {
   DeactivationsService,
   decorate,
   getClassMetadata,
-  multiInject,
   inject,
   injectable,
   injectFromBase,
+  multiInject,
   named,
   optional,
-  postConstruct,
   plan,
-  preDestroy,
   PlanResultCacheService,
+  postConstruct,
+  preDestroy,
   resolve,
+  ResolvedValueElementMetadataKind,
   resolveModuleDeactivations,
   resolveServiceDeactivations,
   tagged,

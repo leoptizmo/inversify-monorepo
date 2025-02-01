@@ -4,6 +4,7 @@ export type BindingType =
   | 'Factory'
   | 'Instance'
   | 'Provider'
+  | 'ResolvedValue'
   | 'ServiceRedirection';
 
 export const bindingTypeValues: { [TKey in BindingType]: TKey } = {
@@ -12,5 +13,6 @@ export const bindingTypeValues: { [TKey in BindingType]: TKey } = {
   Factory: 'Factory',
   Instance: 'Instance',
   Provider: 'Provider',
+  ResolvedValue: 'ResolvedValue',
   ServiceRedirection: 'ServiceRedirection',
 };
