@@ -21,6 +21,7 @@ jest.mock('../calculations/isParentBindingMetadata');
 jest.mock('../calculations/isParentBindingMetadataWithName');
 jest.mock('../calculations/isParentBindingMetadataWithServiceId');
 jest.mock('../calculations/isParentBindingMetadataWithTag');
+jest.mock('../calculations/isResolvedValueMetadataInjectOptions');
 
 import { ServiceIdentifier } from '@inversifyjs/common';
 import {
@@ -42,11 +43,13 @@ import {
   MetadataTag,
   Provider,
   ResolutionContext,
+  ResolvedValueElementMetadataKind,
   ScopedBinding,
   ServiceRedirectionBinding,
 } from '@inversifyjs/core';
 
 import { Writable } from '../../common/models/Writable';
+import { BindingConstraintUtils } from '../../container/binding/utils/BindingConstraintUtils';
 import { ClassMetadataFixtures } from '../../metadata/fixtures/ClassMetadataFixtures';
 import { getBindingId } from '../actions/getBindingId';
 import { isAnyAncestorBindingMetadata } from '../calculations/isAnyAncestorBindingMetadata';
@@ -68,6 +71,7 @@ import { isParentBindingMetadata } from '../calculations/isParentBindingMetadata
 import { isParentBindingMetadataWithName } from '../calculations/isParentBindingMetadataWithName';
 import { isParentBindingMetadataWithServiceId } from '../calculations/isParentBindingMetadataWithServiceId';
 import { isParentBindingMetadataWithTag } from '../calculations/isParentBindingMetadataWithTag';
+import { isResolvedValueMetadataInjectOptions } from '../calculations/isResolvedValueMetadataInjectOptions';
 import {
   BindInFluentSyntaxImplementation,
   BindInWhenOnFluentSyntaxImplementation,
@@ -76,6 +80,10 @@ import {
   BindWhenFluentSyntaxImplementation,
   BindWhenOnFluentSyntaxImplementation,
 } from './BindingFluentSyntaxImplementation';
+import {
+  ResolvedValueInjectOptions,
+  ResolvedValueMetadataInjectOptions,
+} from './ResolvedValueInjectOptions';
 
 describe(BindInFluentSyntaxImplementation.name, () => {
   let bindingMock: jest.Mocked<
@@ -370,6 +378,314 @@ describe(BindToFluentSyntaxImplementation.name, () => {
       });
     },
   );
+
+  describe('.toResolvedValue', () => {
+    describe('having no inject options', () => {
+      let factoryFixture: (arg: unknown) => unknown;
+
+      beforeAll(() => {
+        factoryFixture = (arg: unknown) => arg;
+      });
+
+      describe('when called', () => {
+        let expectedBinding: Binding;
+        let result: unknown;
+
+        beforeAll(() => {
+          expectedBinding = {
+            cache: {
+              isRight: false,
+              value: undefined,
+            },
+            factory: factoryFixture,
+            id: bindingIdFixture,
+            isSatisfiedBy: BindingConstraintUtils.always,
+            metadata: {
+              arguments: [],
+            },
+            moduleId: containerModuleIdFixture,
+            onActivation: undefined,
+            onDeactivation: undefined,
+            scope: defaultScopeFixture,
+            serviceIdentifier: serviceIdentifierFixture,
+            type: bindingTypeValues.ResolvedValue,
+          };
+
+          result =
+            bindToFluentSyntaxImplementation.toResolvedValue(factoryFixture);
+        });
+
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call getBindingId', () => {
+          expect(getBindingId).toHaveBeenCalledTimes(1);
+          expect(getBindingId).toHaveBeenCalledWith();
+        });
+
+        it('should call callback', () => {
+          expect(callbackMock).toHaveBeenCalledTimes(1);
+          expect(callbackMock).toHaveBeenCalledWith(expectedBinding);
+        });
+
+        it('should return expected result', () => {
+          expect(result).toBeInstanceOf(BindInWhenOnFluentSyntaxImplementation);
+        });
+      });
+    });
+
+    describe('having service identifier inject options', () => {
+      let factoryFixture: (arg: unknown) => unknown;
+      let injectOptions: ResolvedValueInjectOptions<unknown>;
+
+      beforeAll(() => {
+        factoryFixture = (arg: unknown) => arg;
+        injectOptions = 'service-id';
+      });
+
+      describe('when called', () => {
+        let expectedBinding: Binding;
+        let result: unknown;
+
+        beforeAll(() => {
+          expectedBinding = {
+            cache: {
+              isRight: false,
+              value: undefined,
+            },
+            factory: factoryFixture,
+            id: bindingIdFixture,
+            isSatisfiedBy: BindingConstraintUtils.always,
+            metadata: {
+              arguments: [
+                {
+                  kind: expect.any(Number) as unknown as number,
+                  name: undefined,
+                  optional: false,
+                  tags: new Map(),
+                  value: 'service-id',
+                },
+              ],
+            },
+            moduleId: containerModuleIdFixture,
+            onActivation: undefined,
+            onDeactivation: undefined,
+            scope: defaultScopeFixture,
+            serviceIdentifier: serviceIdentifierFixture,
+            type: bindingTypeValues.ResolvedValue,
+          };
+
+          (
+            isResolvedValueMetadataInjectOptions as unknown as jest.Mock<
+              typeof isResolvedValueMetadataInjectOptions
+            >
+          ).mockReturnValueOnce(false);
+
+          result = bindToFluentSyntaxImplementation.toResolvedValue(
+            factoryFixture,
+            [injectOptions],
+          );
+        });
+
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call isResolvedValueMetadataInjectOptions()', () => {
+          expect(isResolvedValueMetadataInjectOptions).toHaveBeenCalledTimes(1);
+          expect(isResolvedValueMetadataInjectOptions).toHaveBeenCalledWith(
+            injectOptions,
+          );
+        });
+
+        it('should call getBindingId', () => {
+          expect(getBindingId).toHaveBeenCalledTimes(1);
+          expect(getBindingId).toHaveBeenCalledWith();
+        });
+
+        it('should call callback', () => {
+          expect(callbackMock).toHaveBeenCalledTimes(1);
+          expect(callbackMock).toHaveBeenCalledWith(expectedBinding);
+        });
+
+        it('should return expected result', () => {
+          expect(result).toBeInstanceOf(BindInWhenOnFluentSyntaxImplementation);
+        });
+      });
+    });
+
+    describe('having inject options with service identifier and no optional metadata', () => {
+      let factoryFixture: (arg: unknown) => unknown;
+      let injectOptions: ResolvedValueInjectOptions<unknown>;
+
+      beforeAll(() => {
+        factoryFixture = (arg: unknown) => arg;
+        injectOptions = { serviceIdentifier: 'service-id' };
+      });
+
+      describe('when called', () => {
+        let expectedBinding: Binding;
+        let result: unknown;
+
+        beforeAll(() => {
+          expectedBinding = {
+            cache: {
+              isRight: false,
+              value: undefined,
+            },
+            factory: factoryFixture,
+            id: bindingIdFixture,
+            isSatisfiedBy: BindingConstraintUtils.always,
+            metadata: {
+              arguments: [
+                {
+                  kind: ResolvedValueElementMetadataKind.singleInjection,
+                  name: undefined,
+                  optional: false,
+                  tags: new Map(),
+                  value: 'service-id',
+                },
+              ],
+            },
+            moduleId: containerModuleIdFixture,
+            onActivation: undefined,
+            onDeactivation: undefined,
+            scope: defaultScopeFixture,
+            serviceIdentifier: serviceIdentifierFixture,
+            type: bindingTypeValues.ResolvedValue,
+          };
+
+          (
+            isResolvedValueMetadataInjectOptions as unknown as jest.Mock<
+              typeof isResolvedValueMetadataInjectOptions
+            >
+          ).mockReturnValueOnce(true);
+
+          result = bindToFluentSyntaxImplementation.toResolvedValue(
+            factoryFixture,
+            [injectOptions],
+          );
+        });
+
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call isResolvedValueMetadataInjectOptions()', () => {
+          expect(isResolvedValueMetadataInjectOptions).toHaveBeenCalledTimes(1);
+          expect(isResolvedValueMetadataInjectOptions).toHaveBeenCalledWith(
+            injectOptions,
+          );
+        });
+
+        it('should call getBindingId', () => {
+          expect(getBindingId).toHaveBeenCalledTimes(1);
+          expect(getBindingId).toHaveBeenCalledWith();
+        });
+
+        it('should call callback', () => {
+          expect(callbackMock).toHaveBeenCalledTimes(1);
+          expect(callbackMock).toHaveBeenCalledWith(expectedBinding);
+        });
+
+        it('should return expected result', () => {
+          expect(result).toBeInstanceOf(BindInWhenOnFluentSyntaxImplementation);
+        });
+      });
+    });
+
+    describe('having inject options with service identifier and optional metadata', () => {
+      let factoryFixture: (arg: unknown) => unknown;
+      let injectOptions: ResolvedValueMetadataInjectOptions<unknown>;
+
+      beforeAll(() => {
+        factoryFixture = (arg: unknown) => arg;
+        injectOptions = {
+          isMultiple: true,
+          name: 'name',
+          optional: true,
+          serviceIdentifier: 'service-id',
+          tags: [
+            {
+              key: 'tag',
+              value: 'tagValue',
+            },
+          ],
+        };
+      });
+
+      describe('when called', () => {
+        let expectedBinding: Binding;
+        let result: unknown;
+
+        beforeAll(() => {
+          expectedBinding = {
+            cache: {
+              isRight: false,
+              value: undefined,
+            },
+            factory: factoryFixture,
+            id: bindingIdFixture,
+            isSatisfiedBy: BindingConstraintUtils.always,
+            metadata: {
+              arguments: [
+                {
+                  kind: ResolvedValueElementMetadataKind.multipleInjection,
+                  name: 'name',
+                  optional: true,
+                  tags: new Map<MetadataTag, unknown>([['tag', 'tagValue']]),
+                  value: 'service-id',
+                },
+              ],
+            },
+            moduleId: containerModuleIdFixture,
+            onActivation: undefined,
+            onDeactivation: undefined,
+            scope: defaultScopeFixture,
+            serviceIdentifier: serviceIdentifierFixture,
+            type: bindingTypeValues.ResolvedValue,
+          };
+
+          (
+            isResolvedValueMetadataInjectOptions as unknown as jest.Mock<
+              typeof isResolvedValueMetadataInjectOptions
+            >
+          ).mockReturnValueOnce(true);
+
+          result = bindToFluentSyntaxImplementation.toResolvedValue(
+            factoryFixture,
+            [injectOptions],
+          );
+        });
+
+        afterAll(() => {
+          jest.clearAllMocks();
+        });
+
+        it('should call isResolvedValueMetadataInjectOptions()', () => {
+          expect(isResolvedValueMetadataInjectOptions).toHaveBeenCalledTimes(1);
+          expect(isResolvedValueMetadataInjectOptions).toHaveBeenCalledWith(
+            injectOptions,
+          );
+        });
+
+        it('should call getBindingId', () => {
+          expect(getBindingId).toHaveBeenCalledTimes(1);
+          expect(getBindingId).toHaveBeenCalledWith();
+        });
+
+        it('should call callback', () => {
+          expect(callbackMock).toHaveBeenCalledTimes(1);
+          expect(callbackMock).toHaveBeenCalledWith(expectedBinding);
+        });
+
+        it('should return expected result', () => {
+          expect(result).toBeInstanceOf(BindInWhenOnFluentSyntaxImplementation);
+        });
+      });
+    });
+  });
 
   describe('.toSelf', () => {
     describe('having a non function service identifier', () => {

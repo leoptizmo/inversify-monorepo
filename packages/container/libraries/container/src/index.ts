@@ -9,6 +9,11 @@ import {
   BindWhenOnFluentSyntax,
 } from './binding/models/BindingFluentSyntax';
 import {
+  ResolvedValueInjectOptions,
+  ResolvedValueMetadataInjectOptions,
+  ResolvedValueMetadataInjectTagOptions,
+} from './binding/models/ResolvedValueInjectOptions';
+import {
   ContainerModule,
   ContainerModuleLoadOptions,
 } from './container/models/ContainerModule';
@@ -27,6 +32,9 @@ export type {
   ContainerModuleLoadOptions,
   ContainerOptions,
   IsBoundOptions,
+  ResolvedValueInjectOptions,
+  ResolvedValueMetadataInjectOptions,
+  ResolvedValueMetadataInjectTagOptions,
 };
 
 export {
