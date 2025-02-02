@@ -8,6 +8,8 @@ import bindingToSyntaxApiToConstantValueSource from '@inversifyjs/code-examples/
 import bindingToSyntaxApiToDynamicValueSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToDynamicValue.ts.txt';
 import bindingToSyntaxApiToFactorySource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToFactory.ts.txt';
 import bindingToSyntaxApiToProviderSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToProvider.ts.txt';
+import bindingToSyntaxApiToResolvedValueSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToResolvedValue.ts.txt';
+import bindingToSyntaxApiToResolvedValueAdvancedSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToResolvedValueAdvanced.ts.txt';
 import bindingToSyntaxApiToSelfSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToSelf.ts.txt';
 import bindingToSyntaxApiToServiceSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToService.ts.txt';
 import bindingWhenSyntaxApiWhenSource from '@inversifyjs/code-examples/generated/examples/v7/bindingWhenSyntaxApiWhen.ts.txt';
@@ -106,6 +108,16 @@ toProvider(
 Binds a provider of services associated with a target service identifier to the given service identifier. A provider is just an asynchronous factory.
 
 <CodeBlock language="ts">{bindingToSyntaxApiToProviderSource}</CodeBlock>
+
+### toResolvedValue
+
+Binds a value to a service identifier. This value is generated on top of a function that receives resolved services. You can specify the services to be resolved by passing the service identifiers as arguments:
+
+<CodeBlock language="ts">{bindingToSyntaxApiToResolvedValueSource}</CodeBlock>
+
+You can also provide more detailed options in order to received resolved services:
+
+<CodeBlock language="ts">{bindingToSyntaxApiToResolvedValueAdvancedSource}</CodeBlock>
 
 ### toService
 
