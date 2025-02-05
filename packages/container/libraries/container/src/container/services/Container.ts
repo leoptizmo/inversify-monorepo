@@ -22,6 +22,7 @@ import {
   PlanParams,
   PlanResult,
   PlanResultCacheService,
+  ResolutionContext,
   resolve,
   resolveModuleDeactivations,
   resolveServiceDeactivations,
@@ -55,12 +56,29 @@ export class Container {
   #activationService: ActivationsService;
   #bindingService: BindingService;
   #deactivationService: DeactivationsService;
+  readonly #getActivationsResolutionParam: <TActivated>(
+    serviceIdentifier: ServiceIdentifier<TActivated>,
+  ) => Iterable<BindingActivation<TActivated>> | undefined;
+  readonly #getBindingsPlanParams: <TInstance>(
+    serviceIdentifier: ServiceIdentifier<TInstance>,
+  ) => Iterable<Binding<TInstance>> | undefined;
   readonly #options: InternalContainerOptions;
   readonly #planResultCacheService: PlanResultCacheService;
+  readonly #resolutionContext: ResolutionContext;
+  readonly #setBindingParamsPlan: <TInstance>(
+    binding: Binding<TInstance>,
+  ) => void;
   readonly #snapshots: Snapshot[];
 
   constructor(options?: ContainerOptions) {
+    this.#getActivationsResolutionParam = <TActivated>(
+      serviceIdentifier: ServiceIdentifier<TActivated>,
+    ): Iterable<BindingActivation<TActivated>> | undefined =>
+      this.#activationService.get(serviceIdentifier) as
+        | Iterable<BindingActivation<TActivated>>
+        | undefined;
     this.#planResultCacheService = new PlanResultCacheService();
+    this.#resolutionContext = this.#buildResolutionContext();
 
     if (options?.parent === undefined) {
       this.#activationService = ActivationsService.build(undefined);
@@ -81,6 +99,11 @@ export class Container {
         this.#planResultCacheService,
       );
     }
+
+    this.#getBindingsPlanParams = this.#bindingService.get.bind(
+      this.#bindingService,
+    );
+    this.#setBindingParamsPlan = this.#setBinding.bind(this);
 
     this.#options = {
       autobind: options?.autobind ?? false,
@@ -416,14 +439,14 @@ export class Container {
               scope: this.#options.defaultScope,
             }
           : undefined,
-      getBindings: this.#bindingService.get.bind(this.#bindingService),
+      getBindings: this.#getBindingsPlanParams,
       getClassMetadata,
       rootConstraints: {
         isMultiple,
         serviceIdentifier,
       },
       servicesBranch: new Set(),
-      setBinding: this.#setBinding.bind(this),
+      setBinding: this.#setBindingParamsPlan,
     };
 
     this.#handlePlanParamsRootConstraints(planParams, options);
@@ -458,21 +481,20 @@ export class Container {
     return planResult;
   }
 
+  #buildResolutionContext(): ResolutionContext {
+    return {
+      get: this.get.bind(this),
+      getAll: this.getAll.bind(this),
+      getAllAsync: this.getAllAsync.bind(this),
+      getAsync: this.getAsync.bind(this),
+    };
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   #getFromPlanResult<T>(planResult: PlanResult): T {
     return resolve({
-      context: {
-        get: this.get.bind(this),
-        getAll: this.getAll.bind(this),
-        getAllAsync: this.getAllAsync.bind(this),
-        getAsync: this.getAsync.bind(this),
-      },
-      getActivations: <TActivated>(
-        serviceIdentifier: ServiceIdentifier<TActivated>,
-      ): BindingActivation<TActivated>[] | undefined =>
-        this.#activationService.get(serviceIdentifier) as
-          | BindingActivation<TActivated>[]
-          | undefined,
+      context: this.#resolutionContext,
+      getActivations: this.#getActivationsResolutionParam,
       planResult,
       requestScopeCache: new Map(),
     }) as T;
