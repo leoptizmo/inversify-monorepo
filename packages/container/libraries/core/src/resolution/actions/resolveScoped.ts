@@ -6,6 +6,7 @@ import { BindingType } from '../../binding/models/BindingType';
 import { ScopedBinding } from '../../binding/models/ScopedBinding';
 import { ResolutionParams } from '../models/ResolutionParams';
 import { Resolved } from '../models/Resolved';
+import { cacheResolvedValue } from './cacheResolvedValue';
 import { resolveBindingActivations } from './resolveBindingActivations';
 
 export function resolveScoped<
@@ -27,19 +28,14 @@ export function resolveScoped<
           return binding.cache.value;
         }
 
-        const resolvedValue: Resolved<TActivated> = resolveAndActivate(
-          params,
-          arg,
-          binding,
-          resolve,
-        );
+        const resolvedValue: Resolved<TActivated> =
+          resolveBindingActivations<TActivated>(
+            params,
+            binding,
+            resolve(params, arg),
+          );
 
-        binding.cache = {
-          isRight: true,
-          value: resolvedValue,
-        };
-
-        return resolvedValue;
+        return cacheResolvedValue(binding, resolvedValue);
       }
       case bindingScopeValues.Request: {
         if (params.requestScopeCache.has(binding.id)) {
@@ -48,32 +44,23 @@ export function resolveScoped<
           ) as Resolved<TActivated>;
         }
 
-        const resolvedValue: Resolved<TActivated> = resolveAndActivate(
-          params,
-          arg,
-          binding,
-          resolve,
-        );
+        const resolvedValue: Resolved<TActivated> =
+          resolveBindingActivations<TActivated>(
+            params,
+            binding,
+            resolve(params, arg),
+          );
 
         params.requestScopeCache.set(binding.id, resolvedValue);
 
         return resolvedValue;
       }
       case bindingScopeValues.Transient:
-        return resolveAndActivate(params, arg, binding, resolve);
+        return resolveBindingActivations<TActivated>(
+          params,
+          binding,
+          resolve(params, arg),
+        );
     }
   };
-}
-
-function resolveAndActivate<TActivated, TArg>(
-  params: ResolutionParams,
-  arg: TArg,
-  binding: ScopedBinding<BindingType, BindingScope, TActivated>,
-  resolve: (params: ResolutionParams, arg: TArg) => Resolved<TActivated>,
-): Resolved<TActivated> {
-  return resolveBindingActivations<TActivated>(
-    params,
-    binding,
-    resolve(params, arg),
-  );
 }

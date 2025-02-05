@@ -1,5 +1,6 @@
-import { beforeAll, describe, expect, it, jest } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
+jest.mock('./cacheResolvedValue');
 jest.mock('./resolveBindingActivations');
 
 import { Right } from '@inversifyjs/common';
@@ -11,6 +12,7 @@ import {
 } from '../../binding/models/BindingType';
 import { ScopedBinding } from '../../binding/models/ScopedBinding';
 import { ResolutionParams } from '../models/ResolutionParams';
+import { cacheResolvedValue } from './cacheResolvedValue';
 import { resolveBindingActivations } from './resolveBindingActivations';
 import { resolveSingletonScopedBinding } from './resolveSingletonScopedBinding';
 
@@ -62,6 +64,10 @@ describe(resolveSingletonScopedBinding.name, () => {
           resolutionParamsFixture,
           bindingFixture,
         );
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
       });
 
       it('should return cached value', () => {
@@ -126,10 +132,18 @@ describe(resolveSingletonScopedBinding.name, () => {
           >
         ).mockReturnValueOnce(activatedResolveResult);
 
+        (
+          cacheResolvedValue as jest.Mock<typeof cacheResolvedValue>
+        ).mockReturnValueOnce(activatedResolveResult);
+
         result = resolveSingletonScopedBinding(resolveMock)(
           resolutionParamsFixture,
           bindingFixture,
         );
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
       });
 
       it('should call resolve()', () => {
@@ -149,13 +163,12 @@ describe(resolveSingletonScopedBinding.name, () => {
         );
       });
 
-      it('should cache value', () => {
-        const expectedCache: Right<unknown> = {
-          isRight: true,
-          value: activatedResolveResult,
-        };
-
-        expect(bindingFixture.cache).toStrictEqual(expectedCache);
+      it('should call cacheResolvedValue()', () => {
+        expect(cacheResolvedValue).toHaveBeenCalledTimes(1);
+        expect(cacheResolvedValue).toHaveBeenCalledWith(
+          bindingFixture,
+          activatedResolveResult,
+        );
       });
 
       it('should return cached value', () => {
