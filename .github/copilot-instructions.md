@@ -1,3 +1,7 @@
+## Unit test instructions
+
+**Important**: Apply this instructions **only** when you are told to write or update unit test files.
+
 We use jest for writing unit and integration tests. A test file must include:
 
 1. **Class Scope**: The outermost `describe` block for the class to be tested. Skip this scope when not testing a class.
