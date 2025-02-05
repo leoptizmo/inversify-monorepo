@@ -1,8 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
-import { Right } from '@inversifyjs/common';
-
+jest.mock('./cacheResolvedValue');
 jest.mock('./resolveBindingActivations');
+
+import { Right } from '@inversifyjs/common';
 
 import {
   BindingScope,
@@ -14,6 +15,7 @@ import {
 } from '../../binding/models/BindingType';
 import { ScopedBinding } from '../../binding/models/ScopedBinding';
 import { ResolutionParams } from '../models/ResolutionParams';
+import { cacheResolvedValue } from './cacheResolvedValue';
 import { resolveBindingActivations } from './resolveBindingActivations';
 import { resolveScoped } from './resolveScoped';
 
@@ -133,6 +135,10 @@ describe(resolveScoped.name, () => {
         resolveBindingActivations as jest.Mock<typeof resolveBindingActivations>
       ).mockReturnValueOnce(activatedResolveResult);
 
+      (
+        cacheResolvedValue as jest.Mock<typeof cacheResolvedValue>
+      ).mockReturnValueOnce(activatedResolveResult);
+
       result = resolveScoped(getBindingMock, resolveMock)(
         paramsMock,
         argFixture,
@@ -162,13 +168,12 @@ describe(resolveScoped.name, () => {
       );
     });
 
-    it('should cache value', () => {
-      const expectedCache: Right<unknown> = {
-        isRight: true,
-        value: activatedResolveResult,
-      };
-
-      expect(bindingFixture.cache).toStrictEqual(expectedCache);
+    it('should call cacheResolvedValue()', () => {
+      expect(cacheResolvedValue).toHaveBeenCalledTimes(1);
+      expect(cacheResolvedValue).toHaveBeenCalledWith(
+        bindingFixture,
+        activatedResolveResult,
+      );
     });
 
     it('should return expected result', () => {

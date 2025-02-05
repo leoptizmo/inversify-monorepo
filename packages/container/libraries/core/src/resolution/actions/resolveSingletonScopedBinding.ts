@@ -3,6 +3,7 @@ import { BindingType } from '../../binding/models/BindingType';
 import { ScopedBinding } from '../../binding/models/ScopedBinding';
 import { ResolutionParams } from '../models/ResolutionParams';
 import { Resolved } from '../models/Resolved';
+import { cacheResolvedValue } from './cacheResolvedValue';
 import { resolveBindingActivations } from './resolveBindingActivations';
 
 export function resolveSingletonScopedBinding<
@@ -33,11 +34,6 @@ export function resolveSingletonScopedBinding<
       resolve(params, binding),
     );
 
-    binding.cache = {
-      isRight: true,
-      value: resolvedValue,
-    };
-
-    return resolvedValue;
+    return cacheResolvedValue(binding, resolvedValue);
   };
 }
