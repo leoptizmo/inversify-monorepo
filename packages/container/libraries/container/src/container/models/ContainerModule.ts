@@ -6,20 +6,20 @@ import { getContainerModuleId } from '../actions/getContainerModuleId';
 import { IsBoundOptions } from './isBoundOptions';
 
 export interface ContainerModuleLoadOptions {
-  bind<T>(serviceIdentifier: ServiceIdentifier<T>): BindToFluentSyntax<T>;
-  isBound(
+  bind: <T>(serviceIdentifier: ServiceIdentifier<T>) => BindToFluentSyntax<T>;
+  isBound: (
     serviceIdentifier: ServiceIdentifier,
     options?: IsBoundOptions,
-  ): boolean;
-  onActivation<T>(
+  ) => boolean;
+  onActivation: <T>(
     serviceIdentifier: ServiceIdentifier<T>,
     activation: BindingActivation<T>,
-  ): void;
-  onDeactivation<T>(
+  ) => void;
+  onDeactivation: <T>(
     serviceIdentifier: ServiceIdentifier<T>,
     deactivation: BindingDeactivation<T>,
-  ): void;
-  unbind(serviceIdentifier: ServiceIdentifier): Promise<void>;
+  ) => void;
+  unbind: (serviceIdentifier: ServiceIdentifier) => Promise<void>;
 }
 
 export class ContainerModule {
