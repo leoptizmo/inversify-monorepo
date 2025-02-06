@@ -2,14 +2,273 @@
 
 **Important**: Apply this instructions **only** when you are told to write or update unit test files.
 
-We use jest for writing unit and integration tests. A test file must include:
+When writting unit tests, we expect external modules are mocked using `jest.fn`.
 
-1. **Class Scope**: The outermost `describe` block for the class to be tested. Skip this scope when not testing a class.
-2. **Method/Function Scope**: Nested `describe` blocks for different scenarios.
-3. **Method/Function Input Scope**: Further nested `describe` blocks for different input scenarios for the method/function.
-6. **Method/Function Code Flow Scope**: Further nested `describe` blocks for different behaviors scenarios with the given input for the method/function.
-5. **Arrange in `beforeAll`**: Setting up the necessary conditions and inputs.
-6. **Act in `beforeAll`**: Executing the function or method being tested.
-7. **Assert in `it` clauses**: Verifying that the outcome is as expected. When asserting mock calls, assert how many times the mock has been called and which params was called with.
+## Structure of a test module
 
-We writting unit tests, we expect external modules are mocked using `jest.fn`.
+Test modules are composed by nested `describe` calls. Every describe call includes a block with nested `describe` calls. Every `describe` block is associated with a certain scope of the original implementation.
+
+### 1. The class scope
+
+The first describe block contains the scope of the tested class. It should declare an instance of the class to be tested if the class is stateless.
+
+The class `Foo`
+
+```ts
+export class Foo {
+  constructor(private readonly bar: Bar) {}
+
+  ...
+}
+```
+
+Could be tested with the following implementation
+
+```ts
+describe(Foo.name, () => {
+  let barMock: jest.Mocked<Bar>;
+  let foo: Foo;
+
+  beforeAll(() => {
+    barMock = {
+      ...,
+    };
+
+    foo = new Foo(barMock);
+  });
+
+  ...
+});
+
+```
+
+### 2. The method / function scope
+
+The second describe block is the method one. All the tests regarding a class public method must be in the method scope
+
+The class `Foo`
+
+```ts
+export class Foo {
+  constructor(private readonly bar: Bar) {}
+
+  public sayHello(): void {
+    ...
+  }
+}
+
+```
+
+Could be tested with the following implementation
+
+```ts
+describe(Foo.name, () => {
+  let barMock: jest.Mocked<Bar>;
+  let foo: Foo;
+
+  beforeAll(() => {
+    barMock = {
+      ...,
+    };
+
+    foo = new Foo(barMock);
+  });
+
+  describe('.sayHello', () => {
+    ...
+  });
+});
+
+```
+
+### 3. The method input scope
+
+Specific inputs could be required in order to test certain flows. For example:
+
+```ts
+public composeHelloMessage(name: string): string {
+  if (name === 'Zoe') {
+    return 'Talk to my hand Zoe';
+  } else {
+    return `Hi ${name}, I'm glad to see you`;
+  }
+}
+
+```
+
+Two different inputs are required:
+
+1. The string `'Zoe'`.
+2. Any string different than `Zoe`.
+
+In these cases a describe block for each case is required.
+
+The class `Foo`
+
+```ts
+export class Foo {
+  constructor(private readonly bar: Bar) {}
+
+  public composeHelloMessage(name: string): string {
+    if (name === 'Zoe') {
+      return 'Talk to my hand Zoe';
+    } else {
+      return `Hi ${name}, I'm glad to see you`;
+    }
+  }
+}
+
+```
+
+Could be tested with the following implementation
+
+```ts
+describe(Foo.name, () => {
+  let barMock: jest.Mocked<Bar>;
+  let foo: Foo;
+
+  beforeAll(() => {
+    barMock = {
+      ...,
+    };
+
+    foo = new Foo(barMock);
+  });
+
+  describe('.composeHelloMessage', () => {
+    describe('having a name with value "Zoe"', () => {
+      let nameFixture: string;
+
+      beforeAll(() => {
+        nameFixture = 'Zoe';
+      });
+
+      ...
+    });
+
+    describe('having a name with value different than "Zoe"', () => {
+      let nameFixture: string;
+
+      beforeAll(() => {
+        nameFixture = 'Bob';
+      });
+
+      ...
+    });
+  });
+});
+
+```
+
+### 4. The code flow scope
+
+Every code flow should be covered in a describe block. If, given an input, only one flow is allowed, then the describe name associated should be `when called`. If not, it should be `when called and [behavior]` where behavior is the dependencies behavior that leds to that code flow.
+
+**Important note**: Sometimes several flows shares a common branch. Every flow must be tested but it's allowed to add describe blocks to test that common branch
+
+Once we are in this scope, all the assertions associated with this code flow should be included.
+
+The class Foo
+
+```ts
+export class Foo {
+  constructor(private readonly bar: Bar) {}
+
+  public composeHelloMessage(name: string): string {
+    if (name === this.bar.getUnderisableName()) {
+      return 'Talk to my hand';
+    } else {
+      return `Hi ${name}, I'm glad to see you`;
+    }
+  }
+}
+
+```
+
+Could be tested with the following implementation
+
+```ts
+describe(Foo.name, () => {
+  let barMock: jest.Mocked<Bar>;
+  let foo: Foo;
+
+  beforeAll(() => {
+    barMock = {
+      ...,
+    };
+
+    foo = new Foo(barMock);
+  });
+
+  describe('.composeHelloMessage', () => {
+
+    describe('when called', () => { // This is an example of common branch
+      let undesirableNameFixture: string;
+      let nameFixture: string;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        nameFixture = 'Anna';
+        undesirableNameFixture = 'Carl';
+
+        barMock.getUnderisableName.mockReturnValueOnce(undesirableNameFixture);
+
+        result = foo.composeHelloMessage(nameFixture);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should call bar.getUndesirableName()', () => {
+        expect(barMock.getUnderisableName).toHavBeenCalledTimes(1);
+        expect(barMock.getUnderisableName).toHavBeenCalledWith(nameFixture);
+      });
+    });
+
+    describe('when called, and bar.getUndesirableName() is equal to name', () => {
+      let undesirableNameFixture: string;
+      let nameFixture: string;
+
+      beforeAll(() => {
+        nameFixture = 'Anna';
+        undesirableNameFixture = nameFixture;
+
+        result = foo.composeHelloMessage(nameFixture);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should return a string', () => {
+        expect(result).toBe('Talk to my hand');
+      });
+    });
+
+    describe('when called, and bar.getUndesirableName() is distinct to name', () => {
+      let undesirableNameFixture: string;
+      let nameFixture: string;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        nameFixture = 'Anna';
+        undesirableNameFixture = 'Carl';
+
+        barMock.getUnderisableName.mockReturnValueOnce(undesirableNameFixture);
+
+        result = foo.composeHelloMessage(nameFixture);
+      });
+
+      afterAll(() => {
+        jest.clearAllMocks();
+      });
+
+      it('should return a string', () => {
+        expect(result).toBe(`Hi ${nameFixture}, I'm glad to see you`);
+      });
+    });
+  });
+});
