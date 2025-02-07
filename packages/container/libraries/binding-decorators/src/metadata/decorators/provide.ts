@@ -13,11 +13,14 @@ import { BindingMetadata } from '../models/BindingMetadata';
 import { BindingMetadataMap } from '../models/BindingMetadataMap';
 
 export function provide<T>(
-  serviceIdentifier: ServiceIdentifier<T>,
+  serviceIdentifier?: ServiceIdentifier<T>,
   bind?: (bindSyntax: BindInWhenOnFluentSyntax<T>) => void,
 ): ClassDecorator {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   return (target: Function): void => {
+    const bindingServiceIdentifier: ServiceIdentifier<T> =
+      serviceIdentifier ?? target;
+
     const bindAction: (
       bindService: (
         serviceIdentifier: ServiceIdentifier<T>,
@@ -28,7 +31,7 @@ export function provide<T>(
       ) => BindToFluentSyntax<T>,
     ): void => {
       const bindInWhenOnFluentSyntax: BindInWhenOnFluentSyntax<T> = bindService(
-        serviceIdentifier,
+        bindingServiceIdentifier,
       ).to(target as Newable<T>);
 
       if (bind !== undefined) {
@@ -38,7 +41,7 @@ export function provide<T>(
 
     const bindingMetadata: BindingMetadata<T> = {
       action: bindAction,
-      serviceIdentifier,
+      serviceIdentifier: bindingServiceIdentifier,
     };
 
     updateOwnReflectMetadata<BindingMetadataMap>(
