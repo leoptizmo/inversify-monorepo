@@ -2,6 +2,9 @@ coverage:
   status:
     project:
       default: false
+      '@inversifyjs/binding-decorators':
+        flags:
+          - '@inversifyjs/binding-decorators'
       '@inversifyjs/common':
         flags:
           - '@inversifyjs/common'
@@ -18,6 +21,9 @@ coverage:
         flags:
           - '@inversifyjs/reflect-metadata-utils'
 flags:
+  '@inversifyjs/binding-decorators':
+    paths:
+      - packages/container/libraries/binding-decorators/
   '@inversifyjs/common':
     paths:
       - packages/container/libraries/common/
