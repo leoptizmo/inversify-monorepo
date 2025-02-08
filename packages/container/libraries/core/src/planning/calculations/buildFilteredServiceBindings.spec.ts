@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { Newable } from '@inversifyjs/common';
 
 import { Binding } from '../../binding/models/Binding';
-import { BindingMetadata } from '../../binding/models/BindingMetadata';
+import { BindingConstraints } from '../../binding/models/BindingConstraints';
 import {
   BindingScope,
   bindingScopeValues,
@@ -19,13 +19,13 @@ import {
 describe(buildFilteredServiceBindings.name, () => {
   describe('having no options', () => {
     let paramsMock: jest.Mocked<BasePlanParams>;
-    let bindingMetadataFixture: BindingMetadata;
+    let bindingConstraintsFixture: BindingConstraints;
 
     beforeAll(() => {
       paramsMock = {
         getBindings: jest.fn(),
       } as Partial<jest.Mocked<BasePlanParams>> as jest.Mocked<BasePlanParams>;
-      bindingMetadataFixture = {
+      bindingConstraintsFixture = {
         getAncestor: () => undefined,
         name: 'name',
         serviceIdentifier: 'service-id',
@@ -39,7 +39,7 @@ describe(buildFilteredServiceBindings.name, () => {
       beforeAll(() => {
         result = buildFilteredServiceBindings(
           paramsMock,
-          bindingMetadataFixture,
+          bindingConstraintsFixture,
         );
       });
 
@@ -50,7 +50,7 @@ describe(buildFilteredServiceBindings.name, () => {
       it('should call params.getBinding()', () => {
         expect(paramsMock.getBindings).toHaveBeenCalledTimes(1);
         expect(paramsMock.getBindings).toHaveBeenCalledWith(
-          bindingMetadataFixture.serviceIdentifier,
+          bindingConstraintsFixture.serviceIdentifier,
         );
       });
 
@@ -85,7 +85,7 @@ describe(buildFilteredServiceBindings.name, () => {
 
         result = buildFilteredServiceBindings(
           paramsMock,
-          bindingMetadataFixture,
+          bindingConstraintsFixture,
         );
       });
 
@@ -96,7 +96,7 @@ describe(buildFilteredServiceBindings.name, () => {
       it('should call params.getBinding()', () => {
         expect(paramsMock.getBindings).toHaveBeenCalledTimes(1);
         expect(paramsMock.getBindings).toHaveBeenCalledWith(
-          bindingMetadataFixture.serviceIdentifier,
+          bindingConstraintsFixture.serviceIdentifier,
         );
       });
 
@@ -106,10 +106,10 @@ describe(buildFilteredServiceBindings.name, () => {
     });
   });
 
-  describe('having options with autobindOptions and bindingMetadata with Function serviceIdentifier', () => {
+  describe('having options with autobindOptions and bindingConstraints with Function serviceIdentifier', () => {
     let bindingScopeFixture: BindingScope;
     let paramsMock: jest.Mocked<BasePlanParams>;
-    let bindingMetadataFixture: BindingMetadata;
+    let bindingConstraintsFixture: BindingConstraints;
     let optionsFixture: BuildFilteredServiceBindingsOptions;
 
     beforeAll(() => {
@@ -121,7 +121,7 @@ describe(buildFilteredServiceBindings.name, () => {
         getBindings: jest.fn(),
         setBinding: jest.fn(),
       } as Partial<jest.Mocked<BasePlanParams>> as jest.Mocked<BasePlanParams>;
-      bindingMetadataFixture = {
+      bindingConstraintsFixture = {
         getAncestor: () => undefined,
         name: 'name',
         serviceIdentifier: class {},
@@ -136,7 +136,7 @@ describe(buildFilteredServiceBindings.name, () => {
       beforeAll(() => {
         result = buildFilteredServiceBindings(
           paramsMock,
-          bindingMetadataFixture,
+          bindingConstraintsFixture,
           optionsFixture,
         );
       });
@@ -148,7 +148,7 @@ describe(buildFilteredServiceBindings.name, () => {
       it('should call params.getBinding()', () => {
         expect(paramsMock.getBindings).toHaveBeenCalledTimes(1);
         expect(paramsMock.getBindings).toHaveBeenCalledWith(
-          bindingMetadataFixture.serviceIdentifier,
+          bindingConstraintsFixture.serviceIdentifier,
         );
       });
 
@@ -160,13 +160,13 @@ describe(buildFilteredServiceBindings.name, () => {
           },
           id: 0,
           implementationType:
-            bindingMetadataFixture.serviceIdentifier as Newable,
+            bindingConstraintsFixture.serviceIdentifier as Newable,
           isSatisfiedBy: expect.any(Function) as unknown as () => boolean,
           moduleId: undefined,
           onActivation: undefined,
           onDeactivation: undefined,
           scope: bindingScopeFixture,
-          serviceIdentifier: bindingMetadataFixture.serviceIdentifier,
+          serviceIdentifier: bindingConstraintsFixture.serviceIdentifier,
           type: bindingTypeValues.Instance,
         };
 
@@ -182,13 +182,13 @@ describe(buildFilteredServiceBindings.name, () => {
           },
           id: 0,
           implementationType:
-            bindingMetadataFixture.serviceIdentifier as Newable,
+            bindingConstraintsFixture.serviceIdentifier as Newable,
           isSatisfiedBy: expect.any(Function) as unknown as () => boolean,
           moduleId: undefined,
           onActivation: undefined,
           onDeactivation: undefined,
           scope: bindingScopeFixture,
-          serviceIdentifier: bindingMetadataFixture.serviceIdentifier,
+          serviceIdentifier: bindingConstraintsFixture.serviceIdentifier,
           type: bindingTypeValues.Instance,
         };
 
@@ -199,14 +199,14 @@ describe(buildFilteredServiceBindings.name, () => {
 
   describe('having options with customServiceIdentifier', () => {
     let paramsMock: jest.Mocked<BasePlanParams>;
-    let bindingMetadataFixture: BindingMetadata;
+    let bindingConstraintsFixture: BindingConstraints;
     let optionsFixture: BuildFilteredServiceBindingsOptions;
 
     beforeAll(() => {
       paramsMock = {
         getBindings: jest.fn(),
       } as Partial<jest.Mocked<BasePlanParams>> as jest.Mocked<BasePlanParams>;
-      bindingMetadataFixture = {
+      bindingConstraintsFixture = {
         getAncestor: () => undefined,
         name: 'name',
         serviceIdentifier: 'service-id',
@@ -223,7 +223,7 @@ describe(buildFilteredServiceBindings.name, () => {
       beforeAll(() => {
         result = buildFilteredServiceBindings(
           paramsMock,
-          bindingMetadataFixture,
+          bindingConstraintsFixture,
           optionsFixture,
         );
       });

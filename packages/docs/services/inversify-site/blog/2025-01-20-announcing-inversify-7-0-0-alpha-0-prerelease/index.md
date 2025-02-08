@@ -29,7 +29,7 @@ Previous `Context` and `Request` exposed objects provided internal data which sh
 
 ### Binding constraints
 
-Some methods have been renamed. No `context` is passed to the constraint in favor of a `BindingMetadata` parameter.
+Some methods have been renamed. No `context` is passed to the constraint in favor of a `BindingConstraints` parameter.
 
 #### Motivation
 

@@ -1,8 +1,8 @@
 import { BaseBinding } from './binding/models/BaseBinding';
 import { Binding } from './binding/models/Binding';
 import { BindingActivation } from './binding/models/BindingActivation';
+import { BindingConstraints } from './binding/models/BindingConstraints';
 import { BindingDeactivation } from './binding/models/BindingDeactivation';
-import { BindingMetadata } from './binding/models/BindingMetadata';
 import {
   BindingScope,
   bindingScopeValues,
@@ -89,7 +89,7 @@ export type {
   BindingActivationRelation,
   BindingDeactivation,
   BindingDeactivationRelation,
-  BindingMetadata,
+  BindingConstraints,
   BindingScope,
   BindingType,
   ClassElementMetadata,

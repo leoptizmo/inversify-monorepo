@@ -1,8 +1,8 @@
 import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 import {
   BindingActivation,
+  BindingConstraints,
   BindingDeactivation,
-  BindingMetadata,
   DynamicValueBuilder,
   Factory,
   MetadataName,
@@ -59,10 +59,10 @@ export interface BindWhenOnFluentSyntax<T>
 
 export interface BindWhenFluentSyntax<T> {
   when(
-    constraint: (metadata: BindingMetadata) => boolean,
+    constraint: (metadata: BindingConstraints) => boolean,
   ): BindOnFluentSyntax<T>;
   whenAnyAncestor(
-    constraint: (metadata: BindingMetadata) => boolean,
+    constraint: (metadata: BindingConstraints) => boolean,
   ): BindOnFluentSyntax<T>;
   whenAnyAncestorIs(
     serviceIdentifier: ServiceIdentifier,
@@ -75,7 +75,7 @@ export interface BindWhenFluentSyntax<T> {
   whenDefault(): BindOnFluentSyntax<T>;
   whenNamed(name: MetadataName): BindOnFluentSyntax<T>;
   whenNoAncestor(
-    constraint: (metadata: BindingMetadata) => boolean,
+    constraint: (metadata: BindingConstraints) => boolean,
   ): BindOnFluentSyntax<T>;
   whenNoAncestorIs(serviceIdentifier: ServiceIdentifier): BindOnFluentSyntax<T>;
   whenNoAncestorNamed(name: MetadataName): BindOnFluentSyntax<T>;
@@ -84,7 +84,7 @@ export interface BindWhenFluentSyntax<T> {
     tagValue: unknown,
   ): BindOnFluentSyntax<T>;
   whenNoParent(
-    constraint: (metadata: BindingMetadata) => boolean,
+    constraint: (metadata: BindingConstraints) => boolean,
   ): BindOnFluentSyntax<T>;
   whenNoParentIs(serviceIdentifier: ServiceIdentifier): BindOnFluentSyntax<T>;
   whenNoParentNamed(name: MetadataName): BindOnFluentSyntax<T>;
@@ -93,7 +93,7 @@ export interface BindWhenFluentSyntax<T> {
     tagValue: unknown,
   ): BindOnFluentSyntax<T>;
   whenParent(
-    constraint: (metadata: BindingMetadata) => boolean,
+    constraint: (metadata: BindingConstraints) => boolean,
   ): BindOnFluentSyntax<T>;
   whenParentIs(serviceIdentifier: ServiceIdentifier): BindOnFluentSyntax<T>;
   whenParentNamed(name: MetadataName): BindOnFluentSyntax<T>;

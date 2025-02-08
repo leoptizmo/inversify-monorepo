@@ -1,7 +1,7 @@
 import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 
 import { Binding } from '../../binding/models/Binding';
-import { BindingMetadata } from '../../binding/models/BindingMetadata';
+import { BindingConstraints } from '../../binding/models/BindingConstraints';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
 import { BasePlanParams } from '../models/BasePlanParams';
@@ -13,11 +13,11 @@ export interface BuildFilteredServiceBindingsOptions {
 
 export function buildFilteredServiceBindings(
   params: BasePlanParams,
-  bindingMetadata: BindingMetadata,
+  bindingConstraints: BindingConstraints,
   options?: BuildFilteredServiceBindingsOptions,
 ): Binding<unknown>[] {
   const serviceIdentifier: ServiceIdentifier =
-    options?.customServiceIdentifier ?? bindingMetadata.serviceIdentifier;
+    options?.customServiceIdentifier ?? bindingConstraints.serviceIdentifier;
 
   const serviceBindings: Binding<unknown>[] = [
     ...(params.getBindings(serviceIdentifier) ?? []),
@@ -25,7 +25,7 @@ export function buildFilteredServiceBindings(
 
   const filteredBindings: Binding<unknown>[] = serviceBindings.filter(
     (binding: Binding<unknown>): boolean =>
-      binding.isSatisfiedBy(bindingMetadata),
+      binding.isSatisfiedBy(bindingConstraints),
   );
 
   if (

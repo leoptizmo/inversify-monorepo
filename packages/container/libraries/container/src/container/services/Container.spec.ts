@@ -8,9 +8,9 @@ import {
   Binding,
   BindingActivation,
   BindingActivationRelation,
+  BindingConstraints,
   BindingDeactivation,
   BindingDeactivationRelation,
-  BindingMetadata,
   BindingScope,
   bindingScopeValues,
   BindingService,
@@ -1383,9 +1383,9 @@ describe(Container.name, () => {
       });
 
       it('should call binding.isSatisfiedBy()', () => {
-        const expectedBindingMetadata: BindingMetadata = {
+        const expectedBindingConstraints: BindingConstraints = {
           getAncestor: expect.any(Function) as unknown as () =>
-            | BindingMetadata
+            | BindingConstraints
             | undefined,
           name: nameFixture,
           serviceIdentifier: serviceIdentifierFixture,
@@ -1394,7 +1394,7 @@ describe(Container.name, () => {
 
         expect(bindingMock.isSatisfiedBy).toHaveBeenCalledTimes(1);
         expect(bindingMock.isSatisfiedBy).toHaveBeenCalledWith(
-          expectedBindingMetadata,
+          expectedBindingConstraints,
         );
       });
 
@@ -1447,9 +1447,9 @@ describe(Container.name, () => {
       });
 
       it('should call binding.isSatisfiedBy()', () => {
-        const expectedBindingMetadata: BindingMetadata = {
+        const expectedBindingConstraints: BindingConstraints = {
           getAncestor: expect.any(Function) as unknown as () =>
-            | BindingMetadata
+            | BindingConstraints
             | undefined,
           name: nameFixture,
           serviceIdentifier: serviceIdentifierFixture,
@@ -1458,7 +1458,7 @@ describe(Container.name, () => {
 
         expect(bindingMock.isSatisfiedBy).toHaveBeenCalledTimes(1);
         expect(bindingMock.isSatisfiedBy).toHaveBeenCalledWith(
-          expectedBindingMetadata,
+          expectedBindingConstraints,
         );
       });
 
@@ -1560,9 +1560,9 @@ describe(Container.name, () => {
       });
 
       it('should call binding.isSatisfiedBy()', () => {
-        const expectedBindingMetadata: BindingMetadata = {
+        const expectedBindingConstraints: BindingConstraints = {
           getAncestor: expect.any(Function) as unknown as () =>
-            | BindingMetadata
+            | BindingConstraints
             | undefined,
           name: nameFixture,
           serviceIdentifier: serviceIdentifierFixture,
@@ -1571,7 +1571,7 @@ describe(Container.name, () => {
 
         expect(bindingMock.isSatisfiedBy).toHaveBeenCalledTimes(1);
         expect(bindingMock.isSatisfiedBy).toHaveBeenCalledWith(
-          expectedBindingMetadata,
+          expectedBindingConstraints,
         );
       });
 
@@ -1628,9 +1628,9 @@ describe(Container.name, () => {
       });
 
       it('should call binding.isSatisfiedBy()', () => {
-        const expectedBindingMetadata: BindingMetadata = {
+        const expectedBindingConstraints: BindingConstraints = {
           getAncestor: expect.any(Function) as unknown as () =>
-            | BindingMetadata
+            | BindingConstraints
             | undefined,
           name: nameFixture,
           serviceIdentifier: serviceIdentifierFixture,
@@ -1639,7 +1639,7 @@ describe(Container.name, () => {
 
         expect(bindingMock.isSatisfiedBy).toHaveBeenCalledTimes(1);
         expect(bindingMock.isSatisfiedBy).toHaveBeenCalledWith(
-          expectedBindingMetadata,
+          expectedBindingConstraints,
         );
       });
 

@@ -1,8 +1,9 @@
-import { BindingMetadata } from '@inversifyjs/core';
+import { BindingConstraints } from '@inversifyjs/core';
 
 export class BindingConstraintUtils {
-  public static readonly always: (bindingMetadata: BindingMetadata) => boolean =
-    (_bindingMetadata: BindingMetadata): boolean => {
-      return true;
-    };
+  public static readonly always: (
+    bindingConstraints: BindingConstraints,
+  ) => boolean = (_bindingConstraints: BindingConstraints): boolean => {
+    return true;
+  };
 }

@@ -2,8 +2,8 @@ import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 import {
   Binding,
   BindingActivation,
+  BindingConstraints,
   BindingDeactivation,
-  BindingMetadata,
   BindingScope,
   bindingScopeValues,
   BindingType,
@@ -33,25 +33,25 @@ import {
 import { Writable } from '../../common/models/Writable';
 import { BindingConstraintUtils } from '../../container/binding/utils/BindingConstraintUtils';
 import { getBindingId } from '../actions/getBindingId';
-import { isAnyAncestorBindingMetadata } from '../calculations/isAnyAncestorBindingMetadata';
-import { isAnyAncestorBindingMetadataWithName } from '../calculations/isAnyAncestorBindingMetadataWithName';
-import { isAnyAncestorBindingMetadataWithServiceId } from '../calculations/isAnyAncestorBindingMetadataWithServiceId';
-import { isAnyAncestorBindingMetadataWithTag } from '../calculations/isAnyAncestorBindingMetadataWithTag';
-import { isBindingMetadataWithName } from '../calculations/isBindingMetadataWithName';
-import { isBindingMetadataWithNoNameNorTags } from '../calculations/isBindingMetadataWithNoNameNorTags';
-import { isBindingMetadataWithTag } from '../calculations/isBindingMetadataWithTag';
-import { isNoAncestorBindingMetadata } from '../calculations/isNoAncestorBindingMetadata';
-import { isNoAncestorBindingMetadataWithName } from '../calculations/isNoAncestorBindingMetadataWithName';
-import { isNoAncestorBindingMetadataWithServiceId } from '../calculations/isNoAncestorBindingMetadataWithServiceId';
-import { isNoAncestorBindingMetadataWithTag } from '../calculations/isNoAncestorBindingMetadataWithTag';
-import { isNotParentBindingMetadata } from '../calculations/isNotParentBindingMetadata';
-import { isNotParentBindingMetadataWithName } from '../calculations/isNotParentBindingMetadataWithName';
-import { isNotParentBindingMetadataWithServiceId } from '../calculations/isNotParentBindingMetadataWithServiceId';
-import { isNotParentBindingMetadataWithTag } from '../calculations/isNotParentBindingMetadataWithTag';
-import { isParentBindingMetadata } from '../calculations/isParentBindingMetadata';
-import { isParentBindingMetadataWithName } from '../calculations/isParentBindingMetadataWithName';
-import { isParentBindingMetadataWithServiceId } from '../calculations/isParentBindingMetadataWithServiceId';
-import { isParentBindingMetadataWithTag } from '../calculations/isParentBindingMetadataWithTag';
+import { isAnyAncestorBindingConstraints } from '../calculations/isAnyAncestorBindingConstraints';
+import { isAnyAncestorBindingConstraintsWithName } from '../calculations/isAnyAncestorBindingConstraintsWithName';
+import { isAnyAncestorBindingConstraintsWithServiceId } from '../calculations/isAnyAncestorBindingConstraintsWithServiceId';
+import { isAnyAncestorBindingConstraintsWithTag } from '../calculations/isAnyAncestorBindingConstraintsWithTag';
+import { isBindingConstraintsWithName } from '../calculations/isBindingConstraintsWithName';
+import { isBindingConstraintsWithNoNameNorTags } from '../calculations/isBindingConstraintsWithNoNameNorTags';
+import { isBindingConstraintsWithTag } from '../calculations/isBindingConstraintsWithTag';
+import { isNoAncestorBindingConstraints } from '../calculations/isNoAncestorBindingConstraints';
+import { isNoAncestorBindingConstraintsWithName } from '../calculations/isNoAncestorBindingConstraintsWithName';
+import { isNoAncestorBindingConstraintsWithServiceId } from '../calculations/isNoAncestorBindingConstraintsWithServiceId';
+import { isNoAncestorBindingConstraintsWithTag } from '../calculations/isNoAncestorBindingConstraintsWithTag';
+import { isNotParentBindingConstraints } from '../calculations/isNotParentBindingConstraints';
+import { isNotParentBindingConstraintsWithName } from '../calculations/isNotParentBindingConstraintsWithName';
+import { isNotParentBindingConstraintsWithServiceId } from '../calculations/isNotParentBindingConstraintsWithServiceId';
+import { isNotParentBindingConstraintsWithTag } from '../calculations/isNotParentBindingConstraintsWithTag';
+import { isParentBindingConstraints } from '../calculations/isParentBindingConstraints';
+import { isParentBindingConstraintsWithName } from '../calculations/isParentBindingConstraintsWithName';
+import { isParentBindingConstraintsWithServiceId } from '../calculations/isParentBindingConstraintsWithServiceId';
+import { isParentBindingConstraintsWithTag } from '../calculations/isParentBindingConstraintsWithTag';
 import { isResolvedValueMetadataInjectOptions } from '../calculations/isResolvedValueMetadataInjectOptions';
 import {
   BindInFluentSyntax,
@@ -371,7 +371,7 @@ export class BindWhenFluentSyntaxImplementation<T>
   }
 
   public when(
-    constraint: (metadata: BindingMetadata) => boolean,
+    constraint: (metadata: BindingConstraints) => boolean,
   ): BindOnFluentSyntax<T> {
     this.#binding.isSatisfiedBy = constraint;
 
@@ -379,116 +379,118 @@ export class BindWhenFluentSyntaxImplementation<T>
   }
 
   public whenAnyAncestor(
-    constraint: (metadata: BindingMetadata) => boolean,
+    constraint: (metadata: BindingConstraints) => boolean,
   ): BindOnFluentSyntax<T> {
-    return this.when(isAnyAncestorBindingMetadata(constraint));
+    return this.when(isAnyAncestorBindingConstraints(constraint));
   }
 
   public whenAnyAncestorIs(
     serviceIdentifier: ServiceIdentifier,
   ): BindOnFluentSyntax<T> {
     return this.when(
-      isAnyAncestorBindingMetadataWithServiceId(serviceIdentifier),
+      isAnyAncestorBindingConstraintsWithServiceId(serviceIdentifier),
     );
   }
 
   public whenAnyAncestorNamed(name: MetadataName): BindOnFluentSyntax<T> {
-    return this.when(isAnyAncestorBindingMetadataWithName(name));
+    return this.when(isAnyAncestorBindingConstraintsWithName(name));
   }
 
   public whenAnyAncestorTagged(
     tag: MetadataTag,
     tagValue: unknown,
   ): BindOnFluentSyntax<T> {
-    return this.when(isAnyAncestorBindingMetadataWithTag(tag, tagValue));
+    return this.when(isAnyAncestorBindingConstraintsWithTag(tag, tagValue));
   }
 
   public whenDefault(): BindOnFluentSyntax<T> {
-    return this.when(isBindingMetadataWithNoNameNorTags);
+    return this.when(isBindingConstraintsWithNoNameNorTags);
   }
 
   public whenNamed(name: MetadataName): BindOnFluentSyntax<T> {
-    return this.when(isBindingMetadataWithName(name));
+    return this.when(isBindingConstraintsWithName(name));
   }
 
   public whenNoParent(
-    constraint: (metadata: BindingMetadata) => boolean,
+    constraint: (metadata: BindingConstraints) => boolean,
   ): BindOnFluentSyntax<T> {
-    return this.when(isNotParentBindingMetadata(constraint));
+    return this.when(isNotParentBindingConstraints(constraint));
   }
 
   public whenNoParentIs(
     serviceIdentifier: ServiceIdentifier,
   ): BindOnFluentSyntax<T> {
     return this.when(
-      isNotParentBindingMetadataWithServiceId(serviceIdentifier),
+      isNotParentBindingConstraintsWithServiceId(serviceIdentifier),
     );
   }
 
   public whenNoParentNamed(name: MetadataName): BindOnFluentSyntax<T> {
-    return this.when(isNotParentBindingMetadataWithName(name));
+    return this.when(isNotParentBindingConstraintsWithName(name));
   }
 
   public whenNoParentTagged(
     tag: MetadataTag,
     tagValue: unknown,
   ): BindOnFluentSyntax<T> {
-    return this.when(isNotParentBindingMetadataWithTag(tag, tagValue));
+    return this.when(isNotParentBindingConstraintsWithTag(tag, tagValue));
   }
 
   public whenParent(
-    constraint: (metadata: BindingMetadata) => boolean,
+    constraint: (metadata: BindingConstraints) => boolean,
   ): BindOnFluentSyntax<T> {
-    return this.when(isParentBindingMetadata(constraint));
+    return this.when(isParentBindingConstraints(constraint));
   }
 
   public whenParentIs(
     serviceIdentifier: ServiceIdentifier,
   ): BindOnFluentSyntax<T> {
-    return this.when(isParentBindingMetadataWithServiceId(serviceIdentifier));
+    return this.when(
+      isParentBindingConstraintsWithServiceId(serviceIdentifier),
+    );
   }
 
   public whenParentNamed(name: MetadataName): BindOnFluentSyntax<T> {
-    return this.when(isParentBindingMetadataWithName(name));
+    return this.when(isParentBindingConstraintsWithName(name));
   }
 
   public whenParentTagged(
     tag: MetadataTag,
     tagValue: unknown,
   ): BindOnFluentSyntax<T> {
-    return this.when(isParentBindingMetadataWithTag(tag, tagValue));
+    return this.when(isParentBindingConstraintsWithTag(tag, tagValue));
   }
 
   public whenTagged(
     tag: MetadataTag,
     tagValue: unknown,
   ): BindOnFluentSyntax<T> {
-    return this.when(isBindingMetadataWithTag(tag, tagValue));
+    return this.when(isBindingConstraintsWithTag(tag, tagValue));
   }
 
   public whenNoAncestor(
-    constraint: (metadata: BindingMetadata) => boolean,
+    constraint: (metadata: BindingConstraints) => boolean,
   ): BindOnFluentSyntax<T> {
-    return this.when(isNoAncestorBindingMetadata(constraint));
+    return this.when(isNoAncestorBindingConstraints(constraint));
   }
 
   public whenNoAncestorIs(
     serviceIdentifier: ServiceIdentifier,
   ): BindOnFluentSyntax<T> {
     return this.when(
-      isNoAncestorBindingMetadataWithServiceId(serviceIdentifier),
+      isNoAncestorBindingConstraintsWithServiceId(serviceIdentifier),
     );
   }
 
   public whenNoAncestorNamed(name: MetadataName): BindOnFluentSyntax<T> {
-    return this.when(isNoAncestorBindingMetadataWithName(name));
+    return this.when(isNoAncestorBindingConstraintsWithName(name));
   }
 
   public whenNoAncestorTagged(
     tag: MetadataTag,
     tagValue: unknown,
   ): BindOnFluentSyntax<T> {
-    return this.when(isNoAncestorBindingMetadataWithTag(tag, tagValue));
+    return this.when(isNoAncestorBindingConstraintsWithTag(tag, tagValue));
   }
 }
 

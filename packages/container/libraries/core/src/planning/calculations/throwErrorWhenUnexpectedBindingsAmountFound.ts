@@ -4,7 +4,7 @@ import {
 } from '@inversifyjs/common';
 
 import { stringifyBinding } from '../../binding/calculations/stringifyBinding';
-import { BindingMetadata } from '../../binding/models/BindingMetadata';
+import { BindingConstraints } from '../../binding/models/BindingConstraints';
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
 import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKind';
 import { MetadataTag } from '../../metadata/models/MetadataTag';
@@ -16,7 +16,7 @@ export function throwErrorWhenUnexpectedBindingsAmountFound(
   bindings: PlanBindingNode[] | PlanBindingNode | undefined,
   isOptional: boolean,
   node: BindingNodeParent,
-  bindingMetadata: BindingMetadata,
+  bindingConstraints: BindingConstraints,
 ): void {
   let serviceIdentifier: ServiceIdentifier;
   let parentServiceIdentifier: ServiceIdentifier | undefined;
@@ -35,7 +35,7 @@ export function throwErrorWhenUnexpectedBindingsAmountFound(
       isOptional,
       serviceIdentifier,
       parentServiceIdentifier,
-      bindingMetadata,
+      bindingConstraints,
     );
   } else {
     throwErrorWhenSingleUnexpectedBindingFound(
@@ -43,7 +43,7 @@ export function throwErrorWhenUnexpectedBindingsAmountFound(
       isOptional,
       serviceIdentifier,
       parentServiceIdentifier,
-      bindingMetadata,
+      bindingConstraints,
     );
   }
 }
@@ -51,13 +51,13 @@ export function throwErrorWhenUnexpectedBindingsAmountFound(
 function throwBindingNotFoundError(
   serviceIdentifier: ServiceIdentifier,
   parentServiceIdentifier: ServiceIdentifier | undefined,
-  bindingMetadata: BindingMetadata,
+  bindingConstraints: BindingConstraints,
 ): never {
   const errorMessage: string = `No bindings found for service: "${stringifyServiceIdentifier(serviceIdentifier)}".
 
 Trying to resolve bindings for "${stringifyParentServiceIdentifier(serviceIdentifier, parentServiceIdentifier)}".
 
-${stringifyBindingMetadata(bindingMetadata)}`;
+${stringifyBindingConstraints(bindingConstraints)}`;
 
   throw new InversifyCoreError(InversifyCoreErrorKind.planning, errorMessage);
 }
@@ -67,14 +67,14 @@ function throwErrorWhenMultipleUnexpectedBindingsAmountFound(
   isOptional: boolean,
   serviceIdentifier: ServiceIdentifier,
   parentServiceIdentifier: ServiceIdentifier | undefined,
-  bindingMetadata: BindingMetadata,
+  bindingConstraints: BindingConstraints,
 ): void {
   if (bindings.length === 0) {
     if (!isOptional) {
       throwBindingNotFoundError(
         serviceIdentifier,
         parentServiceIdentifier,
-        bindingMetadata,
+        bindingConstraints,
       );
     }
   } else {
@@ -86,7 +86,7 @@ ${bindings.map((binding: PlanBindingNode): string => stringifyBinding(binding.bi
 
 Trying to resolve bindings for "${stringifyParentServiceIdentifier(serviceIdentifier, parentServiceIdentifier)}".
 
-${stringifyBindingMetadata(bindingMetadata)}`;
+${stringifyBindingConstraints(bindingConstraints)}`;
 
     throw new InversifyCoreError(InversifyCoreErrorKind.planning, errorMessage);
   }
@@ -97,13 +97,13 @@ function throwErrorWhenSingleUnexpectedBindingFound(
   isOptional: boolean,
   serviceIdentifier: ServiceIdentifier,
   parentServiceIdentifier: ServiceIdentifier | undefined,
-  bindingMetadata: BindingMetadata,
+  bindingConstraints: BindingConstraints,
 ): void {
   if (bindings === undefined && !isOptional) {
     throwBindingNotFoundError(
       serviceIdentifier,
       parentServiceIdentifier,
-      bindingMetadata,
+      bindingConstraints,
     );
   } else {
     return;
@@ -119,15 +119,17 @@ function stringifyParentServiceIdentifier(
     : stringifyServiceIdentifier(parentServiceIdentifier);
 }
 
-function stringifyBindingMetadata(bindingMetadata: BindingMetadata): string {
+function stringifyBindingConstraints(
+  bindingConstraints: BindingConstraints,
+): string {
   const stringifiedTags: string =
-    bindingMetadata.tags.size === 0
+    bindingConstraints.tags.size === 0
       ? ''
       : `
 - tags:
-  - ${[...bindingMetadata.tags.keys()].map((key: MetadataTag) => key.toString()).join('\n  - ')}`;
+  - ${[...bindingConstraints.tags.keys()].map((key: MetadataTag) => key.toString()).join('\n  - ')}`;
 
-  return `Binding metadata:
-- service identifier: ${stringifyServiceIdentifier(bindingMetadata.serviceIdentifier)}
-- name: ${bindingMetadata.name?.toString() ?? '-'}${stringifiedTags}`;
+  return `Binding constraints:
+- service identifier: ${stringifyServiceIdentifier(bindingConstraints.serviceIdentifier)}
+- name: ${bindingConstraints.name?.toString() ?? '-'}${stringifiedTags}`;
 }

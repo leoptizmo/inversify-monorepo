@@ -1,4 +1,4 @@
-import { BindingMetadata } from '../../binding/models/BindingMetadata';
+import { BindingConstraints } from '../../binding/models/BindingConstraints';
 import { PlanBindingNode } from '../models/PlanBindingNode';
 import { PlanServiceNode } from '../models/PlanServiceNode';
 import { checkPlanServiceRedirectionBindingNodeSingleInjectionBindings } from './checkPlanServiceRedirectionBindingNodeSingleInjectionBindings';
@@ -10,7 +10,7 @@ const SINGLE_INJECTION_BINDINGS: number = 1;
 export function checkServiceNodeSingleInjectionBindings(
   serviceNode: PlanServiceNode,
   isOptional: boolean,
-  bindingMetadata: BindingMetadata,
+  bindingConstraints: BindingConstraints,
 ): void {
   if (Array.isArray(serviceNode.bindings)) {
     if (serviceNode.bindings.length === SINGLE_INJECTION_BINDINGS) {
@@ -22,7 +22,7 @@ export function checkServiceNodeSingleInjectionBindings(
         checkPlanServiceRedirectionBindingNodeSingleInjectionBindings(
           planBindingNode,
           isOptional,
-          bindingMetadata,
+          bindingConstraints,
         );
       }
 
@@ -34,6 +34,6 @@ export function checkServiceNodeSingleInjectionBindings(
     serviceNode.bindings,
     isOptional,
     serviceNode,
-    bindingMetadata,
+    bindingConstraints,
   );
 }

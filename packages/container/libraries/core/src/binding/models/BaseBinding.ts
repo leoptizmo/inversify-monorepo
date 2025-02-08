@@ -1,6 +1,6 @@
 import { ServiceIdentifier } from '@inversifyjs/common';
 
-import { BindingMetadata } from './BindingMetadata';
+import { BindingConstraints } from './BindingConstraints';
 import { BindingType } from './BindingType';
 
 export interface BaseBinding<TType extends BindingType, TActivated> {
@@ -9,5 +9,5 @@ export interface BaseBinding<TType extends BindingType, TActivated> {
   readonly serviceIdentifier: ServiceIdentifier<TActivated>;
   readonly type: TType;
 
-  isSatisfiedBy(metadata: BindingMetadata): boolean;
+  isSatisfiedBy(constraints: BindingConstraints): boolean;
 }

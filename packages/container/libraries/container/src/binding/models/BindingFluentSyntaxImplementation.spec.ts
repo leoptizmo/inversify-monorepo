@@ -3,32 +3,32 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 jest.mock('@inversifyjs/core');
 
 jest.mock('../actions/getBindingId');
-jest.mock('../calculations/isAnyAncestorBindingMetadata');
-jest.mock('../calculations/isAnyAncestorBindingMetadataWithName');
-jest.mock('../calculations/isAnyAncestorBindingMetadataWithServiceId');
-jest.mock('../calculations/isAnyAncestorBindingMetadataWithTag');
-jest.mock('../calculations/isBindingMetadataWithName');
-jest.mock('../calculations/isBindingMetadataWithTag');
-jest.mock('../calculations/isNoAncestorBindingMetadata');
-jest.mock('../calculations/isNoAncestorBindingMetadataWithTag');
-jest.mock('../calculations/isNoAncestorBindingMetadataWithServiceId');
-jest.mock('../calculations/isNoAncestorBindingMetadataWithName');
-jest.mock('../calculations/isNotParentBindingMetadata');
-jest.mock('../calculations/isNotParentBindingMetadataWithName');
-jest.mock('../calculations/isNotParentBindingMetadataWithServiceId');
-jest.mock('../calculations/isNotParentBindingMetadataWithTag');
-jest.mock('../calculations/isParentBindingMetadata');
-jest.mock('../calculations/isParentBindingMetadataWithName');
-jest.mock('../calculations/isParentBindingMetadataWithServiceId');
-jest.mock('../calculations/isParentBindingMetadataWithTag');
+jest.mock('../calculations/isAnyAncestorBindingConstraints');
+jest.mock('../calculations/isAnyAncestorBindingConstraintsWithName');
+jest.mock('../calculations/isAnyAncestorBindingConstraintsWithServiceId');
+jest.mock('../calculations/isAnyAncestorBindingConstraintsWithTag');
+jest.mock('../calculations/isBindingConstraintsWithName');
+jest.mock('../calculations/isBindingConstraintsWithTag');
+jest.mock('../calculations/isNoAncestorBindingConstraints');
+jest.mock('../calculations/isNoAncestorBindingConstraintsWithTag');
+jest.mock('../calculations/isNoAncestorBindingConstraintsWithServiceId');
+jest.mock('../calculations/isNoAncestorBindingConstraintsWithName');
+jest.mock('../calculations/isNotParentBindingConstraints');
+jest.mock('../calculations/isNotParentBindingConstraintsWithName');
+jest.mock('../calculations/isNotParentBindingConstraintsWithServiceId');
+jest.mock('../calculations/isNotParentBindingConstraintsWithTag');
+jest.mock('../calculations/isParentBindingConstraints');
+jest.mock('../calculations/isParentBindingConstraintsWithName');
+jest.mock('../calculations/isParentBindingConstraintsWithServiceId');
+jest.mock('../calculations/isParentBindingConstraintsWithTag');
 jest.mock('../calculations/isResolvedValueMetadataInjectOptions');
 
 import { ServiceIdentifier } from '@inversifyjs/common';
 import {
   Binding,
   BindingActivation,
+  BindingConstraints,
   BindingDeactivation,
-  BindingMetadata,
   BindingScope,
   bindingScopeValues,
   BindingType,
@@ -52,25 +52,25 @@ import { Writable } from '../../common/models/Writable';
 import { BindingConstraintUtils } from '../../container/binding/utils/BindingConstraintUtils';
 import { ClassMetadataFixtures } from '../../metadata/fixtures/ClassMetadataFixtures';
 import { getBindingId } from '../actions/getBindingId';
-import { isAnyAncestorBindingMetadata } from '../calculations/isAnyAncestorBindingMetadata';
-import { isAnyAncestorBindingMetadataWithName } from '../calculations/isAnyAncestorBindingMetadataWithName';
-import { isAnyAncestorBindingMetadataWithServiceId } from '../calculations/isAnyAncestorBindingMetadataWithServiceId';
-import { isAnyAncestorBindingMetadataWithTag } from '../calculations/isAnyAncestorBindingMetadataWithTag';
-import { isBindingMetadataWithName } from '../calculations/isBindingMetadataWithName';
-import { isBindingMetadataWithNoNameNorTags } from '../calculations/isBindingMetadataWithNoNameNorTags';
-import { isBindingMetadataWithTag } from '../calculations/isBindingMetadataWithTag';
-import { isNoAncestorBindingMetadata } from '../calculations/isNoAncestorBindingMetadata';
-import { isNoAncestorBindingMetadataWithName } from '../calculations/isNoAncestorBindingMetadataWithName';
-import { isNoAncestorBindingMetadataWithServiceId } from '../calculations/isNoAncestorBindingMetadataWithServiceId';
-import { isNoAncestorBindingMetadataWithTag } from '../calculations/isNoAncestorBindingMetadataWithTag';
-import { isNotParentBindingMetadata } from '../calculations/isNotParentBindingMetadata';
-import { isNotParentBindingMetadataWithName } from '../calculations/isNotParentBindingMetadataWithName';
-import { isNotParentBindingMetadataWithServiceId } from '../calculations/isNotParentBindingMetadataWithServiceId';
-import { isNotParentBindingMetadataWithTag } from '../calculations/isNotParentBindingMetadataWithTag';
-import { isParentBindingMetadata } from '../calculations/isParentBindingMetadata';
-import { isParentBindingMetadataWithName } from '../calculations/isParentBindingMetadataWithName';
-import { isParentBindingMetadataWithServiceId } from '../calculations/isParentBindingMetadataWithServiceId';
-import { isParentBindingMetadataWithTag } from '../calculations/isParentBindingMetadataWithTag';
+import { isAnyAncestorBindingConstraints } from '../calculations/isAnyAncestorBindingConstraints';
+import { isAnyAncestorBindingConstraintsWithName } from '../calculations/isAnyAncestorBindingConstraintsWithName';
+import { isAnyAncestorBindingConstraintsWithServiceId } from '../calculations/isAnyAncestorBindingConstraintsWithServiceId';
+import { isAnyAncestorBindingConstraintsWithTag } from '../calculations/isAnyAncestorBindingConstraintsWithTag';
+import { isBindingConstraintsWithName } from '../calculations/isBindingConstraintsWithName';
+import { isBindingConstraintsWithNoNameNorTags } from '../calculations/isBindingConstraintsWithNoNameNorTags';
+import { isBindingConstraintsWithTag } from '../calculations/isBindingConstraintsWithTag';
+import { isNoAncestorBindingConstraints } from '../calculations/isNoAncestorBindingConstraints';
+import { isNoAncestorBindingConstraintsWithName } from '../calculations/isNoAncestorBindingConstraintsWithName';
+import { isNoAncestorBindingConstraintsWithServiceId } from '../calculations/isNoAncestorBindingConstraintsWithServiceId';
+import { isNoAncestorBindingConstraintsWithTag } from '../calculations/isNoAncestorBindingConstraintsWithTag';
+import { isNotParentBindingConstraints } from '../calculations/isNotParentBindingConstraints';
+import { isNotParentBindingConstraintsWithName } from '../calculations/isNotParentBindingConstraintsWithName';
+import { isNotParentBindingConstraintsWithServiceId } from '../calculations/isNotParentBindingConstraintsWithServiceId';
+import { isNotParentBindingConstraintsWithTag } from '../calculations/isNotParentBindingConstraintsWithTag';
+import { isParentBindingConstraints } from '../calculations/isParentBindingConstraints';
+import { isParentBindingConstraintsWithName } from '../calculations/isParentBindingConstraintsWithName';
+import { isParentBindingConstraintsWithServiceId } from '../calculations/isParentBindingConstraintsWithServiceId';
+import { isParentBindingConstraintsWithTag } from '../calculations/isParentBindingConstraintsWithTag';
 import { isResolvedValueMetadataInjectOptions } from '../calculations/isResolvedValueMetadataInjectOptions';
 import {
   BindInFluentSyntaxImplementation,
@@ -246,7 +246,7 @@ describe(BindToFluentSyntaxImplementation.name, () => {
         },
         id: bindingIdFixture,
         isSatisfiedBy: expect.any(Function) as unknown as (
-          metadata: BindingMetadata,
+          metadata: BindingConstraints,
         ) => boolean,
         moduleId: containerModuleIdFixture,
         onActivation: undefined,
@@ -273,7 +273,7 @@ describe(BindToFluentSyntaxImplementation.name, () => {
         },
         id: bindingIdFixture,
         isSatisfiedBy: expect.any(Function) as unknown as (
-          metadata: BindingMetadata,
+          metadata: BindingConstraints,
         ) => boolean,
         moduleId: containerModuleIdFixture,
         onActivation: undefined,
@@ -301,7 +301,7 @@ describe(BindToFluentSyntaxImplementation.name, () => {
         factory: factoryBuilderFixture,
         id: bindingIdFixture,
         isSatisfiedBy: expect.any(Function) as unknown as (
-          metadata: BindingMetadata,
+          metadata: BindingConstraints,
         ) => boolean,
         moduleId: containerModuleIdFixture,
         onActivation: undefined,
@@ -327,7 +327,7 @@ describe(BindToFluentSyntaxImplementation.name, () => {
         },
         id: bindingIdFixture,
         isSatisfiedBy: expect.any(Function) as unknown as (
-          metadata: BindingMetadata,
+          metadata: BindingConstraints,
         ) => boolean,
         moduleId: containerModuleIdFixture,
         onActivation: undefined,
@@ -794,7 +794,7 @@ describe(BindToFluentSyntaxImplementation.name, () => {
             id: getBindingId(),
             implementationType: Foo,
             isSatisfiedBy: expect.any(Function) as unknown as (
-              metadata: BindingMetadata,
+              metadata: BindingConstraints,
             ) => boolean,
             moduleId: containerModuleIdFixture,
             onActivation: undefined,
@@ -848,7 +848,7 @@ describe(BindToFluentSyntaxImplementation.name, () => {
             id: getBindingId(),
             implementationType: Foo,
             isSatisfiedBy: expect.any(Function) as unknown as (
-              metadata: BindingMetadata,
+              metadata: BindingConstraints,
             ) => boolean,
             moduleId: containerModuleIdFixture,
             onActivation: undefined,
@@ -890,7 +890,7 @@ describe(BindToFluentSyntaxImplementation.name, () => {
         const expectedBinding: ServiceRedirectionBinding<unknown> = {
           id: bindingIdFixture,
           isSatisfiedBy: expect.any(Function) as unknown as (
-            metadata: BindingMetadata,
+            metadata: BindingConstraints,
           ) => boolean,
           moduleId: containerModuleIdFixture,
           serviceIdentifier: serviceIdentifierFixture,
@@ -931,7 +931,7 @@ describe(BindOnFluentSyntaxImplementation.name, () => {
       },
       id: 1,
       isSatisfiedBy: expect.any(Function) as unknown as (
-        metadata: BindingMetadata,
+        metadata: BindingConstraints,
       ) => boolean,
       moduleId: undefined,
       get onActivation(): BindingActivation<unknown> | undefined {
@@ -1014,7 +1014,7 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
   let bindingFixture: ConstantValueBinding<unknown>;
 
   let isSatisfiedBySetterMock: jest.Mock<
-    (value: (metadata: BindingMetadata) => boolean) => void
+    (value: (metadata: BindingConstraints) => boolean) => void
   >;
 
   let bindWhenFluentSyntaxImplementation: BindWhenFluentSyntaxImplementation<unknown>;
@@ -1031,7 +1031,7 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       get isSatisfiedBy() {
         return () => true;
       },
-      set isSatisfiedBy(value: (metadata: BindingMetadata) => boolean) {
+      set isSatisfiedBy(value: (metadata: BindingConstraints) => boolean) {
         isSatisfiedBySetterMock(value);
       },
       moduleId: undefined,
@@ -1049,7 +1049,7 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
   });
 
   describe('.when', () => {
-    let constraintFixture: (metadata: BindingMetadata) => boolean;
+    let constraintFixture: (metadata: BindingConstraints) => boolean;
 
     let result: unknown;
 
@@ -1074,7 +1074,7 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
   });
 
   describe('.whenAnyAncestor', () => {
-    let constraintFixture: (metadata: BindingMetadata) => boolean;
+    let constraintFixture: (metadata: BindingConstraints) => boolean;
 
     let result: unknown;
 
@@ -1089,9 +1089,9 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isAnyAncestorBindingMetadata', () => {
-      expect(isAnyAncestorBindingMetadata).toHaveBeenCalledTimes(1);
-      expect(isAnyAncestorBindingMetadata).toHaveBeenCalledWith(
+    it('should call isAnyAncestorBindingConstraints', () => {
+      expect(isAnyAncestorBindingConstraints).toHaveBeenCalledTimes(1);
+      expect(isAnyAncestorBindingConstraints).toHaveBeenCalledWith(
         constraintFixture,
       );
     });
@@ -1117,11 +1117,11 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isAnyAncestorBindingMetadataWithServiceId', () => {
-      expect(isAnyAncestorBindingMetadataWithServiceId).toHaveBeenCalledTimes(
-        1,
-      );
-      expect(isAnyAncestorBindingMetadataWithServiceId).toHaveBeenCalledWith(
+    it('should call isAnyAncestorBindingConstraintsWithServiceId', () => {
+      expect(
+        isAnyAncestorBindingConstraintsWithServiceId,
+      ).toHaveBeenCalledTimes(1);
+      expect(isAnyAncestorBindingConstraintsWithServiceId).toHaveBeenCalledWith(
         serviceIdFixture,
       );
     });
@@ -1147,9 +1147,9 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isAnyAncestorBindingMetadataWithName', () => {
-      expect(isAnyAncestorBindingMetadataWithName).toHaveBeenCalledTimes(1);
-      expect(isAnyAncestorBindingMetadataWithName).toHaveBeenCalledWith(
+    it('should call isAnyAncestorBindingConstraintsWithName', () => {
+      expect(isAnyAncestorBindingConstraintsWithName).toHaveBeenCalledTimes(1);
+      expect(isAnyAncestorBindingConstraintsWithName).toHaveBeenCalledWith(
         nameFixture,
       );
     });
@@ -1179,9 +1179,9 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isAnyAncestorBindingMetadataWithTag', () => {
-      expect(isAnyAncestorBindingMetadataWithTag).toHaveBeenCalledTimes(1);
-      expect(isAnyAncestorBindingMetadataWithTag).toHaveBeenCalledWith(
+    it('should call isAnyAncestorBindingConstraintsWithTag', () => {
+      expect(isAnyAncestorBindingConstraintsWithTag).toHaveBeenCalledTimes(1);
+      expect(isAnyAncestorBindingConstraintsWithTag).toHaveBeenCalledWith(
         tagFixture,
         tagValueFixture,
       );
@@ -1206,7 +1206,7 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
     it('should set constraint', () => {
       expect(isSatisfiedBySetterMock).toHaveBeenCalledTimes(1);
       expect(isSatisfiedBySetterMock).toHaveBeenCalledWith(
-        isBindingMetadataWithNoNameNorTags,
+        isBindingConstraintsWithNoNameNorTags,
       );
     });
 
@@ -1230,9 +1230,9 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isBindingMetadataWithName', () => {
-      expect(isBindingMetadataWithName).toHaveBeenCalledTimes(1);
-      expect(isBindingMetadataWithName).toHaveBeenCalledWith(nameFixture);
+    it('should call isBindingConstraintsWithName', () => {
+      expect(isBindingConstraintsWithName).toHaveBeenCalledTimes(1);
+      expect(isBindingConstraintsWithName).toHaveBeenCalledWith(nameFixture);
     });
 
     it('should return expected result', () => {
@@ -1241,7 +1241,7 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
   });
 
   describe('.whenParent', () => {
-    let constraintFixture: (metadata: BindingMetadata) => boolean;
+    let constraintFixture: (metadata: BindingConstraints) => boolean;
 
     let result: unknown;
 
@@ -1255,9 +1255,11 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isParentBindingMetadata', () => {
-      expect(isParentBindingMetadata).toHaveBeenCalledTimes(1);
-      expect(isParentBindingMetadata).toHaveBeenCalledWith(constraintFixture);
+    it('should call isParentBindingConstraints', () => {
+      expect(isParentBindingConstraints).toHaveBeenCalledTimes(1);
+      expect(isParentBindingConstraints).toHaveBeenCalledWith(
+        constraintFixture,
+      );
     });
 
     it('should return expected result', () => {
@@ -1281,9 +1283,9 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isParentBindingMetadataWithServiceId', () => {
-      expect(isParentBindingMetadataWithServiceId).toHaveBeenCalledTimes(1);
-      expect(isParentBindingMetadataWithServiceId).toHaveBeenCalledWith(
+    it('should call isParentBindingConstraintsWithServiceId', () => {
+      expect(isParentBindingConstraintsWithServiceId).toHaveBeenCalledTimes(1);
+      expect(isParentBindingConstraintsWithServiceId).toHaveBeenCalledWith(
         serviceIdFixture,
       );
     });
@@ -1308,9 +1310,11 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isParentBindingMetadataWithName', () => {
-      expect(isParentBindingMetadataWithName).toHaveBeenCalledTimes(1);
-      expect(isParentBindingMetadataWithName).toHaveBeenCalledWith(nameFixture);
+    it('should call isParentBindingConstraintsWithName', () => {
+      expect(isParentBindingConstraintsWithName).toHaveBeenCalledTimes(1);
+      expect(isParentBindingConstraintsWithName).toHaveBeenCalledWith(
+        nameFixture,
+      );
     });
 
     it('should return expected result', () => {
@@ -1338,9 +1342,9 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isParentBindingMetadataWithTag', () => {
-      expect(isParentBindingMetadataWithTag).toHaveBeenCalledTimes(1);
-      expect(isParentBindingMetadataWithTag).toHaveBeenCalledWith(
+    it('should call isParentBindingConstraintsWithTag', () => {
+      expect(isParentBindingConstraintsWithTag).toHaveBeenCalledTimes(1);
+      expect(isParentBindingConstraintsWithTag).toHaveBeenCalledWith(
         tagFixture,
         tagValueFixture,
       );
@@ -1371,9 +1375,9 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isBindingMetadataWithTag', () => {
-      expect(isBindingMetadataWithTag).toHaveBeenCalledTimes(1);
-      expect(isBindingMetadataWithTag).toHaveBeenCalledWith(
+    it('should call isBindingConstraintsWithTag', () => {
+      expect(isBindingConstraintsWithTag).toHaveBeenCalledTimes(1);
+      expect(isBindingConstraintsWithTag).toHaveBeenCalledWith(
         tagFixture,
         tagValueFixture,
       );
@@ -1400,9 +1404,11 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isNotParentBindingMetadataWithServiceId', () => {
-      expect(isNotParentBindingMetadataWithServiceId).toHaveBeenCalledTimes(1);
-      expect(isNotParentBindingMetadataWithServiceId).toHaveBeenCalledWith(
+    it('should call isNotParentBindingConstraintsWithServiceId', () => {
+      expect(isNotParentBindingConstraintsWithServiceId).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(isNotParentBindingConstraintsWithServiceId).toHaveBeenCalledWith(
         serviceIdFixture,
       );
     });
@@ -1428,9 +1434,9 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isNotParentBindingMetadataWithName', () => {
-      expect(isNotParentBindingMetadataWithName).toHaveBeenCalledTimes(1);
-      expect(isNotParentBindingMetadataWithName).toHaveBeenCalledWith(
+    it('should call isNotParentBindingConstraintsWithName', () => {
+      expect(isNotParentBindingConstraintsWithName).toHaveBeenCalledTimes(1);
+      expect(isNotParentBindingConstraintsWithName).toHaveBeenCalledWith(
         nameFixture,
       );
     });
@@ -1460,9 +1466,9 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isNotParentBindingMetadataWithTag', () => {
-      expect(isNotParentBindingMetadataWithTag).toHaveBeenCalledTimes(1);
-      expect(isNotParentBindingMetadataWithTag).toHaveBeenCalledWith(
+    it('should call isNotParentBindingConstraintsWithTag', () => {
+      expect(isNotParentBindingConstraintsWithTag).toHaveBeenCalledTimes(1);
+      expect(isNotParentBindingConstraintsWithTag).toHaveBeenCalledWith(
         tagFixture,
         tagValueFixture,
       );
@@ -1474,7 +1480,7 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
   });
 
   describe('.whenNoParent', () => {
-    let constraintFixture: (metadata: BindingMetadata) => boolean;
+    let constraintFixture: (metadata: BindingConstraints) => boolean;
 
     let result: unknown;
 
@@ -1489,9 +1495,9 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isNotParentBindingMetadata', () => {
-      expect(isNotParentBindingMetadata).toHaveBeenCalledTimes(1);
-      expect(isNotParentBindingMetadata).toHaveBeenCalledWith(
+    it('should call isNotParentBindingConstraints', () => {
+      expect(isNotParentBindingConstraints).toHaveBeenCalledTimes(1);
+      expect(isNotParentBindingConstraints).toHaveBeenCalledWith(
         constraintFixture,
       );
     });
@@ -1502,7 +1508,7 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
   });
 
   describe('.whenNoAncestor', () => {
-    let constraintFixture: (metadata: BindingMetadata) => boolean;
+    let constraintFixture: (metadata: BindingConstraints) => boolean;
 
     let result: unknown;
 
@@ -1517,9 +1523,9 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isNoAncestorBindingMetadata', () => {
-      expect(isNoAncestorBindingMetadata).toHaveBeenCalledTimes(1);
-      expect(isNoAncestorBindingMetadata).toHaveBeenCalledWith(
+    it('should call isNoAncestorBindingConstraints', () => {
+      expect(isNoAncestorBindingConstraints).toHaveBeenCalledTimes(1);
+      expect(isNoAncestorBindingConstraints).toHaveBeenCalledWith(
         constraintFixture,
       );
     });
@@ -1545,9 +1551,11 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isNoAncestorBindingMetadataWithServiceId', () => {
-      expect(isNoAncestorBindingMetadataWithServiceId).toHaveBeenCalledTimes(1);
-      expect(isNoAncestorBindingMetadataWithServiceId).toHaveBeenCalledWith(
+    it('should call isNoAncestorBindingConstraintsWithServiceId', () => {
+      expect(isNoAncestorBindingConstraintsWithServiceId).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(isNoAncestorBindingConstraintsWithServiceId).toHaveBeenCalledWith(
         serviceIdFixture,
       );
     });
@@ -1573,9 +1581,9 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isNoAncestorBindingMetadataWithName', () => {
-      expect(isNoAncestorBindingMetadataWithName).toHaveBeenCalledTimes(1);
-      expect(isNoAncestorBindingMetadataWithName).toHaveBeenCalledWith(
+    it('should call isNoAncestorBindingConstraintsWithName', () => {
+      expect(isNoAncestorBindingConstraintsWithName).toHaveBeenCalledTimes(1);
+      expect(isNoAncestorBindingConstraintsWithName).toHaveBeenCalledWith(
         nameFixture,
       );
     });
@@ -1605,9 +1613,9 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       jest.clearAllMocks();
     });
 
-    it('should call isNoAncestorBindingMetadataWithTag', () => {
-      expect(isNoAncestorBindingMetadataWithTag).toHaveBeenCalledTimes(1);
-      expect(isNoAncestorBindingMetadataWithTag).toHaveBeenCalledWith(
+    it('should call isNoAncestorBindingConstraintsWithTag', () => {
+      expect(isNoAncestorBindingConstraintsWithTag).toHaveBeenCalledTimes(1);
+      expect(isNoAncestorBindingConstraintsWithTag).toHaveBeenCalledWith(
         tagFixture,
         tagValueFixture,
       );
@@ -1641,7 +1649,7 @@ describe(BindWhenOnFluentSyntaxImplementation.name, () => {
       },
       id: 1,
       isSatisfiedBy: expect.any(Function) as unknown as (
-        metadata: BindingMetadata,
+        metadata: BindingConstraints,
       ) => boolean,
       moduleId: undefined,
       get onActivation(): BindingActivation<unknown> | undefined {

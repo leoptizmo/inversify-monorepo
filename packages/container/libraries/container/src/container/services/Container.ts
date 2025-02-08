@@ -7,8 +7,8 @@ import {
   ActivationsService,
   Binding,
   BindingActivation,
+  BindingConstraints,
   BindingDeactivation,
-  BindingMetadata,
   BindingScope,
   bindingScopeValues,
   BindingService,
@@ -533,7 +533,7 @@ export class Container {
       return false;
     }
 
-    const bindingMetadata: BindingMetadata = {
+    const bindingConstraints: BindingConstraints = {
       getAncestor: () => undefined,
       name: options?.name,
       serviceIdentifier,
@@ -541,11 +541,11 @@ export class Container {
     };
 
     if (options?.tag !== undefined) {
-      bindingMetadata.tags.set(options.tag.key, options.tag.value);
+      bindingConstraints.tags.set(options.tag.key, options.tag.value);
     }
 
     for (const binding of bindings) {
-      if (binding.isSatisfiedBy(bindingMetadata)) {
+      if (binding.isSatisfiedBy(bindingConstraints)) {
         return true;
       }
     }
