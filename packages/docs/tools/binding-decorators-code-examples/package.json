@@ -1,0 +1,65 @@
+{
+  "author": "Roberto Pintos López",
+  "bugs": {
+    "url": "https://github.com/inversify/monorepo/issues"
+  },
+  "description": "InversifyJs binding decorators docs code examples package",
+  "dependencies": {
+    "@inversifyjs/binding-decorators": "workspace:*",
+    "inversify": "npm:inversify@7.0.0-alpha.4"
+  },
+  "devDependencies": {
+    "@inversifyjs/code-examples-devkit": "workspace:*",
+    "@jest/globals": "29.7.0",
+    "@types/node": "22.13.1",
+    "eslint": "9.20.0",
+    "glob": "11.0.1",
+    "jest": "29.7.0",
+    "prettier": "3.4.2",
+    "reflect-metadata": "0.2.2",
+    "rimraf": "6.0.1",
+    "ts-jest": "29.2.5",
+    "tslib": "2.8.1",
+    "typescript": "5.7.3"
+  },
+  "homepage": "https://inversify.io",
+  "keywords": [
+    "dependency injection",
+    "dependency inversion",
+    "di",
+    "inversion of control container",
+    "ioc",
+    "javascript",
+    "node",
+    "typescript"
+  ],
+  "devEngines": {
+    "node": "^22.10.2",
+    "pnpm": "^9.12.1"
+  },
+  "license": "MIT",
+  "name": "@inversifyjs/binding-decorators-code-examples",
+  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inversify/monorepo.git"
+  },
+  "scripts": {
+    "build": "pnpm run build:cjs && pnpm run generate:examples",
+    "build:cjs": "tsc --build tsconfig.cjs.json && pnpm exec foundation-ts-package-cjs ./lib/cjs",
+    "build:clean": "rimraf generated lib",
+    "format": "prettier --write ./src/**/*.ts",
+    "generate:examples": "node ./lib/cjs/scripts/generateExamples/index.mjs",
+    "lint": "eslint ./src",
+    "prebuild": "pnpm run build:clean",
+    "test": "jest --config=jest.config.mjs --runInBand",
+    "test:integration:js": "pnpm run test:js --selectProjects Integration",
+    "test:js": "jest --config=jest.js.config.mjs --runInBand",
+    "test:js:coverage": "pnpm run test:unit:js --coverage",
+    "test:uncommitted": "pnpm run test --changedSince=HEAD",
+    "test:unit:js": "pnpm run test:js --selectProjects Unit"
+  }
+}

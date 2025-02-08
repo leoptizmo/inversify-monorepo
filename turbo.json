@@ -6,6 +6,16 @@
       "inputs": ["src/**/*.{cts,mts,ts}"],
       "outputs": ["dist/**", "lib/**"]
     },
+    "@inversifyjs/binding-decorators-code-examples#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**/*.{cts,mts,ts}"],
+      "outputs": ["generated/**", "lib/**"]
+    },
+    "@inversifyjs/code-examples#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**/*.{cts,mts,ts}"],
+      "outputs": ["generated/**", "lib/**"]
+    },
     "@inversifyjs/inversify-docs-site#build": {
       "dependsOn": ["^build"],
       "inputs": [
@@ -18,11 +28,6 @@
         "versioned_sidebars/**"
       ],
       "outputs": ["build/**"]
-    },
-    "@inversifyjs/code-examples#build": {
-      "dependsOn": ["^build"],
-      "inputs": ["src/**/*.{cts,mts,ts}"],
-      "outputs": ["generated/**", "lib/**"]
     },
     "format": {
       "inputs": ["src/**/*.{cts,mts,ts}"],

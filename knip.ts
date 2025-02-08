@@ -40,15 +40,14 @@ export default {
     "packages/container/tools/*": defaultWorkspaceProjectConfig,
     "packages/docs/services/*": defaultWorkspaceProjectConfig,
     "packages/docs/tools/*": defaultWorkspaceProjectConfig,
+    "packages/docs/tools/binding-decorators-code-examples": {
+      entry: ["src/examples/**/*.ts", "src/scripts/generateExamples/index.mts"],
+      ignoreDependencies: defaultWorkspaceProjectConfig.ignoreDependencies,
+      project: defaultWorkspaceProjectConfig.project,
+    },
     "packages/docs/tools/inversify-code-examples": {
       entry: ["src/examples/**/*.ts", "src/scripts/generateExamples/index.mts"],
-      ignoreDependencies: [
-        ...defaultWorkspaceProjectConfig.ignoreDependencies,
-        "@docusaurus/Link",
-        "@docusaurus/plugin-content-docs",
-        "@docusaurus/useDocusaurusContext",
-        "@theme/*",
-      ],
+      ignoreDependencies: defaultWorkspaceProjectConfig.ignoreDependencies,
       project: defaultWorkspaceProjectConfig.project,
     },
     "packages/foundation/libraries/*": defaultWorkspaceProjectConfig,
