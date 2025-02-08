@@ -207,7 +207,7 @@ Sets a constraint for the current binding.
 
 ```ts
 when(
-  constraint: (metadata: BindingMetadata) => boolean,
+  condition: (constraints: BindingConstraints) => boolean,
 ): BindOnFluentSyntax<T>;
 ```
 
@@ -219,7 +219,7 @@ In the previous example, a custom constraint is implemented to use the binding i
 
 ```ts
 whenAnyAncestor(
-  constraint: (metadata: BindingMetadata) => boolean,
+  condition: (constraints: BindingConstraints) => boolean,
 ): BindOnFluentSyntax<T>;
 ```
 
@@ -274,7 +274,7 @@ whenNamed(name: MetadataName): BindOnFluentSyntax<T>;
 
 ```ts
 whenNoAncestor(
-  constraint: (metadata: BindingMetadata) => boolean,
+  condition: (constraints: BindingConstraints) => boolean,
 ): BindOnFluentSyntax<T>;
 ```
 
@@ -311,7 +311,7 @@ Constrains the binding to be used if and only if, given a tag, no ancestor servi
 
 ```ts
 whenNoParent(
-  constraint: (metadata: BindingMetadata) => boolean,
+  condition: (constraints: BindingConstraints) => boolean,
 ): BindOnFluentSyntax<T>;
 ```
 
@@ -348,7 +348,7 @@ Constrains the binding to be used if and only if, given a tag, no parent service
 
 ```ts
 whenParent(
-  constraint: (metadata: BindingMetadata) => boolean,
+  condition: (constraints: BindingConstraints) => boolean,
 ): BindOnFluentSyntax<T>;
 ```
 

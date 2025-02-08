@@ -8,7 +8,7 @@ jest.mock('../../binding/calculations/stringifyBinding');
 jest.mock('./isPlanServiceRedirectionBindingNode');
 
 import { stringifyBinding } from '../../binding/calculations/stringifyBinding';
-import { BindingMetadata } from '../../binding/models/BindingMetadata';
+import { BindingConstraints } from '../../binding/models/BindingConstraints';
 import { bindingScopeValues } from '../../binding/models/BindingScope';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { InversifyCoreError } from '../../error/models/InversifyCoreError';
@@ -25,7 +25,7 @@ describe(throwErrorWhenUnexpectedBindingsAmountFound.name, () => {
     let bindingsFixture: undefined;
     let isOptionalFixture: false;
     let nodeFixture: PlanServiceNode;
-    let bindingMetadataFixture: BindingMetadata;
+    let bindingConstraintsFixture: BindingConstraints;
 
     beforeAll(() => {
       bindingsFixture = undefined;
@@ -35,7 +35,7 @@ describe(throwErrorWhenUnexpectedBindingsAmountFound.name, () => {
         parent: undefined,
         serviceIdentifier: 'service-identifier',
       };
-      bindingMetadataFixture = {
+      bindingConstraintsFixture = {
         getAncestor: () => undefined,
         name: 'binding-name',
         serviceIdentifier: 'service-identifier',
@@ -74,7 +74,7 @@ describe(throwErrorWhenUnexpectedBindingsAmountFound.name, () => {
             bindingsFixture,
             isOptionalFixture,
             nodeFixture,
-            bindingMetadataFixture,
+            bindingConstraintsFixture,
           );
         } catch (error) {
           result = error;
@@ -92,7 +92,7 @@ describe(throwErrorWhenUnexpectedBindingsAmountFound.name, () => {
 
 Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
 
-Binding metadata:
+Binding constraints:
 - service identifier: ${stringifiedServiceIdentifier}
 - name: binding-name
 - tags:
@@ -112,7 +112,7 @@ Binding metadata:
     let bindingsFixture: PlanBindingNode;
     let isOptionalFixture: false;
     let nodeFixture: PlanServiceNode;
-    let bindingMetadataFixture: BindingMetadata;
+    let bindingConstraintsFixture: BindingConstraints;
 
     beforeAll(() => {
       const parentNode: PlanServiceNode = {
@@ -146,7 +146,7 @@ Binding metadata:
         serviceIdentifier: 'service-identifier',
       };
 
-      bindingMetadataFixture = {
+      bindingConstraintsFixture = {
         getAncestor: () => undefined,
         name: 'binding-name',
         serviceIdentifier: 'service-identifier',
@@ -171,7 +171,7 @@ Binding metadata:
           bindingsFixture,
           isOptionalFixture,
           nodeFixture,
-          bindingMetadataFixture,
+          bindingConstraintsFixture,
         );
       });
 
@@ -189,7 +189,7 @@ Binding metadata:
     let bindingsFixture: [];
     let isOptionalFixture: false;
     let nodeFixture: PlanServiceRedirectionBindingNode;
-    let bindingMetadataFixture: BindingMetadata;
+    let bindingConstraintsFixture: BindingConstraints;
 
     beforeAll(() => {
       bindingsFixture = [];
@@ -210,7 +210,7 @@ Binding metadata:
         },
         redirections: [],
       };
-      bindingMetadataFixture = {
+      bindingConstraintsFixture = {
         getAncestor: () => undefined,
         name: 'binding-name',
         serviceIdentifier: 'service-identifier',
@@ -251,7 +251,7 @@ Binding metadata:
             bindingsFixture,
             isOptionalFixture,
             nodeFixture,
-            bindingMetadataFixture,
+            bindingConstraintsFixture,
           );
         } catch (error: unknown) {
           result = error;
@@ -269,7 +269,7 @@ Binding metadata:
 
 Trying to resolve bindings for "${stringifiedServiceIdentifier}".
 
-Binding metadata:
+Binding constraints:
 - service identifier: stringified-service-id
 - name: binding-name
 - tags:
@@ -289,7 +289,7 @@ Binding metadata:
     let bindingsFixture: [];
     let isOptionalFixture: false;
     let nodeFixture: PlanServiceNode;
-    let bindingMetadataFixture: BindingMetadata;
+    let bindingConstraintsFixture: BindingConstraints;
 
     beforeAll(() => {
       bindingsFixture = [];
@@ -299,7 +299,7 @@ Binding metadata:
         parent: undefined,
         serviceIdentifier: 'service-identifier',
       };
-      bindingMetadataFixture = {
+      bindingConstraintsFixture = {
         getAncestor: () => undefined,
         name: 'binding-name',
         serviceIdentifier: 'service-identifier',
@@ -338,7 +338,7 @@ Binding metadata:
             bindingsFixture,
             isOptionalFixture,
             nodeFixture,
-            bindingMetadataFixture,
+            bindingConstraintsFixture,
           );
         } catch (error) {
           result = error;
@@ -356,7 +356,7 @@ Binding metadata:
 
 Trying to resolve bindings for "${stringifiedServiceIdentifier} (Root service)".
 
-Binding metadata:
+Binding constraints:
 - service identifier: stringified-service-id
 - name: binding-name
 - tags:
@@ -376,7 +376,7 @@ Binding metadata:
     let bindingsFixture: [];
     let isOptionalFixture: true;
     let nodeFixture: PlanServiceNode;
-    let bindingMetadataFixture: BindingMetadata;
+    let bindingConstraintsFixture: BindingConstraints;
 
     beforeAll(() => {
       bindingsFixture = [];
@@ -386,7 +386,7 @@ Binding metadata:
         parent: undefined,
         serviceIdentifier: 'service-identifier',
       };
-      bindingMetadataFixture = {
+      bindingConstraintsFixture = {
         getAncestor: () => undefined,
         name: 'binding-name',
         serviceIdentifier: 'service-identifier',
@@ -411,7 +411,7 @@ Binding metadata:
           bindingsFixture,
           isOptionalFixture,
           nodeFixture,
-          bindingMetadataFixture,
+          bindingConstraintsFixture,
         );
       });
 
@@ -429,7 +429,7 @@ Binding metadata:
     let bindingsFixture: PlanBindingNode[];
     let isOptionalFixture: boolean;
     let nodeFixture: PlanServiceRedirectionBindingNode;
-    let bindingMetadataFixture: BindingMetadata;
+    let bindingConstraintsFixture: BindingConstraints;
 
     beforeAll(() => {
       const parentNode: PlanServiceNode = {
@@ -494,7 +494,7 @@ Binding metadata:
         redirections: [],
       };
 
-      bindingMetadataFixture = {
+      bindingConstraintsFixture = {
         getAncestor: () => undefined,
         name: 'binding-name',
         serviceIdentifier: 'service-identifier',
@@ -544,7 +544,7 @@ Binding metadata:
             bindingsFixture,
             isOptionalFixture,
             nodeFixture,
-            bindingMetadataFixture,
+            bindingConstraintsFixture,
           );
         } catch (error: unknown) {
           result = error;
@@ -567,7 +567,7 @@ ${stringifiedBindingFixture}
 
 Trying to resolve bindings for "${stringifiedServiceIdentifierFixture}".
 
-Binding metadata:
+Binding constraints:
 - service identifier: stringified-service-id
 - name: binding-name
 - tags:

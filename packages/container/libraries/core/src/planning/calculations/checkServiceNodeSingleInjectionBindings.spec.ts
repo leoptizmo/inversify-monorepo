@@ -4,7 +4,7 @@ jest.mock('./checkPlanServiceRedirectionBindingNodeSingleInjectionBindings');
 jest.mock('./isPlanServiceRedirectionBindingNode');
 jest.mock('./throwErrorWhenUnexpectedBindingsAmountFound');
 
-import { BindingMetadata } from '../../binding/models/BindingMetadata';
+import { BindingConstraints } from '../../binding/models/BindingConstraints';
 import { MetadataTag } from '../../metadata/models/MetadataTag';
 import { PlanBindingNode } from '../models/PlanBindingNode';
 import { PlanServiceNode } from '../models/PlanServiceNode';
@@ -18,7 +18,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
   describe('having a PlanServiceNode with no bindings', () => {
     let nodeFixture: PlanServiceNode;
     let isOptionalFixture: boolean;
-    let bindingMetadataFixture: BindingMetadata;
+    let bindingConstraintsFixture: BindingConstraints;
 
     beforeAll(() => {
       nodeFixture = {
@@ -27,7 +27,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
         serviceIdentifier: 'service-id',
       };
       isOptionalFixture = false;
-      bindingMetadataFixture = {
+      bindingConstraintsFixture = {
         getAncestor: () => undefined,
         name: 'binding-name',
         serviceIdentifier: 'service-identifier',
@@ -45,7 +45,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
         result = checkServiceNodeSingleInjectionBindings(
           nodeFixture,
           isOptionalFixture,
-          bindingMetadataFixture,
+          bindingConstraintsFixture,
         );
       });
 
@@ -63,7 +63,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
           nodeFixture.bindings,
           isOptionalFixture,
           nodeFixture,
-          bindingMetadataFixture,
+          bindingConstraintsFixture,
         );
       });
 
@@ -77,7 +77,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
     let nodeFixtureBinding: PlanBindingNode;
     let nodeFixture: PlanServiceNode;
     let isOptionalFixture: boolean;
-    let bindingMetadataFixture: BindingMetadata;
+    let bindingConstraintsFixture: BindingConstraints;
 
     beforeAll(() => {
       nodeFixtureBinding = Symbol() as unknown as PlanBindingNode;
@@ -87,7 +87,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
         serviceIdentifier: 'service-id',
       };
       isOptionalFixture = false;
-      bindingMetadataFixture = {
+      bindingConstraintsFixture = {
         getAncestor: () => undefined,
         name: 'binding-name',
         serviceIdentifier: 'service-identifier',
@@ -111,7 +111,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
         result = checkServiceNodeSingleInjectionBindings(
           nodeFixture,
           isOptionalFixture,
-          bindingMetadataFixture,
+          bindingConstraintsFixture,
         );
       });
 
@@ -143,7 +143,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
         result = checkServiceNodeSingleInjectionBindings(
           nodeFixture,
           isOptionalFixture,
-          bindingMetadataFixture,
+          bindingConstraintsFixture,
         );
       });
 
@@ -160,7 +160,7 @@ describe(checkServiceNodeSingleInjectionBindings.name, () => {
         ).toHaveBeenCalledWith(
           nodeFixtureBinding,
           isOptionalFixture,
-          bindingMetadataFixture,
+          bindingConstraintsFixture,
         );
       });
 

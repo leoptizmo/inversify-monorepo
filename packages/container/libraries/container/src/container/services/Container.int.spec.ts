@@ -97,7 +97,7 @@ describe(Container.name, () => {
 
 Trying to resolve bindings for "Arsenal (Root service)".
 
-Binding metadata:
+Binding constraints:
 - service identifier: Arsenal
 - name: -`,
         };

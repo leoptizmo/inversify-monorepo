@@ -5,7 +5,7 @@ jest.mock('./checkServiceNodeSingleInjectionBindings');
 
 import { LazyServiceIdentifier, ServiceIdentifier } from '@inversifyjs/common';
 
-import { BindingMetadataImplementation } from '../../binding/models/BindingMetadataImplementation';
+import { BindingConstraintsImplementation } from '../../binding/models/BindingConstraintsImplementation';
 import { bindingScopeValues } from '../../binding/models/BindingScope';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { ConstantValueBinding } from '../../binding/models/ConstantValueBinding';
@@ -96,7 +96,7 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(1);
         expect(buildFilteredServiceBindings).toHaveBeenCalledWith(
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 
@@ -162,7 +162,7 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(1);
         expect(buildFilteredServiceBindings).toHaveBeenCalledWith(
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 
@@ -220,7 +220,7 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(1);
         expect(buildFilteredServiceBindings).toHaveBeenCalledWith(
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 
@@ -292,7 +292,7 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(1);
         expect(buildFilteredServiceBindings).toHaveBeenCalledWith(
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 
@@ -428,17 +428,17 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           1,
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           2,
           expectedSublan,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           3,
           expectedSublan,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 
@@ -612,17 +612,17 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           1,
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           2,
           expectedSublan,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           3,
           expectedSublan,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 
@@ -797,17 +797,17 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           1,
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           2,
           expectedSublan,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           3,
           expectedSublan,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 
@@ -832,13 +832,13 @@ describe(plan.name, () => {
           1,
           constructorParamsPlanServiceNode,
           constructorArgumentMetadata.optional,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
         expect(checkServiceNodeSingleInjectionBindings).toHaveBeenNthCalledWith(
           2,
           propertyParamsPlanServiceNode,
           propertyMetadata.optional,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 
@@ -968,7 +968,7 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(1);
         expect(buildFilteredServiceBindings).toHaveBeenCalledWith(
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 
@@ -1044,7 +1044,7 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(1);
         expect(buildFilteredServiceBindings).toHaveBeenCalledWith(
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 
@@ -1158,12 +1158,12 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           1,
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           2,
           expectedSublan,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 
@@ -1293,12 +1293,12 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           1,
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           2,
           expectedSublan,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 
@@ -1429,12 +1429,12 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           1,
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           2,
           expectedSublan,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 
@@ -1518,12 +1518,12 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           1,
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           2,
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
           expectedOptions,
         );
       });
@@ -1614,12 +1614,12 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           1,
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
         expect(buildFilteredServiceBindings).toHaveBeenNthCalledWith(
           2,
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
           expectedOptions,
         );
       });
@@ -1694,7 +1694,7 @@ describe(plan.name, () => {
         expect(buildFilteredServiceBindings).toHaveBeenCalledTimes(1);
         expect(buildFilteredServiceBindings).toHaveBeenCalledWith(
           planParamsMock,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 
@@ -1711,7 +1711,7 @@ describe(plan.name, () => {
         expect(checkServiceNodeSingleInjectionBindings).toHaveBeenCalledWith(
           expectedServiceNode,
           false,
-          expect.any(BindingMetadataImplementation),
+          expect.any(BindingConstraintsImplementation),
         );
       });
 

@@ -70,8 +70,8 @@ In v6, the `Context` class was used to pass contextual information. Too many int
 
 <CodeBlock language="ts">{bindingOnSyntaxApiOnActivationSource}</CodeBlock>
 
-### Use of BindingMetadata instead of interfaces.Request
+### Use of BindingConstraints instead of interfaces.Request
 
-In v6, binding constraints received a `Request` object. In v7, binding constraints receive a `BindingMetadata` object. This object is more focused on the user's needs and hides internal data structures to keep the API simple and maintainable.
+In v6, binding constraints received a `Request` object. In v7, binding constraints receive a `BindingConstraints` object. This object is more focused on the user's needs and hides internal data structures to keep the API simple and maintainable.
 
 <CodeBlock language="ts">{bindingWhenSyntaxApiWhenSource}</CodeBlock>

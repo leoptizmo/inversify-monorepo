@@ -1,11 +1,11 @@
 import { LazyServiceIdentifier, ServiceIdentifier } from '@inversifyjs/common';
 
 import { Binding } from '../../binding/models/Binding';
-import { BindingMetadata } from '../../binding/models/BindingMetadata';
+import { BindingConstraints } from '../../binding/models/BindingConstraints';
 import {
-  BindingMetadataImplementation,
-  InternalBindingMetadata,
-} from '../../binding/models/BindingMetadataImplementation';
+  BindingConstraintsImplementation,
+  InternalBindingConstraints,
+} from '../../binding/models/BindingConstraintsImplementation';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
 import { ResolvedValueBinding } from '../../binding/models/ResolvedValueBinding';
@@ -42,7 +42,7 @@ export function plan(params: PlanParams): PlanResult {
     tags.set(params.rootConstraints.tag.key, params.rootConstraints.tag.value);
   }
 
-  const bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
+  const bindingConstraintsList: SingleInmutableLinkedList<InternalBindingConstraints> =
     new SingleInmutableLinkedList({
       elem: {
         name: params.rootConstraints.name,
@@ -52,12 +52,11 @@ export function plan(params: PlanParams): PlanResult {
       previous: undefined,
     });
 
-  const bindingMetadata: BindingMetadata = new BindingMetadataImplementation(
-    bindingMetadataList.last,
-  );
+  const bindingConstraints: BindingConstraints =
+    new BindingConstraintsImplementation(bindingConstraintsList.last);
 
   const filteredServiceBindings: Binding<unknown>[] =
-    buildFilteredServiceBindings(params, bindingMetadata);
+    buildFilteredServiceBindings(params, bindingConstraints);
 
   const serviceNodeBindings: PlanBindingNode[] = [];
 
@@ -70,7 +69,7 @@ export function plan(params: PlanParams): PlanResult {
   serviceNodeBindings.push(
     ...buildServiceNodeBindings(
       params,
-      bindingMetadataList,
+      bindingConstraintsList,
       filteredServiceBindings,
       serviceNode,
     ),
@@ -80,7 +79,7 @@ export function plan(params: PlanParams): PlanResult {
     checkServiceNodeSingleInjectionBindings(
       serviceNode,
       params.rootConstraints.isOptional ?? false,
-      bindingMetadata,
+      bindingConstraints,
     );
 
     const [planBindingNode]: PlanBindingNode[] = serviceNodeBindings;
@@ -98,7 +97,7 @@ export function plan(params: PlanParams): PlanResult {
 function buildInstancePlanBindingNode(
   params: BasePlanParams,
   binding: InstanceBinding<unknown>,
-  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
+  bindingConstraintsList: SingleInmutableLinkedList<InternalBindingConstraints>,
   parentNode: BindingNodeParent,
 ): PlanBindingNode {
   const classMetadata: ClassMetadata = params.getClassMetadata(
@@ -122,12 +121,12 @@ function buildInstancePlanBindingNode(
     setBinding: params.setBinding,
   };
 
-  return subplan(subplanParams, bindingMetadataList);
+  return subplan(subplanParams, bindingConstraintsList);
 }
 
 function buildPlanServiceNodeFromClassElementMetadata(
   params: SubplanParams,
-  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
+  bindingConstraintsList: SingleInmutableLinkedList<InternalBindingConstraints>,
   elementMetadata: ClassElementMetadata,
 ): PlanServiceNode | undefined {
   if (elementMetadata.kind === ClassElementMetadataKind.unmanaged) {
@@ -140,19 +139,18 @@ function buildPlanServiceNodeFromClassElementMetadata(
     ? elementMetadata.value.unwrap()
     : elementMetadata.value;
 
-  const updatedBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-    bindingMetadataList.concat({
+  const updatedBindingConstraintsList: SingleInmutableLinkedList<InternalBindingConstraints> =
+    bindingConstraintsList.concat({
       name: elementMetadata.name,
       serviceIdentifier,
       tags: elementMetadata.tags,
     });
 
-  const bindingMetadata: BindingMetadata = new BindingMetadataImplementation(
-    updatedBindingMetadataList.last,
-  );
+  const bindingConstraints: BindingConstraints =
+    new BindingConstraintsImplementation(updatedBindingConstraintsList.last);
 
   const filteredServiceBindings: Binding<unknown>[] =
-    buildFilteredServiceBindings(params, bindingMetadata);
+    buildFilteredServiceBindings(params, bindingConstraints);
 
   const serviceNodeBindings: PlanBindingNode[] = [];
 
@@ -165,7 +163,7 @@ function buildPlanServiceNodeFromClassElementMetadata(
   serviceNodeBindings.push(
     ...buildServiceNodeBindings(
       params,
-      updatedBindingMetadataList,
+      updatedBindingConstraintsList,
       filteredServiceBindings,
       serviceNode,
     ),
@@ -175,7 +173,7 @@ function buildPlanServiceNodeFromClassElementMetadata(
     checkServiceNodeSingleInjectionBindings(
       serviceNode,
       elementMetadata.optional,
-      bindingMetadata,
+      bindingConstraints,
     );
 
     const [planBindingNode]: PlanBindingNode[] = serviceNodeBindings;
@@ -188,7 +186,7 @@ function buildPlanServiceNodeFromClassElementMetadata(
 
 function buildPlanServiceNodeFromResolvedValueElementMetadata(
   params: SubplanParams,
-  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
+  bindingConstraintsList: SingleInmutableLinkedList<InternalBindingConstraints>,
   elementMetadata: ResolvedValueElementMetadata,
 ): PlanServiceNode {
   const serviceIdentifier: ServiceIdentifier = LazyServiceIdentifier.is(
@@ -197,19 +195,18 @@ function buildPlanServiceNodeFromResolvedValueElementMetadata(
     ? elementMetadata.value.unwrap()
     : elementMetadata.value;
 
-  const updatedBindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata> =
-    bindingMetadataList.concat({
+  const updatedBindingConstraintsList: SingleInmutableLinkedList<InternalBindingConstraints> =
+    bindingConstraintsList.concat({
       name: elementMetadata.name,
       serviceIdentifier,
       tags: elementMetadata.tags,
     });
 
-  const bindingMetadata: BindingMetadata = new BindingMetadataImplementation(
-    updatedBindingMetadataList.last,
-  );
+  const bindingConstraints: BindingConstraints =
+    new BindingConstraintsImplementation(updatedBindingConstraintsList.last);
 
   const filteredServiceBindings: Binding<unknown>[] =
-    buildFilteredServiceBindings(params, bindingMetadata);
+    buildFilteredServiceBindings(params, bindingConstraints);
 
   const serviceNodeBindings: PlanBindingNode[] = [];
 
@@ -222,7 +219,7 @@ function buildPlanServiceNodeFromResolvedValueElementMetadata(
   serviceNodeBindings.push(
     ...buildServiceNodeBindings(
       params,
-      updatedBindingMetadataList,
+      updatedBindingConstraintsList,
       filteredServiceBindings,
       serviceNode,
     ),
@@ -234,7 +231,7 @@ function buildPlanServiceNodeFromResolvedValueElementMetadata(
     checkServiceNodeSingleInjectionBindings(
       serviceNode,
       elementMetadata.optional,
-      bindingMetadata,
+      bindingConstraints,
     );
 
     const [planBindingNode]: PlanBindingNode[] = serviceNodeBindings;
@@ -248,7 +245,7 @@ function buildPlanServiceNodeFromResolvedValueElementMetadata(
 function buildResolvedValuePlanBindingNode(
   params: BasePlanParams,
   binding: ResolvedValueBinding<unknown>,
-  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
+  bindingConstraintsList: SingleInmutableLinkedList<InternalBindingConstraints>,
   parentNode: BindingNodeParent,
 ): PlanBindingNode {
   const childNode: ResolvedValueBindingNode = {
@@ -266,12 +263,12 @@ function buildResolvedValuePlanBindingNode(
     setBinding: params.setBinding,
   };
 
-  return subplan(subplanParams, bindingMetadataList);
+  return subplan(subplanParams, bindingConstraintsList);
 }
 
 function buildServiceNodeBindings(
   params: BasePlanParams,
-  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
+  bindingConstraintsList: SingleInmutableLinkedList<InternalBindingConstraints>,
   serviceBindings: Binding<unknown>[],
   parentNode: BindingNodeParent,
 ): PlanBindingNode[] {
@@ -291,7 +288,7 @@ function buildServiceNodeBindings(
           buildInstancePlanBindingNode(
             params,
             binding,
-            bindingMetadataList,
+            bindingConstraintsList,
             parentNode,
           ),
         );
@@ -302,7 +299,7 @@ function buildServiceNodeBindings(
           buildResolvedValuePlanBindingNode(
             params,
             binding,
-            bindingMetadataList,
+            bindingConstraintsList,
             parentNode,
           ),
         );
@@ -312,7 +309,7 @@ function buildServiceNodeBindings(
         const planBindingNode: PlanBindingNode | undefined =
           buildServiceRedirectionPlanBindingNode(
             params,
-            bindingMetadataList,
+            bindingConstraintsList,
             binding,
             parentNode,
           );
@@ -336,7 +333,7 @@ function buildServiceNodeBindings(
 
 function buildServiceRedirectionPlanBindingNode(
   params: BasePlanParams,
-  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
+  bindingConstraintsList: SingleInmutableLinkedList<InternalBindingConstraints>,
   binding: ServiceRedirectionBinding<unknown>,
   parentNode: BindingNodeParent,
 ): PlanBindingNode {
@@ -346,19 +343,18 @@ function buildServiceRedirectionPlanBindingNode(
     redirections: [],
   };
 
-  const bindingMetadata: BindingMetadata = new BindingMetadataImplementation(
-    bindingMetadataList.last,
-  );
+  const bindingConstraints: BindingConstraints =
+    new BindingConstraintsImplementation(bindingConstraintsList.last);
 
   const filteredServiceBindings: Binding<unknown>[] =
-    buildFilteredServiceBindings(params, bindingMetadata, {
+    buildFilteredServiceBindings(params, bindingConstraints, {
       customServiceIdentifier: binding.targetServiceIdentifier,
     });
 
   childNode.redirections.push(
     ...buildServiceNodeBindings(
       params,
-      bindingMetadataList,
+      bindingConstraintsList,
       filteredServiceBindings,
       childNode,
     ),
@@ -369,15 +365,19 @@ function buildServiceRedirectionPlanBindingNode(
 
 function subplan(
   params: SubplanParams,
-  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
+  bindingConstraintsList: SingleInmutableLinkedList<InternalBindingConstraints>,
 ): PlanBindingNode {
   if (isInstanceBindingNode(params.node)) {
-    return subplanInstanceBindingNode(params, params.node, bindingMetadataList);
+    return subplanInstanceBindingNode(
+      params,
+      params.node,
+      bindingConstraintsList,
+    );
   } else {
     return subplanResolvedValueBindingNode(
       params,
       params.node,
-      bindingMetadataList,
+      bindingConstraintsList,
     );
   }
 }
@@ -385,7 +385,7 @@ function subplan(
 function subplanInstanceBindingNode(
   params: SubplanParams,
   node: InstanceBindingNode,
-  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
+  bindingConstraintsList: SingleInmutableLinkedList<InternalBindingConstraints>,
 ): PlanBindingNode {
   const classMetadata: ClassMetadata = node.classMetadata;
 
@@ -396,7 +396,7 @@ function subplanInstanceBindingNode(
     node.constructorParams[index] =
       buildPlanServiceNodeFromClassElementMetadata(
         params,
-        bindingMetadataList,
+        bindingConstraintsList,
         elementMetadata,
       );
   }
@@ -405,7 +405,7 @@ function subplanInstanceBindingNode(
     const planServiceNode: PlanServiceNode | undefined =
       buildPlanServiceNodeFromClassElementMetadata(
         params,
-        bindingMetadataList,
+        bindingConstraintsList,
         elementMetadata,
       );
 
@@ -420,7 +420,7 @@ function subplanInstanceBindingNode(
 function subplanResolvedValueBindingNode(
   params: SubplanParams,
   node: ResolvedValueBindingNode,
-  bindingMetadataList: SingleInmutableLinkedList<InternalBindingMetadata>,
+  bindingConstraintsList: SingleInmutableLinkedList<InternalBindingConstraints>,
 ): PlanBindingNode {
   const resolvedValueMetadata: ResolvedValueMetadata = node.binding.metadata;
 
@@ -430,7 +430,7 @@ function subplanResolvedValueBindingNode(
   ] of resolvedValueMetadata.arguments.entries()) {
     node.params[index] = buildPlanServiceNodeFromResolvedValueElementMetadata(
       params,
-      bindingMetadataList,
+      bindingConstraintsList,
       elementMetadata,
     );
   }

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from '@jest/globals';
 
-import { BindingMetadata } from '@inversifyjs/core';
+import { BindingConstraints } from '@inversifyjs/core';
 
 import { BindingConstraintUtils } from './BindingConstraintUtils';
 
@@ -11,7 +11,7 @@ describe(BindingConstraintUtils.name, () => {
 
       beforeAll(() => {
         result = BindingConstraintUtils.always(
-          Symbol() as unknown as BindingMetadata,
+          Symbol() as unknown as BindingConstraints,
         );
       });
 

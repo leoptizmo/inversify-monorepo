@@ -507,7 +507,7 @@ describe(plan.name, () => {
 
 Trying to resolve bindings for "${ServiceIds.nonExistent} (Root service)".
 
-Binding metadata:
+Binding constraints:
 - service identifier: non-existent-service-id
 - name: -`,
       },
@@ -524,7 +524,7 @@ Binding metadata:
 
 Trying to resolve bindings for "${ServiceIds.serviceRedirectionToNonExistent}".
 
-Binding metadata:
+Binding constraints:
 - service identifier: service-redirection-to-non-existent-service-id
 - name: -`,
       },

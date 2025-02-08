@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 jest.mock('./isPlanServiceRedirectionBindingNode');
 jest.mock('./throwErrorWhenUnexpectedBindingsAmountFound');
 
-import { BindingMetadata } from '../../binding/models/BindingMetadata';
+import { BindingConstraints } from '../../binding/models/BindingConstraints';
 import { bindingScopeValues } from '../../binding/models/BindingScope';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { ServiceRedirectionBinding } from '../../binding/models/ServiceRedirectionBinding';
@@ -20,7 +20,7 @@ describe(
     describe('having a PlanServiceRedirectionBindingNode with no redirections', () => {
       let planServiceRedirectionBindingNodeFixture: PlanServiceRedirectionBindingNode;
       let isOptionalFixture: boolean;
-      let bindingMetadataFixture: BindingMetadata;
+      let bindingConstraintsFixture: BindingConstraints;
 
       beforeAll(() => {
         planServiceRedirectionBindingNodeFixture = {
@@ -30,7 +30,7 @@ describe(
           redirections: [],
         };
         isOptionalFixture = false;
-        bindingMetadataFixture = {
+        bindingConstraintsFixture = {
           getAncestor: () => undefined,
           name: 'binding-name',
           serviceIdentifier: 'service-identifier',
@@ -49,7 +49,7 @@ describe(
             checkPlanServiceRedirectionBindingNodeSingleInjectionBindings(
               planServiceRedirectionBindingNodeFixture,
               isOptionalFixture,
-              bindingMetadataFixture,
+              bindingConstraintsFixture,
             );
         });
 
@@ -67,7 +67,7 @@ describe(
             planServiceRedirectionBindingNodeFixture.redirections,
             isOptionalFixture,
             planServiceRedirectionBindingNodeFixture,
-            bindingMetadataFixture,
+            bindingConstraintsFixture,
           );
         });
 
@@ -80,7 +80,7 @@ describe(
     describe('having a PlanServiceRedirectionBindingNode with a single redirection to a leaf node', () => {
       let planServiceRedirectionBindingNodeFixture: PlanServiceRedirectionBindingNode;
       let isOptionalFixture: boolean;
-      let bindingMetadataFixture: BindingMetadata;
+      let bindingConstraintsFixture: BindingConstraints;
 
       beforeAll(() => {
         planServiceRedirectionBindingNodeFixture = {
@@ -109,7 +109,7 @@ describe(
           ],
         };
         isOptionalFixture = false;
-        bindingMetadataFixture = {
+        bindingConstraintsFixture = {
           getAncestor: () => undefined,
           name: 'binding-name',
           serviceIdentifier: 'service-identifier',
@@ -134,7 +134,7 @@ describe(
             checkPlanServiceRedirectionBindingNodeSingleInjectionBindings(
               planServiceRedirectionBindingNodeFixture,
               isOptionalFixture,
-              bindingMetadataFixture,
+              bindingConstraintsFixture,
             );
         });
 
@@ -158,7 +158,7 @@ describe(
       let planServiceRedirectionBindingNodeRedirectionFixture: PlanServiceRedirectionBindingNode;
       let planServiceRedirectionBindingNodeFixture: PlanServiceRedirectionBindingNode;
       let isOptionalFixture: boolean;
-      let bindingMetadataFixture: BindingMetadata;
+      let bindingConstraintsFixture: BindingConstraints;
 
       beforeAll(() => {
         planServiceRedirectionBindingNodeRedirectionFixture = {
@@ -174,7 +174,7 @@ describe(
           redirections: [planServiceRedirectionBindingNodeRedirectionFixture],
         };
         isOptionalFixture = false;
-        bindingMetadataFixture = {
+        bindingConstraintsFixture = {
           getAncestor: () => undefined,
           name: 'binding-name',
           serviceIdentifier: 'service-identifier',
@@ -199,7 +199,7 @@ describe(
             checkPlanServiceRedirectionBindingNodeSingleInjectionBindings(
               planServiceRedirectionBindingNodeFixture,
               isOptionalFixture,
-              bindingMetadataFixture,
+              bindingConstraintsFixture,
             );
         });
 
@@ -217,7 +217,7 @@ describe(
             planServiceRedirectionBindingNodeRedirectionFixture.redirections,
             isOptionalFixture,
             planServiceRedirectionBindingNodeRedirectionFixture,
-            bindingMetadataFixture,
+            bindingConstraintsFixture,
           );
         });
 
