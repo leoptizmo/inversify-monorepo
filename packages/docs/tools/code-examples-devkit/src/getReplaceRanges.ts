@@ -5,7 +5,7 @@ import {
   RelevantCommentPosition,
   RelevantCommentPositions,
   ReplaceRange,
-} from './types.mjs';
+} from './types.js';
 
 const NODE_IMPORT_REXEP: RegExp = /^(.*)(import.*)(['"])([^'"]+)(['"])(.*)$/gms;
 const INVERSIFY_NODE_IMPORT_REPLACE: string = '$2$3inversify$5$6';

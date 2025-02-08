@@ -20,6 +20,7 @@
       "outputs": ["build/**"]
     },
     "@inversifyjs/code-examples#build": {
+      "dependsOn": ["^build"],
       "inputs": ["src/**/*.{cts,mts,ts}"],
       "outputs": ["generated/**", "lib/**"]
     },
