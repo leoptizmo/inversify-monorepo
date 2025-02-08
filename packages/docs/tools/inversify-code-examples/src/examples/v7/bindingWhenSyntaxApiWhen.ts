@@ -1,6 +1,6 @@
 // Is-inversify-import-example
 import {
-  BindingMetadata,
+  BindingConstraints,
   Container,
   inject,
   injectable,
@@ -38,10 +38,10 @@ container.bind<Ninja>(ninjaId).to(Ninja);
 
 const whenTargetNamedConstraint: (
   name: string,
-) => (bindingMetadata: BindingMetadata) => boolean =
+) => (bindingconstraints: BindingConstraints) => boolean =
   (name: string) =>
-  (bindingMetadata: BindingMetadata): boolean =>
-    bindingMetadata.name === name;
+  (bindingconstraints: BindingConstraints): boolean =>
+    bindingconstraints.name === name;
 
 container
   .bind<Weapon>(weaponId)
