@@ -1,0 +1,23 @@
+---
+sidebar_position: 1
+title: Getting started
+---
+import CodeBlock from '@theme/CodeBlock';
+import gettingStartedSource from '@inversifyjs/binding-decorators-code-examples/generated/examples/v1/gettingStarted.ts.txt';
+import gettingStartedWithBindingDecoratorsSource from '@inversifyjs/binding-decorators-code-examples/generated/examples/v1/gettingStartedWithBindingDecorators.ts.txt';
+
+# Getting started
+
+Start by installing `inversify` and `reflect-metadata`:
+
+```bash
+npm install inversify @inversifyjs/binding-decorators reflect-metadata
+```
+
+Next, lets declare some bindings. The [InversifyJS](http://inversify.io/) API allows us to declare bindings using a fluent API:
+
+<CodeBlock language="ts">{gettingStartedSource}</CodeBlock>
+
+This small utility allows you to declare bindings using decorators:
+
+<CodeBlock language="ts">{gettingStartedWithBindingDecoratorsSource}</CodeBlock>
