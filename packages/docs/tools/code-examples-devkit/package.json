@@ -5,8 +5,7 @@
   },
   "description": "InversifyJs binding decorators docs code examples package",
   "dependencies": {
-    "@inversifyjs/binding-decorators": "workspace:*",
-    "inversify": "npm:inversify@7.0.0-alpha.4"
+    "typescript": "5.7.3"
   },
   "devDependencies": {
     "@types/node": "22.13.1",
@@ -15,8 +14,7 @@
     "rimraf": "6.0.1",
     "rollup": "4.34.6",
     "ts-loader": "9.5.2",
-    "tslib": "2.8.1",
-    "typescript": "5.7.3"
+    "tslib": "2.8.1"
   },
   "homepage": "https://inversify.io",
   "keywords": [
