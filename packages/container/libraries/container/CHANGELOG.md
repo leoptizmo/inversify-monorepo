@@ -1,5 +1,13 @@
 # @inversifyjs/container
 
+## 1.5.1
+
+### Patch Changes
+
+- fdc4b96: Improved `Container.get` like methods performance
+- Updated dependencies [4fb30e9]
+  - @inversifyjs/core@4.0.0
+
 ## 1.5.0
 
 ### Minor Changes

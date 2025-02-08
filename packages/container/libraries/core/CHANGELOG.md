@@ -1,5 +1,11 @@
 # @inversifyjs/core
 
+## 4.0.0
+
+### Major Changes
+
+- 4fb30e9: Renamed `BindingMetadata` to `BindingConstraints`
+
 ## 3.5.0
 
 ### Minor Changes
