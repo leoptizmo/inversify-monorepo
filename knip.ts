@@ -29,7 +29,10 @@ export default {
   commitlint: {
     config: "config/commitlint/commitlint.config.js",
   },
-  ignoreWorkspaces: ["packages/docs/services/inversify-site"],
+  ignoreWorkspaces: [
+    "packages/docs/services/inversify-binding-decorators-site",
+    "packages/docs/services/inversify-site",
+  ],
   workspaces: {
     ".": {
       entry: [],
