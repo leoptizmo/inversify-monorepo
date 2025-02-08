@@ -60,14 +60,15 @@ describe(Container.name, () => {
   beforeAll(() => {
     activationServiceMock = {
       add: jest.fn(),
-      clone: jest.fn(),
+      clone: jest.fn().mockReturnThis(),
+      get: jest.fn(),
       removeAllByModuleId: jest.fn(),
       removeAllByServiceId: jest.fn(),
     } as Partial<
       jest.Mocked<ActivationsService>
     > as jest.Mocked<ActivationsService>;
     bindingServiceMock = {
-      clone: jest.fn(),
+      clone: jest.fn().mockReturnThis(),
       get: jest.fn(),
       getNonParentBindings: jest.fn(),
       getNonParentBoundServices: jest.fn(),
@@ -77,7 +78,7 @@ describe(Container.name, () => {
     } as Partial<jest.Mocked<BindingService>> as jest.Mocked<BindingService>;
     deactivationServiceMock = {
       add: jest.fn(),
-      clone: jest.fn(),
+      clone: jest.fn().mockReturnThis(),
       removeAllByModuleId: jest.fn(),
       removeAllByServiceId: jest.fn(),
     } as Partial<

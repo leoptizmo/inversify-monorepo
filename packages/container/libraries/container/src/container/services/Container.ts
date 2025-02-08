@@ -56,18 +56,16 @@ export class Container {
   #activationService: ActivationsService;
   #bindingService: BindingService;
   #deactivationService: DeactivationsService;
-  readonly #getActivationsResolutionParam: <TActivated>(
+  #getActivationsResolutionParam: <TActivated>(
     serviceIdentifier: ServiceIdentifier<TActivated>,
   ) => Iterable<BindingActivation<TActivated>> | undefined;
-  readonly #getBindingsPlanParams: <TInstance>(
+  #getBindingsPlanParams: <TInstance>(
     serviceIdentifier: ServiceIdentifier<TInstance>,
   ) => Iterable<Binding<TInstance>> | undefined;
   readonly #options: InternalContainerOptions;
   readonly #planResultCacheService: PlanResultCacheService;
-  readonly #resolutionContext: ResolutionContext;
-  readonly #setBindingParamsPlan: <TInstance>(
-    binding: Binding<TInstance>,
-  ) => void;
+  #resolutionContext: ResolutionContext;
+  #setBindingParamsPlan: <TInstance>(binding: Binding<TInstance>) => void;
   readonly #snapshots: Snapshot[];
 
   constructor(options?: ContainerOptions) {
@@ -274,7 +272,7 @@ export class Container {
     this.#bindingService = snapshot.bindingService;
     this.#deactivationService = snapshot.deactivationService;
 
-    this.#planResultCacheService.clearCache();
+    this.#resetComputedProperties();
   }
 
   public snapshot(): void {
@@ -551,6 +549,22 @@ export class Container {
     }
 
     return false;
+  }
+
+  #resetComputedProperties(): void {
+    this.#planResultCacheService.clearCache();
+
+    this.#getActivationsResolutionParam = <TActivated>(
+      serviceIdentifier: ServiceIdentifier<TActivated>,
+    ): Iterable<BindingActivation<TActivated>> | undefined =>
+      this.#activationService.get(serviceIdentifier) as
+        | Iterable<BindingActivation<TActivated>>
+        | undefined;
+    this.#getBindingsPlanParams = this.#bindingService.get.bind(
+      this.#bindingService,
+    );
+    this.#resolutionContext = this.#buildResolutionContext();
+    this.#setBindingParamsPlan = this.#setBinding.bind(this);
   }
 
   #setBinding(binding: Binding): void {
