@@ -18,7 +18,7 @@
   "devDependencies": {
     "@types/node": "^22.13.1",
     "eslint": "9.20.0",
-    "prettier": "3.4.2",
+    "prettier": "3.5.0",
     "rimraf": "6.0.1",
     "rollup": "4.34.6",
     "ts-loader": "9.5.2",
