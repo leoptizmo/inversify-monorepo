@@ -13,7 +13,7 @@ import { BindingMetadata } from '../models/BindingMetadata';
 import { BindingMetadataMap } from '../models/BindingMetadataMap';
 
 export function provide<T>(
-  serviceIdentifier?: ServiceIdentifier<T>,
+  serviceIdentifier?: ServiceIdentifier<T> | undefined,
   bind?: (bindSyntax: BindInWhenOnFluentSyntax<T>) => void,
 ): ClassDecorator {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type

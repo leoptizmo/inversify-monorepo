@@ -18,7 +18,6 @@ export function buildProviderModule(): ContainerModule {
 
     for (const bindingMetadataList of bindingMetadataMap.values()) {
       for (const bindingMetadata of bindingMetadataList) {
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         bindingMetadata.action(options.bind);
       }
     }
