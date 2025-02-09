@@ -1,0 +1,48 @@
+---
+sidebar_position: 1
+title: Decorator
+---
+import apiDecoratorsProvideMultipleBindingsSource from '@inversifyjs/binding-decorators-code-examples/generated/examples/v1/apiDecoratorsProvideMultipleBindings.ts.txt';
+import apiDecoratorsProvideSelfBindingSource from '@inversifyjs/binding-decorators-code-examples/generated/examples/v1/apiDecoratorsProvideSelfBinding.ts.txt';
+import apiDecoratorsProvideServiceBindingSource from '@inversifyjs/binding-decorators-code-examples/generated/examples/v1/apiDecoratorsProvideServiceBinding.ts.txt';
+import apiDecoratorsProvideServiceBindingWithBindActionSource from '@inversifyjs/binding-decorators-code-examples/generated/examples/v1/apiDecoratorsProvideServiceBindingWithBindAction.ts.txt';
+import CodeBlock from '@theme/CodeBlock';
+
+# Decorators
+
+This section covers decorators used to provide binding metadata.
+
+## provide
+
+Decorator used to set binding metadata to be loaded into the container.
+
+:::warning
+
+Like any other decorator, `@provide` has no effect on non loaded modules. Make sure to import the module where the decorated class is defined.
+
+:::
+
+### Example: providing class self binding
+
+You can use the `@provide` decorator to provide a class self binding by not passing any parameters.
+
+<CodeBlock language="ts">{apiDecoratorsProvideSelfBindingSource}</CodeBlock>
+
+### Example: providing class service binding
+
+You can use the `@provide` decorator to provide a class service binding by passing the service identifier as a parameter.
+
+<CodeBlock language="ts">{apiDecoratorsProvideServiceBindingSource}</CodeBlock>
+
+### Example: providing class service binding with a custom binding constraint
+
+You can use the `@provide` decorator to provide a class service binding with a custom binding constraint by passing the service identifier and a bind action as parameters.
+
+<CodeBlock language="ts">{apiDecoratorsProvideServiceBindingSource}</CodeBlock>
+
+### Example: providing multiple bindings
+
+You can use the `@provide` decorator to provide multiple bindings by applying it multiple times.
+
+<CodeBlock language="ts">{apiDecoratorsProvideMultipleBindingsSource}</CodeBlock>
+
