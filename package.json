@@ -35,7 +35,8 @@
   "scripts": {
     "build": "turbo run build",
     "commit": "commit",
-    "deploy:inversify:pages": "pnpm run --filter \"@inversifyjs/inversify-docs-site\" deploy",
+    "deploy:binding-decorators:pages": "pnpm run --filter \"@inversifyjs/inversify-docs-site\" deploy",
+    "deploy:inversify:pages": "pnpm run --filter \"@inversifyjs/inversify-binding-decorators-docs-site\" deploy",
     "format": "turbo run format",
     "lint": "turbo run lint",
     "prepare": "husky && turbo telemetry disable",
