@@ -13,6 +13,10 @@ import { InversifyCurrentGetComplexServiceInSingletonScope } from '../scenario/i
 import { InversifyCurrentGetComplexServiceInTransientScope } from '../scenario/inversifyCurrent/InversifyCurrentGetComplexServiceInTransientScope';
 import { InversifyCurrentGetServiceInSingletonScope } from '../scenario/inversifyCurrent/InversifyCurrentGetServiceInSingletonScope';
 import { InversifyCurrentGetServiceInTransientScope } from '../scenario/inversifyCurrent/InversifyCurrentGetServiceInTransientScope';
+import { NestCoreGetComplexServiceInSingletonScopeScenario } from '../scenario/nestCore/NestCoreGetComplexServiceInSingletonScopeScenario';
+import { NestCoreGetComplexServiceInTransientScopeScenario } from '../scenario/nestCore/NestCoreGetComplexServiceInTransientScopeScenario';
+import { NestCoreGetServiceInSingletonScopeScenario } from '../scenario/nestCore/NestCoreGetServiceInSingletonScopeScenario';
+import { NestCoreGetServiceInTransientScopeScenario } from '../scenario/nestCore/NestCoreGetServiceInTransientScopeScenario';
 import { TsyringeGetComplexServiceInSingletonScope } from '../scenario/tsyringe/TsyringeGetComplexServiceInSingletonScope';
 import { TsyringeGetComplexServiceInTransientScope } from '../scenario/tsyringe/TsyringeGetComplexServiceInTransientScope';
 import { TsyringeGetServiceInSingletonScope } from '../scenario/tsyringe/TsyringeGetServiceInSingletonScope';
@@ -29,6 +33,7 @@ export async function run(): Promise<void> {
       scenarios: [
         new InversifyCurrentGetServiceInSingletonScope(),
         new Inversify6GetServiceInSingletonScope(),
+        new NestCoreGetServiceInSingletonScopeScenario(),
         new TsyringeGetServiceInSingletonScope(),
       ],
     });
@@ -49,6 +54,7 @@ export async function run(): Promise<void> {
       scenarios: [
         new InversifyCurrentGetServiceInTransientScope(),
         new Inversify6GetServiceInTransientScope(),
+        new NestCoreGetServiceInTransientScopeScenario(),
         new TsyringeGetServiceInTransientScope(),
       ],
     });
@@ -69,6 +75,7 @@ export async function run(): Promise<void> {
       scenarios: [
         new InversifyCurrentGetComplexServiceInSingletonScope(),
         new Inversify6GetComplexServiceInSingletonScope(),
+        new NestCoreGetComplexServiceInSingletonScopeScenario(),
         new TsyringeGetComplexServiceInSingletonScope(),
       ],
     });
@@ -89,6 +96,7 @@ export async function run(): Promise<void> {
       scenarios: [
         new InversifyCurrentGetComplexServiceInTransientScope(),
         new Inversify6GetComplexServiceInTransientScope(),
+        new NestCoreGetComplexServiceInTransientScopeScenario(),
         new TsyringeGetComplexServiceInTransientScope(),
       ],
     });
