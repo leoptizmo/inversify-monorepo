@@ -49,7 +49,10 @@ export class NestCoreGetServiceInTransientScopeScenario implements Scenario {
   }
 
   public async setUp(): Promise<void> {
-    this.#context = await NestFactory.createApplicationContext(ContainerModule);
+    this.#context = await NestFactory.createApplicationContext(
+      ContainerModule,
+      { logger: false },
+    );
   }
 
   public async tearDown(): Promise<void> {
