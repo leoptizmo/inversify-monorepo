@@ -11,7 +11,7 @@
     "@inversifyjs/core": "workspace:*"
   },
   "devDependencies": {
-    "eslint": "9.20.0",
+    "eslint": "9.20.1",
     "prettier": "3.5.0",
     "rimraf": "6.0.1",
     "rollup": "4.34.6",
