@@ -18,7 +18,7 @@
     "@inversifyjs/foundation-stryker-config": "workspace:*",
     "@inversifyjs/foundation-typescript-config": "workspace:*",
     "husky": "9.1.7",
-    "knip": "5.43.6",
+    "knip": "5.44.0",
     "lint-staged": "15.4.3",
     "turbo": "2.4.1"
   },
@@ -26,7 +26,7 @@
   "keywords": [],
   "license": "MIT",
   "name": "root",
-  "packageManager": "pnpm@10.2.1",
+  "packageManager": "pnpm@10.3.0",
   "private": true,
   "repository": {
     "type": "git",
