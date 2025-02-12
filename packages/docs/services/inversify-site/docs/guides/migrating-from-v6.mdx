@@ -4,6 +4,7 @@ title: Migrating from v6
 ---
 import bindingOnSyntaxApiOnActivationSource from '@inversifyjs/code-examples/generated/examples/v7/bindingOnSyntaxApiOnActivation.ts.txt';
 import bindingWhenSyntaxApiWhenSource from '@inversifyjs/code-examples/generated/examples/v7/bindingWhenSyntaxApiWhen.ts.txt';
+import containerApiGetAllWithNamedBindingsSource from '@inversifyjs/code-examples/generated/examples/v7/containerApiGetAllWithNamedBindings.ts.txt';
 import containerApiGetNamedSource from '@inversifyjs/code-examples/generated/examples/v7/containerApiGetNamed.ts.txt';
 import containerModuleApiExampleSource from '@inversifyjs/code-examples/generated/examples/v7/containerModuleApiExample.ts.txt';
 import diHierarchySource from '@inversifyjs/code-examples/generated/examples/v7/diHierarchy.ts.txt';
@@ -30,7 +31,11 @@ This is the only feature that has been removed in v7 with no direct replacement.
 
 ### isBound like methods
 
-`Container.isCurrentBound`, `Container.isBoundNamed`, `Container.isBoundTagged` behavior can be achieved relying on `Container.isBound` with `isBoundOptions`.
+`Container.isBoundNamed`, `Container.isBoundTagged` behavior can be achieved relying on `Container.isBound`. Optional `isBoundOptions` can be passed to find named and tagged bindings.
+
+`Container.isCurrentBound` has been updated with the same optional `isBoundOptions` parameter in order to find named and tagged bindings.
+
+Refer to the API [isBound](../../api/container#isbound) and [isCurrentBound](../../api/container#iscurrentbound) documentation for more information.
 
 ### get like methods
 
@@ -39,6 +44,12 @@ This is the only feature that has been removed in v7 with no direct replacement.
 The same applies to `Container.getAll`, `Container.getAllAsync` and `Container.getAsync`, they all now receive a `GetOptions` object which can be used to pass expected name or tags.
 
 <CodeBlock language="ts">{containerApiGetNamedSource}</CodeBlock>
+
+Last but not least, `Container.getAll` and `Container.getAllAsync` methods now enforce service bindings to respect binding constraints. Given the following example:
+
+<CodeBlock language="ts">{containerApiGetAllWithNamedBindingsSource}</CodeBlock>
+
+In v6, `container.getAll` would return an array with all bindings that match the service identifier. In v7, `container.getAll` will return an array with all bindings that match the service identifier and the binding constraints, so the shuriken binding will not be used and, therefore, an array with a single katana will be provided as the resolved value for the service.
 
 ### load and unload methods
 
