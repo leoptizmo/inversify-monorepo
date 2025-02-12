@@ -18,7 +18,7 @@
     "@inversifyjs/foundation-stryker-config": "workspace:*",
     "@inversifyjs/foundation-typescript-config": "workspace:*",
     "husky": "9.1.7",
-    "knip": "5.44.0",
+    "knip": "5.44.1",
     "lint-staged": "15.4.3",
     "turbo": "2.4.1"
   },
