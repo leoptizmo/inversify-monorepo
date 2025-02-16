@@ -1,7 +1,8 @@
-import { Platform } from '../models/Platform';
-import { Scenario } from '../models/Scenario';
+import { Scenario } from '@inversifyjs/benchmark-utils';
 
-export abstract class TsyringeBaseScenario implements Scenario {
+import { Platform } from '../models/Platform';
+
+export abstract class TsyringeBaseScenario implements Scenario<Platform> {
   public readonly platform: Platform;
 
   constructor() {

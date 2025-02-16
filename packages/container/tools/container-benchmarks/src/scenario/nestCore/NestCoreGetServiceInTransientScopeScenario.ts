@@ -1,3 +1,4 @@
+import { Scenario } from '@inversifyjs/benchmark-utils';
 import {
   INestApplicationContext,
   Injectable,
@@ -7,7 +8,6 @@ import {
 import { NestFactory } from '@nestjs/core';
 
 import { Platform } from '../models/Platform';
-import { Scenario } from '../models/Scenario';
 
 @Injectable({
   scope: Scope.TRANSIENT,
@@ -39,7 +39,9 @@ class Samurai {
 })
 class ContainerModule {}
 
-export class NestCoreGetServiceInTransientScopeScenario implements Scenario {
+export class NestCoreGetServiceInTransientScopeScenario
+  implements Scenario<Platform>
+{
   public readonly platform: Platform;
 
   #context!: INestApplicationContext;

@@ -3,9 +3,9 @@
 const MS_PER_SCENARIO: number = 1000;
 const FIXED_DECIMALS: number = 3;
 
+import { buildBenchmark } from '@inversifyjs/benchmark-utils';
 import { Bench, Task } from 'tinybench';
 
-import { buildBenchmark } from '../benchmark/calculations/buildBenchmark';
 import { Inversify6GetComplexServiceInSingletonScope } from '../scenario/Inversify6/Inversify6GetComplexServiceInSingletonScope';
 import { Inversify6GetComplexServiceInTransientScope } from '../scenario/Inversify6/Inversify6GetComplexServiceInTransientScope';
 import { Inversify6GetServiceInSingletonScope } from '../scenario/Inversify6/Inversify6GetServiceInSingletonScope';

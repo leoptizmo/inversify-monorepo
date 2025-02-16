@@ -1,3 +1,4 @@
+import { Scenario } from '@inversifyjs/benchmark-utils';
 import {
   INestApplicationContext,
   Injectable,
@@ -7,7 +8,6 @@ import {
 import { NestFactory } from '@nestjs/core';
 
 import { Platform } from '../models/Platform';
-import { Scenario } from '../models/Scenario';
 
 @Injectable({ scope: Scope.TRANSIENT })
 class FinalNode {
@@ -185,7 +185,7 @@ class Node1 {
 class ContainerModule {}
 
 export class NestCoreGetComplexServiceInTransientScopeScenario
-  implements Scenario
+  implements Scenario<Platform>
 {
   public readonly platform: Platform;
 
