@@ -6,7 +6,7 @@ import {
   buildBenchmark,
   printBenchmarkResults,
 } from '@inversifyjs/benchmark-utils';
-import { Bench, Task } from 'tinybench';
+import { Bench } from 'tinybench';
 
 import { Inversify6GetComplexServiceInSingletonScope } from '../scenario/Inversify6/Inversify6GetComplexServiceInSingletonScope';
 import { Inversify6GetComplexServiceInTransientScope } from '../scenario/Inversify6/Inversify6GetComplexServiceInTransientScope';
