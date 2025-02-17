@@ -15,6 +15,7 @@ const defaultWorkspaceProjectConfig: WorkspaceProjectConfig & {
   ],
   ignoreDependencies: [
     "@inversifyjs/container-benchmarks",
+    "@inversifyjs/http-benchmarks",
     "ts-loader",
     "tslib",
   ],

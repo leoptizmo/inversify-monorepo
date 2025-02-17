@@ -10,8 +10,6 @@
   },
   "dependencies": {
     "@inversifyjs/benchmark-utils": "workspace:*",
-    "@inversifyjs/container": "workspace:*",
-    "@inversifyjs/core": "workspace:*",
     "@nestjs/common": "11.0.9",
     "@nestjs/core": "11.0.9",
     "@nestjs/platform-express": "11.0.9",
