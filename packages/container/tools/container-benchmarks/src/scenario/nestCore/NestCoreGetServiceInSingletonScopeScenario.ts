@@ -1,8 +1,8 @@
+import { Scenario } from '@inversifyjs/benchmark-utils';
 import { INestApplicationContext, Injectable, Module } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { Platform } from '../models/Platform';
-import { Scenario } from '../models/Scenario';
 
 @Injectable()
 class Katana {
@@ -30,7 +30,9 @@ class Samurai {
 })
 class ContainerModule {}
 
-export class NestCoreGetServiceInSingletonScopeScenario implements Scenario {
+export class NestCoreGetServiceInSingletonScopeScenario
+  implements Scenario<Platform>
+{
   public readonly platform: Platform;
 
   #context!: INestApplicationContext;

@@ -1,8 +1,8 @@
+import { Scenario } from '@inversifyjs/benchmark-utils';
 import { INestApplicationContext, Injectable, Module } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { Platform } from '../models/Platform';
-import { Scenario } from '../models/Scenario';
 
 @Injectable()
 class FinalNode {
@@ -180,7 +180,7 @@ class Node1 {
 class ContainerModule {}
 
 export class NestCoreGetComplexServiceInSingletonScopeScenario
-  implements Scenario
+  implements Scenario<Platform>
 {
   public readonly platform: Platform;
 
