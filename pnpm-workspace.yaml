@@ -5,4 +5,4 @@ packages:
   - "packages/docs/tools/*"
   - "packages/foundation/libraries/*"
   - "packages/foundation/tools/*"
-  - "packages/http/libraries/*"
+  - "packages/http/tools/*"
