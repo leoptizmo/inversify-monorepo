@@ -1,6 +1,7 @@
 import { RequestMethodType } from '../models/RequestMethodType';
 import { requestMethod } from './RequestMethod';
 
-export function delet(path?: string): MethodDecorator {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function DELETE(path?: string): MethodDecorator {
   return requestMethod(RequestMethodType.DELETE, path);
 }
