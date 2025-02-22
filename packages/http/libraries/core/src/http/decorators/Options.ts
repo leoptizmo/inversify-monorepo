@@ -1,7 +1,6 @@
 import { RequestMethodType } from '../models/RequestMethodType';
 import { requestMethod } from './RequestMethod';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export function OPTIONS(path?: string): MethodDecorator {
-  return requestMethod(RequestMethodType.OPTIONS, path);
-}
+export const OPTIONS: (path?: string) => MethodDecorator = (
+  path?: string,
+): MethodDecorator => requestMethod(RequestMethodType.OPTIONS, path);
