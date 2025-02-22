@@ -5,6 +5,6 @@ export enum RequestMethodType {
   DELETE = 'delete',
   PATCH = 'patch',
   OPTIONS = 'options',
-  //HEAD = 'head',
+  HEAD = 'head',
   ALL = 'all',
 }
