@@ -24,16 +24,28 @@ import { ForbiddenHttpResponse } from './http/responses/error/ForbiddenHttpRespo
 import { GatewayTimeoutHttpResponse } from './http/responses/error/GatewayTimeoutHttpResponse';
 import { GoneHttpResponse } from './http/responses/error/GoneHttpResponse';
 import { HttpVersionNotSupportedHttpResponse } from './http/responses/error/HttpVersionNotSupportedHttpResponse';
+import { InsufficientStorageHttpResponse } from './http/responses/error/InsufficientStorageHttpResponse';
 import { InternalServerErrorHttpResponse } from './http/responses/error/InternalServerErrorHttpResponse';
+import { LoopDetectedHttpResponse } from './http/responses/error/LoopDetectedHttpResponse';
 import { MethodNotAllowedHttpResponse } from './http/responses/error/MethodNotAllowedHttpResponse';
+import { NotAcceptableHttpResponse } from './http/responses/error/NotAcceptableHttpResponse';
 import { NotFoundHttpResponse } from './http/responses/error/NotFoundHttpResponse';
+import { NotImplementedHttpResponse } from './http/responses/error/NotImplementedHttpResponse';
+import { PaymentRequiredHttpResponse } from './http/responses/error/PaymentRequiredHttpResponse';
+import { ServiceUnavailableHttpResponse } from './http/responses/error/ServiceUnavailableHttpResponse';
 import { UnauthorizedHttpResponse } from './http/responses/error/UnauthorizedHttpResponse';
 import { HttpResponse } from './http/responses/HttpResponse';
 import { HttpStatusCode } from './http/responses/HttpStatusCode';
 import { AcceptedHttpResponse } from './http/responses/success/AcceptedHttpResponse';
+import { AlreadyReportedHttpResponse } from './http/responses/success/AlreadyReportedHttpResponse';
+import { ContentDifferentHttpResponse } from './http/responses/success/ContentDifferentHttpResponse';
 import { CreatedHttpResponse } from './http/responses/success/CreatedHttpResponse';
+import { MultiStatusHttpResponse } from './http/responses/success/MultiStatusHttpResponse';
 import { NoContentHttpResponse } from './http/responses/success/NoContentHttpResponse';
+import { NonAuthoritativeInformationHttpResponse } from './http/responses/success/NonAuthoritativeInformationHttpResponse';
 import { OkHttpResponse } from './http/responses/success/OkHttpResponse';
+import { PartialContentHttpResponse } from './http/responses/success/PartialContentHttpResponse';
+import { ResetContentHttpResponse } from './http/responses/success/ResetContentHttpResponse';
 
 export type { RouterParams };
 
@@ -53,6 +65,18 @@ export {
   HttpVersionNotSupportedHttpResponse,
   GatewayTimeoutHttpResponse,
   BadGatewayHttpResponse,
+  InsufficientStorageHttpResponse,
+  LoopDetectedHttpResponse,
+  NotAcceptableHttpResponse,
+  NotImplementedHttpResponse,
+  PaymentRequiredHttpResponse,
+  ServiceUnavailableHttpResponse,
+  AlreadyReportedHttpResponse,
+  ContentDifferentHttpResponse,
+  MultiStatusHttpResponse,
+  NonAuthoritativeInformationHttpResponse,
+  PartialContentHttpResponse,
+  ResetContentHttpResponse,
   HttpResponse,
   HttpStatusCode,
   InversifyHttpAdapter,
