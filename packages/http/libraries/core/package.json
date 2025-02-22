@@ -5,7 +5,6 @@
   },
   "description": "InversifyJs http core package",
   "dependencies": {
-    "@inversifyjs/container": "workspace:*",
     "@inversifyjs/reflect-metadata-utils": "workspace:*"
   },
   "devDependencies": {
@@ -49,6 +48,9 @@
     }
   },
   "name": "@inversifyjs/http-core",
+  "peerDependencies": {
+    "inversify": "7.0.0-alpha.5"
+  },
   "publishConfig": {
     "access": "public"
   },
