@@ -1,6 +1,8 @@
 import { Container } from '@inversifyjs/container';
 import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
+import { InversifyHttpAdapterError } from '../../error/models/InversifyHttpAdapterError';
+import { InversifyHttpAdapterErrorKind } from '../../error/models/InversifyHttpAdapterErrorKind';
 import { ControllerMetadata } from '../models/ControllerMetadata';
 import { ControllerMethodMetadata } from '../models/ControllerMethodMetadata';
 import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
@@ -28,7 +30,9 @@ export abstract class InversifyHttpAdapter<
       getReflectMetadata(Reflect, METADATA_KEY.controller);
 
     if (controllerMetadataList === undefined) {
-      throw new Error('No controllers found');
+      throw new InversifyHttpAdapterError(
+        InversifyHttpAdapterErrorKind.noControllerFound,
+      );
     }
 
     this.#buildHandlers(controllerMetadataList);
