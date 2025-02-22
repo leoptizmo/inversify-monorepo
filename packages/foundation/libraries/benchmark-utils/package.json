@@ -20,7 +20,7 @@
     "node",
     "typescript"
   ],
-  "author": "Roberto Pintos López",
+  "author": "Adrián Martínez Jiménez",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/inversify/monorepo/issues"
@@ -29,9 +29,9 @@
     "tinybench": "3.1.1"
   },
   "devDependencies": {
-    "@types/node": "22.13.4",
-    "eslint": "9.20.1",
-    "prettier": "3.5.1",
+    "@types/node": "22.13.5",
+    "eslint": "9.21.0",
+    "prettier": "3.5.2",
     "rimraf": "6.0.1",
     "rollup": "4.34.8",
     "ts-loader": "9.5.2",
