@@ -1,5 +1,5 @@
-import { Container } from '@inversifyjs/container';
 import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
+import { Container } from 'inversify';
 
 import { InversifyHttpAdapterError } from '../../error/models/InversifyHttpAdapterError';
 import { InversifyHttpAdapterErrorKind } from '../../error/models/InversifyHttpAdapterErrorKind';
@@ -9,6 +9,8 @@ import { ControllerMethodParameterMetadata } from '../models/ControllerMethodPar
 import { METADATA_KEY } from '../models/MetadataKey';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 import { RouterParams } from '../models/RouterParams';
+import { HttpResponse } from '../responses/HttpResponse';
+import { HttpStatusCode } from '../responses/HttpStatusCode';
 
 export abstract class InversifyHttpAdapter<
   TRequest,
@@ -94,13 +96,21 @@ export abstract class InversifyHttpAdapter<
                 ),
               );
 
-              const value: unknown = await (
+              const value:
+                | HttpResponse
+                | object
+                | string
+                | number
+                | boolean
+                | undefined = await (
                 controller[controllerMethodMetadata.methodKey] as (
                   ...args: unknown[]
-                ) => unknown
+                ) => Promise<
+                  HttpResponse | object | string | number | boolean | undefined
+                >
               )(...handlerParams);
 
-              return this._reply(req, res, value);
+              return this.#reply(req, res, value);
             } catch (error) {
               next(error);
               return undefined;
@@ -173,6 +183,34 @@ export abstract class InversifyHttpAdapter<
     );
   }
 
+  #reply(
+    request: TRequest,
+    response: TResponse,
+    value: HttpResponse | object | string | number | boolean | undefined,
+  ): unknown {
+    let body: object | string | number | boolean | undefined = undefined;
+    let statusCode: HttpStatusCode | undefined = undefined;
+
+    if (value instanceof HttpResponse) {
+      body = value.body;
+      statusCode = value.statusCode;
+    } else {
+      body = value;
+    }
+
+    if (statusCode !== undefined) {
+      this._setStatus(request, response, statusCode);
+    }
+
+    if (typeof body === 'string') {
+      return this._replyText(request, response, body);
+    } else if (body === undefined || typeof body === 'object') {
+      return this._replyJson(request, response, body);
+    } else {
+      return this._replyText(request, response, JSON.stringify(body));
+    }
+  }
+
   public abstract build(): unknown;
 
   protected abstract _getBody(
@@ -200,11 +238,23 @@ export abstract class InversifyHttpAdapter<
     parameterName?: string | symbol,
   ): unknown;
 
-  protected abstract _reply(
+  protected abstract _replyText(
     request: TRequest,
     response: TResponse,
-    value: unknown,
+    value: string,
   ): unknown;
+
+  protected abstract _replyJson(
+    request: TRequest,
+    response: TResponse,
+    value?: object,
+  ): unknown;
+
+  protected abstract _setStatus(
+    request: TRequest,
+    response: TResponse,
+    statusCode: HttpStatusCode,
+  ): void;
 
   protected abstract _buildRouter(
     path: string,
