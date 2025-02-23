@@ -1,9 +1,8 @@
-import { ControllerMethodMetadata } from './ControllerMethodMetadata';
 import { RequestHandler } from './RequestHandler';
+import { RequestMethodType } from './RequestMethodType';
 
-export type RouterParams<TRequest, TResponse, TNextFunction> = Omit<
-  ControllerMethodMetadata,
-  'methodKey'
-> & {
+export interface RouterParams<TRequest, TResponse, TNextFunction> {
   handler: RequestHandler<TRequest, TResponse, TNextFunction>;
-};
+  path: string;
+  requestMethodType: RequestMethodType;
+}
