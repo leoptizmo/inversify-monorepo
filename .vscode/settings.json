@@ -6,6 +6,7 @@
     { "pattern": "./packages/docs/tools/*" },
     { "pattern": "./packages/foundation/libraries/*" },
     { "pattern": "./packages/foundation/tools/*" },
+    { "pattern": "./packages/http/libraries/*" },
     { "pattern": "./packages/http/tools/*" }
   ]
 }
