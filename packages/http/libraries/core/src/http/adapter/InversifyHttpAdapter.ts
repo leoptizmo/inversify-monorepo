@@ -3,12 +3,17 @@ import { Container } from 'inversify';
 
 import { InversifyHttpAdapterError } from '../../error/models/InversifyHttpAdapterError';
 import { InversifyHttpAdapterErrorKind } from '../../error/models/InversifyHttpAdapterErrorKind';
+import { Controller } from '../models/Controller';
+import { ControllerFunction } from '../models/ControllerFunction';
 import { ControllerMetadata } from '../models/ControllerMetadata';
 import { ControllerMethodMetadata } from '../models/ControllerMethodMetadata';
 import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
+import { ControllerResponse } from '../models/ControllerResponse';
 import { METADATA_KEY } from '../models/MetadataKey';
+import { RequestHandler } from '../models/RequestHandler';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 import { RouterParams } from '../models/RouterParams';
+import { InternalServerErrorHttpResponse } from '../responses/error/InternalServerErrorHttpResponse';
 import { HttpResponse } from '../responses/HttpResponse';
 import { HttpStatusCode } from '../responses/HttpStatusCode';
 
@@ -75,53 +80,54 @@ export abstract class InversifyHttpAdapter<
           METADATA_KEY.controllerMethodParameter,
         );
 
-        const controller: { [key: string | symbol]: () => unknown } =
-          this.#container.get(controllerMetadata.target);
+        const controller: Controller = this.#container.get(
+          controllerMetadata.target,
+        );
 
         return {
-          handler: async (
-            req: TRequest,
-            res: TResponse,
-            next: TNextFunction,
-          ): Promise<unknown> => {
-            try {
-              const handlerParams: unknown[] = await Promise.all(
-                this.#buildHandlerParams(
-                  parameterMetadata?.[
-                    controllerMethodMetadata.methodKey as string
-                  ] ?? [],
-                  req,
-                  res,
-                  next,
-                ),
-              );
-
-              const value:
-                | HttpResponse
-                | object
-                | string
-                | number
-                | boolean
-                | undefined = await (
-                controller[controllerMethodMetadata.methodKey] as (
-                  ...args: unknown[]
-                ) => Promise<
-                  HttpResponse | object | string | number | boolean | undefined
-                >
-              )(...handlerParams);
-
-              return this.#reply(req, res, value);
-            } catch (error) {
-              next(error);
-              return undefined;
-            }
-          },
+          handler: this.#buildHandler(
+            controllerMethodMetadata,
+            parameterMetadata?.[controllerMethodMetadata.methodKey as string] ??
+              [],
+            controller,
+          ),
           methodKey: controllerMethodMetadata.methodKey,
           path: controllerMethodMetadata.path,
           requestMethodType: controllerMethodMetadata.requestMethodType,
         };
       },
     );
+  }
+
+  #buildHandler(
+    controllerMethodMetadata: ControllerMethodMetadata,
+    controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
+    controller: Controller,
+  ): RequestHandler<TRequest, TResponse, TNextFunction> {
+    return async (
+      req: TRequest,
+      res: TResponse,
+      next: TNextFunction,
+    ): Promise<unknown> => {
+      try {
+        const handlerParams: unknown[] = await Promise.all(
+          this.#buildHandlerParams(
+            controllerMethodParameterMetadataList,
+            req,
+            res,
+            next,
+          ),
+        );
+
+        const value: ControllerResponse = await (
+          controller[controllerMethodMetadata.methodKey] as ControllerFunction
+        )(...handlerParams);
+
+        return this.#reply(req, res, value);
+      } catch (_error: unknown) {
+        return this.#reply(req, res, new InternalServerErrorHttpResponse());
+      }
+    };
   }
 
   #buildHandlerParams(
@@ -186,7 +192,7 @@ export abstract class InversifyHttpAdapter<
   #reply(
     request: TRequest,
     response: TResponse,
-    value: HttpResponse | object | string | number | boolean | undefined,
+    value: ControllerResponse,
   ): unknown {
     let body: object | string | number | boolean | undefined = undefined;
     let statusCode: HttpStatusCode | undefined = undefined;

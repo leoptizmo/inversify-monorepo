@@ -16,8 +16,6 @@ export function requestParam(
     key: string | symbol | undefined,
     index: number,
   ): void => {
-    console.log(target.constructor);
-    console.log((target as { [key: string]: unknown })[key as string]);
     let parameterMetadataObject:
       | {
           [key: string]: ControllerMethodParameterMetadata[];
