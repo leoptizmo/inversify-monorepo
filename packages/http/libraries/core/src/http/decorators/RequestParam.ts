@@ -3,10 +3,10 @@ import {
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
+import { controllerMethodParameterMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
 import { Controller } from '../models/Controller';
 import { ControllerFunction } from '../models/ControllerFunction';
 import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
-import { METADATA_KEY } from '../models/MetadataKey';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 
 export function requestParam(
@@ -21,7 +21,7 @@ export function requestParam(
     let parameterMetadataList: ControllerMethodParameterMetadata[] | undefined =
       getReflectMetadata(
         (target as Controller)[key as string] as ControllerFunction,
-        METADATA_KEY.controllerMethodParameter,
+        controllerMethodParameterMetadataReflectKey,
       );
 
     const controllerMethodParameterMetadata: ControllerMethodParameterMetadata =
@@ -42,7 +42,7 @@ export function requestParam(
 
     setReflectMetadata(
       (target as Controller)[key as string] as ControllerFunction,
-      METADATA_KEY.controllerMethodParameter,
+      controllerMethodParameterMetadataReflectKey,
       parameterMetadataList,
     );
   };

@@ -3,9 +3,9 @@ import {
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
+import { controllerMetadataReflectKey } from '../../reflectMetadata/data/controllerMetadataReflectKey';
 import { ControllerMetadata } from '../models/ControllerMetadata';
 import { ControllerOptions } from '../models/ControllerOptions';
-import { METADATA_KEY } from '../models/MetadataKey';
 
 export function controller(
   pathOrOptions?: string | ControllerOptions,
@@ -26,7 +26,7 @@ export function controller(
     }
 
     let controllerMetadataList: ControllerMetadata[] | undefined =
-      getReflectMetadata(Reflect, METADATA_KEY.controller);
+      getReflectMetadata(Reflect, controllerMetadataReflectKey);
 
     if (controllerMetadataList !== undefined) {
       controllerMetadataList.push(controllerMetadata);
@@ -36,7 +36,7 @@ export function controller(
 
     setReflectMetadata(
       Reflect,
-      METADATA_KEY.controller,
+      controllerMetadataReflectKey,
       controllerMetadataList,
     );
   };
