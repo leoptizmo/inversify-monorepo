@@ -179,11 +179,6 @@ export abstract class InversifyHttpAdapter<
           case RequestMethodParameterType.NEXT: {
             return next;
           }
-          case RequestMethodParameterType.PRINCIPAL: {
-            throw new Error(
-              'Not implemented yet: RequestMethodParameterType.PRINCIPAL case',
-            );
-          }
         }
       },
     );
