@@ -3,6 +3,8 @@ import {
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
+import { InversifyHttpAdapterError } from '../../error/models/InversifyHttpAdapterError';
+import { InversifyHttpAdapterErrorKind } from '../../error/models/InversifyHttpAdapterErrorKind';
 import { controllerMethodParameterMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
 import { Controller } from '../models/Controller';
 import { ControllerFunction } from '../models/ControllerFunction';
@@ -18,9 +20,19 @@ export function requestParam(
     key: string | symbol | undefined,
     index: number,
   ): void => {
+    const controllerFunction: ControllerFunction | undefined = (
+      target as Controller
+    )[key as string];
+
+    if (controllerFunction === undefined) {
+      throw new InversifyHttpAdapterError(
+        InversifyHttpAdapterErrorKind.requestParamIncorrectUse,
+      );
+    }
+
     let parameterMetadataList: ControllerMethodParameterMetadata[] | undefined =
       getReflectMetadata(
-        (target as Controller)[key as string] as ControllerFunction,
+        controllerFunction,
         controllerMethodParameterMetadataReflectKey,
       );
 
@@ -41,7 +53,7 @@ export function requestParam(
     }
 
     setReflectMetadata(
-      (target as Controller)[key as string] as ControllerFunction,
+      controllerFunction,
       controllerMethodParameterMetadataReflectKey,
       parameterMetadataList,
     );
