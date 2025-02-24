@@ -16,6 +16,7 @@ import { PUT } from './http/decorators/Put';
 import { query } from './http/decorators/Query';
 import { request } from './http/decorators/Request';
 import { response } from './http/decorators/Response';
+import { statusCode } from './http/decorators/StatusCode';
 import { RouterParams } from './http/models/RouterParams';
 import { BadGatewayHttpResponse } from './http/responses/error/BadGatewayHttpResponse';
 import { BadRequestHttpResponse } from './http/responses/error/BadRequestHttpResponse';
@@ -97,4 +98,5 @@ export {
   query,
   request,
   response,
+  statusCode,
 };

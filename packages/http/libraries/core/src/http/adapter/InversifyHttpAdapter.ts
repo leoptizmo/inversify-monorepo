@@ -3,13 +3,16 @@ import { Container } from 'inversify';
 
 import { InversifyHttpAdapterError } from '../../error/models/InversifyHttpAdapterError';
 import { InversifyHttpAdapterErrorKind } from '../../error/models/InversifyHttpAdapterErrorKind';
+import { controllerMetadataReflectKey } from '../../reflectMetadata/data/controllerMetadataReflectKey';
+import { controllerMethodMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodMetadataReflectKey';
+import { controllerMethodParameterMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
+import { controllerMethodStatusCodeMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodStatusCodeMetadataReflectKey';
 import { Controller } from '../models/Controller';
 import { ControllerFunction } from '../models/ControllerFunction';
 import { ControllerMetadata } from '../models/ControllerMetadata';
 import { ControllerMethodMetadata } from '../models/ControllerMethodMetadata';
 import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
 import { ControllerResponse } from '../models/ControllerResponse';
-import { METADATA_KEY } from '../models/MetadataKey';
 import { RequestHandler } from '../models/RequestHandler';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 import { RouterParams } from '../models/RouterParams';
@@ -34,7 +37,7 @@ export abstract class InversifyHttpAdapter<
 
   #registerControllers(): void {
     const controllerMetadataList: ControllerMetadata[] | undefined =
-      getReflectMetadata(Reflect, METADATA_KEY.controller);
+      getReflectMetadata(Reflect, controllerMetadataReflectKey);
 
     if (controllerMetadataList === undefined) {
       throw new InversifyHttpAdapterError(
@@ -51,7 +54,7 @@ export abstract class InversifyHttpAdapter<
         | ControllerMethodMetadata[]
         | undefined = getReflectMetadata(
         controllerMetadata.target,
-        METADATA_KEY.controllerMethod,
+        controllerMethodMetadataReflectKey,
       );
 
       if (controllerMethodMetadataList !== undefined) {
@@ -77,11 +80,16 @@ export abstract class InversifyHttpAdapter<
             }
           | undefined = getReflectMetadata(
           controllerMetadata.target,
-          METADATA_KEY.controllerMethodParameter,
+          controllerMethodParameterMetadataReflectKey,
         );
 
         const controller: Controller = this.#container.get(
           controllerMetadata.target,
+        );
+
+        const statusCode: HttpStatusCode | undefined = getReflectMetadata(
+          controller[controllerMethodMetadata.methodKey] as ControllerFunction,
+          controllerMethodStatusCodeMetadataReflectKey,
         );
 
         return {
@@ -90,6 +98,7 @@ export abstract class InversifyHttpAdapter<
             parameterMetadata?.[controllerMethodMetadata.methodKey as string] ??
               [],
             controller,
+            statusCode,
           ),
           methodKey: controllerMethodMetadata.methodKey,
           path: controllerMethodMetadata.path,
@@ -103,6 +112,7 @@ export abstract class InversifyHttpAdapter<
     controllerMethodMetadata: ControllerMethodMetadata,
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
     controller: Controller,
+    statusCode: HttpStatusCode | undefined,
   ): RequestHandler<TRequest, TResponse, TNextFunction> {
     return async (
       req: TRequest,
@@ -123,7 +133,7 @@ export abstract class InversifyHttpAdapter<
           controller[controllerMethodMetadata.methodKey] as ControllerFunction
         )(...handlerParams);
 
-        return this.#reply(req, res, value);
+        return this.#reply(req, res, value, statusCode);
       } catch (_error: unknown) {
         return this.#reply(req, res, new InternalServerErrorHttpResponse());
       }
@@ -188,19 +198,20 @@ export abstract class InversifyHttpAdapter<
     request: TRequest,
     response: TResponse,
     value: ControllerResponse,
+    statusCode?: HttpStatusCode,
   ): unknown {
     let body: object | string | number | boolean | undefined = undefined;
-    let statusCode: HttpStatusCode | undefined = undefined;
+    let httpStatusCode: HttpStatusCode | undefined = statusCode;
 
-    if (value instanceof HttpResponse) {
+    if (HttpResponse.is(value)) {
       body = value.body;
-      statusCode = value.statusCode;
+      httpStatusCode = value.statusCode;
     } else {
       body = value;
     }
 
-    if (statusCode !== undefined) {
-      this._setStatus(request, response, statusCode);
+    if (httpStatusCode !== undefined) {
+      this._setStatus(request, response, httpStatusCode);
     }
 
     if (typeof body === 'string') {
