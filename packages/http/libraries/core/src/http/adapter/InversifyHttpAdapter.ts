@@ -200,7 +200,7 @@ export abstract class InversifyHttpAdapter<
     let body: object | string | number | boolean | undefined = undefined;
     let httpStatusCode: HttpStatusCode | undefined = statusCode;
 
-    if (value instanceof HttpResponse) {
+    if (HttpResponse.is(value)) {
       body = value.body;
       httpStatusCode = value.statusCode;
     } else {
