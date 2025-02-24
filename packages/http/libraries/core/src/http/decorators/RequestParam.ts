@@ -3,6 +3,8 @@ import {
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
+import { Controller } from '../models/Controller';
+import { ControllerFunction } from '../models/ControllerFunction';
 import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
 import { METADATA_KEY } from '../models/MetadataKey';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
@@ -16,14 +18,11 @@ export function requestParam(
     key: string | symbol | undefined,
     index: number,
   ): void => {
-    let parameterMetadataObject:
-      | {
-          [key: string]: ControllerMethodParameterMetadata[];
-        }
-      | undefined = getReflectMetadata(
-      target.constructor,
-      METADATA_KEY.controllerMethodParameter,
-    );
+    let parameterMetadataList: ControllerMethodParameterMetadata[] | undefined =
+      getReflectMetadata(
+        (target as Controller)[key as string] as ControllerFunction,
+        METADATA_KEY.controllerMethodParameter,
+      );
 
     const controllerMethodParameterMetadata: ControllerMethodParameterMetadata =
       {
@@ -32,29 +31,19 @@ export function requestParam(
         parameterType,
       };
 
-    if (parameterMetadataObject === undefined) {
-      parameterMetadataObject = {
-        [key as string]: [controllerMethodParameterMetadata],
-      };
+    if (parameterMetadataList === undefined) {
+      parameterMetadataList = [controllerMethodParameterMetadata];
     } else {
-      if (parameterMetadataObject[key as string] === undefined) {
-        parameterMetadataObject[key as string] = [
-          controllerMethodParameterMetadata,
-        ];
-      } else {
-        insertParameterMetadata(
-          parameterMetadataObject[
-            key as string
-          ] as ControllerMethodParameterMetadata[],
-          controllerMethodParameterMetadata,
-        );
-      }
+      insertParameterMetadata(
+        parameterMetadataList,
+        controllerMethodParameterMetadata,
+      );
     }
 
     setReflectMetadata(
-      target.constructor,
+      (target as Controller)[key as string] as ControllerFunction,
       METADATA_KEY.controllerMethodParameter,
-      parameterMetadataObject,
+      parameterMetadataList,
     );
   };
 }
