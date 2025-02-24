@@ -3,8 +3,8 @@ import {
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
+import { controllerMethodMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodMetadataReflectKey';
 import { ControllerMethodMetadata } from '../models/ControllerMethodMetadata';
-import { METADATA_KEY } from '../models/MetadataKey';
 import { RequestMethodType } from '../models/RequestMethodType';
 
 export function requestMethod(
@@ -19,7 +19,10 @@ export function requestMethod(
     };
 
     let controllerMethodMetadataList: ControllerMethodMetadata[] | undefined =
-      getReflectMetadata(target.constructor, METADATA_KEY.controllerMethod);
+      getReflectMetadata(
+        target.constructor,
+        controllerMethodMetadataReflectKey,
+      );
 
     if (controllerMethodMetadataList !== undefined) {
       controllerMethodMetadataList.push(controllerMethodMetadata);
@@ -29,7 +32,7 @@ export function requestMethod(
 
     setReflectMetadata(
       target.constructor,
-      METADATA_KEY.controllerMethod,
+      controllerMethodMetadataReflectKey,
       controllerMethodMetadataList,
     );
   };

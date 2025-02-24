@@ -7,7 +7,7 @@ import {
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
-import { METADATA_KEY } from '../models/MetadataKey';
+import { controllerMetadataReflectKey } from '../../reflectMetadata/data/controllerMetadataReflectKey';
 import { controller } from './Controller';
 
 describe(controller.name, () => {
@@ -27,14 +27,14 @@ describe(controller.name, () => {
     it('should get existing metadata', () => {
       expect(getReflectMetadata).toHaveBeenCalledWith(
         Reflect,
-        METADATA_KEY.controller,
+        controllerMetadataReflectKey,
       );
     });
 
     it('should set metadata with controller path', () => {
       expect(setReflectMetadata).toHaveBeenCalledWith(
         Reflect,
-        METADATA_KEY.controller,
+        controllerMetadataReflectKey,
         [
           {
             path: pathFixture,
@@ -64,7 +64,7 @@ describe(controller.name, () => {
     it('should set metadata with controller options', () => {
       expect(setReflectMetadata).toHaveBeenCalledWith(
         Reflect,
-        METADATA_KEY.controller,
+        controllerMetadataReflectKey,
         [
           {
             controllerName: optionsFixture.controllerName,

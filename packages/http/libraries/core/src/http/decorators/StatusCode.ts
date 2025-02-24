@@ -1,7 +1,7 @@
 import { setReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 
+import { controllerMethodStatusCodeMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodStatusCodeMetadataReflectKey';
 import { ControllerFunction } from '../models/ControllerFunction';
-import { METADATA_KEY } from '../models/MetadataKey';
 import { HttpStatusCode } from '../responses/HttpStatusCode';
 
 export function statusCode(statusCode: HttpStatusCode): MethodDecorator {
@@ -12,7 +12,7 @@ export function statusCode(statusCode: HttpStatusCode): MethodDecorator {
   ): void => {
     setReflectMetadata(
       descriptor.value as ControllerFunction,
-      METADATA_KEY.controllerMethodStatusCode,
+      controllerMethodStatusCodeMetadataReflectKey,
       statusCode,
     );
   };

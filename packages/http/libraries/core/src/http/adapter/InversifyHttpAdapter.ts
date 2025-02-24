@@ -3,13 +3,16 @@ import { Container } from 'inversify';
 
 import { InversifyHttpAdapterError } from '../../error/models/InversifyHttpAdapterError';
 import { InversifyHttpAdapterErrorKind } from '../../error/models/InversifyHttpAdapterErrorKind';
+import { controllerMetadataReflectKey } from '../../reflectMetadata/data/controllerMetadataReflectKey';
+import { controllerMethodMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodMetadataReflectKey';
+import { controllerMethodParameterMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
+import { controllerMethodStatusCodeMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodStatusCodeMetadataReflectKey';
 import { Controller } from '../models/Controller';
 import { ControllerFunction } from '../models/ControllerFunction';
 import { ControllerMetadata } from '../models/ControllerMetadata';
 import { ControllerMethodMetadata } from '../models/ControllerMethodMetadata';
 import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
 import { ControllerResponse } from '../models/ControllerResponse';
-import { METADATA_KEY } from '../models/MetadataKey';
 import { RequestHandler } from '../models/RequestHandler';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 import { RouterParams } from '../models/RouterParams';
@@ -34,7 +37,7 @@ export abstract class InversifyHttpAdapter<
 
   #registerControllers(): void {
     const controllerMetadataList: ControllerMetadata[] | undefined =
-      getReflectMetadata(Reflect, METADATA_KEY.controller);
+      getReflectMetadata(Reflect, controllerMetadataReflectKey);
 
     if (controllerMetadataList === undefined) {
       throw new InversifyHttpAdapterError(
@@ -51,7 +54,7 @@ export abstract class InversifyHttpAdapter<
         | ControllerMethodMetadata[]
         | undefined = getReflectMetadata(
         controllerMetadata.target,
-        METADATA_KEY.controllerMethod,
+        controllerMethodMetadataReflectKey,
       );
 
       if (controllerMethodMetadataList !== undefined) {
@@ -77,7 +80,7 @@ export abstract class InversifyHttpAdapter<
             }
           | undefined = getReflectMetadata(
           controllerMetadata.target,
-          METADATA_KEY.controllerMethodParameter,
+          controllerMethodParameterMetadataReflectKey,
         );
 
         const controller: Controller = this.#container.get(
@@ -86,7 +89,7 @@ export abstract class InversifyHttpAdapter<
 
         const statusCode: HttpStatusCode | undefined = getReflectMetadata(
           controller[controllerMethodMetadata.methodKey] as ControllerFunction,
-          METADATA_KEY.controllerMethodStatusCode,
+          controllerMethodStatusCodeMetadataReflectKey,
         );
 
         return {
