@@ -84,12 +84,18 @@ export abstract class InversifyHttpAdapter<
           controllerMetadata.target,
         );
 
+        const statusCode: HttpStatusCode | undefined = getReflectMetadata(
+          controller[controllerMethodMetadata.methodKey] as ControllerFunction,
+          METADATA_KEY.controllerMethodStatusCode,
+        );
+
         return {
           handler: this.#buildHandler(
             controllerMethodMetadata,
             parameterMetadata?.[controllerMethodMetadata.methodKey as string] ??
               [],
             controller,
+            statusCode,
           ),
           methodKey: controllerMethodMetadata.methodKey,
           path: controllerMethodMetadata.path,
@@ -103,6 +109,7 @@ export abstract class InversifyHttpAdapter<
     controllerMethodMetadata: ControllerMethodMetadata,
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
     controller: Controller,
+    statusCode: HttpStatusCode | undefined,
   ): RequestHandler<TRequest, TResponse, TNextFunction> {
     return async (
       req: TRequest,
@@ -123,7 +130,7 @@ export abstract class InversifyHttpAdapter<
           controller[controllerMethodMetadata.methodKey] as ControllerFunction
         )(...handlerParams);
 
-        return this.#reply(req, res, value);
+        return this.#reply(req, res, value, statusCode);
       } catch (_error: unknown) {
         return this.#reply(req, res, new InternalServerErrorHttpResponse());
       }
@@ -188,19 +195,20 @@ export abstract class InversifyHttpAdapter<
     request: TRequest,
     response: TResponse,
     value: ControllerResponse,
+    statusCode?: HttpStatusCode,
   ): unknown {
     let body: object | string | number | boolean | undefined = undefined;
-    let statusCode: HttpStatusCode | undefined = undefined;
+    let httpStatusCode: HttpStatusCode | undefined = statusCode;
 
     if (value instanceof HttpResponse) {
       body = value.body;
-      statusCode = value.statusCode;
+      httpStatusCode = value.statusCode;
     } else {
       body = value;
     }
 
-    if (statusCode !== undefined) {
-      this._setStatus(request, response, statusCode);
+    if (httpStatusCode !== undefined) {
+      this._setStatus(request, response, httpStatusCode);
     }
 
     if (typeof body === 'string') {
