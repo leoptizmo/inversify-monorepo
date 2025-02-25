@@ -74,17 +74,15 @@ export abstract class InversifyHttpAdapter<
   ): RouterParams<TRequest, TResponse, TNextFunction>[] {
     return controllerMethodMetadataList.map(
       (controllerMethodMetadata: ControllerMethodMetadata) => {
-        const parameterMetadata:
-          | {
-              [key: string]: ControllerMethodParameterMetadata[];
-            }
-          | undefined = getReflectMetadata(
-          controllerMetadata.target,
-          controllerMethodParameterMetadataReflectKey,
-        );
-
         const controller: Controller = this.#container.get(
           controllerMetadata.target,
+        );
+
+        const parameterMetadataList:
+          | ControllerMethodParameterMetadata[]
+          | undefined = getReflectMetadata(
+          controller[controllerMethodMetadata.methodKey] as ControllerFunction,
+          controllerMethodParameterMetadataReflectKey,
         );
 
         const statusCode: HttpStatusCode | undefined = getReflectMetadata(
@@ -95,8 +93,7 @@ export abstract class InversifyHttpAdapter<
         return {
           handler: this.#buildHandler(
             controllerMethodMetadata,
-            parameterMetadata?.[controllerMethodMetadata.methodKey as string] ??
-              [],
+            parameterMetadataList ?? [],
             controller,
             statusCode,
           ),

@@ -3,7 +3,11 @@ import {
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
+import { InversifyHttpAdapterError } from '../../error/models/InversifyHttpAdapterError';
+import { InversifyHttpAdapterErrorKind } from '../../error/models/InversifyHttpAdapterErrorKind';
 import { controllerMethodParameterMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
+import { Controller } from '../models/Controller';
+import { ControllerFunction } from '../models/ControllerFunction';
 import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 
@@ -16,14 +20,23 @@ export function requestParam(
     key: string | symbol | undefined,
     index: number,
   ): void => {
-    let parameterMetadataObject:
-      | {
-          [key: string]: ControllerMethodParameterMetadata[];
-        }
-      | undefined = getReflectMetadata(
-      target.constructor,
-      controllerMethodParameterMetadataReflectKey,
-    );
+    let controllerFunction: ControllerFunction | undefined = undefined;
+
+    if (key !== undefined) {
+      controllerFunction = (target as Controller)[key];
+    }
+
+    if (controllerFunction === undefined) {
+      throw new InversifyHttpAdapterError(
+        InversifyHttpAdapterErrorKind.requestParamIncorrectUse,
+      );
+    }
+
+    let parameterMetadataList: ControllerMethodParameterMetadata[] | undefined =
+      getReflectMetadata(
+        controllerFunction,
+        controllerMethodParameterMetadataReflectKey,
+      );
 
     const controllerMethodParameterMetadata: ControllerMethodParameterMetadata =
       {
@@ -32,29 +45,19 @@ export function requestParam(
         parameterType,
       };
 
-    if (parameterMetadataObject === undefined) {
-      parameterMetadataObject = {
-        [key as string]: [controllerMethodParameterMetadata],
-      };
+    if (parameterMetadataList === undefined) {
+      parameterMetadataList = [controllerMethodParameterMetadata];
     } else {
-      if (parameterMetadataObject[key as string] === undefined) {
-        parameterMetadataObject[key as string] = [
-          controllerMethodParameterMetadata,
-        ];
-      } else {
-        insertParameterMetadata(
-          parameterMetadataObject[
-            key as string
-          ] as ControllerMethodParameterMetadata[],
-          controllerMethodParameterMetadata,
-        );
-      }
+      insertParameterMetadata(
+        parameterMetadataList,
+        controllerMethodParameterMetadata,
+      );
     }
 
     setReflectMetadata(
-      target.constructor,
+      controllerFunction,
       controllerMethodParameterMetadataReflectKey,
-      parameterMetadataObject,
+      parameterMetadataList,
     );
   };
 }
