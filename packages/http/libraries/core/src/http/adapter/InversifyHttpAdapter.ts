@@ -255,7 +255,8 @@ export abstract class InversifyHttpAdapter<
     if (middlewareList !== undefined) {
       requestHandlerList = middlewareList.map(
         (newableFunction: NewableFunction) => {
-          const middleware: Middleware = this.#container.get(newableFunction);
+          const middleware: Middleware<TRequest, TResponse, TNextFunction> =
+            this.#container.get(newableFunction);
 
           return middleware.execute.bind(middleware);
         },

@@ -1,8 +1,4 @@
-export interface Middleware<
-  TRequest = unknown,
-  TResponse = unknown,
-  TNextFunction = unknown,
-> {
+export interface Middleware<TRequest, TResponse, TNextFunction> {
   execute(
     request: TRequest,
     response: TResponse,
