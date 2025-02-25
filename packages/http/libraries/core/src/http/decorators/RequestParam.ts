@@ -20,9 +20,11 @@ export function requestParam(
     key: string | symbol | undefined,
     index: number,
   ): void => {
-    const controllerFunction: ControllerFunction | undefined = (
-      target as Controller
-    )[key as string];
+    let controllerFunction: ControllerFunction | undefined = undefined;
+
+    if (key !== undefined) {
+      controllerFunction = (target as Controller)[key];
+    }
 
     if (controllerFunction === undefined) {
       throw new InversifyHttpAdapterError(
