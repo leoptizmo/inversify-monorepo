@@ -29,7 +29,6 @@ export class InversifyHttpAdapterError extends Error {
     value: unknown,
     kind: InversifyHttpAdapterErrorKind,
   ): value is InversifyHttpAdapterError {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     return InversifyHttpAdapterError.is(value) && value.kind === kind;
   }
 }
