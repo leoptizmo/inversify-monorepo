@@ -14,6 +14,9 @@ coverage:
       '@inversifyjs/core':
         flags:
           - '@inversifyjs/core'
+      '@inversifyjs/http-core':
+        flags:
+          - '@inversifyjs/http-core'
       '@inversifyjs/prototype-utils':
         flags:
           - '@inversifyjs/prototype-utils'
@@ -33,6 +36,9 @@ flags:
   '@inversifyjs/core':
     paths:
       - packages/container/libraries/core/
+  '@inversifyjs/http-core':
+    paths:
+      - packages/http/libraries/core
   '@inversifyjs/prototype-utils':
     paths:
       - packages/foundation/libraries/prototype-utils

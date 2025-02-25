@@ -42,6 +42,19 @@ export default {
     },
     "packages/container/libraries/*": defaultWorkspaceProjectConfig,
     "packages/container/tools/*": defaultWorkspaceProjectConfig,
+    "packages/container/tools/e2e-tests": {
+      entry: [
+        "config/*.mjs",
+        "src/*/parameters/*.ts",
+        "src/*/step-definitions/*.ts",
+        "src/app/hooks/*.ts",
+      ],
+      ignoreDependencies: [
+        ...defaultWorkspaceProjectConfig.ignoreDependencies,
+        "ts-node",
+      ],
+      project: [...defaultWorkspaceProjectConfig.project, "!config/*"],
+    },
     "packages/docs/services/*": defaultWorkspaceProjectConfig,
     "packages/docs/tools/*": defaultWorkspaceProjectConfig,
     "packages/docs/tools/binding-decorators-code-examples": {
@@ -61,18 +74,6 @@ export default {
       ignoreDependencies: defaultWorkspaceProjectConfig.ignoreDependencies,
       project: defaultWorkspaceProjectConfig.project,
     },
-    "packages/container/tools/e2e-tests": {
-      entry: [
-        "config/*.mjs",
-        "src/*/parameters/*.ts",
-        "src/*/step-definitions/*.ts",
-        "src/app/hooks/*.ts",
-      ],
-      ignoreDependencies: [
-        ...defaultWorkspaceProjectConfig.ignoreDependencies,
-        "ts-node",
-      ],
-      project: [...defaultWorkspaceProjectConfig.project, "!config/*"],
-    },
+    "packages/http/libraries/*": defaultWorkspaceProjectConfig,
   },
 } satisfies KnipConfig;
