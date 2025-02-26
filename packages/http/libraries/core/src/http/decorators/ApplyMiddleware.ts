@@ -30,7 +30,7 @@ export function applyMiddleware(
     }
 
     if (middlewareMetadataList !== undefined) {
-      middlewareList.push(...middlewareMetadataList);
+      middlewareMetadataList.push(...middlewareList);
     } else {
       middlewareMetadataList = middlewareList;
     }
@@ -45,7 +45,7 @@ export function applyMiddleware(
       setReflectMetadata(
         descriptor.value as ControllerFunction,
         controllerMethodMiddlewareMetadataReflectKey,
-        middlewareList,
+        middlewareMetadataList,
       );
     }
   };
