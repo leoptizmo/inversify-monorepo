@@ -1,0 +1,88 @@
+---
+sidebar_position: 1
+title: Migrating from v6
+---
+import bindingOnSyntaxApiOnActivationSource from '@inversifyjs/code-examples/generated/examples/v7/bindingOnSyntaxApiOnActivation.ts.txt';
+import bindingWhenSyntaxApiWhenSource from '@inversifyjs/code-examples/generated/examples/v7/bindingWhenSyntaxApiWhen.ts.txt';
+import containerApiGetAllWithNamedBindingsSource from '@inversifyjs/code-examples/generated/examples/v7/containerApiGetAllWithNamedBindings.ts.txt';
+import containerApiGetNamedSource from '@inversifyjs/code-examples/generated/examples/v7/containerApiGetNamed.ts.txt';
+import containerModuleApiExampleSource from '@inversifyjs/code-examples/generated/examples/v7/containerModuleApiExample.ts.txt';
+import diHierarchySource from '@inversifyjs/code-examples/generated/examples/v7/diHierarchy.ts.txt';
+import fundamentalsAutobindingSource from '@inversifyjs/code-examples/generated/examples/v7/fundamentalsAutobinding.ts.txt';
+import CodeBlock from '@theme/CodeBlock';
+
+# Migrating from v6
+
+InversifyJS v7 introduces a few breaking changes. This guide will help you migrate your existing InversifyJS v6 code to v7.
+
+## Container API
+
+### Autobinding
+
+In v6, you could enable autobinding by passing the `autoBindInjectable` option to the container constructor. In v7, this option has been renamed to `autobind` which can be passed either as part of `Container` constructor options or `Container.get` options.
+
+In v6, `container.resolve` would automatically bind the resolved service to the container. In v7, this behavior has been removed. You can enable this behavior by passing the `autobind` option.
+
+<CodeBlock language="ts">{fundamentalsAutobindingSource}</CodeBlock>
+
+### Custom metadata and middlewares
+
+This is the only feature that has been removed in v7 with no direct replacement. The API was not super useful, not widely used and was one of the main reasons for the complexity of the library. We might bring it back in the future with a better API.
+
+### isBound like methods
+
+`Container.isBoundNamed`, `Container.isBoundTagged` behavior can be achieved relying on `Container.isBound`. Optional `isBoundOptions` can be passed to find named and tagged bindings.
+
+`Container.isCurrentBound` has been updated with the same optional `isBoundOptions` parameter in order to find named and tagged bindings.
+
+Refer to the API [isBound](../../api/container#isbound) and [isCurrentBound](../../api/container#iscurrentbound) documentation for more information.
+
+### get like methods
+
+`Container` has been updated with no `getNamed`, `getTagged`, `tryGet`, `tryGetNamed` and `tryGetTagged` methods in favor of `Container.get` with `OptionalGetOptions` options.
+
+The same applies to `Container.getAll`, `Container.getAllAsync` and `Container.getAsync`, they all now receive a `GetOptions` object which can be used to pass expected name or tags.
+
+<CodeBlock language="ts">{containerApiGetNamedSource}</CodeBlock>
+
+Last but not least, `Container.getAll` and `Container.getAllAsync` methods now enforce service bindings to respect binding constraints. Given the following example:
+
+<CodeBlock language="ts">{containerApiGetAllWithNamedBindingsSource}</CodeBlock>
+
+In v6, `container.getAll` would return an array with all bindings that match the service identifier. In v7, `container.getAll` will return an array with all bindings that match the service identifier and the binding constraints, so the shuriken binding will not be used and, therefore, an array with a single katana will be provided as the resolved value for the service.
+
+### load and unload methods
+
+This methods are now asynncronous and therefore return a promise.
+
+<CodeBlock language="ts">{containerModuleApiExampleSource}</CodeBlock>
+
+### unbind and unbindAll methods
+
+`Container.unbind` and `Container.unbindAll` methods are now asynchronous and return a promise. `Container.unbindAsync` and `Container.unbindAllAsync` methods have been removed.
+
+### Parent and child containers
+
+In v6, you could create a child container by calling the `createChild` method on a parent container. In v7, this method has been removed. Instead, you can create a child container by passing the parent container to the constructor of the child container.
+
+<CodeBlock language="ts">{diHierarchySource}</CodeBlock>
+
+## ContainerModule API
+
+Container module load options have been updated to be an object.
+
+<CodeBlock language="ts">{containerModuleApiExampleSource}</CodeBlock>
+
+## BindingFluentSyntax API
+
+### Use of ResolutionContext instead of interfaces.Context
+
+In v6, the `Context` class was used to pass contextual information. Too many internal data structures were exposed to the user. In v7, the `ResolutionContext` class is used to pass contextual information. This class is more focused on the user's needs and hides internal data structures to keep the API simple and maintainable.
+
+<CodeBlock language="ts">{bindingOnSyntaxApiOnActivationSource}</CodeBlock>
+
+### Use of BindingConstraints instead of interfaces.Request
+
+In v6, binding constraints received a `Request` object. In v7, binding constraints receive a `BindingConstraints` object. This object is more focused on the user's needs and hides internal data structures to keep the API simple and maintainable.
+
+<CodeBlock language="ts">{bindingWhenSyntaxApiWhenSource}</CodeBlock>
