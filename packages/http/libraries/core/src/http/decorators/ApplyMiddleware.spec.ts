@@ -63,7 +63,7 @@ describe(applyMiddleware.name, () => {
         ).mockReturnValueOnce([]);
 
         applyMiddleware(middlewareFixture)(
-          {} as object,
+          {},
           'key',
           descriptorFixture,
         );
