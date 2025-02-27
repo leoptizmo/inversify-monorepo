@@ -62,11 +62,7 @@ describe(applyMiddleware.name, () => {
           getReflectMetadata as jest.Mock<typeof getReflectMetadata>
         ).mockReturnValueOnce([]);
 
-        applyMiddleware(middlewareFixture)(
-          {},
-          'key',
-          descriptorFixture,
-        );
+        applyMiddleware(middlewareFixture)({}, 'key', descriptorFixture);
       });
 
       it('should call getReflectMetadata', () => {
