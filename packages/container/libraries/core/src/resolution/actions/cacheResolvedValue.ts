@@ -15,6 +15,11 @@ export function cacheResolvedValue<
   resolvedValue: Resolved<TActivated>,
 ): Resolved<TActivated> {
   if (isPromise(resolvedValue)) {
+    binding.cache = {
+      isRight: true,
+      value: resolvedValue,
+    };
+
     return resolvedValue.then((syncResolvedValue: SyncResolved<TActivated>) =>
       cacheSyncResolvedValue(binding, syncResolvedValue),
     );
