@@ -1,5 +1,6 @@
 import { InversifyHttpAdapter } from './http/adapter/InversifyHttpAdapter';
 import { ALL } from './http/decorators/All';
+import { applyMiddleware } from './http/decorators/ApplyMiddleware';
 import { body } from './http/decorators/Body';
 import { controller } from './http/decorators/Controller';
 import { cookies } from './http/decorators/Cookies';
@@ -17,6 +18,8 @@ import { query } from './http/decorators/Query';
 import { request } from './http/decorators/Request';
 import { response } from './http/decorators/Response';
 import { statusCode } from './http/decorators/StatusCode';
+import { Middleware } from './http/models/Middleware';
+import { RequestHandler } from './http/models/RequestHandler';
 import { RouterParams } from './http/models/RouterParams';
 import { BadGatewayHttpResponse } from './http/responses/error/BadGatewayHttpResponse';
 import { BadRequestHttpResponse } from './http/responses/error/BadRequestHttpResponse';
@@ -48,7 +51,7 @@ import { OkHttpResponse } from './http/responses/success/OkHttpResponse';
 import { PartialContentHttpResponse } from './http/responses/success/PartialContentHttpResponse';
 import { ResetContentHttpResponse } from './http/responses/success/ResetContentHttpResponse';
 
-export type { RouterParams };
+export type { RequestHandler, RouterParams, Middleware };
 
 export {
   BadRequestHttpResponse,
@@ -89,6 +92,7 @@ export {
   PATCH,
   POST,
   PUT,
+  applyMiddleware,
   body,
   controller,
   cookies,
