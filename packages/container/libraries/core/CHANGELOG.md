@@ -1,5 +1,11 @@
 # @inversifyjs/core
 
+## 4.0.1
+
+### Patch Changes
+
+- a77354a: Update `cacheResolvedValue` to set promise like cache values until promise is fullfilled
+
 ## 4.0.0
 
 ### Major Changes
