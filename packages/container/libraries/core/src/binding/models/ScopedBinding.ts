@@ -1,6 +1,6 @@
 import { Either } from '@inversifyjs/common';
 
-import { SyncResolved } from '../../resolution/models/Resolved';
+import { Resolved } from '../../resolution/models/Resolved';
 import { BaseBinding } from './BaseBinding';
 import { BindingActivation } from './BindingActivation';
 import { BindingDeactivation } from './BindingDeactivation';
@@ -12,7 +12,7 @@ export interface ScopedBinding<
   TScope extends BindingScope,
   TActivated,
 > extends BaseBinding<TType, TActivated> {
-  cache: Either<undefined, SyncResolved<TActivated>>;
+  cache: Either<undefined, Resolved<TActivated>>;
   readonly onActivation: BindingActivation<TActivated> | undefined;
   readonly onDeactivation: BindingDeactivation<TActivated> | undefined;
   readonly scope: TScope;
