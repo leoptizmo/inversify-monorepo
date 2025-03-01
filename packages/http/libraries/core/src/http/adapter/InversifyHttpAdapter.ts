@@ -86,8 +86,17 @@ export abstract class InversifyHttpAdapter<
     controllerMetadata: ControllerMetadata,
     controllerMethodMetadataList: ControllerMethodMetadata[],
   ): RouterParams<TRequest, TResponse, TNextFunction>[] {
-    return controllerMethodMetadataList.map(
-      (controllerMethodMetadata: ControllerMethodMetadata) => {
+    const routerParams: RouterParams<TRequest, TResponse, TNextFunction>[] = [];
+
+    for (const controllerMethodMetadata of controllerMethodMetadataList) {
+      if (
+        (controllerMetadata.controllerName === undefined &&
+          this.#container.isBound(controllerMetadata.target)) ||
+        (controllerMetadata.controllerName !== undefined &&
+          this.#container.isBound(controllerMetadata.target, {
+            name: controllerMetadata.controllerName,
+          }))
+      ) {
         const controller: Controller =
           controllerMetadata.controllerName === undefined
             ? this.#container.get(controllerMetadata.target)
@@ -115,22 +124,23 @@ export abstract class InversifyHttpAdapter<
             controllerMethodMiddlewareMetadataReflectKey,
           );
 
-        return {
+        routerParams.push({
           handler: this.#buildHandler(
             controllerMethodMetadata,
             parameterMetadataList ?? [],
             controller,
             statusCode,
           ),
-          methodKey: controllerMethodMetadata.methodKey,
           middlewareList: this.#getMiddlewareHandlerFromMetadata(
             controllerMethodMiddlewareList,
           ),
           path: controllerMethodMetadata.path,
           requestMethodType: controllerMethodMetadata.requestMethodType,
-        };
-      },
-    );
+        });
+      }
+    }
+
+    return routerParams;
   }
 
   #buildHandler(
