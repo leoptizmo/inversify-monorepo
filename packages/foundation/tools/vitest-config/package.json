@@ -1,0 +1,24 @@
+{
+  "author": "Adrián Martínez Jiménez",
+  "bugs": {
+    "url": "https://github.com/inversify/monorepo/issues"
+  },
+  "description": "Common vitest config for inversify monorepo packages",
+  "devDependencies": {
+    "vitest": "3.0.5",
+    "prettier": "3.5.2"
+  },
+  "exports": "./lib/index.js",
+  "homepage": "https://github.com/inversify/monorepo#readme",
+  "license": "MIT",
+  "name": "@inversifyjs/foundation-vitest-config",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inversify/monorepo.git"
+  },
+  "scripts": {
+    "format": "prettier --write ./lib/**/*.js"
+  },
+  "type": "module"
+}
