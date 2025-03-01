@@ -10,14 +10,14 @@ import { ControllerOptions } from '../models/ControllerOptions';
 
 export function controller(
   pathOrOptions?: string | ControllerOptions,
-  scope?: BindingScope,
 ): ClassDecorator {
   return (target: NewableFunction): void => {
-    injectable(scope)(target);
     const controllerMetadata: ControllerMetadata = {
       path: '/',
       target,
     };
+
+    let scope: BindingScope | undefined = undefined;
 
     if (pathOrOptions !== undefined) {
       if (typeof pathOrOptions === 'string') {
@@ -25,8 +25,11 @@ export function controller(
       } else {
         controllerMetadata.controllerName = pathOrOptions.controllerName;
         controllerMetadata.path = pathOrOptions.path ?? '/';
+        scope = pathOrOptions.scope;
       }
     }
+
+    injectable(scope)(target);
 
     let controllerMetadataList: ControllerMetadata[] | undefined =
       getReflectMetadata(Reflect, controllerMetadataReflectKey);
