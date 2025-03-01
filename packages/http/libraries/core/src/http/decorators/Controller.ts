@@ -2,6 +2,7 @@ import {
   getReflectMetadata,
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
+import { BindingScope, injectable } from 'inversify';
 
 import { controllerMetadataReflectKey } from '../../reflectMetadata/data/controllerMetadataReflectKey';
 import { ControllerMetadata } from '../models/ControllerMetadata';
@@ -9,8 +10,10 @@ import { ControllerOptions } from '../models/ControllerOptions';
 
 export function controller(
   pathOrOptions?: string | ControllerOptions,
+  scope?: BindingScope,
 ): ClassDecorator {
   return (target: NewableFunction): void => {
+    injectable(scope)(target);
     const controllerMetadata: ControllerMetadata = {
       path: '/',
       target,
