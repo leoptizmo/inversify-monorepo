@@ -5,7 +5,7 @@
   },
   "description": "InversifyJs binding decorators docs code examples package",
   "dependencies": {
-    "typescript": "5.7.3"
+    "typescript": "5.8.2"
   },
   "devDependencies": {
     "@types/node": "22.13.5",
