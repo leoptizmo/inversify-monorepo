@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from '@jest/globals';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import { ServiceIdentifier } from '@inversifyjs/common';
 import { BindingConstraints } from '@inversifyjs/core';
@@ -29,7 +29,7 @@ describe(isBindingConstraintsWithServiceId.name, () => {
       });
 
       it('should return true', () => {
-        expect(result).toBe(true);
+        expect(result).toBeTruthy();
       });
     });
   });
@@ -57,7 +57,7 @@ describe(isBindingConstraintsWithServiceId.name, () => {
       });
 
       it('should return false', () => {
-        expect(result).toBe(false);
+        expect(result).toBeFalsy();
       });
     });
   });

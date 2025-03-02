@@ -1,6 +1,15 @@
-import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  Mock,
+  Mocked,
+  vitest,
+} from 'vitest';
 
-jest.mock('@inversifyjs/core');
+vitest.mock('@inversifyjs/core');
 
 import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 import {
@@ -45,64 +54,57 @@ import { IsBoundOptions } from '../models/isBoundOptions';
 import { Container } from './Container';
 
 describe(Container.name, () => {
-  let activationServiceMock: jest.Mocked<ActivationsService>;
-  let bindingServiceMock: jest.Mocked<BindingService>;
-  let deactivationServiceMock: jest.Mocked<DeactivationsService>;
+  let activationServiceMock: Mocked<ActivationsService>;
+  let bindingServiceMock: Mocked<BindingService>;
+  let deactivationServiceMock: Mocked<DeactivationsService>;
 
-  let clearCacheMock: jest.Mock<() => void>;
-  let getPlanResultMock: jest.Mock<
+  let clearCacheMock: Mock<() => void>;
+  let getPlanResultMock: Mock<
     (options: GetPlanOptions) => PlanResult | undefined
   >;
-  let setPlanResultMock: jest.Mock<
+  let setPlanResultMock: Mock<
     (options: GetPlanOptions, planResult: PlanResult) => void
   >;
 
   beforeAll(() => {
     activationServiceMock = {
-      add: jest.fn(),
-      clone: jest.fn().mockReturnThis(),
-      get: jest.fn(),
-      removeAllByModuleId: jest.fn(),
-      removeAllByServiceId: jest.fn(),
-    } as Partial<
-      jest.Mocked<ActivationsService>
-    > as jest.Mocked<ActivationsService>;
+      add: vitest.fn(),
+      clone: vitest.fn().mockReturnThis(),
+      get: vitest.fn(),
+      removeAllByModuleId: vitest.fn(),
+      removeAllByServiceId: vitest.fn(),
+    } as Partial<Mocked<ActivationsService>> as Mocked<ActivationsService>;
     bindingServiceMock = {
-      clone: jest.fn().mockReturnThis(),
-      get: jest.fn(),
-      getNonParentBindings: jest.fn(),
-      getNonParentBoundServices: jest.fn(),
-      removeAllByModuleId: jest.fn(),
-      removeAllByServiceId: jest.fn(),
-      set: jest.fn(),
-    } as Partial<jest.Mocked<BindingService>> as jest.Mocked<BindingService>;
+      clone: vitest.fn().mockReturnThis(),
+      get: vitest.fn(),
+      getNonParentBindings: vitest.fn(),
+      getNonParentBoundServices: vitest.fn(),
+      removeAllByModuleId: vitest.fn(),
+      removeAllByServiceId: vitest.fn(),
+      set: vitest.fn(),
+    } as Partial<Mocked<BindingService>> as Mocked<BindingService>;
     deactivationServiceMock = {
-      add: jest.fn(),
-      clone: jest.fn().mockReturnThis(),
-      removeAllByModuleId: jest.fn(),
-      removeAllByServiceId: jest.fn(),
-    } as Partial<
-      jest.Mocked<DeactivationsService>
-    > as jest.Mocked<DeactivationsService>;
+      add: vitest.fn(),
+      clone: vitest.fn().mockReturnThis(),
+      removeAllByModuleId: vitest.fn(),
+      removeAllByServiceId: vitest.fn(),
+    } as Partial<Mocked<DeactivationsService>> as Mocked<DeactivationsService>;
 
-    clearCacheMock = jest.fn();
-    getPlanResultMock = jest.fn();
-    setPlanResultMock = jest.fn();
+    clearCacheMock = vitest.fn();
+    getPlanResultMock = vitest.fn();
+    setPlanResultMock = vitest.fn();
 
-    (
-      ActivationsService.build as jest.Mock<() => ActivationsService>
-    ).mockReturnValue(activationServiceMock);
+    vitest
+      .mocked(ActivationsService.build)
+      .mockReturnValue(activationServiceMock);
 
-    (BindingService.build as jest.Mock<() => BindingService>).mockReturnValue(
-      bindingServiceMock,
-    );
-    (
-      DeactivationsService.build as jest.Mock<() => DeactivationsService>
-    ).mockReturnValue(deactivationServiceMock);
+    vitest.mocked(BindingService.build).mockReturnValue(bindingServiceMock);
 
-    (
-      PlanResultCacheService as jest.Mock<() => PlanResultCacheService>
-    ).mockImplementation(function (
+    vitest
+      .mocked(DeactivationsService.build)
+      .mockReturnValue(deactivationServiceMock);
+
+    vitest.mocked(PlanResultCacheService).mockImplementation(function (
       this: PlanResultCacheService,
     ): PlanResultCacheService {
       this.clearCache = clearCacheMock;
@@ -129,7 +131,7 @@ describe(Container.name, () => {
         });
 
         afterAll(() => {
-          jest.clearAllMocks();
+          vitest.clearAllMocks();
         });
 
         it('should call new ActivationsService.build()', () => {
@@ -231,19 +233,15 @@ describe(Container.name, () => {
 
           resolvedValueFixture = Symbol();
 
-          (plan as jest.Mock<typeof plan>).mockReturnValueOnce(
-            planResultFixture,
-          );
+          vitest.mocked(plan).mockReturnValueOnce(planResultFixture);
 
-          (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce(
-            resolvedValueFixture,
-          );
+          vitest.mocked(resolve).mockReturnValueOnce(resolvedValueFixture);
 
           result = container.get(serviceIdentifierFixture, getOptionsFixture);
         });
 
         afterAll(() => {
-          jest.clearAllMocks();
+          vitest.clearAllMocks();
         });
 
         it('should call planResultCacheService.get()', () => {
@@ -352,15 +350,13 @@ describe(Container.name, () => {
 
           getPlanResultMock.mockReturnValueOnce(planResultFixture);
 
-          (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce(
-            resolvedValueFixture,
-          );
+          vitest.mocked(resolve).mockReturnValueOnce(resolvedValueFixture);
 
           result = container.get(serviceIdentifierFixture, getOptionsFixture);
         });
 
         afterAll(() => {
-          jest.clearAllMocks();
+          vitest.clearAllMocks();
         });
 
         it('should call planResultCacheService.get()', () => {
@@ -435,13 +431,9 @@ describe(Container.name, () => {
 
           resolvedValueFixture = Symbol();
 
-          (plan as jest.Mock<typeof plan>).mockReturnValueOnce(
-            planResultFixture,
-          );
+          vitest.mocked(plan).mockReturnValueOnce(planResultFixture);
 
-          (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce(
-            Promise.resolve(resolvedValueFixture),
-          );
+          vitest.mocked(resolve).mockResolvedValueOnce(resolvedValueFixture);
 
           try {
             container.get(serviceIdentifierFixture, getOptionsFixture);
@@ -451,7 +443,7 @@ describe(Container.name, () => {
         });
 
         afterAll(() => {
-          jest.clearAllMocks();
+          vitest.clearAllMocks();
         });
 
         it('should call planResultCacheService.get()', () => {
@@ -579,19 +571,15 @@ describe(Container.name, () => {
 
           resolvedValueFixture = Symbol();
 
-          (plan as jest.Mock<typeof plan>).mockReturnValueOnce(
-            planResultFixture,
-          );
+          vitest.mocked(plan).mockReturnValueOnce(planResultFixture);
 
-          (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce(
-            resolvedValueFixture,
-          );
+          vitest.mocked(resolve).mockReturnValueOnce(resolvedValueFixture);
 
           result = container.get(serviceIdentifierFixture, getOptionsFixture);
         });
 
         afterAll(() => {
-          jest.clearAllMocks();
+          vitest.clearAllMocks();
         });
 
         it('should call planResultCacheService.get()', () => {
@@ -713,19 +701,15 @@ describe(Container.name, () => {
 
           resolvedValueFixture = Symbol();
 
-          (plan as jest.Mock<typeof plan>).mockReturnValueOnce(
-            planResultFixture,
-          );
+          vitest.mocked(plan).mockReturnValueOnce(planResultFixture);
 
-          (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce(
-            resolvedValueFixture,
-          );
+          vitest.mocked(resolve).mockReturnValueOnce(resolvedValueFixture);
 
           result = container.get(serviceIdentifierFixture, getOptionsFixture);
         });
 
         afterAll(() => {
-          jest.clearAllMocks();
+          vitest.clearAllMocks();
         });
 
         it('should call planResultCacheService.get()', () => {
@@ -837,11 +821,9 @@ describe(Container.name, () => {
 
         resolvedValueFixture = Symbol();
 
-        (plan as jest.Mock<typeof plan>).mockReturnValueOnce(planResultFixture);
+        vitest.mocked(plan).mockReturnValueOnce(planResultFixture);
 
-        (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce([
-          resolvedValueFixture,
-        ]);
+        vitest.mocked(resolve).mockReturnValueOnce([resolvedValueFixture]);
 
         result = new Container().getAll(
           serviceIdentifierFixture,
@@ -850,7 +832,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call planResultCacheService.get()', () => {
@@ -955,11 +937,9 @@ describe(Container.name, () => {
 
         resolvedValueFixture = Symbol();
 
-        (plan as jest.Mock<typeof plan>).mockReturnValueOnce(planResultFixture);
+        vitest.mocked(plan).mockReturnValueOnce(planResultFixture);
 
-        (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce(
-          Promise.resolve([resolvedValueFixture]),
-        );
+        vitest.mocked(resolve).mockResolvedValueOnce([resolvedValueFixture]);
 
         try {
           new Container().getAll(serviceIdentifierFixture, getOptionsFixture);
@@ -969,7 +949,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call planResultCacheService.get()', () => {
@@ -1084,11 +1064,9 @@ describe(Container.name, () => {
 
         resolvedValueFixture = Symbol();
 
-        (plan as jest.Mock<typeof plan>).mockReturnValueOnce(planResultFixture);
+        vitest.mocked(plan).mockReturnValueOnce(planResultFixture);
 
-        (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce([
-          resolvedValueFixture,
-        ]);
+        vitest.mocked(resolve).mockReturnValueOnce([resolvedValueFixture]);
 
         result = await new Container().getAllAsync(
           serviceIdentifierFixture,
@@ -1097,7 +1075,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call planResultCacheService.get()', () => {
@@ -1204,11 +1182,9 @@ describe(Container.name, () => {
 
         resolvedValueFixture = Symbol();
 
-        (plan as jest.Mock<typeof plan>).mockReturnValueOnce(planResultFixture);
+        vitest.mocked(plan).mockReturnValueOnce(planResultFixture);
 
-        (resolve as jest.Mock<typeof resolve>).mockReturnValueOnce(
-          resolvedValueFixture,
-        );
+        vitest.mocked(resolve).mockReturnValueOnce(resolvedValueFixture);
 
         result = await new Container().getAsync(
           serviceIdentifierFixture,
@@ -1217,7 +1193,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call planResultCacheService.get()', () => {
@@ -1325,7 +1301,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call bindingService.get()', () => {
@@ -1336,12 +1312,12 @@ describe(Container.name, () => {
       });
 
       it('should return false', () => {
-        expect(result).toBe(false);
+        expect(result).toBeFalsy();
       });
     });
 
     describe('when called, and bindingService.get() returns binding ann binding.isSatisfiedBy() returns false', () => {
-      let bindingMock: jest.Mocked<Binding>;
+      let bindingMock: Mocked<Binding>;
 
       let result: unknown;
 
@@ -1352,7 +1328,7 @@ describe(Container.name, () => {
             value: undefined,
           },
           id: 1,
-          isSatisfiedBy: jest.fn(),
+          isSatisfiedBy: vitest.fn(),
           moduleId: undefined,
           onActivation: undefined,
           onDeactivation: undefined,
@@ -1373,7 +1349,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call bindingService.get()', () => {
@@ -1400,12 +1376,12 @@ describe(Container.name, () => {
       });
 
       it('should return false', () => {
-        expect(result).toBe(false);
+        expect(result).toBeFalsy();
       });
     });
 
     describe('when called, and bindingService.get() returns binding ann binding.isSatisfiedBy() returns true', () => {
-      let bindingMock: jest.Mocked<Binding>;
+      let bindingMock: Mocked<Binding>;
 
       let result: unknown;
 
@@ -1416,7 +1392,7 @@ describe(Container.name, () => {
             value: undefined,
           },
           id: 1,
-          isSatisfiedBy: jest.fn(),
+          isSatisfiedBy: vitest.fn(),
           moduleId: undefined,
           onActivation: undefined,
           onDeactivation: undefined,
@@ -1437,7 +1413,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call bindingService.get()', () => {
@@ -1464,7 +1440,7 @@ describe(Container.name, () => {
       });
 
       it('should return true', () => {
-        expect(result).toBe(true);
+        expect(result).toBeTruthy();
       });
     });
   });
@@ -1496,7 +1472,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call bindingService.getNonParentBindings()', () => {
@@ -1509,12 +1485,12 @@ describe(Container.name, () => {
       });
 
       it('should return false', () => {
-        expect(result).toBe(false);
+        expect(result).toBeFalsy();
       });
     });
 
     describe('when called, and bindingService.getNonParentBindings() returns bindings and binding.isSatisfiedBy() returns false', () => {
-      let bindingMock: jest.Mocked<Binding>;
+      let bindingMock: Mocked<Binding>;
 
       let result: unknown;
 
@@ -1525,7 +1501,7 @@ describe(Container.name, () => {
             value: undefined,
           },
           id: 1,
-          isSatisfiedBy: jest.fn(),
+          isSatisfiedBy: vitest.fn(),
           moduleId: undefined,
           onActivation: undefined,
           onDeactivation: undefined,
@@ -1548,7 +1524,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call bindingService.getNonParentBindings()', () => {
@@ -1577,12 +1553,12 @@ describe(Container.name, () => {
       });
 
       it('should return false', () => {
-        expect(result).toBe(false);
+        expect(result).toBeFalsy();
       });
     });
 
     describe('when called, and bindingService.getNonParentBindings() returns bindings and binding.isSatisfiedBy() returns true', () => {
-      let bindingMock: jest.Mocked<Binding>;
+      let bindingMock: Mocked<Binding>;
 
       let result: unknown;
 
@@ -1593,7 +1569,7 @@ describe(Container.name, () => {
             value: undefined,
           },
           id: 1,
-          isSatisfiedBy: jest.fn(),
+          isSatisfiedBy: vitest.fn(),
           moduleId: undefined,
           onActivation: undefined,
           onDeactivation: undefined,
@@ -1616,7 +1592,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call bindingService.getNonParentBindings()', () => {
@@ -1645,20 +1621,18 @@ describe(Container.name, () => {
       });
 
       it('should return true', () => {
-        expect(result).toBe(true);
+        expect(result).toBeTruthy();
       });
     });
   });
 
   describe('.load', () => {
-    let containerModuleMock: jest.Mocked<ContainerModule>;
+    let containerModuleMock: Mocked<ContainerModule>;
 
     beforeAll(() => {
       containerModuleMock = {
-        load: jest.fn(),
-      } as Partial<
-        jest.Mocked<ContainerModule>
-      > as jest.Mocked<ContainerModule>;
+        load: vitest.fn(),
+      } as Partial<Mocked<ContainerModule>> as Mocked<ContainerModule>;
     });
 
     describe('when called', () => {
@@ -1669,7 +1643,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call containerModuler.load', () => {
@@ -1706,11 +1680,11 @@ describe(Container.name, () => {
 
   describe('.onActivation', () => {
     let serviceIdentifierFixture: ServiceIdentifier;
-    let activationMock: jest.Mock<BindingActivation>;
+    let activationMock: Mock<BindingActivation>;
 
     beforeAll(() => {
       serviceIdentifierFixture = 'service-id';
-      activationMock = jest.fn();
+      activationMock = vitest.fn();
     });
 
     describe('when called', () => {
@@ -1724,7 +1698,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call activationService.add()', () => {
@@ -1747,11 +1721,11 @@ describe(Container.name, () => {
 
   describe('.onDeactivation', () => {
     let serviceIdentifierFixture: ServiceIdentifier;
-    let deactivationMock: jest.Mock<BindingDeactivation>;
+    let deactivationMock: Mock<BindingDeactivation>;
 
     beforeAll(() => {
       serviceIdentifierFixture = 'service-id';
-      deactivationMock = jest.fn();
+      deactivationMock = vitest.fn();
     });
 
     describe('when called', () => {
@@ -1765,7 +1739,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call deactivationService.add()', () => {
@@ -1806,7 +1780,7 @@ describe(Container.name, () => {
         });
 
         afterAll(() => {
-          jest.clearAllMocks();
+          vitest.clearAllMocks();
         });
 
         it('should throw an InversifyContainerError', () => {
@@ -1840,7 +1814,7 @@ describe(Container.name, () => {
         });
 
         afterAll(() => {
-          jest.clearAllMocks();
+          vitest.clearAllMocks();
         });
 
         it('should call planResultCacheService.clearCache()', () => {
@@ -1864,7 +1838,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call activationService.clone()', () => {
@@ -1903,7 +1877,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call resolveServiceDeactivations', () => {
@@ -1982,7 +1956,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call resolveServiceDeactivations for each service', () => {
@@ -2058,7 +2032,7 @@ describe(Container.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call resolveModuleDeactivations', () => {

@@ -1,9 +1,17 @@
-import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  Mock,
+  vitest,
+} from 'vitest';
 
 import { BindingConstraints, MetadataTag } from '@inversifyjs/core';
 
-jest.mock('./isBindingConstraintsWithTag');
-jest.mock('./isParentBindingConstraints');
+vitest.mock('./isBindingConstraintsWithTag');
+vitest.mock('./isParentBindingConstraints');
 
 import { isBindingConstraintsWithTag } from './isBindingConstraintsWithTag';
 import { isParentBindingConstraints } from './isParentBindingConstraints';
@@ -19,27 +27,24 @@ describe(isParentBindingConstraintsWithTag.name, () => {
   });
 
   describe('when called', () => {
-    let isBindingConstraintsWithNameResultMock: jest.Mock<
+    let isBindingConstraintsWithNameResultMock: Mock<
       (constraints: BindingConstraints) => boolean
     >;
-    let isParentBindingConstraintsResultMock: jest.Mock<
+    let isParentBindingConstraintsResultMock: Mock<
       (constraints: BindingConstraints) => boolean
     >;
 
     let result: unknown;
 
     beforeAll(() => {
-      isBindingConstraintsWithNameResultMock = jest.fn();
-      isParentBindingConstraintsResultMock = jest.fn();
+      isBindingConstraintsWithNameResultMock = vitest.fn();
+      isParentBindingConstraintsResultMock = vitest.fn();
+      vitest
+        .mocked(isBindingConstraintsWithTag)
+        .mockReturnValueOnce(isBindingConstraintsWithNameResultMock);
 
       (
-        isBindingConstraintsWithTag as jest.Mock<
-          typeof isBindingConstraintsWithTag
-        >
-      ).mockReturnValueOnce(isBindingConstraintsWithNameResultMock);
-
-      (
-        isParentBindingConstraints as jest.Mock<
+        isParentBindingConstraints as vitest.Mock<
           typeof isParentBindingConstraints
         >
       ).mockReturnValueOnce(isParentBindingConstraintsResultMock);
@@ -48,7 +53,7 @@ describe(isParentBindingConstraintsWithTag.name, () => {
     });
 
     afterAll(() => {
-      jest.clearAllMocks();
+      vitest.clearAllMocks();
     });
 
     it('should call isBindingConstraintsWithTag()', () => {

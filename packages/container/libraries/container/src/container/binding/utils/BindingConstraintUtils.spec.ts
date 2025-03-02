@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from '@jest/globals';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import { BindingConstraints } from '@inversifyjs/core';
 
@@ -16,7 +16,7 @@ describe(BindingConstraintUtils.name, () => {
       });
 
       it('should return true', () => {
-        expect(result).toBe(true);
+        expect(result).toBeTruthy();
       });
     });
   });

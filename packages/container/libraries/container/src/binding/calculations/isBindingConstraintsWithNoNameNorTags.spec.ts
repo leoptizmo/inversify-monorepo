@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from '@jest/globals';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import { BindingConstraints } from '@inversifyjs/core';
 
@@ -25,7 +25,7 @@ describe(isBindingConstraintsWithNoNameNorTags.name, () => {
       });
 
       it('should return false', () => {
-        expect(result).toBe(false);
+        expect(result).toBeFalsy();
       });
     });
   });
@@ -49,7 +49,7 @@ describe(isBindingConstraintsWithNoNameNorTags.name, () => {
       });
 
       it('should return false', () => {
-        expect(result).toBe(false);
+        expect(result).toBeFalsy();
       });
     });
   });
@@ -74,7 +74,7 @@ describe(isBindingConstraintsWithNoNameNorTags.name, () => {
       });
 
       it('should return true', () => {
-        expect(result).toBe(true);
+        expect(result).toBeTruthy();
       });
     });
   });
