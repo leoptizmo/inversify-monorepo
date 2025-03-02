@@ -1,78 +1,148 @@
 import { beforeAll, describe, expect, it, jest } from '@jest/globals';
 
 jest.mock('@inversifyjs/reflect-metadata-utils');
+jest.mock('inversify');
 
 import {
   getReflectMetadata,
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
+import { BindingScope, injectable } from 'inversify';
 
 import { controllerMetadataReflectKey } from '../../reflectMetadata/data/controllerMetadataReflectKey';
+import { ControllerOptions } from '../models/ControllerOptions';
 import { controller } from './Controller';
 
 describe(controller.name, () => {
-  describe('when called with a string path', () => {
-    let pathFixture: string;
-    let decoratorFixture: ClassDecorator;
-    let targetFixture: NewableFunction;
+  describe('having a path', () => {
+    describe('when called', () => {
+      let pathFixture: string;
+      let targetFixture: NewableFunction;
+      let classDecoratorMock: jest.Mock<ClassDecorator>;
 
-    beforeAll(() => {
-      pathFixture = '/api';
-      targetFixture = class TestController {};
-      decoratorFixture = controller(pathFixture);
+      beforeAll(() => {
+        pathFixture = '/api';
+        targetFixture = class TestController {};
 
-      decoratorFixture(targetFixture);
-    });
+        classDecoratorMock = jest.fn();
 
-    it('should get existing metadata', () => {
-      expect(getReflectMetadata).toHaveBeenCalledWith(
-        Reflect,
-        controllerMetadataReflectKey,
-      );
-    });
+        (injectable as jest.Mock<typeof injectable>).mockReturnValueOnce(
+          classDecoratorMock as ClassDecorator,
+        );
 
-    it('should set metadata with controller path', () => {
-      expect(setReflectMetadata).toHaveBeenCalledWith(
-        Reflect,
-        controllerMetadataReflectKey,
-        [
-          {
-            path: pathFixture,
-            target: targetFixture,
-          },
-        ],
-      );
+        controller(pathFixture)(targetFixture);
+      });
+
+      it('should get existing metadata', () => {
+        expect(getReflectMetadata).toHaveBeenCalledWith(
+          Reflect,
+          controllerMetadataReflectKey,
+        );
+      });
+
+      it('should call injectable', () => {
+        expect(injectable).toHaveBeenCalledWith(undefined);
+      });
+
+      it('should call ClassDecorator', () => {
+        expect(classDecoratorMock).toHaveBeenCalledWith(targetFixture);
+      });
+
+      it('should set metadata with controller path', () => {
+        expect(setReflectMetadata).toHaveBeenCalledWith(
+          Reflect,
+          controllerMetadataReflectKey,
+          [
+            {
+              path: pathFixture,
+              target: targetFixture,
+            },
+          ],
+        );
+      });
     });
   });
 
-  describe('when called with options object', () => {
-    let optionsFixture: { controllerName: string; path: string };
-    let decoratorFixture: ClassDecorator;
-    let targetFixture: NewableFunction;
+  describe('having a ControllerOptions', () => {
+    describe('when called and scope is undefined', () => {
+      let optionsFixture: { controllerName: string; path: string };
+      let targetFixture: NewableFunction;
+      let classDecoratorMock: jest.Mock<ClassDecorator>;
 
-    beforeAll(() => {
-      optionsFixture = {
-        controllerName: 'TestController',
-        path: '/api',
-      };
-      targetFixture = class TestController {};
-      decoratorFixture = controller(optionsFixture);
+      beforeAll(() => {
+        optionsFixture = {
+          controllerName: 'TestController',
+          path: '/api',
+        };
+        targetFixture = class TestController {};
 
-      decoratorFixture(targetFixture);
+        classDecoratorMock = jest.fn();
+
+        (injectable as jest.Mock<typeof injectable>).mockReturnValueOnce(
+          classDecoratorMock as ClassDecorator,
+        );
+
+        controller(optionsFixture)(targetFixture);
+      });
+
+      it('should set metadata with controller options', () => {
+        expect(setReflectMetadata).toHaveBeenCalledWith(
+          Reflect,
+          controllerMetadataReflectKey,
+          [
+            {
+              controllerName: optionsFixture.controllerName,
+              path: optionsFixture.path,
+              target: targetFixture,
+            },
+          ],
+        );
+      });
     });
 
-    it('should set metadata with controller options', () => {
-      expect(setReflectMetadata).toHaveBeenCalledWith(
-        Reflect,
-        controllerMetadataReflectKey,
-        [
-          {
-            controllerName: optionsFixture.controllerName,
-            path: optionsFixture.path,
-            target: targetFixture,
-          },
-        ],
-      );
+    describe('when called and scope is defined', () => {
+      let optionsFixture: ControllerOptions;
+      let targetFixture: NewableFunction;
+      let classDecoratorMock: jest.Mock<ClassDecorator>;
+
+      beforeAll(() => {
+        optionsFixture = {
+          controllerName: 'TestController',
+          path: '/api',
+          scope: 'Singleton',
+        };
+        targetFixture = class TestController {};
+
+        classDecoratorMock = jest.fn();
+
+        (injectable as jest.Mock<typeof injectable>).mockReturnValueOnce(
+          classDecoratorMock as ClassDecorator,
+        );
+
+        controller(optionsFixture)(targetFixture);
+      });
+
+      it('should call injectable', () => {
+        expect(injectable).toHaveBeenCalledWith(optionsFixture.scope);
+      });
+
+      it('should call ClassDecorator', () => {
+        expect(classDecoratorMock).toHaveBeenCalledWith(targetFixture);
+      });
+
+      it('should set metadata with controller options', () => {
+        expect(setReflectMetadata).toHaveBeenCalledWith(
+          Reflect,
+          controllerMetadataReflectKey,
+          [
+            {
+              controllerName: optionsFixture.controllerName,
+              path: optionsFixture.path,
+              target: targetFixture,
+            },
+          ],
+        );
+      });
     });
   });
 });
