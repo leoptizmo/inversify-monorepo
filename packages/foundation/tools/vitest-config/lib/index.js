@@ -16,22 +16,6 @@ export const workspaceConfig = defineWorkspace([
   },
 ]);
 
-export const jsWorkspaceConfig = defineWorkspace([
-  {
-    test: {
-      exclude: ['lib/esm/**/*.int.spec.js'],
-      include: ['lib/esm/**/*.spec.js'],
-      name: 'Unit',
-    },
-  },
-  {
-    test: {
-      include: ['lib/**/*.int.spec.js'],
-      name: 'Integration',
-    },
-  },
-]);
-
 export const defaultConfig = defineConfig({
   test: {
     coverage: {
