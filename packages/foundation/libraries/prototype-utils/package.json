@@ -42,7 +42,8 @@
     "ts-loader": "9.5.2",
     "ts-jest": "29.2.6",
     "tslib": "2.8.1",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "vitest": "3.0.5"
   },
   "devEngines": {
     "node": "^22.10.2",
@@ -60,12 +61,11 @@
     "format": "prettier --write ./src/**/*.ts",
     "lint": "eslint ./src",
     "prebuild": "pnpm run build:clean",
-    "test": "jest --config=jest.config.mjs --runInBand",
-    "test:integration:js": "pnpm run test:js --selectProjects Integration",
-    "test:js": "jest --config=jest.js.config.mjs --runInBand",
-    "test:js:coverage": "pnpm run test:unit:js --coverage",
+    "test": "vitest run",
+    "test:integration": "pnpm run test --project Integration",
+    "test:coverage": "pnpm run test:unit --coverage",
     "test:mutation": "stryker run",
-    "test:uncommitted": "pnpm run test --changedSince=HEAD",
-    "test:unit:js": "pnpm run test:js --selectProjects Unit"
+    "test:uncommitted": "pnpm run test --changed=HEAD",
+    "test:unit": "pnpm run test --project Unit"
   }
 }
