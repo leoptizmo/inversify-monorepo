@@ -58,7 +58,7 @@
     "build:cjs": "tsc --build tsconfig.cjs.json && pnpm exec foundation-ts-package-cjs ./lib/cjs",
     "build:esm": "rollup -c ./rollup.config.mjs && pnpm exec foundation-ts-package-esm ./lib/esm",
     "build:clean": "rimraf lib",
-    "format": "prettier --write ./src/**/*.ts",
+    "format": "prettier --write ./src",
     "lint": "eslint ./src",
     "prebuild": "pnpm run build:clean",
     "test": "vitest run",

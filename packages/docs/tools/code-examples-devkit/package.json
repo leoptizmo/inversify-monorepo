@@ -49,7 +49,7 @@
     "build": "pnpm run build:esm",
     "build:esm": "rollup -c ./rollup.config.mjs && pnpm exec foundation-ts-package-esm ./lib/esm",
     "build:clean": "rimraf generated lib",
-    "format": "prettier --write ./src/**/*.ts",
+    "format": "prettier --write ./src",
     "lint": "eslint ./src",
     "prebuild": "pnpm run build:clean"
   },

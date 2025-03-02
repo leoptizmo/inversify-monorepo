@@ -1,4 +1,7 @@
+import { BindingScope } from 'inversify';
+
 export interface ControllerOptions {
-  path?: string;
   controllerName?: string;
+  path?: string;
+  scope?: BindingScope;
 }

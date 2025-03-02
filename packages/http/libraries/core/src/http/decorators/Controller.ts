@@ -2,6 +2,7 @@ import {
   getReflectMetadata,
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
+import { BindingScope, injectable } from 'inversify';
 
 import { controllerMetadataReflectKey } from '../../reflectMetadata/data/controllerMetadataReflectKey';
 import { ControllerMetadata } from '../models/ControllerMetadata';
@@ -16,14 +17,19 @@ export function controller(
       target,
     };
 
+    let scope: BindingScope | undefined = undefined;
+
     if (pathOrOptions !== undefined) {
       if (typeof pathOrOptions === 'string') {
         controllerMetadata.path = pathOrOptions;
       } else {
         controllerMetadata.controllerName = pathOrOptions.controllerName;
         controllerMetadata.path = pathOrOptions.path ?? '/';
+        scope = pathOrOptions.scope;
       }
     }
+
+    injectable(scope)(target);
 
     let controllerMetadataList: ControllerMetadata[] | undefined =
       getReflectMetadata(Reflect, controllerMetadataReflectKey);
