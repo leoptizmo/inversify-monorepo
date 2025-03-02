@@ -59,12 +59,11 @@
     "lint": "eslint ./src",
     "prebuild": "pnpm run build:clean",
     "test": "vitest run",
-    "test:integration:js": "pnpm run test:js --project Integration",
-    "test:js": "pnpm run test --workspace vitest.js.workspace.mjs",
-    "test:js:coverage": "pnpm run test:unit:js --coverage",
+    "test:integration": "pnpm run test --project Integration",
+    "test:coverage": "pnpm run test:unit --coverage",
     "test:mutation": "stryker run",
     "test:uncommitted": "pnpm run test --changed=HEAD",
-    "test:unit:js": "pnpm run test:js --project Unit"
+    "test:unit": "pnpm run test --project Unit"
   },
   "version": "1.5.0"
 }
