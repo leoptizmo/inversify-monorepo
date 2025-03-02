@@ -138,7 +138,7 @@ function buildBaseConfig() {
         'error',
         {
           groups: [
-            ['@jest/globals'],
+            ['vitest'],
             ['^\\u0000'],
             ['^node:'],
             ['^@?\\w'],
@@ -197,9 +197,8 @@ export default tseslint.config(
       ...vitest.configs.all.rules,
       '@typescript-eslint/unbound-method': 'off',
       '@typescript-eslint/no-confusing-void-expression': 'off',
-      '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/no-magic-numbers': 'off',
-      '@typescript-eslint/no-non-null-asserted-optional-chain': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
       'vitest/consistent-test-filename': 'off',
       'vitest/max-expects': 'off',
       'vitest/no-hooks': 'off',
