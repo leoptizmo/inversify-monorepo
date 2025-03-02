@@ -43,11 +43,9 @@ describe(isParentBindingConstraintsWithTag.name, () => {
         .mocked(isBindingConstraintsWithTag)
         .mockReturnValueOnce(isBindingConstraintsWithNameResultMock);
 
-      (
-        isParentBindingConstraints as vitest.Mock<
-          typeof isParentBindingConstraints
-        >
-      ).mockReturnValueOnce(isParentBindingConstraintsResultMock);
+      vitest
+        .mocked(isParentBindingConstraints)
+        .mockReturnValueOnce(isParentBindingConstraintsResultMock);
 
       result = isParentBindingConstraintsWithTag(tagFixture, tagValueFixture);
     });

@@ -1,7 +1,5 @@
 // @ts-check
 
-import { strykerConfig, workspaceConfig } from '@inversifyjs/foundation-vitest-config';
-
 /**
  * @type {import('@stryker-mutator/api/core').PartialStrykerOptions}
  */
