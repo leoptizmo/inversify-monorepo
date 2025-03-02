@@ -57,7 +57,7 @@
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
     "build": "pnpm run typecheck && docusaurus build",
-    "format": "prettier --write ./src/**/*.{ts,tsx} ./*.ts",
+    "format": "prettier --write ./src ./*.ts",
     "lint": "eslint ./src ./docusaurus.config.ts ./sidebars.ts",
     "serve": "docusaurus serve",
     "typecheck": "tsc"

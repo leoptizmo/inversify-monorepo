@@ -24,7 +24,7 @@
     "url": "git+https://github.com/inversify/monorepo.git"
   },
   "scripts": {
-    "format": "prettier --write ./lib/**/*.js"
+    "format": "prettier --write ./lib"
   },
   "type": "module"
 }
