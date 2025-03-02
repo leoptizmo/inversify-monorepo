@@ -2,7 +2,7 @@
 
 import eslint from '@eslint/js';
 import jestPlugin from 'eslint-plugin-jest';
-import vitest from 'eslint-plugin-vitest';
+import vitest from '@vitest/eslint-plugin';
 import tseslint from 'typescript-eslint';
 import eslintPrettierConfig from 'eslint-plugin-prettier/recommended';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
@@ -205,6 +205,9 @@ export default tseslint.config(
       'vitest/prefer-expect-assertions': 'off',
       'vitest/prefer-strict-equal': 'error',
       'vitest/valid-title': 'off',
+      'vitest/prefer-lowercase-title': 'off',
+      'vitest/prefer-to-be-falsy': 'off',
+      'vitest/prefer-to-be-truthy': 'off',
     },
   },
   /** @type {import('typescript-eslint').ConfigWithExtends} */ (
