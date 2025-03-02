@@ -1,5 +1,6 @@
 .heroBanner {
-  background: linear-gradient(
+  background:
+    linear-gradient(
       0deg,
       rgb(from var(--ifm-color-primary-darkest) r g b / 0.5),
       rgb(from var(--ifm-color-primary-darkest) r g b / 0.5)
