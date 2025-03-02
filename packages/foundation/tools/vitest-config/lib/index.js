@@ -21,6 +21,7 @@ export const defaultConfig = defineConfig({
     coverage: {
       all: false,
     },
+    passWithNoTests: true,
     sequence: {
       hooks: 'parallel',
     },
