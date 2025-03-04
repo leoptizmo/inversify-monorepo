@@ -46,7 +46,7 @@
       "inputs": ["src/**/*.{cts,mts,ts}"],
       "outputs": ["src/**/*.{cts,mts,ts}"]
     },
-    "@inversifyjs/foundation-jest-config#format": {
+    "@inversifyjs/foundation-vitest-config#format": {
       "inputs": ["lib/**/*.{cjs,mjs,js}"],
       "outputs": ["lib/**/*.{cjs,mjs,js}"]
     },
