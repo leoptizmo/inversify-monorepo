@@ -59,6 +59,7 @@
       "inputs": ["src/**/*.{cts,mts,ts}"]
     },
     "test": {
+      "dependsOn": ["^build"],
       "inputs": ["src/**/*.{cts,mts,ts}"],
       "outputs": []
     },

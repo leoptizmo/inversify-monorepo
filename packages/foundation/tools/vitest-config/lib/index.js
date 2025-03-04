@@ -1,7 +1,13 @@
+import swc from 'unplugin-swc';
 import { defineConfig, defineWorkspace } from 'vitest/config';
 
 export const workspaceConfig = defineWorkspace([
   {
+    plugins: [
+      swc.vite({
+        tsconfigFile: 'tsconfig.esm.json',
+      }),
+    ],
     test: {
       exclude: ['src/**/*.int.spec.ts'],
       include: ['src/**/*.spec.ts'],
@@ -9,6 +15,11 @@ export const workspaceConfig = defineWorkspace([
     },
   },
   {
+    plugins: [
+      swc.vite({
+        tsconfigFile: 'tsconfig.esm.json',
+      }),
+    ],
     test: {
       include: ['src/**/*.int.spec.ts'],
       name: 'Integration',
@@ -36,8 +47,5 @@ export const strykerConfig = defineConfig({
       all: true,
     },
     passWithNoTests: true,
-    sequence: {
-      hooks: 'parallel',
-    },
   },
 });
