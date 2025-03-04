@@ -74,18 +74,13 @@
       "cache": false,
       "dependsOn": ["build"]
     },
-    "test:integration:js": {
-      "dependsOn": ["build"],
+    "test:integration": {
+      "dependsOn": ["^build"],
       "inputs": ["{dist,lib}/**/*.{cjs,mjs,js}"],
       "outputs": []
     },
-    "test:js": {
-      "dependsOn": ["build"],
-      "inputs": ["{dist,lib}/**/*.{cjs,mjs,js}"],
-      "outputs": []
-    },
-    "test:js:coverage": {
-      "dependsOn": ["build"],
+    "test:coverage": {
+      "dependsOn": ["^build"],
       "inputs": ["{dist,lib}/**/*.{cjs,mjs,js}"],
       "outputs": ["coverage/**"]
     },
@@ -98,8 +93,8 @@
       "inputs": ["src/**/*.{cts,mts,ts}"],
       "outputs": []
     },
-    "test:unit:js": {
-      "dependsOn": ["build"],
+    "test:unit": {
+      "dependsOn": ["^build"],
       "inputs": ["{dist,lib}/**/*.{cjs,mjs,js}"],
       "outputs": []
     }
