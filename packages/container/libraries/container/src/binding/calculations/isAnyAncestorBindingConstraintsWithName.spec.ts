@@ -42,11 +42,9 @@ describe(isAnyAncestorBindingConstraintsWithName.name, () => {
         .mocked(isBindingConstraintsWithName)
         .mockReturnValueOnce(isBindingConstraintsWithNameResultMock);
 
-      (
-        isAnyAncestorBindingConstraints as Mock<
-          typeof isAnyAncestorBindingConstraints
-        >
-      ).mockReturnValueOnce(isAnyAncestorBindingConstraintsResultMock);
+      vitest
+        .mocked(isAnyAncestorBindingConstraints)
+        .mockReturnValueOnce(isAnyAncestorBindingConstraintsResultMock);
 
       result = isAnyAncestorBindingConstraintsWithName(nameFixture);
     });

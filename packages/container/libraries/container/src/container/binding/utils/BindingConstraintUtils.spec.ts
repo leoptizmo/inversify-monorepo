@@ -16,7 +16,7 @@ describe(BindingConstraintUtils.name, () => {
       });
 
       it('should return true', () => {
-        expect(result).toBeTruthy();
+        expect(result).toBe(true);
       });
     });
   });

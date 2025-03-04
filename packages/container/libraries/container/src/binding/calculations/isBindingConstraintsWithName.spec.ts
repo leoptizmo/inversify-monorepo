@@ -28,7 +28,7 @@ describe(isBindingConstraintsWithName.name, () => {
       });
 
       it('should return true', () => {
-        expect(result).toBeTruthy();
+        expect(result).toBe(true);
       });
     });
   });
@@ -56,7 +56,7 @@ describe(isBindingConstraintsWithName.name, () => {
       });
 
       it('should return false', () => {
-        expect(result).toBeFalsy();
+        expect(result).toBe(false);
       });
     });
   });

@@ -62,7 +62,7 @@ describe(isNoAncestorBindingConstraints.name, () => {
     });
 
     it('should return false', () => {
-      expect(result).toBeFalsy();
+      expect(result).toBe(false);
     });
   });
 
@@ -99,7 +99,7 @@ describe(isNoAncestorBindingConstraints.name, () => {
     });
 
     it('should return true', () => {
-      expect(result).toBeTruthy();
+      expect(result).toBe(true);
     });
   });
 });

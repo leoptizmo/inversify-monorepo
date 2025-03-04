@@ -47,7 +47,7 @@ describe(isParentBindingConstraints.name, () => {
     });
 
     it('should return false', () => {
-      expect(result).toBeFalsy();
+      expect(result).toBe(false);
     });
   });
 

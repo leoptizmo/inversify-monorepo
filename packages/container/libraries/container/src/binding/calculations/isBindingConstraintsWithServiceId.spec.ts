@@ -29,7 +29,7 @@ describe(isBindingConstraintsWithServiceId.name, () => {
       });
 
       it('should return true', () => {
-        expect(result).toBeTruthy();
+        expect(result).toBe(true);
       });
     });
   });
@@ -57,7 +57,7 @@ describe(isBindingConstraintsWithServiceId.name, () => {
       });
 
       it('should return false', () => {
-        expect(result).toBeFalsy();
+        expect(result).toBe(false);
       });
     });
   });

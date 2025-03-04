@@ -47,7 +47,7 @@ describe(isAnyAncestorBindingConstraints.name, () => {
     });
 
     it('should return false', () => {
-      expect(result).toBeFalsy();
+      expect(result).toBe(false);
     });
   });
 
@@ -80,7 +80,7 @@ describe(isAnyAncestorBindingConstraints.name, () => {
     });
 
     it('should return expected result', () => {
-      expect(result).toBeFalsy();
+      expect(result).toBe(false);
     });
   });
 
@@ -110,7 +110,7 @@ describe(isAnyAncestorBindingConstraints.name, () => {
     });
 
     it('should return expected result', () => {
-      expect(result).toBeTruthy();
+      expect(result).toBe(true);
     });
   });
 });

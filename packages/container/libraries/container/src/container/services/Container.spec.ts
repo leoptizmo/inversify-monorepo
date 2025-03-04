@@ -1312,7 +1312,7 @@ describe(Container.name, () => {
       });
 
       it('should return false', () => {
-        expect(result).toBeFalsy();
+        expect(result).toBe(false);
       });
     });
 
@@ -1376,7 +1376,7 @@ describe(Container.name, () => {
       });
 
       it('should return false', () => {
-        expect(result).toBeFalsy();
+        expect(result).toBe(false);
       });
     });
 
@@ -1440,7 +1440,7 @@ describe(Container.name, () => {
       });
 
       it('should return true', () => {
-        expect(result).toBeTruthy();
+        expect(result).toBe(true);
       });
     });
   });
@@ -1485,7 +1485,7 @@ describe(Container.name, () => {
       });
 
       it('should return false', () => {
-        expect(result).toBeFalsy();
+        expect(result).toBe(false);
       });
     });
 
@@ -1553,7 +1553,7 @@ describe(Container.name, () => {
       });
 
       it('should return false', () => {
-        expect(result).toBeFalsy();
+        expect(result).toBe(false);
       });
     });
 
@@ -1621,7 +1621,7 @@ describe(Container.name, () => {
       });
 
       it('should return true', () => {
-        expect(result).toBeTruthy();
+        expect(result).toBe(true);
       });
     });
   });
@@ -1963,6 +1963,7 @@ describe(Container.name, () => {
         expect(resolveServiceDeactivations).toHaveBeenCalledTimes(
           serviceIdsFixture.length,
         );
+
         for (const serviceId of serviceIdsFixture) {
           expect(resolveServiceDeactivations).toHaveBeenCalledWith(
             expect.any(Object),
@@ -1975,6 +1976,7 @@ describe(Container.name, () => {
         expect(
           activationServiceMock.removeAllByServiceId,
         ).toHaveBeenCalledTimes(serviceIdsFixture.length);
+
         for (const serviceId of serviceIdsFixture) {
           expect(
             activationServiceMock.removeAllByServiceId,
@@ -1986,6 +1988,7 @@ describe(Container.name, () => {
         expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledTimes(
           serviceIdsFixture.length,
         );
+
         for (const serviceId of serviceIdsFixture) {
           expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledWith(
             serviceId,
@@ -1997,6 +2000,7 @@ describe(Container.name, () => {
         expect(
           deactivationServiceMock.removeAllByServiceId,
         ).toHaveBeenCalledTimes(serviceIdsFixture.length);
+
         for (const serviceId of serviceIdsFixture) {
           expect(
             deactivationServiceMock.removeAllByServiceId,
