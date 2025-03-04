@@ -103,7 +103,7 @@ describe(resolveBindingServiceDeactivations.name, () => {
 
       beforeAll(async () => {
         deactivationMock = vitest.fn();
-        deactivationMock.mockReturnValueOnce(Promise.resolve(undefined));
+        deactivationMock.mockResolvedValueOnce(undefined);
 
         paramsMock.getDeactivations.mockReturnValueOnce([deactivationMock]);
 
@@ -223,7 +223,7 @@ describe(resolveBindingServiceDeactivations.name, () => {
 
       beforeAll(async () => {
         deactivationMock = vitest.fn();
-        deactivationMock.mockReturnValueOnce(Promise.resolve(undefined));
+        deactivationMock.mockResolvedValueOnce(undefined);
 
         paramsMock.getDeactivations.mockReturnValueOnce([deactivationMock]);
 

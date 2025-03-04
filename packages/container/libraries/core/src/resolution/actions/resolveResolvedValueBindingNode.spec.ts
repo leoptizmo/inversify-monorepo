@@ -97,8 +97,8 @@ describe(resolveResolvedValueBindingNode.name, () => {
       constructorResolvedValues = [Symbol()];
       instanceResolvedValue = Symbol();
 
-      resolveResolvedValueBindingParamsMock.mockReturnValue(
-        Promise.resolve(constructorResolvedValues),
+      resolveResolvedValueBindingParamsMock.mockResolvedValue(
+        constructorResolvedValues,
       );
 
       vitest

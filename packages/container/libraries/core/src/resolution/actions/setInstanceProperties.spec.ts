@@ -208,9 +208,7 @@ describe(setInstanceProperties.name, () => {
 
         resolvedPropertyValue = Symbol();
 
-        resolveServiceNodeMock.mockReturnValueOnce(
-          Promise.resolve(resolvedPropertyValue),
-        );
+        resolveServiceNodeMock.mockResolvedValueOnce(resolvedPropertyValue);
 
         result = setInstanceProperties(resolveServiceNodeMock)(
           paramsFixture,

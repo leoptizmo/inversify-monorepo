@@ -80,9 +80,7 @@ describe(resolveResolvedValueBindingParams.name, () => {
       beforeAll(() => {
         resolvedValue = Symbol();
 
-        resolveServiceNodeMock.mockReturnValueOnce(
-          Promise.resolve(resolvedValue),
-        );
+        resolveServiceNodeMock.mockResolvedValueOnce(resolvedValue);
 
         result = resolveResolvedValueBindingParams(resolveServiceNodeMock)(
           paramsFixture,

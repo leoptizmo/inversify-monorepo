@@ -95,27 +95,29 @@ describe(resolve.name, () => {
   >;
 
   beforeAll(() => {
-    resolveScopedInstanceBindingNodeMock = resolveScopedInstanceBindingNode(
-      vitest.fn<
-        (
-          params: ResolutionParams,
-          node: InstanceBindingNode,
-        ) => unknown[] | Promise<unknown[]>
-      >(),
-    ) as Mock<ReturnType<typeof resolveScopedInstanceBindingNode>>;
-    resolveScopedResolvedValueBindingNodeMock =
+    resolveScopedInstanceBindingNodeMock = vitest.mocked(
+      resolveScopedInstanceBindingNode(
+        vitest.fn<
+          (
+            params: ResolutionParams,
+            node: InstanceBindingNode,
+          ) => Promise<unknown>
+        >(),
+      ),
+    );
+    resolveScopedResolvedValueBindingNodeMock = vitest.mocked(
       resolveScopedResolvedValueBindingNode(
         vitest.fn<
           (
             params: ResolutionParams,
             node: ResolvedValueBindingNode,
-          ) => unknown[] | Promise<unknown[]>
+          ) => Promise<unknown>
         >(),
-      ) as Mock<ReturnType<typeof resolveScopedResolvedValueBindingNode>>;
-    resolveServiceRedirectionBindingNodeMock =
-      resolveServiceRedirectionBindingNode(vitest.fn()) as Mock<
-        ReturnType<typeof resolveServiceRedirectionBindingNode>
-      >;
+      ),
+    );
+    resolveServiceRedirectionBindingNodeMock = vitest.mocked(
+      resolveServiceRedirectionBindingNode(vitest.fn()),
+    );
   });
 
   describe('having ResolutionParams with plan tree with root with no bindings', () => {
@@ -339,7 +341,7 @@ describe(resolve.name, () => {
 
         vitest
           .mocked(resolveConstantValueBinding)
-          .mockReturnValueOnce(Promise.resolve(resolveValue));
+          .mockResolvedValueOnce(resolveValue);
 
         result = await resolve(resolutionParamsFixture);
       });

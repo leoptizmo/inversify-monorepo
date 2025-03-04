@@ -112,9 +112,7 @@ describe(resolveInstanceBindingConstructorParams.name, () => {
       beforeAll(() => {
         resolvedValue = Symbol();
 
-        resolveServiceNodeMock.mockReturnValueOnce(
-          Promise.resolve(resolvedValue),
-        );
+        resolveServiceNodeMock.mockResolvedValueOnce(resolvedValue);
 
         result = resolveInstanceBindingConstructorParams(
           resolveServiceNodeMock,

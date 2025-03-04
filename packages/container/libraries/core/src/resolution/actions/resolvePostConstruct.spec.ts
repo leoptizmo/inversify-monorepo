@@ -269,7 +269,7 @@ describe(resolvePostConstruct.name, () => {
       let result: unknown;
 
       beforeAll(async () => {
-        postConstructMethodMock.mockReturnValueOnce(Promise.resolve(undefined));
+        postConstructMethodMock.mockResolvedValueOnce(undefined);
 
         result = await resolvePostConstruct(
           instanceFixture,

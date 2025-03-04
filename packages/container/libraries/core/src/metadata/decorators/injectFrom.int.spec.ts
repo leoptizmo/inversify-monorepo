@@ -476,6 +476,7 @@ describe(injectFrom.name, () => {
             ]),
             scope: undefined,
           };
+
           expect(result).toStrictEqual(expectedClassMetadata);
         });
       });

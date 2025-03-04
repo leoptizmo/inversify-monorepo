@@ -163,7 +163,7 @@ describe(resolveInstanceBindingNodeFromConstructorParams.name, () => {
           this[expectedResultProperty] = expectedResultValue;
         });
 
-      setInstancePropertiesMock.mockReturnValueOnce(Promise.resolve(undefined));
+      setInstancePropertiesMock.mockResolvedValueOnce(undefined);
 
       result = resolveInstanceBindingNodeFromConstructorParams(
         setInstancePropertiesMock,

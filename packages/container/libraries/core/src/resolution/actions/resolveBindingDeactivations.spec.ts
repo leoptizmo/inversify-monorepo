@@ -90,7 +90,7 @@ describe(resolveBindingDeactivations.name, () => {
       beforeAll(() => {
         vitest
           .mocked(resolveBindingPreDestroy)
-          .mockReturnValueOnce(Promise.resolve(undefined));
+          .mockResolvedValueOnce(undefined);
 
         result = resolveBindingDeactivations(paramsMock, bindingFixture);
       });

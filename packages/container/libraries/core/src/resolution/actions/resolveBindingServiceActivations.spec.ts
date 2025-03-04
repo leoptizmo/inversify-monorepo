@@ -111,9 +111,7 @@ describe(resolveBindingServiceActivations.name, () => {
       beforeAll(async () => {
         activationResult = Symbol('activation-result');
 
-        activationMock = vitest
-          .fn()
-          .mockReturnValueOnce(Promise.resolve(activationResult));
+        activationMock = vitest.fn().mockResolvedValueOnce(activationResult);
 
         paramsMock.getActivations.mockReturnValueOnce([activationMock]);
 
@@ -242,9 +240,7 @@ describe(resolveBindingServiceActivations.name, () => {
       beforeAll(async () => {
         activationResult = Symbol('activation-result');
 
-        activationMock = vitest
-          .fn()
-          .mockReturnValueOnce(Promise.resolve(activationResult));
+        activationMock = vitest.fn().mockResolvedValueOnce(activationResult);
 
         paramsMock.getActivations.mockReturnValueOnce([activationMock]);
 
