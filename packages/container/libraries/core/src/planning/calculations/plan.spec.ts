@@ -569,6 +569,7 @@ describe(plan.name, () => {
 
         vitest
           .mocked(buildFilteredServiceBindings)
+          .mockReturnValueOnce([instanceBindingFixture])
           .mockReturnValueOnce([constantValueBinding])
           .mockReturnValueOnce([constantValueBinding]);
 
