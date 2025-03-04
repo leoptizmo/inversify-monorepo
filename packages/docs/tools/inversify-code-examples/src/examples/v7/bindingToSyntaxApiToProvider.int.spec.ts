@@ -16,9 +16,11 @@ describe('BindingToSyntax API (toFactory)', () => {
     expectedPowerfulKatana.damage = 100;
     expectedPowerfulKatana.material = 'gold';
 
-    expect(await notSoPowerfulGoldKatana).toStrictEqual(
+    await expect(notSoPowerfulGoldKatana).resolves.toStrictEqual(
       expectedNotSoPowerfulKatana,
     );
-    expect(await powerfulGoldKatana).toStrictEqual(expectedPowerfulKatana);
+    await expect(powerfulGoldKatana).resolves.toStrictEqual(
+      expectedPowerfulKatana,
+    );
   });
 });
