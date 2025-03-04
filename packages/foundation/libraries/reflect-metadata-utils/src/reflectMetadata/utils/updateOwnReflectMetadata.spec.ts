@@ -94,9 +94,7 @@ describe(updateOwnReflectMetadata.name, () => {
         .fn<(value: unknown) => unknown>()
         .mockImplementationOnce((value: unknown) => value);
 
-      (
-        getOwnReflectMetadata as Mock<typeof getOwnReflectMetadata>
-      ).mockReturnValueOnce(metadataFixture);
+      vitest.mocked(getOwnReflectMetadata).mockReturnValueOnce(metadataFixture);
 
       updateOwnReflectMetadata(
         targetFixture,
