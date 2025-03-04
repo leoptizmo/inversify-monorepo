@@ -1,7 +1,6 @@
 // @ts-check
 
 import eslint from '@eslint/js';
-import jestPlugin from 'eslint-plugin-jest';
 import vitest from '@vitest/eslint-plugin';
 import tseslint from 'typescript-eslint';
 import eslintPrettierConfig from 'eslint-plugin-prettier/recommended';
@@ -169,22 +168,16 @@ export default tseslint.config(
   },
   {
     ...baseRules,
-    extends: [
-      ...(baseRules.extends ?? []),
-      jestPlugin.configs['flat/recommended'],
-      jestPlugin.configs['flat/style'],
-    ],
+    extends: [...(baseRules.extends ?? [])],
     files: ['**/*.spec.{cjs,mts,ts,tsx}'],
     plugins: {
       ...(baseRules.plugins ?? {}),
-      jest: jestPlugin,
     },
     rules: {
       ...(baseRules.rules ?? {}),
       '@typescript-eslint/no-confusing-void-expression': 'off',
       '@typescript-eslint/unbound-method': 'off',
       '@typescript-eslint/no-magic-numbers': 'off',
-      'jest/valid-title': 'off',
     },
   },
   {
