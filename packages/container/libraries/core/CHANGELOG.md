@@ -1,5 +1,15 @@
 # @inversifyjs/core
 
+## 5.0.0
+
+### Major Changes
+
+- 6de1cee: updated `BasePlanParams.servicesBranch` to be an array
+
+### Patch Changes
+
+- 7ef055a: Updated `plan` to no longer provide false positive circular dependencies
+
 ## 4.0.1
 
 ### Patch Changes
