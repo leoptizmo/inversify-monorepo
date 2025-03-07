@@ -10,6 +10,6 @@ export interface BasePlanParams {
     serviceIdentifier: ServiceIdentifier<TInstance>,
   ) => Iterable<Binding<TInstance>> | undefined;
   getClassMetadata: (type: Newable) => ClassMetadata;
-  servicesBranch: Set<ServiceIdentifier>;
+  servicesBranch: ServiceIdentifier[];
   setBinding: <TInstance>(binding: Binding<TInstance>) => void;
 }

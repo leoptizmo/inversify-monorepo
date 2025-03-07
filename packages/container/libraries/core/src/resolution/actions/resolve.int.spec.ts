@@ -290,7 +290,7 @@ describe(resolve.name, () => {
           isMultiple,
           serviceIdentifier,
         },
-        servicesBranch: new Set(),
+        servicesBranch: [],
         setBinding: bindingService.set.bind(bindingService),
       };
 
@@ -537,7 +537,7 @@ describe(resolve.name, () => {
             getBindings: bindingService.get.bind(bindingService),
             getClassMetadata: getClassMetadataFunction,
             rootConstraints: planParamsConstraint(),
-            servicesBranch: new Set(),
+            servicesBranch: [],
             setBinding: bindingService.set.bind(bindingService),
           });
 

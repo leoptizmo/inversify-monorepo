@@ -19,7 +19,6 @@ import { MetadataTag } from '../../metadata/models/MetadataTag';
 import { ResolvedValueElementMetadata } from '../../metadata/models/ResolvedValueElementMetadata';
 import { ResolvedValueElementMetadataKind } from '../../metadata/models/ResolvedValueElementMetadataKind';
 import { ResolvedValueMetadata } from '../../metadata/models/ResolvedValueMetadata';
-import { addBranchService } from '../actions/addBranchService';
 import { BasePlanParams } from '../models/BasePlanParams';
 import { BindingNodeParent } from '../models/BindingNodeParent';
 import { InstanceBindingNode } from '../models/InstanceBindingNode';
@@ -32,66 +31,74 @@ import { ResolvedValueBindingNode } from '../models/ResolvedValueBindingNode';
 import { SubplanParams } from '../models/SubplanParams';
 import { buildFilteredServiceBindings } from './buildFilteredServiceBindings';
 import { checkServiceNodeSingleInjectionBindings } from './checkServiceNodeSingleInjectionBindings';
+import { handlePlanError } from './handlePlanError';
 import { isInstanceBindingNode } from './isInstanceBindingNode';
 import { isPlanServiceRedirectionBindingNode } from './isPlanServiceRedirectionBindingNode';
 
 export function plan(params: PlanParams): PlanResult {
-  const tags: Map<MetadataTag, unknown> = new Map();
+  try {
+    const tags: Map<MetadataTag, unknown> = new Map();
 
-  if (params.rootConstraints.tag !== undefined) {
-    tags.set(params.rootConstraints.tag.key, params.rootConstraints.tag.value);
-  }
+    if (params.rootConstraints.tag !== undefined) {
+      tags.set(
+        params.rootConstraints.tag.key,
+        params.rootConstraints.tag.value,
+      );
+    }
 
-  const bindingConstraintsList: SingleInmutableLinkedList<InternalBindingConstraints> =
-    new SingleInmutableLinkedList({
-      elem: {
-        name: params.rootConstraints.name,
-        serviceIdentifier: params.rootConstraints.serviceIdentifier,
-        tags,
-      },
-      previous: undefined,
-    });
+    const bindingConstraintsList: SingleInmutableLinkedList<InternalBindingConstraints> =
+      new SingleInmutableLinkedList({
+        elem: {
+          name: params.rootConstraints.name,
+          serviceIdentifier: params.rootConstraints.serviceIdentifier,
+          tags,
+        },
+        previous: undefined,
+      });
 
-  const bindingConstraints: BindingConstraints =
-    new BindingConstraintsImplementation(bindingConstraintsList.last);
+    const bindingConstraints: BindingConstraints =
+      new BindingConstraintsImplementation(bindingConstraintsList.last);
 
-  const filteredServiceBindings: Binding<unknown>[] =
-    buildFilteredServiceBindings(params, bindingConstraints);
+    const filteredServiceBindings: Binding<unknown>[] =
+      buildFilteredServiceBindings(params, bindingConstraints);
 
-  const serviceNodeBindings: PlanBindingNode[] = [];
+    const serviceNodeBindings: PlanBindingNode[] = [];
 
-  const serviceNode: PlanServiceNode = {
-    bindings: serviceNodeBindings,
-    parent: undefined,
-    serviceIdentifier: params.rootConstraints.serviceIdentifier,
-  };
+    const serviceNode: PlanServiceNode = {
+      bindings: serviceNodeBindings,
+      parent: undefined,
+      serviceIdentifier: params.rootConstraints.serviceIdentifier,
+    };
 
-  serviceNodeBindings.push(
-    ...buildServiceNodeBindings(
-      params,
-      bindingConstraintsList,
-      filteredServiceBindings,
-      serviceNode,
-    ),
-  );
-
-  if (!params.rootConstraints.isMultiple) {
-    checkServiceNodeSingleInjectionBindings(
-      serviceNode,
-      params.rootConstraints.isOptional ?? false,
-      bindingConstraints,
+    serviceNodeBindings.push(
+      ...buildServiceNodeBindings(
+        params,
+        bindingConstraintsList,
+        filteredServiceBindings,
+        serviceNode,
+      ),
     );
 
-    const [planBindingNode]: PlanBindingNode[] = serviceNodeBindings;
+    if (!params.rootConstraints.isMultiple) {
+      checkServiceNodeSingleInjectionBindings(
+        serviceNode,
+        params.rootConstraints.isOptional ?? false,
+        bindingConstraints,
+      );
 
-    (serviceNode as Writable<PlanServiceNode>).bindings = planBindingNode;
+      const [planBindingNode]: PlanBindingNode[] = serviceNodeBindings;
+
+      (serviceNode as Writable<PlanServiceNode>).bindings = planBindingNode;
+    }
+
+    return {
+      tree: {
+        root: serviceNode,
+      },
+    };
+  } catch (error: unknown) {
+    handlePlanError(params, error);
   }
-
-  return {
-    tree: {
-      root: serviceNode,
-    },
-  };
 }
 
 function buildInstancePlanBindingNode(
@@ -277,7 +284,7 @@ function buildServiceNodeBindings(
       ? parentNode.binding.targetServiceIdentifier
       : parentNode.serviceIdentifier;
 
-  addBranchService(params, serviceIdentifier);
+  params.servicesBranch.push(serviceIdentifier);
 
   const planBindingNodes: PlanBindingNode[] = [];
 
@@ -326,7 +333,7 @@ function buildServiceNodeBindings(
     }
   }
 
-  params.servicesBranch.delete(serviceIdentifier);
+  params.servicesBranch.pop();
 
   return planBindingNodes;
 }

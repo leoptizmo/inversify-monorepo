@@ -426,9 +426,9 @@ export class Container {
   }
 
   #buildPlanParams(
-    isMultiple: boolean,
     serviceIdentifier: ServiceIdentifier,
-    options: GetOptions | undefined,
+    isMultiple: boolean,
+    options?: GetOptions,
   ): PlanParams {
     const planParams: PlanParams = {
       autobindOptions:
@@ -443,7 +443,7 @@ export class Container {
         isMultiple,
         serviceIdentifier,
       },
-      servicesBranch: new Set(),
+      servicesBranch: [],
       setBinding: this.#setBindingParamsPlan,
     };
 
@@ -471,7 +471,7 @@ export class Container {
     }
 
     const planResult: PlanResult = plan(
-      this.#buildPlanParams(isMultiple, serviceIdentifier, options),
+      this.#buildPlanParams(serviceIdentifier, isMultiple, options),
     );
 
     this.#planResultCacheService.set(getPlanOptions, planResult);
