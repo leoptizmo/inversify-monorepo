@@ -4,8 +4,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [7ef055a]
-- Updated dependencies [6de1cee]
+- Updated dependencies
   - @inversifyjs/core@5.0.0
 
 ## 1.5.3
@@ -13,7 +12,7 @@
 ### Patch Changes
 
 - a77354a: Updated `container.get` like methods to no longer initialize twice singleton scoped bindings
-- Updated dependencies [a77354a]
+- Updated dependencies
   - @inversifyjs/core@4.0.1
 
 ## 1.5.2
