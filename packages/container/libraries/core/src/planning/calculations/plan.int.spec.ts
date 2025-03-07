@@ -482,7 +482,7 @@ describe(plan.name, () => {
             getBindings: bindingService.get.bind(bindingService),
             getClassMetadata: getClassMetadataFunction,
             rootConstraints: planParamsConstraint,
-            servicesBranch: new Set(),
+            servicesBranch: [],
             setBinding: bindingService.set.bind(bindingService),
           });
         });
@@ -546,7 +546,7 @@ Binding constraints:
               getBindings: bindingService.get.bind(bindingService),
               getClassMetadata: getClassMetadataFunction,
               rootConstraints: planParamsConstraint,
-              servicesBranch: new Set(),
+              servicesBranch: [],
               setBinding: bindingService.set.bind(bindingService),
             });
           } catch (error: unknown) {
