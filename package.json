@@ -9,8 +9,6 @@
     "@commitlint/cli": "19.7.1",
     "@commitlint/config-conventional": "19.7.1",
     "@commitlint/prompt-cli": "19.7.1",
-    "@inversifyjs/container-benchmarks": "workspace:*",
-    "@inversifyjs/http-benchmarks": "workspace:*",
     "@inversifyjs/foundation-eslint-config": "workspace:*",
     "@inversifyjs/foundation-prettier-config": "workspace:*",
     "@inversifyjs/foundation-rollup-config": "workspace:*",
@@ -34,6 +32,10 @@
     "url": "git+https://github.com/inversify/monorepo.git"
   },
   "scripts": {
+    "benchmarks:container:cjs": "pnpm run --filter \"@inversifyjs/container-benchmarks\" benchmarks:run:cjs",
+    "benchmarks:container:esm": "pnpm run --filter \"@inversifyjs/container-benchmarks\" benchmarks:run:esm",
+    "benchmarks:http:cjs": "pnpm run --filter \"@inversifyjs/http-benchmarks\" benchmarks:run:cjs",
+    "benchmarks:http:esm": "pnpm run --filter \"@inversifyjs/http-benchmarks\" benchmarks:run:esm",
     "build": "turbo run build",
     "commit": "commit",
     "deploy:binding-decorators:pages": "pnpm run --filter \"@inversifyjs/inversify-binding-decorators-docs-site\" deploy",

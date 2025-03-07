@@ -4,10 +4,6 @@
     "url": "https://github.com/inversify/monorepo/issues"
   },
   "description": "InversifyJs benchmarks package",
-  "bin": {
-    "container-benchmarks-run-cjs": "./bin/run-cjs.cjs",
-    "container-benchmarks-run-esm": "./bin/run-esm.mjs"
-  },
   "dependencies": {
     "@inversifyjs/benchmark-utils": "workspace:*",
     "@inversifyjs/container": "workspace:*",
@@ -52,6 +48,8 @@
     "url": "git+https://github.com/inversify/monorepo.git"
   },
   "scripts": {
+    "benchmarks:run:cjs": "./bin/run-cjs.cjs",
+    "benchmarks:run:esm": "./bin/run-esm.mjs",
     "build": "pnpm run build:cjs && pnpm run build:esm",
     "build:cjs": "tsc --build tsconfig.cjs.json && pnpm exec foundation-ts-package-cjs ./lib/cjs",
     "build:esm": "rollup -c ./rollup.config.mjs && pnpm exec foundation-ts-package-esm ./lib/esm",
