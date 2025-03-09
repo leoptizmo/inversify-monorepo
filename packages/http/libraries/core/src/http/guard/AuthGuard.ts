@@ -9,13 +9,14 @@ export abstract class AuthGuard<
   TResponse,
   TNextFunction extends () => void,
 > extends Guard<TRequest, TResponse, TNextFunction> {
-  public async _activate(
+  protected async _activate(
     request: TRequest,
     response: TResponse,
     next: TNextFunction,
   ): Promise<boolean> {
     const token: string = await this._getTokenFromRequest(request);
-    const user: unknown | undefined = await this._validateToken(token);
+    const user: Record<string, unknown> | undefined =
+      await this._validateToken(token);
 
     if (user === undefined) {
       this._httpAdapter.replyUnauthorized(request, response);
@@ -27,8 +28,14 @@ export abstract class AuthGuard<
     return true;
   }
 
-  protected abstract _getTokenFromRequest(request: TRequest): Promise<string>;
+  protected abstract _getTokenFromRequest(
+    request: TRequest,
+  ): Promise<string> | string;
+
   protected abstract _validateToken(
     token: string,
-  ): Promise<unknown | undefined> | unknown | undefined;
+  ):
+    | Promise<Record<string, unknown> | undefined>
+    | Record<string, unknown>
+    | undefined;
 }
