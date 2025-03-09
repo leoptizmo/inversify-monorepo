@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 
 import { HttpAdapter } from '../adapter/HttpAdapter';
-import { InversifyHttpAdapter } from '../adapter/InversifyHttpAdapter';
+import { inversifyHttpAdapterSymbol } from '../adapter/InversifyHttpAdapter';
 import { Middleware } from '../models/Middleware';
 import { ForbiddenHttpResponse } from '../responses/error/ForbiddenHttpResponse';
 import { HttpResponse } from '../responses/HttpResponse';
@@ -13,7 +13,7 @@ export abstract class Guard<
   TNextFunction extends () => void,
 > implements Middleware<TRequest, TResponse, TNextFunction>
 {
-  @inject(InversifyHttpAdapter.name)
+  @inject(inversifyHttpAdapterSymbol)
   protected readonly _httpAdapter!: HttpAdapter<TRequest, TResponse>;
 
   public async execute(

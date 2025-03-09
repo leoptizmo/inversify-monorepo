@@ -27,6 +27,10 @@ import { HttpResponse } from '../responses/HttpResponse';
 import { HttpStatusCode } from '../responses/HttpStatusCode';
 import { HttpAdapter } from './HttpAdapter';
 
+export const inversifyHttpAdapterSymbol: symbol = Symbol(
+  'InversifyHttpAdapter',
+);
+
 export abstract class InversifyHttpAdapter<
   TRequest extends UserRequest,
   TResponse,
@@ -38,7 +42,7 @@ export abstract class InversifyHttpAdapter<
   constructor(container: Container) {
     this.#container = container;
 
-    this.#container.bind(InversifyHttpAdapter.name).toConstantValue(this);
+    this.#container.bind(inversifyHttpAdapterSymbol).toConstantValue(this);
   }
 
   public replyHttpResponse(
