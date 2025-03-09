@@ -3,6 +3,8 @@ import { inject, injectable } from 'inversify';
 import { HttpAdapter } from '../adapter/HttpAdapter';
 import { InversifyHttpAdapter } from '../adapter/InversifyHttpAdapter';
 import { Middleware } from '../models/Middleware';
+import { ForbiddenHttpResponse } from '../responses/error/ForbiddenHttpResponse';
+import { HttpResponse } from '../responses/HttpResponse';
 
 @injectable()
 export abstract class Guard<
@@ -19,18 +21,22 @@ export abstract class Guard<
     response: TResponse,
     next: TNextFunction,
   ): Promise<void> {
-    const activate: boolean = await this._activate(request, response, next);
+    const activate: boolean = await this._activate(request);
 
     if (!activate) {
-      this._httpAdapter.replyForbidden(request, response);
+      this._httpAdapter.replyHttpResponse(
+        request,
+        response,
+        this._getGuardError(),
+      );
     } else {
       next();
     }
   }
 
-  protected abstract _activate(
-    request: TRequest,
-    response: TResponse,
-    next: TNextFunction,
-  ): Promise<boolean> | boolean;
+  protected _getGuardError(): HttpResponse {
+    return new ForbiddenHttpResponse();
+  }
+
+  protected abstract _activate(request: TRequest): Promise<boolean> | boolean;
 }

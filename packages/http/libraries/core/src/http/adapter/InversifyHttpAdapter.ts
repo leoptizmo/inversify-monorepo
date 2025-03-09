@@ -41,12 +41,12 @@ export abstract class InversifyHttpAdapter<
     this.#container.bind(InversifyHttpAdapter.name).toConstantValue(this);
   }
 
-  public replyUnauthorized(request: TRequest, response: TResponse): unknown {
-    return this.#reply(request, response, HttpStatusCode.UNAUTHORIZED);
-  }
-
-  public replyForbidden(request: TRequest, response: TResponse): unknown {
-    return this.#reply(request, response, HttpStatusCode.FORBIDDEN);
+  public replyHttpResponse(
+    request: TRequest,
+    response: TResponse,
+    httpResponse: HttpResponse,
+  ): unknown {
+    return this.#reply(request, response, httpResponse);
   }
 
   protected _buildServer(): void {
