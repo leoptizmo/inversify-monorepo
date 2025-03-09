@@ -13,6 +13,18 @@ export class WinstonLoggerAdapter extends LoggerAdapter {
     super(context, loggerOptions);
     this.#logger = logger;
 
+    this.#formatLogger();
+  }
+
+  protected override printLog(
+    logType: LogLevel,
+    message: string,
+    context?: ContextMetadata,
+  ): void {
+    this.#logger.log(logType, message, context);
+  }
+
+  #buildOptionsFormatList(): Format[] {
     const formatList: Format[] = [];
 
     if (this._loggerOptions.timestamp) {
@@ -34,15 +46,14 @@ export class WinstonLoggerAdapter extends LoggerAdapter {
       );
     }
 
-    this.#logger.format = format.combine(this.#logger.format, ...formatList);
+    return formatList;
   }
 
-  protected override printLog(
-    logType: LogLevel,
-    message: string,
-    context?: ContextMetadata,
-  ): void {
-    this.#logger.log(logType, message, context);
+  #formatLogger(): void {
+    this.#logger.format = format.combine(
+      this.#logger.format,
+      ...this.#buildOptionsFormatList(),
+    );
   }
 
   #stringifyInfo(info: TransformableInfo): string {
