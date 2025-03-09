@@ -8,21 +8,21 @@ import {
   vitest,
 } from 'vitest';
 
-import { LogType } from '../../model/LogType';
+import { LogLevel } from '../../model/LogLevel';
 import { ContextMetadata } from '../model/ContextMetadata';
 import { LoggerAdapter } from './LoggerAdapter';
 
 class LoggerAdapterMock extends LoggerAdapter {
   readonly #printLogMock: Mock<
-    (logType: LogType, message: string, context?: ContextMetadata) => void
+    (logType: LogLevel, message: string, context?: ContextMetadata) => void
   >;
 
   constructor(
     printLogMock: Mock<
-      (logType: LogType, message: string, context?: ContextMetadata) => void
+      (logType: LogLevel, message: string, context?: ContextMetadata) => void
     >,
     context?: string,
-    loggerOptions?: { json: boolean; logTypes: LogType[]; timestamp: boolean },
+    loggerOptions?: { json: boolean; logTypes: LogLevel[]; timestamp: boolean },
   ) {
     super(context, loggerOptions);
 
@@ -30,7 +30,7 @@ class LoggerAdapterMock extends LoggerAdapter {
   }
 
   protected override printLog(
-    logType: LogType,
+    logType: LogLevel,
     message: string,
     context?: ContextMetadata,
   ): void {
@@ -40,7 +40,7 @@ class LoggerAdapterMock extends LoggerAdapter {
 
 describe(LoggerAdapter.name, () => {
   let printLogMock: Mock<
-    (logType: LogType, message: string, context?: ContextMetadata) => void
+    (logType: LogLevel, message: string, context?: ContextMetadata) => void
   >;
   let loggerAdapter: LoggerAdapterMock;
 
@@ -72,7 +72,7 @@ describe(LoggerAdapter.name, () => {
       it('should call printLog with LogType.INFO', () => {
         expect(printLogMock).toHaveBeenCalledTimes(1);
         expect(printLogMock).toHaveBeenCalledWith(
-          LogType.INFO,
+          LogLevel.INFO,
           messageFixture,
           contextMetadataFixture,
         );
@@ -107,7 +107,7 @@ describe(LoggerAdapter.name, () => {
       it('should call printLog with LogType.HTTP', () => {
         expect(printLogMock).toHaveBeenCalledTimes(1);
         expect(printLogMock).toHaveBeenCalledWith(
-          LogType.HTTP,
+          LogLevel.HTTP,
           messageFixture,
           contextMetadataFixture,
         );
@@ -142,7 +142,7 @@ describe(LoggerAdapter.name, () => {
       it('should call printLog with LogType.SILLY', () => {
         expect(printLogMock).toHaveBeenCalledTimes(1);
         expect(printLogMock).toHaveBeenCalledWith(
-          LogType.SILLY,
+          LogLevel.SILLY,
           messageFixture,
           contextMetadataFixture,
         );
@@ -177,7 +177,7 @@ describe(LoggerAdapter.name, () => {
       it('should call printLog with LogType.ERROR', () => {
         expect(printLogMock).toHaveBeenCalledTimes(1);
         expect(printLogMock).toHaveBeenCalledWith(
-          LogType.ERROR,
+          LogLevel.ERROR,
           messageFixture,
           contextMetadataFixture,
         );
@@ -212,7 +212,7 @@ describe(LoggerAdapter.name, () => {
       it('should call printLog with LogType.WARN', () => {
         expect(printLogMock).toHaveBeenCalledTimes(1);
         expect(printLogMock).toHaveBeenCalledWith(
-          LogType.WARN,
+          LogLevel.WARN,
           messageFixture,
           contextMetadataFixture,
         );
@@ -247,7 +247,7 @@ describe(LoggerAdapter.name, () => {
       it('should call printLog with LogType.DEBUG', () => {
         expect(printLogMock).toHaveBeenCalledTimes(1);
         expect(printLogMock).toHaveBeenCalledWith(
-          LogType.DEBUG,
+          LogLevel.DEBUG,
           messageFixture,
           contextMetadataFixture,
         );
@@ -282,7 +282,7 @@ describe(LoggerAdapter.name, () => {
       it('should call printLog with LogType.VERBOSE', () => {
         expect(printLogMock).toHaveBeenCalledTimes(1);
         expect(printLogMock).toHaveBeenCalledWith(
-          LogType.VERBOSE,
+          LogLevel.VERBOSE,
           messageFixture,
           contextMetadataFixture,
         );
@@ -297,12 +297,12 @@ describe(LoggerAdapter.name, () => {
   describe('.log', () => {
     let messageFixture: string;
     let contextMetadataFixture: ContextMetadata | undefined;
-    let logTypeFixture: LogType;
+    let logTypeFixture: LogLevel;
 
     beforeAll(() => {
       messageFixture = 'log test message';
       contextMetadataFixture = { context: 'log test context' };
-      logTypeFixture = LogType.INFO;
+      logTypeFixture = LogLevel.INFO;
     });
 
     describe('when called', () => {
@@ -343,7 +343,7 @@ describe(LoggerAdapter.name, () => {
           undefined,
           {
             json: true,
-            logTypes: [LogType.ERROR], // Only ERROR logs allowed
+            logTypes: [LogLevel.ERROR], // Only ERROR logs allowed
             timestamp: true,
           },
         );
@@ -354,7 +354,7 @@ describe(LoggerAdapter.name, () => {
 
         beforeAll(() => {
           result = restrictedLoggerAdapter.log(
-            LogType.INFO,
+            LogLevel.INFO,
             messageFixture,
             contextMetadataFixture,
           );

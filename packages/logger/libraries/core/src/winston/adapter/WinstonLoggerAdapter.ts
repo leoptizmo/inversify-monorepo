@@ -4,7 +4,7 @@ import { format, Logger } from 'winston';
 import { LoggerAdapter } from '../../logger/adapter/LoggerAdapter';
 import { ContextMetadata } from '../../logger/model/ContextMetadata';
 import { LoggerOptions } from '../../model/LoggerOptions';
-import { LogType } from '../../model/LogType';
+import { LogLevel } from '../../model/LogLevel';
 
 export class WinstonLoggerAdapter extends LoggerAdapter {
   readonly #logger: Logger;
@@ -38,8 +38,8 @@ export class WinstonLoggerAdapter extends LoggerAdapter {
     this.#logger.format = format.combine(this.#logger.format, ...formatList);
   }
 
-  protected printLog(
-    logType: LogType,
+  protected override printLog(
+    logType: LogLevel,
     message: string,
     context?: ContextMetadata,
   ): void {

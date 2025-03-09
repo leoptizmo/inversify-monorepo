@@ -1,8 +1,8 @@
-import { LogType } from '../../model/LogType';
+import { LogLevel } from '../../model/LogLevel';
 import { ContextMetadata } from './ContextMetadata';
 
 export interface Logger {
-  log(logType: LogType, message: string, context?: ContextMetadata): void;
+  log(logType: LogLevel, message: string, context?: ContextMetadata): void;
   error(message: string, context?: ContextMetadata): void;
   warn(message: string, context?: ContextMetadata): void;
   info(message: string, context?: ContextMetadata): void;

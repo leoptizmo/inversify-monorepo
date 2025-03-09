@@ -1,5 +1,5 @@
 import { LoggerOptions } from '../../model/LoggerOptions';
-import { LogType } from '../../model/LogType';
+import { LogLevel } from '../../model/LogLevel';
 import { ContextMetadata } from '../model/ContextMetadata';
 import { Logger } from '../model/Logger';
 
@@ -11,13 +11,13 @@ export abstract class LoggerAdapter implements Logger {
     protected readonly _loggerOptions: LoggerOptions = {
       json: true,
       logTypes: [
-        LogType.DEBUG,
-        LogType.ERROR,
-        LogType.HTTP,
-        LogType.INFO,
-        LogType.SILLY,
-        LogType.VERBOSE,
-        LogType.WARN,
+        LogLevel.DEBUG,
+        LogLevel.ERROR,
+        LogLevel.HTTP,
+        LogLevel.INFO,
+        LogLevel.SILLY,
+        LogLevel.VERBOSE,
+        LogLevel.WARN,
       ],
       timestamp: true,
     },
@@ -26,19 +26,19 @@ export abstract class LoggerAdapter implements Logger {
   }
 
   public info(message: string, contextMetadata?: ContextMetadata): void {
-    this.log(LogType.INFO, message, contextMetadata);
+    this.log(LogLevel.INFO, message, contextMetadata);
   }
 
   public http(message: string, contextMetadata?: ContextMetadata): void {
-    this.log(LogType.HTTP, message, contextMetadata);
+    this.log(LogLevel.HTTP, message, contextMetadata);
   }
 
   public silly(message: string, contextMetadata?: ContextMetadata): void {
-    this.log(LogType.SILLY, message, contextMetadata);
+    this.log(LogLevel.SILLY, message, contextMetadata);
   }
 
   public log(
-    logType: LogType,
+    logType: LogLevel,
     message: string,
     contextMetadata?: ContextMetadata,
   ): void {
@@ -51,23 +51,23 @@ export abstract class LoggerAdapter implements Logger {
   }
 
   public error(message: string, contextMetadata?: ContextMetadata): void {
-    this.log(LogType.ERROR, message, contextMetadata);
+    this.log(LogLevel.ERROR, message, contextMetadata);
   }
 
   public warn(message: string, contextMetadata?: ContextMetadata): void {
-    this.log(LogType.WARN, message, contextMetadata);
+    this.log(LogLevel.WARN, message, contextMetadata);
   }
 
   public debug(message: string, contextMetadata?: ContextMetadata): void {
-    this.log(LogType.DEBUG, message, contextMetadata);
+    this.log(LogLevel.DEBUG, message, contextMetadata);
   }
 
   public verbose(message: string, contextMetadata?: ContextMetadata): void {
-    this.log(LogType.VERBOSE, message, contextMetadata);
+    this.log(LogLevel.VERBOSE, message, contextMetadata);
   }
 
   protected abstract printLog(
-    logType: LogType,
+    logType: LogLevel,
     message: string,
     context?: ContextMetadata,
   ): void;

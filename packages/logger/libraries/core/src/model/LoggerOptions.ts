@@ -1,7 +1,7 @@
-import { LogType } from './LogType';
+import { LogLevel } from './LogLevel';
 
 export interface LoggerOptions {
   json: boolean;
-  logTypes: LogType[];
+  logTypes: LogLevel[];
   timestamp: boolean;
 }
