@@ -24,7 +24,7 @@
     "vitest": "3.0.7"
   },
   "peerDependencies": {
-    "inversify": "^7.0.1"
+    "inversify": "^7.0.2"
   },
   "homepage": "https://inversify.io",
   "keywords": [
