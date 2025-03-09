@@ -3,7 +3,9 @@ import { Container } from 'inversify';
 
 import { InversifyHttpAdapterError } from '../../error/models/InversifyHttpAdapterError';
 import { InversifyHttpAdapterErrorKind } from '../../error/models/InversifyHttpAdapterErrorKind';
+import { controllerGuardMetadataReflectKey } from '../../reflectMetadata/data/controllerGuardMetadataReflectKey';
 import { controllerMetadataReflectKey } from '../../reflectMetadata/data/controllerMetadataReflectKey';
+import { controllerMethodGuardMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodGuardMetadataReflectKey';
 import { controllerMethodMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodMetadataReflectKey';
 import { controllerMethodMiddlewareMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodMiddlewareMetadataReflectKey';
 import { controllerMethodParameterMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
@@ -69,6 +71,12 @@ export abstract class InversifyHttpAdapter<
         controllerMethodMetadataReflectKey,
       );
 
+      const controllerGuardList: NewableFunction[] | undefined =
+        getReflectMetadata(
+          controllerMetadata.target,
+          controllerGuardMetadataReflectKey,
+        );
+
       const controllerMiddlewareList: NewableFunction[] | undefined =
         getReflectMetadata(
           controllerMetadata.target,
@@ -85,6 +93,7 @@ export abstract class InversifyHttpAdapter<
         this._buildRouter(
           controllerMetadata.path,
           routerParams,
+          this.#getMiddlewareHandlerFromMetadata(controllerGuardList),
           this.#getMiddlewareHandlerFromMetadata(controllerMiddlewareList),
         );
       }
@@ -125,6 +134,14 @@ export abstract class InversifyHttpAdapter<
           controllerMethodStatusCodeMetadataReflectKey,
         );
 
+        const controllerMethodGuardList: NewableFunction[] | undefined =
+          getReflectMetadata(
+            controller[
+              controllerMethodMetadata.methodKey
+            ] as ControllerFunction,
+            controllerMethodGuardMetadataReflectKey,
+          );
+
         const controllerMethodMiddlewareList: NewableFunction[] | undefined =
           getReflectMetadata(
             controller[
@@ -134,6 +151,9 @@ export abstract class InversifyHttpAdapter<
           );
 
         routerParams.push({
+          guardList: this.#getMiddlewareHandlerFromMetadata(
+            controllerMethodGuardList,
+          ),
           handler: this.#buildHandler(
             controllerMethodMetadata,
             parameterMetadataList ?? [],
@@ -339,6 +359,7 @@ export abstract class InversifyHttpAdapter<
   protected abstract _buildRouter(
     path: string,
     routerParams: RouterParams<TRequest, TResponse, TNextFunction>[],
+    guardList: RequestHandler<TRequest, TResponse, TNextFunction>[] | undefined,
     middlewareList:
       | RequestHandler<TRequest, TResponse, TNextFunction>[]
       | undefined,
