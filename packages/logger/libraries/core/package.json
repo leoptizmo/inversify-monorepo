@@ -45,6 +45,9 @@
     }
   },
   "name": "@inversifyjs/logger",
+  "peerDependencies": {
+    "winston": "^3.17.0"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -67,8 +70,5 @@
     "test:uncommitted": "pnpm run test --changed=HEAD",
     "test:unit": "pnpm run test --project Unit"
   },
-  "version": "1.0.0",
-  "dependencies": {
-    "winston": "^3.17.0"
-  }
+  "version": "1.0.0"
 }
