@@ -11,7 +11,7 @@ export abstract class Guard<
   TNextFunction extends () => void,
 > implements Middleware<TRequest, TResponse, TNextFunction>
 {
-  @inject(InversifyHttpAdapter)
+  @inject(InversifyHttpAdapter.name)
   protected readonly _httpAdapter!: HttpAdapter<TRequest, TResponse>;
 
   public async execute(

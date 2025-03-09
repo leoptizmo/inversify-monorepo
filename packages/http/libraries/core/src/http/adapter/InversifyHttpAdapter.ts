@@ -37,6 +37,8 @@ export abstract class InversifyHttpAdapter<
 
   constructor(container: Container) {
     this.#container = container;
+
+    this.#container.bind(InversifyHttpAdapter.name).toConstantValue(this);
   }
 
   public replyUnauthorized(request: TRequest, response: TResponse): unknown {
