@@ -7,7 +7,7 @@ packages:
   - packages/foundation/tools/*
   - packages/http/libraries/*
   - packages/http/tools/*
-  - packages/logger/libraries/*
+  - packages/logger
 
 onlyBuiltDependencies:
   - '@swc/core'
