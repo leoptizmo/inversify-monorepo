@@ -1,3 +1,3 @@
 export interface UserRequest {
-  user?: unknown;
+  user?: Record<string, unknown>;
 }
