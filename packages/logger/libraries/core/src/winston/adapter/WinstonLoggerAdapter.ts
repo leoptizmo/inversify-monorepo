@@ -28,9 +28,8 @@ export class WinstonLoggerAdapter extends LoggerAdapter {
     } else {
       formatList.push(
         format.colorize({ all: true }),
-        format.printf(
-          (info: TransformableInfo): string =>
-            `[InversifyJS] - ${String(process.pid)}${this._loggerOptions.timestamp ? ` ${info['timestamp'] as string}` : ''} ${info.level}${info['context'] !== undefined ? ` [${info['context'] as string}]` : ''}: ${info.message as string}`,
+        format.printf((info: TransformableInfo): string =>
+          this.#stringifyInfo(info),
         ),
       );
     }
@@ -44,5 +43,12 @@ export class WinstonLoggerAdapter extends LoggerAdapter {
     context?: ContextMetadata,
   ): void {
     this.#logger.log(logType, message, context);
+  }
+
+  #stringifyInfo(info: TransformableInfo): string {
+    const prefix: string =
+      (info['context'] as string | undefined) ?? 'InversifyJS';
+
+    return `[${prefix}] - ${String(process.pid)}${this._loggerOptions.timestamp ? ` ${info['timestamp'] as string}` : ''} ${info.level}: ${info.message as string}`;
   }
 }

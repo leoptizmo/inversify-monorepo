@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import stream from 'node:stream';
 
@@ -28,41 +28,83 @@ class TestStream extends stream.Writable {
 }
 
 describe(WinstonLoggerAdapter.name, () => {
-  let stream: TestStream;
-  let winstonLoggerAdapter: WinstonLoggerAdapter;
-
-  beforeAll(() => {
-    stream = new TestStream();
-
-    winstonLoggerAdapter = new WinstonLoggerAdapter(
-      createLogger({
-        transports: [new transports.Stream({ stream })],
-      }),
-    );
-  });
-
   describe('.log', () => {
-    describe('when called', () => {
+    describe('having a WinstonLoggerAdapter instance with timestamp flag', () => {
+      let stream: TestStream;
+      let winstonLoggerAdapter: WinstonLoggerAdapter;
+
       beforeAll(() => {
-        winstonLoggerAdapter.log(LogLevel.INFO, 'test', {
-          context: 'context-test',
+        stream = new TestStream();
+
+        winstonLoggerAdapter = new WinstonLoggerAdapter(
+          createLogger({
+            transports: [new transports.Stream({ stream })],
+          }),
+          'test',
+          {
+            timestamp: true,
+          },
+        );
+      });
+
+      describe('when called', () => {
+        beforeAll(() => {
+          winstonLoggerAdapter.log(LogLevel.INFO, 'test-message', {
+            context: 'context-test',
+          });
+        });
+
+        it('should write log to stream', () => {
+          const expectedChunks: unknown[] = [
+            expect.objectContaining({
+              context: 'context-test',
+              level: `\x1b[32m${LogLevel.INFO}\x1b[39m`,
+              message: '\x1b[32mtest-message\x1b[39m',
+            }),
+          ];
+
+          expect(stream.chunks).toStrictEqual(expectedChunks);
         });
       });
+    });
 
-      afterAll(() => {
-        stream.chunks = [];
+    describe('having a WinstonLoggerAdapter instance with both json and timestamp flags', () => {
+      let stream: TestStream;
+      let winstonLoggerAdapter: WinstonLoggerAdapter;
+
+      beforeAll(() => {
+        stream = new TestStream();
+
+        winstonLoggerAdapter = new WinstonLoggerAdapter(
+          createLogger({
+            transports: [new transports.Stream({ stream })],
+          }),
+          'test',
+          {
+            json: true,
+            timestamp: true,
+          },
+        );
       });
 
-      it('should write log to stream', () => {
-        const expectedChunks: unknown[] = [
-          expect.objectContaining({
+      describe('when called', () => {
+        beforeAll(() => {
+          winstonLoggerAdapter.log(LogLevel.INFO, 'test-message', {
             context: 'context-test',
-            level: 'info',
-            message: 'test',
-          }),
-        ];
+          });
+        });
 
-        expect(stream.chunks).toStrictEqual(expectedChunks);
+        it('should write log to stream', () => {
+          const expectedChunks: unknown[] = [
+            expect.objectContaining({
+              context: 'context-test',
+              level: LogLevel.INFO,
+              message: 'test-message',
+            }),
+          ];
+
+          expect(stream.chunks).toStrictEqual(expectedChunks);
+        });
       });
     });
   });

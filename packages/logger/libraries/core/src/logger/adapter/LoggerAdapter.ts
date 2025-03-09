@@ -3,25 +3,14 @@ import { LogLevel } from '../../model/LogLevel';
 import { ContextMetadata } from '../model/ContextMetadata';
 import { Logger } from '../model/Logger';
 
+type InternalLoggerOptions = Required<LoggerOptions>;
+
 export abstract class LoggerAdapter implements Logger {
+  protected readonly _loggerOptions: InternalLoggerOptions;
   readonly #context: string | undefined;
 
-  constructor(
-    context?: string,
-    protected readonly _loggerOptions: LoggerOptions = {
-      json: true,
-      logTypes: [
-        LogLevel.DEBUG,
-        LogLevel.ERROR,
-        LogLevel.HTTP,
-        LogLevel.INFO,
-        LogLevel.SILLY,
-        LogLevel.VERBOSE,
-        LogLevel.WARN,
-      ],
-      timestamp: true,
-    },
-  ) {
+  constructor(context?: string, loggerOptions?: LoggerOptions) {
+    this._loggerOptions = this.#parseLoggingOptions(loggerOptions);
     this.#context = context;
   }
 
@@ -64,6 +53,24 @@ export abstract class LoggerAdapter implements Logger {
 
   public verbose(message: string, contextMetadata?: ContextMetadata): void {
     this.log(LogLevel.VERBOSE, message, contextMetadata);
+  }
+
+  #parseLoggingOptions(
+    loggerOptions: LoggerOptions | undefined,
+  ): InternalLoggerOptions {
+    return {
+      json: loggerOptions?.json ?? false,
+      logTypes: loggerOptions?.logTypes ?? [
+        LogLevel.DEBUG,
+        LogLevel.ERROR,
+        LogLevel.HTTP,
+        LogLevel.INFO,
+        LogLevel.SILLY,
+        LogLevel.VERBOSE,
+        LogLevel.WARN,
+      ],
+      timestamp: loggerOptions?.timestamp ?? true,
+    };
   }
 
   protected abstract printLog(
