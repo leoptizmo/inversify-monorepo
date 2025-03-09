@@ -25,12 +25,14 @@ import { UserRequest } from '../models/UserRequest';
 import { InternalServerErrorHttpResponse } from '../responses/error/InternalServerErrorHttpResponse';
 import { HttpResponse } from '../responses/HttpResponse';
 import { HttpStatusCode } from '../responses/HttpStatusCode';
+import { HttpAdapter } from './HttpAdapter';
 
 export abstract class InversifyHttpAdapter<
   TRequest extends UserRequest,
   TResponse,
   TNextFunction extends (err?: unknown) => void,
-> {
+> implements HttpAdapter<TRequest, TResponse>
+{
   readonly #container: Container;
 
   constructor(container: Container) {
