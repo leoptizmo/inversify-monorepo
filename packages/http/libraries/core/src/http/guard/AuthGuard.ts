@@ -1,6 +1,8 @@
 import { injectable } from 'inversify';
 
 import { UserRequest } from '../models/UserRequest';
+import { UnauthorizedHttpResponse } from '../responses/error/UnauthorizedHttpResponse';
+import { HttpResponse } from '../responses/HttpResponse';
 import { Guard } from './Guard';
 
 @injectable()
@@ -9,23 +11,20 @@ export abstract class AuthGuard<
   TResponse,
   TNextFunction extends () => void,
 > extends Guard<TRequest, TResponse, TNextFunction> {
-  protected async _activate(
-    request: TRequest,
-    response: TResponse,
-    next: TNextFunction,
-  ): Promise<boolean> {
+  protected async _activate(request: TRequest): Promise<boolean> {
     const token: string = await this._getTokenFromRequest(request);
     const user: Record<string, unknown> | undefined =
       await this._validateToken(token);
 
-    if (user === undefined) {
-      this._httpAdapter.replyUnauthorized(request, response);
-    } else {
+    if (user !== undefined) {
       request.user = user;
-      next();
     }
 
-    return true;
+    return user !== undefined;
+  }
+
+  protected override _getGuardError(): HttpResponse {
+    return new UnauthorizedHttpResponse();
   }
 
   protected abstract _getTokenFromRequest(
