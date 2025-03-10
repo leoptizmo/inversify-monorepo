@@ -1,3 +1,4 @@
+import { ConsoleLogger, Logger } from '@inversifyjs/logger';
 import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 import { Container } from 'inversify';
 
@@ -16,6 +17,7 @@ import { ControllerMethodMetadata } from '../models/ControllerMethodMetadata';
 import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
 import { ControllerResponse } from '../models/ControllerResponse';
 import { HttpAdapterOptions } from '../models/HttpAdapterOptions';
+import { InternalHttpAdapterOptions } from '../models/InternalHttpAdapterOptions';
 import { Middleware } from '../models/Middleware';
 import { RequestHandler } from '../models/RequestHandler';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
@@ -30,18 +32,26 @@ export abstract class InversifyHttpAdapter<
   TNextFunction extends (err?: unknown) => void,
 > {
   readonly #container: Container;
-  readonly #httpAdapterOptions: HttpAdapterOptions;
+  readonly #httpAdapterOptions: InternalHttpAdapterOptions;
+  readonly #logger: Logger;
 
-  constructor(
-    container: Container,
-    httpAdapterOptions: HttpAdapterOptions = { logger: true },
-  ) {
+  constructor(container: Container, httpAdapterOptions?: HttpAdapterOptions) {
     this.#container = container;
-    this.#httpAdapterOptions = httpAdapterOptions;
+    this.#logger = new ConsoleLogger();
+    this.#httpAdapterOptions =
+      this.#parseHttpAdapterOptions(httpAdapterOptions);
   }
 
   protected _buildServer(): void {
     this.#registerControllers();
+  }
+
+  #parseHttpAdapterOptions(
+    httpAdapterOptions?: HttpAdapterOptions,
+  ): InternalHttpAdapterOptions {
+    return {
+      logger: httpAdapterOptions?.logger ?? true,
+    };
   }
 
   #registerControllers(): void {
@@ -85,10 +95,7 @@ export abstract class InversifyHttpAdapter<
           this.#getMiddlewareHandlerFromMetadata(controllerMiddlewareList),
         );
 
-        if (
-          this.#httpAdapterOptions.logger === undefined ||
-          this.#httpAdapterOptions.logger
-        ) {
+        if (this.#httpAdapterOptions.logger) {
           this.#printController(
             controllerMetadata.target.name,
             controllerMetadata.path,
@@ -301,10 +308,10 @@ export abstract class InversifyHttpAdapter<
     path: string,
     controllerMethodMetadataList: ControllerMethodMetadata[],
   ): void {
-    console.log(`${controllerName} {${path}}:`);
+    this.#logger.info(`${controllerName} {${path}}:`);
 
     for (const controllerMethodMetadata of controllerMethodMetadataList) {
-      console.log(
+      this.#logger.info(
         `.${controllerMethodMetadata.methodKey as string}() mapped {${controllerMethodMetadata.path}, ${controllerMethodMetadata.requestMethodType}}`,
       );
     }
