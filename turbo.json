@@ -90,6 +90,7 @@
       "outputs": ["reports/**"]
     },
     "test:uncommitted": {
+      "dependsOn": ["^build"],
       "inputs": ["src/**/*.{cts,mts,ts}"],
       "outputs": []
     },

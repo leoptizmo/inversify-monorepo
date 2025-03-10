@@ -273,7 +273,7 @@ describe(Container.name, () => {
               serviceIdentifier: serviceIdentifierFixture,
               tag: getOptionsFixture.tag as GetOptionsTagConstraint,
             },
-            servicesBranch: new Set(),
+            servicesBranch: [],
             setBinding: expect.any(Function) as unknown as <TInstance>(
               binding: Binding<TInstance>,
             ) => void,
@@ -475,7 +475,7 @@ describe(Container.name, () => {
               serviceIdentifier: serviceIdentifierFixture,
               tag: getOptionsFixture.tag as GetOptionsTagConstraint,
             },
-            servicesBranch: new Set(),
+            servicesBranch: [],
             setBinding: expect.any(Function) as unknown as <TInstance>(
               binding: Binding<TInstance>,
             ) => void,
@@ -613,7 +613,7 @@ describe(Container.name, () => {
               serviceIdentifier: serviceIdentifierFixture,
               tag: getOptionsFixture.tag as GetOptionsTagConstraint,
             },
-            servicesBranch: new Set(),
+            servicesBranch: [],
             setBinding: expect.any(Function) as unknown as <TInstance>(
               binding: Binding<TInstance>,
             ) => void,
@@ -743,7 +743,7 @@ describe(Container.name, () => {
               serviceIdentifier: serviceIdentifierFixture,
               tag: getOptionsFixture.tag as GetOptionsTagConstraint,
             },
-            servicesBranch: new Set(),
+            servicesBranch: [],
             setBinding: expect.any(Function) as unknown as <TInstance>(
               binding: Binding<TInstance>,
             ) => void,
@@ -862,7 +862,7 @@ describe(Container.name, () => {
             serviceIdentifier: serviceIdentifierFixture,
             tag: getOptionsFixture.tag as GetOptionsTagConstraint,
           },
-          servicesBranch: new Set(),
+          servicesBranch: [],
           setBinding: expect.any(Function) as unknown as <TInstance>(
             binding: Binding<TInstance>,
           ) => void,
@@ -979,7 +979,7 @@ describe(Container.name, () => {
             serviceIdentifier: serviceIdentifierFixture,
             tag: getOptionsFixture.tag as GetOptionsTagConstraint,
           },
-          servicesBranch: new Set(),
+          servicesBranch: [],
           setBinding: expect.any(Function) as unknown as <TInstance>(
             binding: Binding<TInstance>,
           ) => void,
@@ -1105,7 +1105,7 @@ describe(Container.name, () => {
             serviceIdentifier: serviceIdentifierFixture,
             tag: getOptionsFixture.tag as GetOptionsTagConstraint,
           },
-          servicesBranch: new Set(),
+          servicesBranch: [],
           setBinding: expect.any(Function) as unknown as <TInstance>(
             binding: Binding<TInstance>,
           ) => void,
@@ -1223,7 +1223,7 @@ describe(Container.name, () => {
             serviceIdentifier: serviceIdentifierFixture,
             tag: getOptionsFixture.tag as GetOptionsTagConstraint,
           },
-          servicesBranch: new Set(),
+          servicesBranch: [],
           setBinding: expect.any(Function) as unknown as <TInstance>(
             binding: Binding<TInstance>,
           ) => void,

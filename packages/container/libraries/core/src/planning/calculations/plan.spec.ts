@@ -62,7 +62,7 @@ describe(plan.name, () => {
             value: 'tag-value',
           },
         },
-        servicesBranch: new Set(),
+        servicesBranch: [],
       } as Partial<Mocked<PlanParams>> as Mocked<PlanParams>;
     });
 
@@ -142,7 +142,7 @@ describe(plan.name, () => {
           isMultiple: true,
           serviceIdentifier: 'service-id',
         },
-        servicesBranch: new Set(),
+        servicesBranch: [],
         setBinding: vitest.fn() as unknown,
       } as Partial<Mocked<PlanParams>> as Mocked<PlanParams>;
     });
@@ -411,9 +411,7 @@ describe(plan.name, () => {
           getBindings: planParamsMock.getBindings,
           getClassMetadata: planParamsMock.getClassMetadata,
           node: expect.any(Object) as unknown as Mocked<PlanServiceNodeParent>,
-          servicesBranch: expect.any(Set) as unknown as Mocked<
-            Set<ServiceIdentifier>
-          >,
+          servicesBranch: expect.any(Array) as unknown as ServiceIdentifier[],
           setBinding: planParamsMock.setBinding,
         };
 
@@ -590,9 +588,7 @@ describe(plan.name, () => {
           getBindings: planParamsMock.getBindings,
           getClassMetadata: planParamsMock.getClassMetadata,
           node: expect.any(Object) as unknown as Mocked<PlanServiceNodeParent>,
-          servicesBranch: expect.any(Set) as unknown as Mocked<
-            Set<ServiceIdentifier>
-          >,
+          servicesBranch: expect.any(Array) as unknown as ServiceIdentifier[],
           setBinding: planParamsMock.setBinding,
         };
 
@@ -770,9 +766,7 @@ describe(plan.name, () => {
           getBindings: planParamsMock.getBindings,
           getClassMetadata: planParamsMock.getClassMetadata,
           node: expect.any(Object) as unknown as Mocked<PlanServiceNodeParent>,
-          servicesBranch: expect.any(Set) as unknown as Mocked<
-            Set<ServiceIdentifier>
-          >,
+          servicesBranch: expect.any(Array) as unknown as ServiceIdentifier[],
           setBinding: planParamsMock.setBinding,
         };
 
@@ -1122,9 +1116,7 @@ describe(plan.name, () => {
           getBindings: planParamsMock.getBindings,
           getClassMetadata: planParamsMock.getClassMetadata,
           node: expect.any(Object) as unknown as Mocked<PlanServiceNodeParent>,
-          servicesBranch: expect.any(Set) as unknown as Mocked<
-            Set<ServiceIdentifier>
-          >,
+          servicesBranch: expect.any(Array) as unknown as ServiceIdentifier[],
           setBinding: planParamsMock.setBinding,
         };
 
@@ -1252,9 +1244,7 @@ describe(plan.name, () => {
           getBindings: planParamsMock.getBindings,
           getClassMetadata: planParamsMock.getClassMetadata,
           node: expect.any(Object) as unknown as Mocked<PlanServiceNodeParent>,
-          servicesBranch: expect.any(Set) as unknown as Mocked<
-            Set<ServiceIdentifier>
-          >,
+          servicesBranch: expect.any(Array) as unknown as ServiceIdentifier[],
           setBinding: planParamsMock.setBinding,
         };
 
@@ -1383,9 +1373,7 @@ describe(plan.name, () => {
           getBindings: planParamsMock.getBindings,
           getClassMetadata: planParamsMock.getClassMetadata,
           node: expect.any(Object) as unknown as Mocked<PlanServiceNodeParent>,
-          servicesBranch: expect.any(Set) as unknown as Mocked<
-            Set<ServiceIdentifier>
-          >,
+          servicesBranch: expect.any(Array) as unknown as ServiceIdentifier[],
           setBinding: planParamsMock.setBinding,
         };
 
@@ -1621,14 +1609,15 @@ describe(plan.name, () => {
 
     beforeAll(() => {
       planParamsMock = {
-        getBindings: vitest.fn(),
-        getClassMetadata: vitest.fn(),
+        getBindings: vitest.fn() as unknown,
+        getClassMetadata: vitest.fn() as unknown,
         rootConstraints: {
           isMultiple: false,
           serviceIdentifier: 'service-id',
         },
-        servicesBranch: new Set(),
-      } as Partial<PlanParams> as Mocked<PlanParams>;
+        servicesBranch: [],
+        setBinding: vitest.fn() as unknown,
+      } as Partial<Mocked<PlanParams>> as Mocked<PlanParams>;
     });
 
     describe('when called, and params.getBindings() returns undefined', () => {

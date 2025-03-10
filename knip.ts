@@ -75,5 +75,6 @@ export default {
       project: defaultWorkspaceProjectConfig.project,
     },
     "packages/http/libraries/*": defaultWorkspaceProjectConfig,
+    "packages/logger": defaultWorkspaceProjectConfig,
   },
 } satisfies KnipConfig;
