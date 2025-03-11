@@ -261,9 +261,6 @@ export abstract class InversifyHttpAdapter<
           case RequestMethodParameterType.NEXT: {
             return next;
           }
-          case RequestMethodParameterType.USER: {
-            return request.user;
-          }
         }
       },
     );

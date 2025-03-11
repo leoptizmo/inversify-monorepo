@@ -19,7 +19,6 @@ import { request } from './http/decorators/Request';
 import { response } from './http/decorators/Response';
 import { statusCode } from './http/decorators/StatusCode';
 import { useGuard } from './http/decorators/UseGuard';
-import { AuthGuard } from './http/guard/AuthGuard';
 import { Guard } from './http/guard/Guard';
 import { Middleware } from './http/models/Middleware';
 import { RequestHandler } from './http/models/RequestHandler';
@@ -89,7 +88,6 @@ export {
   HttpStatusCode,
   InversifyHttpAdapter,
   Guard,
-  AuthGuard,
   ALL,
   GET,
   DELETE,
