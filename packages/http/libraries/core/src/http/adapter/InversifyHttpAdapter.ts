@@ -1,3 +1,4 @@
+import { ConsoleLogger, Logger } from '@inversifyjs/logger';
 import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 import { Container } from 'inversify';
 
@@ -17,6 +18,8 @@ import { ControllerMetadata } from '../models/ControllerMetadata';
 import { ControllerMethodMetadata } from '../models/ControllerMethodMetadata';
 import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
 import { ControllerResponse } from '../models/ControllerResponse';
+import { HttpAdapterOptions } from '../models/HttpAdapterOptions';
+import { InternalHttpAdapterOptions } from '../models/InternalHttpAdapterOptions';
 import { Middleware } from '../models/Middleware';
 import { RequestHandler } from '../models/RequestHandler';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
@@ -38,10 +41,14 @@ export abstract class InversifyHttpAdapter<
 > implements HttpAdapter<TRequest, TResponse>
 {
   readonly #container: Container;
+  readonly #httpAdapterOptions: InternalHttpAdapterOptions;
+  readonly #logger: Logger;
 
-  constructor(container: Container) {
+  constructor(container: Container, httpAdapterOptions?: HttpAdapterOptions) {
     this.#container = container;
-
+    this.#logger = new ConsoleLogger();
+    this.#httpAdapterOptions =
+      this.#parseHttpAdapterOptions(httpAdapterOptions);
     this.#container.bind(inversifyHttpAdapterSymbol).toConstantValue(this);
   }
 
@@ -55,6 +62,14 @@ export abstract class InversifyHttpAdapter<
 
   protected _buildServer(): void {
     this.#registerControllers();
+  }
+
+  #parseHttpAdapterOptions(
+    httpAdapterOptions?: HttpAdapterOptions,
+  ): InternalHttpAdapterOptions {
+    return {
+      logger: httpAdapterOptions?.logger ?? true,
+    };
   }
 
   #registerControllers(): void {
@@ -104,6 +119,14 @@ export abstract class InversifyHttpAdapter<
           this.#getMiddlewareHandlerFromMetadata(controllerGuardList),
           this.#getMiddlewareHandlerFromMetadata(controllerMiddlewareList),
         );
+
+        if (this.#httpAdapterOptions.logger) {
+          this.#printController(
+            controllerMetadata.target.name,
+            controllerMetadata.path,
+            controllerMethodMetadataList,
+          );
+        }
       }
     }
   }
@@ -314,6 +337,20 @@ export abstract class InversifyHttpAdapter<
     }
 
     return requestHandlerList;
+  }
+
+  #printController(
+    controllerName: string,
+    path: string,
+    controllerMethodMetadataList: ControllerMethodMetadata[],
+  ): void {
+    this.#logger.info(`${controllerName} {${path}}:`);
+
+    for (const controllerMethodMetadata of controllerMethodMetadataList) {
+      this.#logger.info(
+        `.${controllerMethodMetadata.methodKey as string}() mapped {${controllerMethodMetadata.path}, ${controllerMethodMetadata.requestMethodType}}`,
+      );
+    }
   }
 
   public abstract build(): unknown;
