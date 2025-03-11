@@ -1,21 +1,9 @@
 import { ConsoleLogger, Logger } from '@inversifyjs/logger';
-import { getReflectMetadata } from '@inversifyjs/reflect-metadata-utils';
 import { Container } from 'inversify';
 
-import { InversifyHttpAdapterError } from '../../error/models/InversifyHttpAdapterError';
-import { InversifyHttpAdapterErrorKind } from '../../error/models/InversifyHttpAdapterErrorKind';
-import { controllerGuardMetadataReflectKey } from '../../reflectMetadata/data/controllerGuardMetadataReflectKey';
-import { controllerMetadataReflectKey } from '../../reflectMetadata/data/controllerMetadataReflectKey';
-import { controllerMethodGuardMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodGuardMetadataReflectKey';
-import { controllerMethodMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodMetadataReflectKey';
-import { controllerMethodMiddlewareMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodMiddlewareMetadataReflectKey';
-import { controllerMethodParameterMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
-import { controllerMethodStatusCodeMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodStatusCodeMetadataReflectKey';
-import { controllerMiddlewareMetadataReflectKey } from '../../reflectMetadata/data/controllerMiddlewareMetadataReflectKey';
-import { Controller } from '../models/Controller';
+import { RouterExplorerControllerMethodMetadata } from '../../routerExplorer/model/RouterExplorerControllerMethodMetadata';
+import { RouterExplorer } from '../../routerExplorer/RouterExplorer';
 import { ControllerFunction } from '../models/ControllerFunction';
-import { ControllerMetadata } from '../models/ControllerMetadata';
-import { ControllerMethodMetadata } from '../models/ControllerMethodMetadata';
 import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
 import { ControllerResponse } from '../models/ControllerResponse';
 import { HttpAdapterOptions } from '../models/HttpAdapterOptions';
@@ -43,9 +31,11 @@ export abstract class InversifyHttpAdapter<
   readonly #container: Container;
   readonly #httpAdapterOptions: InternalHttpAdapterOptions;
   readonly #logger: Logger;
+  readonly #routerExplorer: RouterExplorer;
 
   constructor(container: Container, httpAdapterOptions?: HttpAdapterOptions) {
     this.#container = container;
+    this.#routerExplorer = new RouterExplorer(container);
     this.#logger = new ConsoleLogger();
     this.#httpAdapterOptions =
       this.#parseHttpAdapterOptions(httpAdapterOptions);
@@ -73,140 +63,59 @@ export abstract class InversifyHttpAdapter<
   }
 
   #registerControllers(): void {
-    const controllerMetadataList: ControllerMetadata[] | undefined =
-      getReflectMetadata(Reflect, controllerMetadataReflectKey);
-
-    if (controllerMetadataList === undefined) {
-      throw new InversifyHttpAdapterError(
-        InversifyHttpAdapterErrorKind.noControllerFound,
-      );
-    }
-
-    this.#buildHandlers(controllerMetadataList);
-  }
-
-  #buildHandlers(controllerMetadataList: ControllerMetadata[]): void {
-    for (const controllerMetadata of controllerMetadataList) {
-      const controllerMethodMetadataList:
-        | ControllerMethodMetadata[]
-        | undefined = getReflectMetadata(
-        controllerMetadata.target,
-        controllerMethodMetadataReflectKey,
+    for (const routerExplorerControllerMetadata of this.#routerExplorer
+      .routerExplorerControllerMetadataList) {
+      this._buildRouter(
+        routerExplorerControllerMetadata.path,
+        this.#buildHandlers(
+          routerExplorerControllerMetadata.controllerMethodMetadataList,
+        ),
+        this.#getMiddlewareHandlerFromMetadata(
+          routerExplorerControllerMetadata.middlewareList,
+        ),
+        this.#getMiddlewareHandlerFromMetadata(
+          routerExplorerControllerMetadata.guardList,
+        ),
       );
 
-      const controllerGuardList: NewableFunction[] | undefined =
-        getReflectMetadata(
-          controllerMetadata.target,
-          controllerGuardMetadataReflectKey,
+      if (this.#httpAdapterOptions.logger) {
+        this.#printController(
+          routerExplorerControllerMetadata.target.name,
+          routerExplorerControllerMetadata.path,
+          routerExplorerControllerMetadata.controllerMethodMetadataList,
         );
-
-      const controllerMiddlewareList: NewableFunction[] | undefined =
-        getReflectMetadata(
-          controllerMetadata.target,
-          controllerMiddlewareMetadataReflectKey,
-        );
-
-      if (controllerMethodMetadataList !== undefined) {
-        const routerParams: RouterParams<TRequest, TResponse, TNextFunction>[] =
-          this.#buildRouterParams(
-            controllerMetadata,
-            controllerMethodMetadataList,
-          );
-
-        this._buildRouter(
-          controllerMetadata.path,
-          routerParams,
-          this.#getMiddlewareHandlerFromMetadata(controllerGuardList),
-          this.#getMiddlewareHandlerFromMetadata(controllerMiddlewareList),
-        );
-
-        if (this.#httpAdapterOptions.logger) {
-          this.#printController(
-            controllerMetadata.target.name,
-            controllerMetadata.path,
-            controllerMethodMetadataList,
-          );
-        }
       }
     }
   }
 
-  #buildRouterParams(
-    controllerMetadata: ControllerMetadata,
-    controllerMethodMetadataList: ControllerMethodMetadata[],
+  #buildHandlers(
+    routerExplorerControllerMethodMetadata: RouterExplorerControllerMethodMetadata[],
   ): RouterParams<TRequest, TResponse, TNextFunction>[] {
-    const routerParams: RouterParams<TRequest, TResponse, TNextFunction>[] = [];
-
-    for (const controllerMethodMetadata of controllerMethodMetadataList) {
-      if (
-        (controllerMetadata.controllerName === undefined &&
-          this.#container.isBound(controllerMetadata.target)) ||
-        (controllerMetadata.controllerName !== undefined &&
-          this.#container.isBound(controllerMetadata.target, {
-            name: controllerMetadata.controllerName,
-          }))
-      ) {
-        const controller: Controller =
-          controllerMetadata.controllerName === undefined
-            ? this.#container.get(controllerMetadata.target)
-            : this.#container.get(controllerMetadata.target, {
-                name: controllerMetadata.controllerName,
-              });
-
-        const parameterMetadataList:
-          | ControllerMethodParameterMetadata[]
-          | undefined = getReflectMetadata(
-          controller[controllerMethodMetadata.methodKey] as ControllerFunction,
-          controllerMethodParameterMetadataReflectKey,
-        );
-
-        const statusCode: HttpStatusCode | undefined = getReflectMetadata(
-          controller[controllerMethodMetadata.methodKey] as ControllerFunction,
-          controllerMethodStatusCodeMetadataReflectKey,
-        );
-
-        const controllerMethodGuardList: NewableFunction[] | undefined =
-          getReflectMetadata(
-            controller[
-              controllerMethodMetadata.methodKey
-            ] as ControllerFunction,
-            controllerMethodGuardMetadataReflectKey,
-          );
-
-        const controllerMethodMiddlewareList: NewableFunction[] | undefined =
-          getReflectMetadata(
-            controller[
-              controllerMethodMetadata.methodKey
-            ] as ControllerFunction,
-            controllerMethodMiddlewareMetadataReflectKey,
-          );
-
-        routerParams.push({
-          guardList: this.#getMiddlewareHandlerFromMetadata(
-            controllerMethodGuardList,
-          ),
-          handler: this.#buildHandler(
-            controllerMethodMetadata,
-            parameterMetadataList ?? [],
-            controller,
-            statusCode,
-          ),
-          middlewareList: this.#getMiddlewareHandlerFromMetadata(
-            controllerMethodMiddlewareList,
-          ),
-          path: controllerMethodMetadata.path,
-          requestMethodType: controllerMethodMetadata.requestMethodType,
-        });
-      }
-    }
-
-    return routerParams;
+    return routerExplorerControllerMethodMetadata.map(
+      (
+        routerExplorerControllerMethodMetadata: RouterExplorerControllerMethodMetadata,
+      ) => ({
+        guardList: this.#getMiddlewareHandlerFromMetadata(
+          routerExplorerControllerMethodMetadata.guardList,
+        ),
+        handler: this.#buildHandler(
+          routerExplorerControllerMethodMetadata.parameterMetadataList,
+          routerExplorerControllerMethodMetadata.target,
+          routerExplorerControllerMethodMetadata.statusCode,
+        ),
+        middlewareList: this.#getMiddlewareHandlerFromMetadata(
+          routerExplorerControllerMethodMetadata.middlewareList,
+        ),
+        path: routerExplorerControllerMethodMetadata.path,
+        requestMethodType:
+          routerExplorerControllerMethodMetadata.requestMethodType,
+      }),
+    );
   }
 
   #buildHandler(
-    controllerMethodMetadata: ControllerMethodMetadata,
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
-    controller: Controller,
+    controllerFunction: ControllerFunction,
     statusCode: HttpStatusCode | undefined,
   ): RequestHandler<TRequest, TResponse, TNextFunction> {
     return async (
@@ -224,9 +133,9 @@ export abstract class InversifyHttpAdapter<
           ),
         );
 
-        const value: ControllerResponse = await (
-          controller[controllerMethodMetadata.methodKey] as ControllerFunction
-        )(...handlerParams);
+        const value: ControllerResponse = await controllerFunction(
+          ...handlerParams,
+        );
 
         return this.#reply(req, res, value, statusCode);
       } catch (_error: unknown) {
@@ -342,13 +251,13 @@ export abstract class InversifyHttpAdapter<
   #printController(
     controllerName: string,
     path: string,
-    controllerMethodMetadataList: ControllerMethodMetadata[],
+    routerExplorerControllerMethodMetadataList: RouterExplorerControllerMethodMetadata[],
   ): void {
     this.#logger.info(`${controllerName} {${path}}:`);
 
-    for (const controllerMethodMetadata of controllerMethodMetadataList) {
+    for (const controllerMethodMetadata of routerExplorerControllerMethodMetadataList) {
       this.#logger.info(
-        `.${controllerMethodMetadata.methodKey as string}() mapped {${controllerMethodMetadata.path}, ${controllerMethodMetadata.requestMethodType}}`,
+        `.${controllerMethodMetadata.target.name}() mapped {${controllerMethodMetadata.path}, ${controllerMethodMetadata.requestMethodType}}`,
       );
     }
   }
