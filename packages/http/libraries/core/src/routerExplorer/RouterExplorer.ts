@@ -135,12 +135,12 @@ export class RouterExplorer {
 
     return {
       guardList: controllerMethodGuardList,
+      methodKey: controllerMethodMetadata.methodKey,
       middlewareList: controllerMethodMiddlewareList,
       parameterMetadataList: controllerMethodParameterMetadataList ?? [],
       path: controllerMethodMetadata.path,
       requestMethodType: controllerMethodMetadata.requestMethodType,
       statusCode: controllerMethodStatusCode,
-      target: targetFunction,
     };
   }
 
