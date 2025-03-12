@@ -3,6 +3,7 @@ import { Container } from 'inversify';
 
 import { RouterExplorerControllerMethodMetadata } from '../../routerExplorer/model/RouterExplorerControllerMethodMetadata';
 import { RouterExplorer } from '../../routerExplorer/RouterExplorer';
+import { Guard } from '../guard/Guard';
 import { ControllerFunction } from '../models/ControllerFunction';
 import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
 import { ControllerResponse } from '../models/ControllerResponse';
@@ -12,22 +13,16 @@ import { Middleware } from '../models/Middleware';
 import { RequestHandler } from '../models/RequestHandler';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 import { RouterParams } from '../models/RouterParams';
-import { UserRequest } from '../models/UserRequest';
+import { ForbiddenHttpResponse } from '../responses/error/ForbiddenHttpResponse';
 import { InternalServerErrorHttpResponse } from '../responses/error/InternalServerErrorHttpResponse';
 import { HttpResponse } from '../responses/HttpResponse';
 import { HttpStatusCode } from '../responses/HttpStatusCode';
-import { HttpAdapter } from './HttpAdapter';
-
-export const inversifyHttpAdapterSymbol: symbol = Symbol(
-  'InversifyHttpAdapter',
-);
 
 export abstract class InversifyHttpAdapter<
-  TRequest extends UserRequest,
+  TRequest,
   TResponse,
   TNextFunction extends (err?: unknown) => void,
-> implements HttpAdapter<TRequest, TResponse>
-{
+> {
   readonly #container: Container;
   readonly #httpAdapterOptions: InternalHttpAdapterOptions;
   readonly #logger: Logger;
@@ -39,15 +34,6 @@ export abstract class InversifyHttpAdapter<
     this.#logger = new ConsoleLogger();
     this.#httpAdapterOptions =
       this.#parseHttpAdapterOptions(httpAdapterOptions);
-    this.#container.bind(inversifyHttpAdapterSymbol).toConstantValue(this);
-  }
-
-  public replyHttpResponse(
-    request: TRequest,
-    response: TResponse,
-    httpResponse: HttpResponse,
-  ): unknown {
-    return this.#reply(request, response, httpResponse);
   }
 
   protected _buildServer(): void {
@@ -73,7 +59,7 @@ export abstract class InversifyHttpAdapter<
         this.#getMiddlewareHandlerFromMetadata(
           routerExplorerControllerMetadata.middlewareList,
         ),
-        this.#getMiddlewareHandlerFromMetadata(
+        this.#getGuardHandlerFromMetadata(
           routerExplorerControllerMetadata.guardList,
         ),
       );
@@ -95,7 +81,7 @@ export abstract class InversifyHttpAdapter<
       (
         routerExplorerControllerMethodMetadata: RouterExplorerControllerMethodMetadata,
       ) => ({
-        guardList: this.#getMiddlewareHandlerFromMetadata(
+        guardList: this.#getGuardHandlerFromMetadata(
           routerExplorerControllerMethodMetadata.guardList,
         ),
         handler: this.#buildHandler(
@@ -246,6 +232,42 @@ export abstract class InversifyHttpAdapter<
     }
 
     return requestHandlerList;
+  }
+
+  #getGuardHandlerFromMetadata(
+    guardList: NewableFunction[] | undefined,
+  ): RequestHandler<TRequest, TResponse, TNextFunction>[] | undefined {
+    let guardHandlerList:
+      | RequestHandler<TRequest, TResponse, TNextFunction>[]
+      | undefined = undefined;
+
+    if (guardList !== undefined) {
+      guardHandlerList = guardList.map((newableFunction: NewableFunction) => {
+        const guard: Guard<TRequest> = this.#container.get(newableFunction);
+
+        return async (
+          request: TRequest,
+          response: TResponse,
+          next: TNextFunction,
+        ) => {
+          const activate: boolean = await guard.activate(request);
+
+          if (!activate) {
+            this.#reply(
+              request,
+              response,
+              guard.getHttpResponse !== undefined
+                ? guard.getHttpResponse()
+                : new ForbiddenHttpResponse(),
+            );
+          } else {
+            next();
+          }
+        };
+      });
+    }
+
+    return guardHandlerList;
   }
 
   #printController(
