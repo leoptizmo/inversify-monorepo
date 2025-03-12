@@ -13,14 +13,13 @@ import { Middleware } from '../models/Middleware';
 import { RequestHandler } from '../models/RequestHandler';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 import { RouterParams } from '../models/RouterParams';
-import { UserRequest } from '../models/UserRequest';
 import { ForbiddenHttpResponse } from '../responses/error/ForbiddenHttpResponse';
 import { InternalServerErrorHttpResponse } from '../responses/error/InternalServerErrorHttpResponse';
 import { HttpResponse } from '../responses/HttpResponse';
 import { HttpStatusCode } from '../responses/HttpStatusCode';
 
 export abstract class InversifyHttpAdapter<
-  TRequest extends UserRequest,
+  TRequest,
   TResponse,
   TNextFunction extends (err?: unknown) => void,
 > {
