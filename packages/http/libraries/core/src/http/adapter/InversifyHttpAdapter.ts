@@ -4,7 +4,7 @@ import { Container } from 'inversify';
 import { RouterExplorerControllerMethodMetadata } from '../../routerExplorer/model/RouterExplorerControllerMethodMetadata';
 import { RouterExplorer } from '../../routerExplorer/RouterExplorer';
 import { Guard } from '../guard/Guard';
-import { ControllerFunction } from '../models/ControllerFunction';
+import { Controller } from '../models/Controller';
 import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
 import { ControllerResponse } from '../models/ControllerResponse';
 import { HttpAdapterOptions } from '../models/HttpAdapterOptions';
@@ -54,6 +54,7 @@ export abstract class InversifyHttpAdapter<
       this._buildRouter(
         routerExplorerControllerMetadata.path,
         this.#buildHandlers(
+          routerExplorerControllerMetadata.target,
           routerExplorerControllerMetadata.controllerMethodMetadataList,
         ),
         this.#getMiddlewareHandlerFromMetadata(
@@ -75,8 +76,11 @@ export abstract class InversifyHttpAdapter<
   }
 
   #buildHandlers(
+    target: NewableFunction,
     routerExplorerControllerMethodMetadata: RouterExplorerControllerMethodMetadata[],
   ): RouterParams<TRequest, TResponse, TNextFunction>[] {
+    const controller: Controller = this.#container.get(target);
+
     return routerExplorerControllerMethodMetadata.map(
       (
         routerExplorerControllerMethodMetadata: RouterExplorerControllerMethodMetadata,
@@ -85,8 +89,9 @@ export abstract class InversifyHttpAdapter<
           routerExplorerControllerMethodMetadata.guardList,
         ),
         handler: this.#buildHandler(
+          controller,
+          routerExplorerControllerMethodMetadata.methodKey,
           routerExplorerControllerMethodMetadata.parameterMetadataList,
-          routerExplorerControllerMethodMetadata.target,
           routerExplorerControllerMethodMetadata.statusCode,
         ),
         middlewareList: this.#getMiddlewareHandlerFromMetadata(
@@ -100,8 +105,9 @@ export abstract class InversifyHttpAdapter<
   }
 
   #buildHandler(
+    controller: Controller,
+    controllerMethodKey: string | symbol,
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
-    controllerFunction: ControllerFunction,
     statusCode: HttpStatusCode | undefined,
   ): RequestHandler<TRequest, TResponse, TNextFunction> {
     return async (
@@ -119,9 +125,9 @@ export abstract class InversifyHttpAdapter<
           ),
         );
 
-        const value: ControllerResponse = await controllerFunction(
-          ...handlerParams,
-        );
+        const value: ControllerResponse = await controller[
+          controllerMethodKey
+        ]?.(...handlerParams);
 
         return this.#reply(req, res, value, statusCode);
       } catch (_error: unknown) {
@@ -279,7 +285,7 @@ export abstract class InversifyHttpAdapter<
 
     for (const controllerMethodMetadata of routerExplorerControllerMethodMetadataList) {
       this.#logger.info(
-        `.${controllerMethodMetadata.target.name}() mapped {${controllerMethodMetadata.path}, ${controllerMethodMetadata.requestMethodType}}`,
+        `.${controllerMethodMetadata.methodKey as string}() mapped {${controllerMethodMetadata.path}, ${controllerMethodMetadata.requestMethodType}}`,
       );
     }
   }
