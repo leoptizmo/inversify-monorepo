@@ -9,6 +9,7 @@ import express, {
   Application,
   NextFunction,
   Request,
+  RequestHandler as ExpressRequestHandler,
   Response,
   Router,
 } from 'express';
@@ -67,11 +68,14 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
       if (orderedMiddlewareList !== undefined) {
         router[route.requestMethodType](
           route.path,
-          ...orderedMiddlewareList,
-          route.handler,
+          ...(orderedMiddlewareList as ExpressRequestHandler[]),
+          route.handler as ExpressRequestHandler,
         );
       } else {
-        router[route.requestMethodType](route.path, route.handler);
+        router[route.requestMethodType](
+          route.path,
+          route.handler as ExpressRequestHandler,
+        );
       }
     }
 
@@ -107,7 +111,7 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     parameterName?: string,
   ): Promise<unknown> {
     return parameterName !== undefined
-      ? request.body[parameterName]
+      ? (request.body as Record<string, unknown>)[parameterName]
       : request.body;
   }
 
@@ -131,7 +135,7 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
 
   protected _getCookies(request: Request, parameterName?: string): unknown {
     return parameterName !== undefined
-      ? request.cookies[parameterName]
+      ? (request.cookies as Record<string, unknown>)[parameterName]
       : request.cookies;
   }
 
