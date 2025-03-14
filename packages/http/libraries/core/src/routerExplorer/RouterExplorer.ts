@@ -78,10 +78,14 @@ export class RouterExplorer {
     const controllerMiddlewareList: NewableFunction[] | undefined =
       this.#exploreControllerMiddlewareList(controllerMetadata.target);
 
+    const controller: Controller = await this.#container.getAsync(
+      controllerMetadata.target,
+    );
+
     return {
       controllerMethodMetadataList:
-        await this.#buildRouterExplorerControllerMethodMetadataList(
-          controllerMetadata,
+        this.#buildRouterExplorerControllerMethodMetadataList(
+          controller,
           controllerMethodMetadataList ?? [],
         ),
       guardList: controllerGuardList,
@@ -91,29 +95,23 @@ export class RouterExplorer {
     };
   }
 
-  async #buildRouterExplorerControllerMethodMetadataList(
-    controllerMetadata: ControllerMetadata,
+  #buildRouterExplorerControllerMethodMetadataList(
+    controller: Controller,
     controllerMethodMetadataList: ControllerMethodMetadata[],
-  ): Promise<RouterExplorerControllerMethodMetadata[]> {
-    return Promise.all(
-      controllerMethodMetadataList.map(
-        async (controllerMethodMetadata: ControllerMethodMetadata) =>
-          this.#buildRouterExplorerControllerMethodMetadata(
-            controllerMetadata,
-            controllerMethodMetadata,
-          ),
-      ),
+  ): RouterExplorerControllerMethodMetadata[] {
+    return controllerMethodMetadataList.map(
+      (controllerMethodMetadata: ControllerMethodMetadata) =>
+        this.#buildRouterExplorerControllerMethodMetadata(
+          controller,
+          controllerMethodMetadata,
+        ),
     );
   }
 
-  async #buildRouterExplorerControllerMethodMetadata(
-    controllerMetadata: ControllerMetadata,
+  #buildRouterExplorerControllerMethodMetadata(
+    controller: Controller,
     controllerMethodMetadata: ControllerMethodMetadata,
-  ): Promise<RouterExplorerControllerMethodMetadata> {
-    const controller: Controller = this.#container.get(
-      controllerMetadata.target,
-    );
-
+  ): RouterExplorerControllerMethodMetadata {
     const targetFunction: ControllerFunction = controller[
       controllerMethodMetadata.methodKey
     ] as ControllerFunction;
