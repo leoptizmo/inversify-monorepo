@@ -56,14 +56,7 @@ export class RouterExplorer {
       [];
 
     for (const controllerMetadata of controllerMetadataList) {
-      if (
-        (controllerMetadata.controllerName === undefined &&
-          this.#container.isBound(controllerMetadata.target)) ||
-        (controllerMetadata.controllerName !== undefined &&
-          this.#container.isBound(controllerMetadata.target, {
-            name: controllerMetadata.controllerName,
-          }))
-      ) {
+      if (this.#container.isBound(controllerMetadata.target)) {
         routerExplorerControllerMetadataList.push(
           await this.#buildRouterExplorerControllerMetadata(controllerMetadata),
         );
@@ -117,12 +110,9 @@ export class RouterExplorer {
     controllerMetadata: ControllerMetadata,
     controllerMethodMetadata: ControllerMethodMetadata,
   ): Promise<RouterExplorerControllerMethodMetadata> {
-    const controller: Controller =
-      controllerMetadata.controllerName === undefined
-        ? await this.#container.getAsync(controllerMetadata.target)
-        : await this.#container.getAsync(controllerMetadata.target, {
-            name: controllerMetadata.controllerName,
-          });
+    const controller: Controller = this.#container.get(
+      controllerMetadata.target,
+    );
 
     const targetFunction: ControllerFunction = controller[
       controllerMethodMetadata.methodKey
