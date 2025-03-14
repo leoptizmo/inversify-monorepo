@@ -5,8 +5,7 @@
   },
   "description": "InversifyJs http express package",
   "dependencies": {
-    "@inversifyjs/http-core": "workspace:*",
-    "@inversifyjs/reflect-metadata-utils": "workspace:*"
+    "@inversifyjs/http-core": "workspace:*"
   },
   "devDependencies": {
     "@stryker-mutator/core": "8.7.1",
