@@ -194,6 +194,7 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-assignment': 'off',
       'vitest/consistent-test-filename': 'off',
       'vitest/max-expects': 'off',
+      'vitest/max-nested-describe': 'off',
       'vitest/no-hooks': 'off',
       'vitest/prefer-expect-assertions': 'off',
       'vitest/prefer-strict-equal': 'error',
