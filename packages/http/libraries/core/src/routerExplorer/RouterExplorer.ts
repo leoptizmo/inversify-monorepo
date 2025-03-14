@@ -21,21 +21,28 @@ import { RouterExplorerControllerMetadata } from './model/RouterExplorerControll
 import { RouterExplorerControllerMethodMetadata } from './model/RouterExplorerControllerMethodMetadata';
 
 export class RouterExplorer {
-  readonly #routerExplorerControllerMetadataList: RouterExplorerControllerMetadata[];
+  #routerExplorerControllerMetadataList:
+    | RouterExplorerControllerMetadata[]
+    | undefined;
   readonly #container: Container;
 
   constructor(container: Container) {
     this.#container = container;
-
-    this.#routerExplorerControllerMetadataList =
-      this.#buildControllerMetadataList();
+    this.#routerExplorerControllerMetadataList = undefined;
   }
 
-  public get routerExplorerControllerMetadataList(): RouterExplorerControllerMetadata[] {
+  public async getMetadataList(): Promise<RouterExplorerControllerMetadata[]> {
+    if (this.#routerExplorerControllerMetadataList === undefined) {
+      this.#routerExplorerControllerMetadataList =
+        await this.#buildControllerMetadataList();
+    }
+
     return this.#routerExplorerControllerMetadataList;
   }
 
-  #buildControllerMetadataList(): RouterExplorerControllerMetadata[] {
+  async #buildControllerMetadataList(): Promise<
+    RouterExplorerControllerMetadata[]
+  > {
     const controllerMetadataList: ControllerMetadata[] | undefined =
       this.#exploreControllers();
 
@@ -58,7 +65,7 @@ export class RouterExplorer {
           }))
       ) {
         routerExplorerControllerMetadataList.push(
-          this.#buildRouterExplorerControllerMetadata(controllerMetadata),
+          await this.#buildRouterExplorerControllerMetadata(controllerMetadata),
         );
       }
     }
@@ -66,9 +73,9 @@ export class RouterExplorer {
     return routerExplorerControllerMetadataList;
   }
 
-  #buildRouterExplorerControllerMetadata(
+  async #buildRouterExplorerControllerMetadata(
     controllerMetadata: ControllerMetadata,
-  ): RouterExplorerControllerMetadata {
+  ): Promise<RouterExplorerControllerMetadata> {
     const controllerMethodMetadataList: ControllerMethodMetadata[] | undefined =
       this.#exploreControllerMethodMetadataList(controllerMetadata.target);
 
@@ -80,7 +87,7 @@ export class RouterExplorer {
 
     return {
       controllerMethodMetadataList:
-        this.#buildRouterExplorerControllerMethodMetadataList(
+        await this.#buildRouterExplorerControllerMethodMetadataList(
           controllerMetadata,
           controllerMethodMetadataList ?? [],
         ),
@@ -91,27 +98,29 @@ export class RouterExplorer {
     };
   }
 
-  #buildRouterExplorerControllerMethodMetadataList(
+  async #buildRouterExplorerControllerMethodMetadataList(
     controllerMetadata: ControllerMetadata,
     controllerMethodMetadataList: ControllerMethodMetadata[],
-  ): RouterExplorerControllerMethodMetadata[] {
-    return controllerMethodMetadataList.map(
-      (controllerMethodMetadata: ControllerMethodMetadata) =>
-        this.#buildRouterExplorerControllerMethodMetadata(
-          controllerMetadata,
-          controllerMethodMetadata,
-        ),
+  ): Promise<RouterExplorerControllerMethodMetadata[]> {
+    return Promise.all(
+      controllerMethodMetadataList.map(
+        async (controllerMethodMetadata: ControllerMethodMetadata) =>
+          this.#buildRouterExplorerControllerMethodMetadata(
+            controllerMetadata,
+            controllerMethodMetadata,
+          ),
+      ),
     );
   }
 
-  #buildRouterExplorerControllerMethodMetadata(
+  async #buildRouterExplorerControllerMethodMetadata(
     controllerMetadata: ControllerMetadata,
     controllerMethodMetadata: ControllerMethodMetadata,
-  ): RouterExplorerControllerMethodMetadata {
+  ): Promise<RouterExplorerControllerMethodMetadata> {
     const controller: Controller =
       controllerMetadata.controllerName === undefined
-        ? this.#container.get(controllerMetadata.target)
-        : this.#container.get(controllerMetadata.target, {
+        ? await this.#container.getAsync(controllerMetadata.target)
+        : await this.#container.getAsync(controllerMetadata.target, {
             name: controllerMetadata.controllerName,
           });
 

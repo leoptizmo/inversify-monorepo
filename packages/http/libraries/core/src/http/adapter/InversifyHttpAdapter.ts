@@ -1,6 +1,7 @@
 import { ConsoleLogger, Logger } from '@inversifyjs/logger';
 import { Container } from 'inversify';
 
+import { RouterExplorerControllerMetadata } from '../../routerExplorer/model/RouterExplorerControllerMetadata';
 import { RouterExplorerControllerMethodMetadata } from '../../routerExplorer/model/RouterExplorerControllerMethodMetadata';
 import { RouterExplorer } from '../../routerExplorer/RouterExplorer';
 import { Guard } from '../guard/Guard';
@@ -49,8 +50,10 @@ export abstract class InversifyHttpAdapter<
   }
 
   async #registerControllers(): Promise<void> {
-    for (const routerExplorerControllerMetadata of this.#routerExplorer
-      .routerExplorerControllerMetadataList) {
+    const routerExplorerControllerMetadataList: RouterExplorerControllerMetadata[] =
+      await this.#routerExplorer.getMetadataList();
+
+    for (const routerExplorerControllerMetadata of routerExplorerControllerMetadataList) {
       await this._buildRouter(
         routerExplorerControllerMetadata.path,
         await this.#buildHandlers(
