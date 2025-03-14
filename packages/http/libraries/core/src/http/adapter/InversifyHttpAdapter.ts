@@ -294,27 +294,27 @@ export abstract class InversifyHttpAdapter<
 
   protected abstract _getBody(
     request: TRequest,
-    parameterName?: string | symbol,
+    parameterName?: string,
   ): Promise<unknown>;
 
   protected abstract _getParams(
     request: TRequest,
-    parameterName?: string | symbol,
+    parameterName?: string,
   ): unknown;
 
   protected abstract _getQuery(
     request: TRequest,
-    parameterName?: string | symbol,
+    parameterName?: string,
   ): unknown;
 
   protected abstract _getHeaders(
     request: TRequest,
-    parameterName?: string | symbol,
+    parameterName?: string,
   ): unknown;
 
   protected abstract _getCookies(
     request: TRequest,
-    parameterName?: string | symbol,
+    parameterName?: string,
   ): unknown;
 
   protected abstract _replyText(
