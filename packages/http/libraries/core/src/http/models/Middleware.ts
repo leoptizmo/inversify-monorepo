@@ -3,5 +3,5 @@ export interface Middleware<TRequest, TResponse, TNextFunction> {
     request: TRequest,
     response: TResponse,
     next: TNextFunction,
-  ): Promise<void>;
+  ): Promise<void> | void;
 }
