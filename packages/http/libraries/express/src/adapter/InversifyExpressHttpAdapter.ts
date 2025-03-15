@@ -31,10 +31,10 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     this.#app = customApp ?? express();
   }
 
-  public build(): Application {
+  public async build(): Promise<Application> {
     this.#app.use(express.json());
 
-    this._buildServer();
+    await this._buildServer();
 
     return this.#app;
   }

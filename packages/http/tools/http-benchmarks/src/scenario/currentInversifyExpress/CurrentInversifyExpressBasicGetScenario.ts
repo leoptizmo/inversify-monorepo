@@ -33,7 +33,7 @@ export class CurrentInversifyExpressBasicGetScenario extends CurrentInversifyExp
       },
     );
 
-    this._app = server.build();
+    this._app = await server.build();
 
     this._server = this._app.listen(this._port);
   }
