@@ -22,7 +22,7 @@ import { HttpStatusCode } from '../responses/HttpStatusCode';
 export abstract class InversifyHttpAdapter<
   TRequest,
   TResponse,
-  TNextFunction extends (err?: unknown) => void,
+  TNextFunction extends (err?: Error) => void,
 > {
   readonly #container: Container;
   readonly #httpAdapterOptions: InternalHttpAdapterOptions;
