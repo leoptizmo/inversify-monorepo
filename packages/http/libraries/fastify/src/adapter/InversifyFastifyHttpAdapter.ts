@@ -34,7 +34,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
 
   public async build(): Promise<FastifyInstance> {
     this.#app.register(middie, { hook: 'preHandler' });
-    this._buildServer();
+    await this._buildServer();
 
     return this.#app;
   }
