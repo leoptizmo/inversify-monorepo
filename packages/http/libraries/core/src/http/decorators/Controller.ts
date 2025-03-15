@@ -23,7 +23,6 @@ export function controller(
       if (typeof pathOrOptions === 'string') {
         controllerMetadata.path = pathOrOptions;
       } else {
-        controllerMetadata.controllerName = pathOrOptions.controllerName;
         controllerMetadata.path = pathOrOptions.path ?? '/';
         scope = pathOrOptions.scope;
       }
