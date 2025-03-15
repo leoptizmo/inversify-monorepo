@@ -92,7 +92,7 @@ export abstract class InversifyHttpAdapter<
           guardList: await this.#getGuardHandlerFromMetadata(
             routerExplorerControllerMethodMetadata.guardList,
           ),
-          handler: await this.#buildHandler(
+          handler: this.#buildHandler(
             controller,
             routerExplorerControllerMethodMetadata.methodKey,
             routerExplorerControllerMethodMetadata.parameterMetadataList,
@@ -109,25 +109,23 @@ export abstract class InversifyHttpAdapter<
     );
   }
 
-  async #buildHandler(
+  #buildHandler(
     controller: Controller,
     controllerMethodKey: string | symbol,
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
     statusCode: HttpStatusCode | undefined,
-  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>> {
+  ): RequestHandler<TRequest, TResponse, TNextFunction> {
     return async (
       req: TRequest,
       res: TResponse,
       next: TNextFunction,
     ): Promise<unknown> => {
       try {
-        const handlerParams: unknown[] = await Promise.all(
-          this.#buildHandlerParams(
-            controllerMethodParameterMetadataList,
-            req,
-            res,
-            next,
-          ),
+        const handlerParams: unknown[] = await this.#buildHandlerParams(
+          controllerMethodParameterMetadataList,
+          req,
+          res,
+          next,
         );
 
         const value: ControllerResponse = await controller[
@@ -141,57 +139,59 @@ export abstract class InversifyHttpAdapter<
     };
   }
 
-  #buildHandlerParams(
+  async #buildHandlerParams(
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
     request: TRequest,
     response: TResponse,
     next: TNextFunction,
-  ): Promise<unknown>[] {
-    return controllerMethodParameterMetadataList.map(
-      async (
-        controllerMethodParameterMetadata: ControllerMethodParameterMetadata,
-      ) => {
-        switch (controllerMethodParameterMetadata.parameterType) {
-          case RequestMethodParameterType.BODY:
-            return this._getBody(
-              request,
-              controllerMethodParameterMetadata.parameterName,
-            );
-          case RequestMethodParameterType.REQUEST: {
-            return request;
+  ): Promise<unknown[]> {
+    return Promise.all(
+      controllerMethodParameterMetadataList.map(
+        async (
+          controllerMethodParameterMetadata: ControllerMethodParameterMetadata,
+        ) => {
+          switch (controllerMethodParameterMetadata.parameterType) {
+            case RequestMethodParameterType.BODY:
+              return this._getBody(
+                request,
+                controllerMethodParameterMetadata.parameterName,
+              );
+            case RequestMethodParameterType.REQUEST: {
+              return request;
+            }
+            case RequestMethodParameterType.RESPONSE: {
+              return response;
+            }
+            case RequestMethodParameterType.PARAMS: {
+              return this._getParams(
+                request,
+                controllerMethodParameterMetadata.parameterName,
+              );
+            }
+            case RequestMethodParameterType.QUERY: {
+              return this._getQuery(
+                request,
+                controllerMethodParameterMetadata.parameterName,
+              );
+            }
+            case RequestMethodParameterType.HEADERS: {
+              return this._getHeaders(
+                request,
+                controllerMethodParameterMetadata.parameterName,
+              );
+            }
+            case RequestMethodParameterType.COOKIES: {
+              return this._getCookies(
+                request,
+                controllerMethodParameterMetadata.parameterName,
+              );
+            }
+            case RequestMethodParameterType.NEXT: {
+              return next;
+            }
           }
-          case RequestMethodParameterType.RESPONSE: {
-            return response;
-          }
-          case RequestMethodParameterType.PARAMS: {
-            return this._getParams(
-              request,
-              controllerMethodParameterMetadata.parameterName,
-            );
-          }
-          case RequestMethodParameterType.QUERY: {
-            return this._getQuery(
-              request,
-              controllerMethodParameterMetadata.parameterName,
-            );
-          }
-          case RequestMethodParameterType.HEADERS: {
-            return this._getHeaders(
-              request,
-              controllerMethodParameterMetadata.parameterName,
-            );
-          }
-          case RequestMethodParameterType.COOKIES: {
-            return this._getCookies(
-              request,
-              controllerMethodParameterMetadata.parameterName,
-            );
-          }
-          case RequestMethodParameterType.NEXT: {
-            return next;
-          }
-        }
-      },
+        },
+      ),
     );
   }
 
