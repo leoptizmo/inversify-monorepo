@@ -1,6 +1,7 @@
 import { ConsoleLogger, Logger } from '@inversifyjs/logger';
 import { Container } from 'inversify';
 
+import { RouterExplorerControllerMetadata } from '../../routerExplorer/model/RouterExplorerControllerMetadata';
 import { RouterExplorerControllerMethodMetadata } from '../../routerExplorer/model/RouterExplorerControllerMethodMetadata';
 import { RouterExplorer } from '../../routerExplorer/RouterExplorer';
 import { Guard } from '../guard/Guard';
@@ -36,8 +37,8 @@ export abstract class InversifyHttpAdapter<
       this.#parseHttpAdapterOptions(httpAdapterOptions);
   }
 
-  protected _buildServer(): void {
-    this.#registerControllers();
+  protected async _buildServer(): Promise<void> {
+    await this.#registerControllers();
   }
 
   #parseHttpAdapterOptions(
@@ -48,19 +49,21 @@ export abstract class InversifyHttpAdapter<
     };
   }
 
-  #registerControllers(): void {
-    for (const routerExplorerControllerMetadata of this.#routerExplorer
-      .routerExplorerControllerMetadataList) {
-      this._buildRouter(
+  async #registerControllers(): Promise<void> {
+    const routerExplorerControllerMetadataList: RouterExplorerControllerMetadata[] =
+      await this.#routerExplorer.getMetadataList();
+
+    for (const routerExplorerControllerMetadata of routerExplorerControllerMetadataList) {
+      await this._buildRouter(
         routerExplorerControllerMetadata.path,
-        this.#buildHandlers(
+        await this.#buildHandlers(
           routerExplorerControllerMetadata.target,
           routerExplorerControllerMetadata.controllerMethodMetadataList,
         ),
-        this.#getMiddlewareHandlerFromMetadata(
+        await this.#getMiddlewareHandlerFromMetadata(
           routerExplorerControllerMetadata.middlewareList,
         ),
-        this.#getGuardHandlerFromMetadata(
+        await this.#getGuardHandlerFromMetadata(
           routerExplorerControllerMetadata.guardList,
         ),
       );
@@ -75,32 +78,34 @@ export abstract class InversifyHttpAdapter<
     }
   }
 
-  #buildHandlers(
+  async #buildHandlers(
     target: NewableFunction,
     routerExplorerControllerMethodMetadata: RouterExplorerControllerMethodMetadata[],
-  ): RouterParams<TRequest, TResponse, TNextFunction>[] {
-    const controller: Controller = this.#container.get(target);
+  ): Promise<RouterParams<TRequest, TResponse, TNextFunction>[]> {
+    const controller: Controller = await this.#container.getAsync(target);
 
-    return routerExplorerControllerMethodMetadata.map(
-      (
-        routerExplorerControllerMethodMetadata: RouterExplorerControllerMethodMetadata,
-      ) => ({
-        guardList: this.#getGuardHandlerFromMetadata(
-          routerExplorerControllerMethodMetadata.guardList,
-        ),
-        handler: this.#buildHandler(
-          controller,
-          routerExplorerControllerMethodMetadata.methodKey,
-          routerExplorerControllerMethodMetadata.parameterMetadataList,
-          routerExplorerControllerMethodMetadata.statusCode,
-        ),
-        middlewareList: this.#getMiddlewareHandlerFromMetadata(
-          routerExplorerControllerMethodMetadata.middlewareList,
-        ),
-        path: routerExplorerControllerMethodMetadata.path,
-        requestMethodType:
-          routerExplorerControllerMethodMetadata.requestMethodType,
-      }),
+    return Promise.all(
+      routerExplorerControllerMethodMetadata.map(
+        async (
+          routerExplorerControllerMethodMetadata: RouterExplorerControllerMethodMetadata,
+        ) => ({
+          guardList: await this.#getGuardHandlerFromMetadata(
+            routerExplorerControllerMethodMetadata.guardList,
+          ),
+          handler: this.#buildHandler(
+            controller,
+            routerExplorerControllerMethodMetadata.methodKey,
+            routerExplorerControllerMethodMetadata.parameterMetadataList,
+            routerExplorerControllerMethodMetadata.statusCode,
+          ),
+          middlewareList: await this.#getMiddlewareHandlerFromMetadata(
+            routerExplorerControllerMethodMetadata.middlewareList,
+          ),
+          path: routerExplorerControllerMethodMetadata.path,
+          requestMethodType:
+            routerExplorerControllerMethodMetadata.requestMethodType,
+        }),
+      ),
     );
   }
 
@@ -116,13 +121,11 @@ export abstract class InversifyHttpAdapter<
       next: TNextFunction,
     ): Promise<unknown> => {
       try {
-        const handlerParams: unknown[] = await Promise.all(
-          this.#buildHandlerParams(
-            controllerMethodParameterMetadataList,
-            req,
-            res,
-            next,
-          ),
+        const handlerParams: unknown[] = await this.#buildHandlerParams(
+          controllerMethodParameterMetadataList,
+          req,
+          res,
+          next,
         );
 
         const value: ControllerResponse = await controller[
@@ -136,57 +139,59 @@ export abstract class InversifyHttpAdapter<
     };
   }
 
-  #buildHandlerParams(
+  async #buildHandlerParams(
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
     request: TRequest,
     response: TResponse,
     next: TNextFunction,
-  ): Promise<unknown>[] {
-    return controllerMethodParameterMetadataList.map(
-      async (
-        controllerMethodParameterMetadata: ControllerMethodParameterMetadata,
-      ) => {
-        switch (controllerMethodParameterMetadata.parameterType) {
-          case RequestMethodParameterType.BODY:
-            return this._getBody(
-              request,
-              controllerMethodParameterMetadata.parameterName,
-            );
-          case RequestMethodParameterType.REQUEST: {
-            return request;
+  ): Promise<unknown[]> {
+    return Promise.all(
+      controllerMethodParameterMetadataList.map(
+        async (
+          controllerMethodParameterMetadata: ControllerMethodParameterMetadata,
+        ) => {
+          switch (controllerMethodParameterMetadata.parameterType) {
+            case RequestMethodParameterType.BODY:
+              return this._getBody(
+                request,
+                controllerMethodParameterMetadata.parameterName,
+              );
+            case RequestMethodParameterType.REQUEST: {
+              return request;
+            }
+            case RequestMethodParameterType.RESPONSE: {
+              return response;
+            }
+            case RequestMethodParameterType.PARAMS: {
+              return this._getParams(
+                request,
+                controllerMethodParameterMetadata.parameterName,
+              );
+            }
+            case RequestMethodParameterType.QUERY: {
+              return this._getQuery(
+                request,
+                controllerMethodParameterMetadata.parameterName,
+              );
+            }
+            case RequestMethodParameterType.HEADERS: {
+              return this._getHeaders(
+                request,
+                controllerMethodParameterMetadata.parameterName,
+              );
+            }
+            case RequestMethodParameterType.COOKIES: {
+              return this._getCookies(
+                request,
+                controllerMethodParameterMetadata.parameterName,
+              );
+            }
+            case RequestMethodParameterType.NEXT: {
+              return next;
+            }
           }
-          case RequestMethodParameterType.RESPONSE: {
-            return response;
-          }
-          case RequestMethodParameterType.PARAMS: {
-            return this._getParams(
-              request,
-              controllerMethodParameterMetadata.parameterName,
-            );
-          }
-          case RequestMethodParameterType.QUERY: {
-            return this._getQuery(
-              request,
-              controllerMethodParameterMetadata.parameterName,
-            );
-          }
-          case RequestMethodParameterType.HEADERS: {
-            return this._getHeaders(
-              request,
-              controllerMethodParameterMetadata.parameterName,
-            );
-          }
-          case RequestMethodParameterType.COOKIES: {
-            return this._getCookies(
-              request,
-              controllerMethodParameterMetadata.parameterName,
-            );
-          }
-          case RequestMethodParameterType.NEXT: {
-            return next;
-          }
-        }
-      },
+        },
+      ),
     );
   }
 
@@ -219,37 +224,34 @@ export abstract class InversifyHttpAdapter<
     }
   }
 
-  #getMiddlewareHandlerFromMetadata(
+  async #getMiddlewareHandlerFromMetadata(
     middlewareList: NewableFunction[] | undefined,
-  ): RequestHandler<TRequest, TResponse, TNextFunction>[] | undefined {
-    let requestHandlerList:
-      | RequestHandler<TRequest, TResponse, TNextFunction>[]
-      | undefined = undefined;
-
-    if (middlewareList !== undefined) {
-      requestHandlerList = middlewareList.map(
-        (newableFunction: NewableFunction) => {
-          const middleware: Middleware<TRequest, TResponse, TNextFunction> =
-            this.#container.get(newableFunction);
-
-          return middleware.execute.bind(middleware);
-        },
-      );
+  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[] | undefined> {
+    if (middlewareList === undefined) {
+      return undefined;
     }
 
-    return requestHandlerList;
+    return Promise.all(
+      middlewareList.map(async (newableFunction: NewableFunction) => {
+        const middleware: Middleware<TRequest, TResponse, TNextFunction> =
+          await this.#container.getAsync(newableFunction);
+
+        return middleware.execute.bind(middleware);
+      }),
+    );
   }
 
-  #getGuardHandlerFromMetadata(
+  async #getGuardHandlerFromMetadata(
     guardList: NewableFunction[] | undefined,
-  ): RequestHandler<TRequest, TResponse, TNextFunction>[] | undefined {
-    let guardHandlerList:
-      | RequestHandler<TRequest, TResponse, TNextFunction>[]
-      | undefined = undefined;
+  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[] | undefined> {
+    if (guardList === undefined) {
+      return undefined;
+    }
 
-    if (guardList !== undefined) {
-      guardHandlerList = guardList.map((newableFunction: NewableFunction) => {
-        const guard: Guard<TRequest> = this.#container.get(newableFunction);
+    return Promise.all(
+      guardList.map(async (newableFunction: NewableFunction) => {
+        const guard: Guard<TRequest> =
+          await this.#container.getAsync(newableFunction);
 
         return async (
           request: TRequest,
@@ -270,10 +272,8 @@ export abstract class InversifyHttpAdapter<
             next();
           }
         };
-      });
-    }
-
-    return guardHandlerList;
+      }),
+    );
   }
 
   #printController(
@@ -290,31 +290,31 @@ export abstract class InversifyHttpAdapter<
     }
   }
 
-  public abstract build(): unknown;
+  public abstract build(): Promise<unknown>;
 
   protected abstract _getBody(
     request: TRequest,
-    parameterName?: string | symbol,
+    parameterName?: string,
   ): Promise<unknown>;
 
   protected abstract _getParams(
     request: TRequest,
-    parameterName?: string | symbol,
+    parameterName?: string,
   ): unknown;
 
   protected abstract _getQuery(
     request: TRequest,
-    parameterName?: string | symbol,
+    parameterName?: string,
   ): unknown;
 
   protected abstract _getHeaders(
     request: TRequest,
-    parameterName?: string | symbol,
+    parameterName?: string,
   ): unknown;
 
   protected abstract _getCookies(
     request: TRequest,
-    parameterName?: string | symbol,
+    parameterName?: string,
   ): unknown;
 
   protected abstract _replyText(
