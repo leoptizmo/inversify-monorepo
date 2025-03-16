@@ -16,13 +16,11 @@ import { applyMiddleware } from './ApplyMiddleware';
 describe(applyMiddleware.name, () => {
   describe('having a ClassDecorator', () => {
     describe('when called and getReflectMetadata returns undefined', () => {
-      let middlewareFixture: Newable<Middleware<unknown, unknown, unknown>>;
+      let middlewareFixture: Newable<Middleware>;
       let targetFixture: NewableFunction;
 
       beforeAll(() => {
-        middlewareFixture = {} as Newable<
-          Middleware<unknown, unknown, unknown>
-        >;
+        middlewareFixture = {} as Newable<Middleware>;
         targetFixture = class TestController {};
 
         applyMiddleware(middlewareFixture)(targetFixture);
@@ -53,13 +51,11 @@ describe(applyMiddleware.name, () => {
 
   describe('having a MethodDecorator', () => {
     describe('when called and getReflectMetadata returns a Middleware list', () => {
-      let middlewareFixture: Newable<Middleware<unknown, unknown, unknown>>;
+      let middlewareFixture: Newable<Middleware>;
       let descriptorFixture: PropertyDescriptor;
 
       beforeAll(() => {
-        middlewareFixture = {} as Newable<
-          Middleware<unknown, unknown, unknown>
-        >;
+        middlewareFixture = {} as Newable<Middleware>;
         descriptorFixture = {
           value: 'value-descriptor-example',
         } as PropertyDescriptor;

@@ -10,7 +10,7 @@ import { Guard } from '../guard/Guard';
 import { ControllerFunction } from '../models/ControllerFunction';
 
 export function useGuard(
-  ...guardList: Newable<Guard<unknown>>[]
+  ...guardList: Newable<Guard>[]
 ): ClassDecorator & MethodDecorator {
   return (
     target: object,

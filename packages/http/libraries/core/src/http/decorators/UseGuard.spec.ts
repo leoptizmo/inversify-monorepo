@@ -16,11 +16,11 @@ import { useGuard } from './UseGuard';
 describe(useGuard.name, () => {
   describe('having a ClassDecorator', () => {
     describe('when called and getReflectMetadata returns undefined', () => {
-      let middlewareFixture: Newable<Guard<unknown>>;
+      let middlewareFixture: Newable<Guard>;
       let targetFixture: NewableFunction;
 
       beforeAll(() => {
-        middlewareFixture = {} as Newable<Guard<unknown>>;
+        middlewareFixture = {} as Newable<Guard>;
         targetFixture = class TestController {};
 
         useGuard(middlewareFixture)(targetFixture);
@@ -51,11 +51,11 @@ describe(useGuard.name, () => {
 
   describe('having a MethodDecorator', () => {
     describe('when called and getReflectMetadata returns a Guard list', () => {
-      let middlewareFixture: Newable<Guard<unknown>>;
+      let middlewareFixture: Newable<Guard>;
       let descriptorFixture: PropertyDescriptor;
 
       beforeAll(() => {
-        middlewareFixture = {} as Newable<Guard<unknown>>;
+        middlewareFixture = {} as Newable<Guard>;
         descriptorFixture = {
           value: 'value-descriptor-example',
         } as PropertyDescriptor;

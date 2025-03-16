@@ -10,7 +10,7 @@ import { ControllerFunction } from '../models/ControllerFunction';
 import { Middleware } from '../models/Middleware';
 
 export function applyMiddleware(
-  ...middlewareList: Newable<Middleware<unknown, unknown, unknown>>[]
+  ...middlewareList: Newable<Middleware>[]
 ): ClassDecorator & MethodDecorator {
   return (
     target: object,
