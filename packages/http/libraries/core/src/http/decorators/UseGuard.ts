@@ -2,13 +2,15 @@ import {
   getReflectMetadata,
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
+import { Newable } from 'inversify';
 
 import { controllerGuardMetadataReflectKey } from '../../reflectMetadata/data/controllerGuardMetadataReflectKey';
 import { controllerMethodGuardMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodGuardMetadataReflectKey';
+import { Guard } from '../guard/Guard';
 import { ControllerFunction } from '../models/ControllerFunction';
 
 export function useGuard(
-  ...guardList: NewableFunction[]
+  ...guardList: Newable<Guard<unknown>>[]
 ): ClassDecorator & MethodDecorator {
   return (
     target: object,
