@@ -2,13 +2,15 @@ import {
   getReflectMetadata,
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
+import { Newable } from 'inversify';
 
 import { controllerMethodMiddlewareMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodMiddlewareMetadataReflectKey';
 import { controllerMiddlewareMetadataReflectKey } from '../../reflectMetadata/data/controllerMiddlewareMetadataReflectKey';
 import { ControllerFunction } from '../models/ControllerFunction';
+import { Middleware } from '../models/Middleware';
 
 export function applyMiddleware(
-  ...middlewareList: NewableFunction[]
+  ...middlewareList: Newable<Middleware<unknown, unknown, unknown>>[]
 ): ClassDecorator & MethodDecorator {
   return (
     target: object,
