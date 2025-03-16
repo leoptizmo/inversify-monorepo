@@ -19,6 +19,8 @@ import { InternalServerErrorHttpResponse } from '../responses/error/InternalServ
 import { HttpResponse } from '../responses/HttpResponse';
 import { HttpStatusCode } from '../responses/HttpStatusCode';
 
+const DEFAULT_ERROR_MESSAGE: string = 'An unexpected error occurred';
+
 export abstract class InversifyHttpAdapter<
   TRequest,
   TResponse,
@@ -26,19 +28,30 @@ export abstract class InversifyHttpAdapter<
 > {
   readonly #container: Container;
   readonly #httpAdapterOptions: InternalHttpAdapterOptions;
-  #logger: Logger;
+  readonly #logger: Logger;
   readonly #routerExplorer: RouterExplorer;
 
   constructor(container: Container, httpAdapterOptions?: HttpAdapterOptions) {
     this.#container = container;
     this.#routerExplorer = new RouterExplorer(container);
-    this.#logger = new ConsoleLogger();
+    this.#logger = this.#buildLogger(httpAdapterOptions);
     this.#httpAdapterOptions =
       this.#parseHttpAdapterOptions(httpAdapterOptions);
   }
 
   protected async _buildServer(): Promise<void> {
     await this.#registerControllers();
+  }
+
+  #buildLogger(httpAdapterOptions: HttpAdapterOptions | undefined): Logger {
+    if (
+      httpAdapterOptions?.logger === undefined ||
+      typeof httpAdapterOptions.logger === 'boolean'
+    ) {
+      return new ConsoleLogger();
+    }
+
+    return httpAdapterOptions.logger;
   }
 
   #parseHttpAdapterOptions(
@@ -51,8 +64,6 @@ export abstract class InversifyHttpAdapter<
     if (httpAdapterOptions?.logger !== undefined) {
       if (typeof httpAdapterOptions.logger === 'boolean') {
         internalHttpAdapterOptions.logger = httpAdapterOptions.logger;
-      } else {
-        this.#logger = httpAdapterOptions.logger;
       }
     }
 
@@ -143,7 +154,8 @@ export abstract class InversifyHttpAdapter<
         ]?.(...handlerParams);
 
         return this.#reply(req, res, value, statusCode);
-      } catch (_error: unknown) {
+      } catch (error: unknown) {
+        this.#printError(error);
         return this.#reply(req, res, new InternalServerErrorHttpResponse());
       }
     };
@@ -298,6 +310,16 @@ export abstract class InversifyHttpAdapter<
         `.${controllerMethodMetadata.methodKey as string}() mapped {${controllerMethodMetadata.path}, ${controllerMethodMetadata.requestMethodType}}`,
       );
     }
+  }
+
+  #printError(error: unknown): void {
+    const errorMessage: string = DEFAULT_ERROR_MESSAGE;
+
+    if (error instanceof Error) {
+      this.#logger.error(error.stack ?? error.message);
+    }
+
+    this.#logger.error(errorMessage);
   }
 
   public abstract build(): Promise<unknown>;

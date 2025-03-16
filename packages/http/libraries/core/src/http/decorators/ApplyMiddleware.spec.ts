@@ -6,19 +6,21 @@ import {
   getReflectMetadata,
   setReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
+import { Newable } from 'inversify';
 
 import { controllerMethodMiddlewareMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodMiddlewareMetadataReflectKey';
 import { controllerMiddlewareMetadataReflectKey } from '../../reflectMetadata/data/controllerMiddlewareMetadataReflectKey';
+import { Middleware } from '../models/Middleware';
 import { applyMiddleware } from './ApplyMiddleware';
 
 describe(applyMiddleware.name, () => {
   describe('having a ClassDecorator', () => {
     describe('when called and getReflectMetadata returns undefined', () => {
-      let middlewareFixture: NewableFunction;
+      let middlewareFixture: Newable<Middleware>;
       let targetFixture: NewableFunction;
 
       beforeAll(() => {
-        middlewareFixture = {} as NewableFunction;
+        middlewareFixture = {} as Newable<Middleware>;
         targetFixture = class TestController {};
 
         applyMiddleware(middlewareFixture)(targetFixture);
@@ -49,11 +51,11 @@ describe(applyMiddleware.name, () => {
 
   describe('having a MethodDecorator', () => {
     describe('when called and getReflectMetadata returns a Middleware list', () => {
-      let middlewareFixture: NewableFunction;
+      let middlewareFixture: Newable<Middleware>;
       let descriptorFixture: PropertyDescriptor;
 
       beforeAll(() => {
-        middlewareFixture = {} as NewableFunction;
+        middlewareFixture = {} as Newable<Middleware>;
         descriptorFixture = {
           value: 'value-descriptor-example',
         } as PropertyDescriptor;
