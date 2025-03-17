@@ -23,6 +23,7 @@ import { Guard } from './http/guard/Guard';
 import { HttpAdapterOptions } from './http/models/HttpAdapterOptions';
 import { Middleware } from './http/models/Middleware';
 import { RequestHandler } from './http/models/RequestHandler';
+import { RouteParams } from './http/models/RouteParams';
 import { RouterParams } from './http/models/RouterParams';
 import { BadGatewayHttpResponse } from './http/responses/error/BadGatewayHttpResponse';
 import { BadRequestHttpResponse } from './http/responses/error/BadRequestHttpResponse';
@@ -54,7 +55,13 @@ import { OkHttpResponse } from './http/responses/success/OkHttpResponse';
 import { PartialContentHttpResponse } from './http/responses/success/PartialContentHttpResponse';
 import { ResetContentHttpResponse } from './http/responses/success/ResetContentHttpResponse';
 
-export type { HttpAdapterOptions, RequestHandler, RouterParams, Middleware };
+export type {
+  HttpAdapterOptions,
+  RequestHandler,
+  RouteParams,
+  RouterParams,
+  Middleware,
+};
 
 export {
   BadRequestHttpResponse,
