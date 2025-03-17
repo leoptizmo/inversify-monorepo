@@ -3,6 +3,7 @@ import { Container } from 'inversify';
 
 import { InversifyHttpAdapterError } from '../error/models/InversifyHttpAdapterError';
 import { InversifyHttpAdapterErrorKind } from '../error/models/InversifyHttpAdapterErrorKind';
+import { ApplyMiddlewareOptions } from '../http/models/ApplyMiddlewareOptions';
 import { Controller } from '../http/models/Controller';
 import { ControllerFunction } from '../http/models/ControllerFunction';
 import { ControllerMetadata } from '../http/models/ControllerMetadata';
@@ -17,6 +18,8 @@ import { controllerMethodMiddlewareMetadataReflectKey } from '../reflectMetadata
 import { controllerMethodParameterMetadataReflectKey } from '../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
 import { controllerMethodStatusCodeMetadataReflectKey } from '../reflectMetadata/data/controllerMethodStatusCodeMetadataReflectKey';
 import { controllerMiddlewareMetadataReflectKey } from '../reflectMetadata/data/controllerMiddlewareMetadataReflectKey';
+import { ApplyMiddlewareOptionsToNewableFunctionConverter } from './converter/ApplyMiddlewareOptionsToNewableFunctionConverter';
+import { Converter } from './converter/Converter';
 import { RouterExplorerControllerMetadata } from './model/RouterExplorerControllerMetadata';
 import { RouterExplorerControllerMethodMetadata } from './model/RouterExplorerControllerMethodMetadata';
 
@@ -25,10 +28,19 @@ export class RouterExplorer {
     | RouterExplorerControllerMetadata[]
     | undefined;
   readonly #container: Container;
+  readonly #applyMiddlewareOptionsToNewableFunctionConverter: Converter<
+    (NewableFunction | ApplyMiddlewareOptions)[],
+    {
+      preHandlerMiddlewareList: NewableFunction[];
+      postHandlerMiddlewareList: NewableFunction[];
+    }
+  >;
 
   constructor(container: Container) {
     this.#container = container;
     this.#routerExplorerControllerMetadataList = undefined;
+    this.#applyMiddlewareOptionsToNewableFunctionConverter =
+      new ApplyMiddlewareOptionsToNewableFunctionConverter();
   }
 
   public async getMetadataList(): Promise<RouterExplorerControllerMetadata[]> {
@@ -82,6 +94,13 @@ export class RouterExplorer {
       controllerMetadata.target,
     );
 
+    const newableFunctionMiddleware: {
+      postHandlerMiddlewareList: NewableFunction[];
+      preHandlerMiddlewareList: NewableFunction[];
+    } = this.#applyMiddlewareOptionsToNewableFunctionConverter.convert(
+      controllerMiddlewareList ?? [],
+    );
+
     return {
       controllerMethodMetadataList:
         this.#buildRouterExplorerControllerMethodMetadataList(
@@ -89,8 +108,11 @@ export class RouterExplorer {
           controllerMethodMetadataList ?? [],
         ),
       guardList: controllerGuardList,
-      middlewareList: controllerMiddlewareList,
       path: controllerMetadata.path,
+      postHandlerMiddlewareList:
+        newableFunctionMiddleware.postHandlerMiddlewareList,
+      preHandlerMiddlewareList:
+        newableFunctionMiddleware.preHandlerMiddlewareList,
       target: controllerMetadata.target,
     };
   }
@@ -130,12 +152,22 @@ export class RouterExplorer {
     const controllerMethodMiddlewareList: NewableFunction[] | undefined =
       this.#exploreControllerMethodMiddlewareList(targetFunction);
 
+    const newableFunctionMiddleware: {
+      postHandlerMiddlewareList: NewableFunction[];
+      preHandlerMiddlewareList: NewableFunction[];
+    } = this.#applyMiddlewareOptionsToNewableFunctionConverter.convert(
+      controllerMethodMiddlewareList ?? [],
+    );
+
     return {
       guardList: controllerMethodGuardList,
       methodKey: controllerMethodMetadata.methodKey,
-      middlewareList: controllerMethodMiddlewareList,
       parameterMetadataList: controllerMethodParameterMetadataList ?? [],
       path: controllerMethodMetadata.path,
+      postHandlerMiddlewareList:
+        newableFunctionMiddleware.postHandlerMiddlewareList,
+      preHandlerMiddlewareList:
+        newableFunctionMiddleware.preHandlerMiddlewareList,
       requestMethodType: controllerMethodMetadata.requestMethodType,
       statusCode: controllerMethodStatusCode,
     };
