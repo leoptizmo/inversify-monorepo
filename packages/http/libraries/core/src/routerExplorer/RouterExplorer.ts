@@ -3,7 +3,6 @@ import { Container } from 'inversify';
 
 import { InversifyHttpAdapterError } from '../error/models/InversifyHttpAdapterError';
 import { InversifyHttpAdapterErrorKind } from '../error/models/InversifyHttpAdapterErrorKind';
-import { ApplyMiddlewareOptions } from '../http/models/ApplyMiddlewareOptions';
 import { Controller } from '../http/models/Controller';
 import { ControllerFunction } from '../http/models/ControllerFunction';
 import { ControllerMetadata } from '../http/models/ControllerMetadata';
@@ -18,8 +17,8 @@ import { controllerMethodMiddlewareMetadataReflectKey } from '../reflectMetadata
 import { controllerMethodParameterMetadataReflectKey } from '../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
 import { controllerMethodStatusCodeMetadataReflectKey } from '../reflectMetadata/data/controllerMethodStatusCodeMetadataReflectKey';
 import { controllerMiddlewareMetadataReflectKey } from '../reflectMetadata/data/controllerMiddlewareMetadataReflectKey';
-import { ApplyMiddlewareOptionsToNewableFunctionConverter } from './converter/ApplyMiddlewareOptionsToNewableFunctionConverter';
-import { Converter } from './converter/Converter';
+import { applyMiddlewareOptionsToMiddlewareOptionsConvert } from './calculations/applyMiddlewareOptionsToMiddlewareOptionsConvert';
+import { MiddlewareOptions } from './model/MiddlewareOptions';
 import { RouterExplorerControllerMetadata } from './model/RouterExplorerControllerMetadata';
 import { RouterExplorerControllerMethodMetadata } from './model/RouterExplorerControllerMethodMetadata';
 
@@ -28,19 +27,10 @@ export class RouterExplorer {
     | RouterExplorerControllerMetadata[]
     | undefined;
   readonly #container: Container;
-  readonly #applyMiddlewareOptionsToNewableFunctionConverter: Converter<
-    (NewableFunction | ApplyMiddlewareOptions)[],
-    {
-      preHandlerMiddlewareList: NewableFunction[];
-      postHandlerMiddlewareList: NewableFunction[];
-    }
-  >;
 
   constructor(container: Container) {
     this.#container = container;
     this.#routerExplorerControllerMetadataList = undefined;
-    this.#applyMiddlewareOptionsToNewableFunctionConverter =
-      new ApplyMiddlewareOptionsToNewableFunctionConverter();
   }
 
   public async getMetadataList(): Promise<RouterExplorerControllerMetadata[]> {
@@ -94,12 +84,10 @@ export class RouterExplorer {
       controllerMetadata.target,
     );
 
-    const newableFunctionMiddleware: {
-      postHandlerMiddlewareList: NewableFunction[];
-      preHandlerMiddlewareList: NewableFunction[];
-    } = this.#applyMiddlewareOptionsToNewableFunctionConverter.convert(
-      controllerMiddlewareList ?? [],
-    );
+    const middlewareOptions: MiddlewareOptions =
+      applyMiddlewareOptionsToMiddlewareOptionsConvert(
+        controllerMiddlewareList ?? [],
+      );
 
     return {
       controllerMethodMetadataList:
@@ -107,12 +95,10 @@ export class RouterExplorer {
           controller,
           controllerMethodMetadataList ?? [],
         ),
-      guardList: controllerGuardList,
+      guardList: controllerGuardList ?? [],
       path: controllerMetadata.path,
-      postHandlerMiddlewareList:
-        newableFunctionMiddleware.postHandlerMiddlewareList,
-      preHandlerMiddlewareList:
-        newableFunctionMiddleware.preHandlerMiddlewareList,
+      postHandlerMiddlewareList: middlewareOptions.postHandlerMiddlewareList,
+      preHandlerMiddlewareList: middlewareOptions.preHandlerMiddlewareList,
       target: controllerMetadata.target,
     };
   }
@@ -152,22 +138,18 @@ export class RouterExplorer {
     const controllerMethodMiddlewareList: NewableFunction[] | undefined =
       this.#exploreControllerMethodMiddlewareList(targetFunction);
 
-    const newableFunctionMiddleware: {
-      postHandlerMiddlewareList: NewableFunction[];
-      preHandlerMiddlewareList: NewableFunction[];
-    } = this.#applyMiddlewareOptionsToNewableFunctionConverter.convert(
-      controllerMethodMiddlewareList ?? [],
-    );
+    const middlewareOptions: MiddlewareOptions =
+      applyMiddlewareOptionsToMiddlewareOptionsConvert(
+        controllerMethodMiddlewareList ?? [],
+      );
 
     return {
-      guardList: controllerMethodGuardList,
+      guardList: controllerMethodGuardList ?? [],
       methodKey: controllerMethodMetadata.methodKey,
       parameterMetadataList: controllerMethodParameterMetadataList ?? [],
       path: controllerMethodMetadata.path,
-      postHandlerMiddlewareList:
-        newableFunctionMiddleware.postHandlerMiddlewareList,
-      preHandlerMiddlewareList:
-        newableFunctionMiddleware.preHandlerMiddlewareList,
+      postHandlerMiddlewareList: middlewareOptions.postHandlerMiddlewareList,
+      preHandlerMiddlewareList: middlewareOptions.preHandlerMiddlewareList,
       requestMethodType: controllerMethodMetadata.requestMethodType,
       statusCode: controllerMethodStatusCode,
     };
