@@ -1,8 +1,9 @@
 import { Newable } from 'inversify';
 
-import { Middleware } from './Middleware';
+import { Middleware } from '../middleware/model/Middleware';
+import { MiddlewarePhase } from '../middleware/model/MiddlewarePhase';
 
 export interface ApplyMiddlewareOptions {
-  phase: 'preHandler' | 'postHandler';
+  phase: MiddlewarePhase;
   middleware: Newable<Middleware> | Newable<Middleware>[];
 }
