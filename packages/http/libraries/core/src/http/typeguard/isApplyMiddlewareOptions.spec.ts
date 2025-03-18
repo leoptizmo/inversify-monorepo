@@ -1,7 +1,8 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
+import { Middleware } from '../middleware/model/Middleware';
+import { MiddlewarePhase } from '../middleware/model/MiddlewarePhase';
 import { ApplyMiddlewareOptions } from '../models/ApplyMiddlewareOptions';
-import { Middleware } from '../models/Middleware';
 import { isApplyMiddlewareOptions } from './isApplyMiddlewareOptions';
 
 class TestMiddleware implements Middleware {
@@ -19,7 +20,7 @@ describe(isApplyMiddlewareOptions.name, () => {
       beforeAll(() => {
         valueFixture = {
           middleware: TestMiddleware,
-          phase: 'preHandler',
+          phase: MiddlewarePhase.PreHandler,
         };
 
         result = isApplyMiddlewareOptions(valueFixture);
