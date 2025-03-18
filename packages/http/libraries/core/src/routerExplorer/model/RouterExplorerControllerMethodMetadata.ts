@@ -3,12 +3,12 @@ import { RequestMethodType } from '../../http/models/RequestMethodType';
 import { HttpStatusCode } from '../../http/responses/HttpStatusCode';
 
 export interface RouterExplorerControllerMethodMetadata {
-  guardList: NewableFunction[] | undefined;
+  guardList: NewableFunction[];
   methodKey: string | symbol;
   parameterMetadataList: ControllerMethodParameterMetadata[];
   path: string;
-  postHandlerMiddlewareList: NewableFunction[] | undefined;
-  preHandlerMiddlewareList: NewableFunction[] | undefined;
+  postHandlerMiddlewareList: NewableFunction[];
+  preHandlerMiddlewareList: NewableFunction[];
   requestMethodType: RequestMethodType;
   statusCode: HttpStatusCode | undefined;
 }

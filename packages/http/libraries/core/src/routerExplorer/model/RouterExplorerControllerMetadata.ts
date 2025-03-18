@@ -2,9 +2,9 @@ import { RouterExplorerControllerMethodMetadata } from './RouterExplorerControll
 
 export interface RouterExplorerControllerMetadata {
   controllerMethodMetadataList: RouterExplorerControllerMethodMetadata[];
-  guardList: NewableFunction[] | undefined;
+  guardList: NewableFunction[];
   path: string;
-  postHandlerMiddlewareList: NewableFunction[] | undefined;
-  preHandlerMiddlewareList: NewableFunction[] | undefined;
+  postHandlerMiddlewareList: NewableFunction[];
+  preHandlerMiddlewareList: NewableFunction[];
   target: NewableFunction;
 }
