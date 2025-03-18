@@ -1,6 +1,6 @@
-import { ControllerMethodParameterMetadata } from '../../http/models/ControllerMethodParameterMetadata';
 import { RequestMethodType } from '../../http/models/RequestMethodType';
 import { HttpStatusCode } from '../../http/responses/HttpStatusCode';
+import { ControllerMethodParameterMetadata } from './ControllerMethodParameterMetadata';
 
 export interface RouterExplorerControllerMethodMetadata {
   guardList: NewableFunction[];

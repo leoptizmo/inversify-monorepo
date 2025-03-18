@@ -1,13 +1,13 @@
 import { ConsoleLogger, Logger } from '@inversifyjs/logger';
 import { Container } from 'inversify';
 
+import { ControllerMethodParameterMetadata } from '../../routerExplorer/model/ControllerMethodParameterMetadata';
 import { RouterExplorerControllerMetadata } from '../../routerExplorer/model/RouterExplorerControllerMetadata';
 import { RouterExplorerControllerMethodMetadata } from '../../routerExplorer/model/RouterExplorerControllerMethodMetadata';
 import { RouterExplorer } from '../../routerExplorer/RouterExplorer';
 import { Guard } from '../guard/model/Guard';
 import { Middleware } from '../middleware/model/Middleware';
 import { Controller } from '../models/Controller';
-import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
 import { ControllerResponse } from '../models/ControllerResponse';
 import { HttpAdapterOptions } from '../models/HttpAdapterOptions';
 import { InternalHttpAdapterOptions } from '../models/InternalHttpAdapterOptions';
@@ -256,12 +256,8 @@ export abstract class InversifyHttpAdapter<
   }
 
   async #getMiddlewareHandlerFromMetadata(
-    middlewareList: NewableFunction[] | undefined,
-  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[] | undefined> {
-    if (middlewareList === undefined) {
-      return undefined;
-    }
-
+    middlewareList: NewableFunction[],
+  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[]> {
     return Promise.all(
       middlewareList.map(async (newableFunction: NewableFunction) => {
         const middleware: Middleware<TRequest, TResponse, TNextFunction> =
@@ -273,12 +269,8 @@ export abstract class InversifyHttpAdapter<
   }
 
   async #getGuardHandlerFromMetadata(
-    guardList: NewableFunction[] | undefined,
-  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[] | undefined> {
-    if (guardList === undefined) {
-      return undefined;
-    }
-
+    guardList: NewableFunction[],
+  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[]> {
     return Promise.all(
       guardList.map(async (newableFunction: NewableFunction) => {
         const guard: Guard<TRequest> =

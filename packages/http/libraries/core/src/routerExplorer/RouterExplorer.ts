@@ -5,9 +5,6 @@ import { InversifyHttpAdapterError } from '../error/models/InversifyHttpAdapterE
 import { InversifyHttpAdapterErrorKind } from '../error/models/InversifyHttpAdapterErrorKind';
 import { Controller } from '../http/models/Controller';
 import { ControllerFunction } from '../http/models/ControllerFunction';
-import { ControllerMetadata } from '../http/models/ControllerMetadata';
-import { ControllerMethodMetadata } from '../http/models/ControllerMethodMetadata';
-import { ControllerMethodParameterMetadata } from '../http/models/ControllerMethodParameterMetadata';
 import { HttpStatusCode } from '../http/responses/HttpStatusCode';
 import { controllerGuardMetadataReflectKey } from '../reflectMetadata/data/controllerGuardMetadataReflectKey';
 import { controllerMetadataReflectKey } from '../reflectMetadata/data/controllerMetadataReflectKey';
@@ -18,6 +15,9 @@ import { controllerMethodParameterMetadataReflectKey } from '../reflectMetadata/
 import { controllerMethodStatusCodeMetadataReflectKey } from '../reflectMetadata/data/controllerMethodStatusCodeMetadataReflectKey';
 import { controllerMiddlewareMetadataReflectKey } from '../reflectMetadata/data/controllerMiddlewareMetadataReflectKey';
 import { applyMiddlewareOptionsToMiddlewareOptionsConvert } from './calculations/applyMiddlewareOptionsToMiddlewareOptionsConvert';
+import { ControllerMetadata } from './model/ControllerMetadata';
+import { ControllerMethodMetadata } from './model/ControllerMethodMetadata';
+import { ControllerMethodParameterMetadata } from './model/ControllerMethodParameterMetadata';
 import { MiddlewareOptions } from './model/MiddlewareOptions';
 import { RouterExplorerControllerMetadata } from './model/RouterExplorerControllerMetadata';
 import { RouterExplorerControllerMethodMetadata } from './model/RouterExplorerControllerMethodMetadata';
