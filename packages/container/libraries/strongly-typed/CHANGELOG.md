@@ -1,5 +1,11 @@
 # @inversifyjs/strongly-typed
 
+## 2.0.0
+
+### Major Changes
+
+- fa63aaf: Update to reflect `inversify@7` types
+
 ## 1.2.3
 
 ### Patch Changes
