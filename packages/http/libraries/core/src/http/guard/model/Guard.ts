@@ -1,4 +1,4 @@
-import { HttpResponse } from '../responses/HttpResponse';
+import { HttpResponse } from '../../responses/HttpResponse';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Guard<TRequest = any> {

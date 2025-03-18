@@ -5,7 +5,7 @@ import {
 import { BindingScope, injectable } from 'inversify';
 
 import { controllerMetadataReflectKey } from '../../reflectMetadata/data/controllerMetadataReflectKey';
-import { ControllerMetadata } from '../models/ControllerMetadata';
+import { ControllerMetadata } from '../../routerExplorer/model/ControllerMetadata';
 import { ControllerOptions } from '../models/ControllerOptions';
 
 export function controller(

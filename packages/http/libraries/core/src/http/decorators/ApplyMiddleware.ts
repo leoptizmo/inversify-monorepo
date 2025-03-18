@@ -6,18 +6,21 @@ import { Newable } from 'inversify';
 
 import { controllerMethodMiddlewareMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodMiddlewareMetadataReflectKey';
 import { controllerMiddlewareMetadataReflectKey } from '../../reflectMetadata/data/controllerMiddlewareMetadataReflectKey';
+import { Middleware } from '../middleware/model/Middleware';
+import { ApplyMiddlewareOptions } from '../models/ApplyMiddlewareOptions';
 import { ControllerFunction } from '../models/ControllerFunction';
-import { Middleware } from '../models/Middleware';
 
 export function applyMiddleware(
-  ...middlewareList: Newable<Middleware>[]
+  ...middlewareList: (Newable<Middleware> | ApplyMiddlewareOptions)[]
 ): ClassDecorator & MethodDecorator {
   return (
     target: object,
     _key?: string | symbol,
     descriptor?: PropertyDescriptor,
   ): void => {
-    let middlewareMetadataList: NewableFunction[] | undefined = undefined;
+    let middlewareMetadataList:
+      | (NewableFunction | ApplyMiddlewareOptions)[]
+      | undefined = undefined;
 
     if (descriptor === undefined) {
       middlewareMetadataList = getReflectMetadata(

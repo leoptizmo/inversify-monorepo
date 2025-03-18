@@ -1,8 +1,9 @@
 import { RequestHandler } from './RequestHandler';
-import { RouteParams } from './RouteParams';
+import { RequestMethodType } from './RequestMethodType';
 
-export interface RouterParams<TRequest, TResponse, TNextFunction> {
+export interface RouteParams<TRequest, TResponse, TNextFunction> {
   guardList: RequestHandler<TRequest, TResponse, TNextFunction>[];
+  handler: RequestHandler<TRequest, TResponse, TNextFunction>;
   path: string;
   postHandlerMiddlewareList: RequestHandler<
     TRequest,
@@ -14,5 +15,5 @@ export interface RouterParams<TRequest, TResponse, TNextFunction> {
     TResponse,
     TNextFunction
   >[];
-  routeParamsList: RouteParams<TRequest, TResponse, TNextFunction>[];
+  requestMethodType: RequestMethodType;
 }

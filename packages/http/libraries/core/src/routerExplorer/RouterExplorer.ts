@@ -5,9 +5,6 @@ import { InversifyHttpAdapterError } from '../error/models/InversifyHttpAdapterE
 import { InversifyHttpAdapterErrorKind } from '../error/models/InversifyHttpAdapterErrorKind';
 import { Controller } from '../http/models/Controller';
 import { ControllerFunction } from '../http/models/ControllerFunction';
-import { ControllerMetadata } from '../http/models/ControllerMetadata';
-import { ControllerMethodMetadata } from '../http/models/ControllerMethodMetadata';
-import { ControllerMethodParameterMetadata } from '../http/models/ControllerMethodParameterMetadata';
 import { HttpStatusCode } from '../http/responses/HttpStatusCode';
 import { controllerGuardMetadataReflectKey } from '../reflectMetadata/data/controllerGuardMetadataReflectKey';
 import { controllerMetadataReflectKey } from '../reflectMetadata/data/controllerMetadataReflectKey';
@@ -17,6 +14,11 @@ import { controllerMethodMiddlewareMetadataReflectKey } from '../reflectMetadata
 import { controllerMethodParameterMetadataReflectKey } from '../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
 import { controllerMethodStatusCodeMetadataReflectKey } from '../reflectMetadata/data/controllerMethodStatusCodeMetadataReflectKey';
 import { controllerMiddlewareMetadataReflectKey } from '../reflectMetadata/data/controllerMiddlewareMetadataReflectKey';
+import { buildMiddlewareOptionsFromApplyMiddlewareOptions } from './calculations/buildMiddlewareOptionsFromApplyMiddlewareOptions';
+import { ControllerMetadata } from './model/ControllerMetadata';
+import { ControllerMethodMetadata } from './model/ControllerMethodMetadata';
+import { ControllerMethodParameterMetadata } from './model/ControllerMethodParameterMetadata';
+import { MiddlewareOptions } from './model/MiddlewareOptions';
 import { RouterExplorerControllerMetadata } from './model/RouterExplorerControllerMetadata';
 import { RouterExplorerControllerMethodMetadata } from './model/RouterExplorerControllerMethodMetadata';
 
@@ -82,15 +84,21 @@ export class RouterExplorer {
       controllerMetadata.target,
     );
 
+    const middlewareOptions: MiddlewareOptions =
+      buildMiddlewareOptionsFromApplyMiddlewareOptions(
+        controllerMiddlewareList ?? [],
+      );
+
     return {
       controllerMethodMetadataList:
         this.#buildRouterExplorerControllerMethodMetadataList(
           controller,
           controllerMethodMetadataList ?? [],
         ),
-      guardList: controllerGuardList,
-      middlewareList: controllerMiddlewareList,
+      guardList: controllerGuardList ?? [],
       path: controllerMetadata.path,
+      postHandlerMiddlewareList: middlewareOptions.postHandlerMiddlewareList,
+      preHandlerMiddlewareList: middlewareOptions.preHandlerMiddlewareList,
       target: controllerMetadata.target,
     };
   }
@@ -130,12 +138,18 @@ export class RouterExplorer {
     const controllerMethodMiddlewareList: NewableFunction[] | undefined =
       this.#exploreControllerMethodMiddlewareList(targetFunction);
 
+    const middlewareOptions: MiddlewareOptions =
+      buildMiddlewareOptionsFromApplyMiddlewareOptions(
+        controllerMethodMiddlewareList ?? [],
+      );
+
     return {
-      guardList: controllerMethodGuardList,
+      guardList: controllerMethodGuardList ?? [],
       methodKey: controllerMethodMetadata.methodKey,
-      middlewareList: controllerMethodMiddlewareList,
       parameterMetadataList: controllerMethodParameterMetadataList ?? [],
       path: controllerMethodMetadata.path,
+      postHandlerMiddlewareList: middlewareOptions.postHandlerMiddlewareList,
+      preHandlerMiddlewareList: middlewareOptions.preHandlerMiddlewareList,
       requestMethodType: controllerMethodMetadata.requestMethodType,
       statusCode: controllerMethodStatusCode,
     };
