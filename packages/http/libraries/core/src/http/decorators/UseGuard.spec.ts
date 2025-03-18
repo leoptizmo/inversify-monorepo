@@ -10,7 +10,7 @@ import { Newable } from 'inversify';
 
 import { controllerGuardMetadataReflectKey } from '../../reflectMetadata/data/controllerGuardMetadataReflectKey';
 import { controllerMethodGuardMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodGuardMetadataReflectKey';
-import { Guard } from '../guard/Guard';
+import { Guard } from '../guard/model/Guard';
 import { useGuard } from './UseGuard';
 
 describe(useGuard.name, () => {

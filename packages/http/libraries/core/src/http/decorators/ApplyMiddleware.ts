@@ -6,9 +6,9 @@ import { Newable } from 'inversify';
 
 import { controllerMethodMiddlewareMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodMiddlewareMetadataReflectKey';
 import { controllerMiddlewareMetadataReflectKey } from '../../reflectMetadata/data/controllerMiddlewareMetadataReflectKey';
+import { Middleware } from '../middleware/model/Middleware';
 import { ApplyMiddlewareOptions } from '../models/ApplyMiddlewareOptions';
 import { ControllerFunction } from '../models/ControllerFunction';
-import { Middleware } from '../models/Middleware';
 
 export function applyMiddleware(
   ...middlewareList: (Newable<Middleware> | ApplyMiddlewareOptions)[]
