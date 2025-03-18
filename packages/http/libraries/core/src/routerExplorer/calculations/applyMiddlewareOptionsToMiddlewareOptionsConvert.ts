@@ -1,6 +1,6 @@
 import { MiddlewarePhase } from '../../http/middleware/model/MiddlewarePhase';
 import { ApplyMiddlewareOptions } from '../../http/models/ApplyMiddlewareOptions';
-import { isApplyMiddlewareOptions } from '../../http/typeGuard/isApplyMiddlewareOptions';
+import { isApplyMiddlewareOptions } from '../../http/typeguard/isApplyMiddlewareOptions';
 import { MiddlewareOptions } from '../model/MiddlewareOptions';
 
 export function applyMiddlewareOptionsToMiddlewareOptionsConvert(
