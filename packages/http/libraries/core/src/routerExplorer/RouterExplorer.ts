@@ -14,7 +14,7 @@ import { controllerMethodMiddlewareMetadataReflectKey } from '../reflectMetadata
 import { controllerMethodParameterMetadataReflectKey } from '../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
 import { controllerMethodStatusCodeMetadataReflectKey } from '../reflectMetadata/data/controllerMethodStatusCodeMetadataReflectKey';
 import { controllerMiddlewareMetadataReflectKey } from '../reflectMetadata/data/controllerMiddlewareMetadataReflectKey';
-import { applyMiddlewareOptionsToMiddlewareOptionsConvert } from './calculations/applyMiddlewareOptionsToMiddlewareOptionsConvert';
+import { buildMiddlewareOptionsFromApplyMiddlewareOptions } from './calculations/buildMiddlewareOptionsFromApplyMiddlewareOptions';
 import { ControllerMetadata } from './model/ControllerMetadata';
 import { ControllerMethodMetadata } from './model/ControllerMethodMetadata';
 import { ControllerMethodParameterMetadata } from './model/ControllerMethodParameterMetadata';
@@ -85,7 +85,7 @@ export class RouterExplorer {
     );
 
     const middlewareOptions: MiddlewareOptions =
-      applyMiddlewareOptionsToMiddlewareOptionsConvert(
+      buildMiddlewareOptionsFromApplyMiddlewareOptions(
         controllerMiddlewareList ?? [],
       );
 
@@ -139,7 +139,7 @@ export class RouterExplorer {
       this.#exploreControllerMethodMiddlewareList(targetFunction);
 
     const middlewareOptions: MiddlewareOptions =
-      applyMiddlewareOptionsToMiddlewareOptionsConvert(
+      buildMiddlewareOptionsFromApplyMiddlewareOptions(
         controllerMethodMiddlewareList ?? [],
       );
 

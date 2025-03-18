@@ -3,7 +3,7 @@ import { ApplyMiddlewareOptions } from '../../http/models/ApplyMiddlewareOptions
 import { isApplyMiddlewareOptions } from '../../http/typeguard/isApplyMiddlewareOptions';
 import { MiddlewareOptions } from '../model/MiddlewareOptions';
 
-export function applyMiddlewareOptionsToMiddlewareOptionsConvert(
+export function buildMiddlewareOptionsFromApplyMiddlewareOptions(
   applyMiddlewareOptionsList: (NewableFunction | ApplyMiddlewareOptions)[],
 ): MiddlewareOptions {
   const middlewareOptions: MiddlewareOptions = {
