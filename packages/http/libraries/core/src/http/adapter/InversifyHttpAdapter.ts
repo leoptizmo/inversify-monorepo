@@ -1,10 +1,10 @@
 import { ConsoleLogger, Logger } from '@inversifyjs/logger';
 import { Container } from 'inversify';
 
+import { buildRouterExplorerControllerMetadataList } from '../../routerExplorer/calculations/buildRouterExplorerControllerMetadataList';
 import { ControllerMethodParameterMetadata } from '../../routerExplorer/model/ControllerMethodParameterMetadata';
 import { RouterExplorerControllerMetadata } from '../../routerExplorer/model/RouterExplorerControllerMetadata';
 import { RouterExplorerControllerMethodMetadata } from '../../routerExplorer/model/RouterExplorerControllerMethodMetadata';
-import { RouterExplorer } from '../../routerExplorer/RouterExplorer';
 import { Guard } from '../guard/model/Guard';
 import { Middleware } from '../middleware/model/Middleware';
 import { Controller } from '../models/Controller';
@@ -30,11 +30,9 @@ export abstract class InversifyHttpAdapter<
   readonly #container: Container;
   readonly #httpAdapterOptions: InternalHttpAdapterOptions;
   readonly #logger: Logger;
-  readonly #routerExplorer: RouterExplorer;
 
   constructor(container: Container, httpAdapterOptions?: HttpAdapterOptions) {
     this.#container = container;
-    this.#routerExplorer = new RouterExplorer(container);
     this.#logger = this.#buildLogger(httpAdapterOptions);
     this.#httpAdapterOptions =
       this.#parseHttpAdapterOptions(httpAdapterOptions);
@@ -73,7 +71,7 @@ export abstract class InversifyHttpAdapter<
 
   async #registerControllers(): Promise<void> {
     const routerExplorerControllerMetadataList: RouterExplorerControllerMetadata[] =
-      await this.#routerExplorer.getMetadataList();
+      await buildRouterExplorerControllerMetadataList(this.#container);
 
     for (const routerExplorerControllerMetadata of routerExplorerControllerMetadataList) {
       await this._buildRouter({
