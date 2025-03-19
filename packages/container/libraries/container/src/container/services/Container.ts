@@ -55,6 +55,7 @@ const DEFAULT_DEFAULT_SCOPE: BindingScope = bindingScopeValues.Transient;
 export class Container {
   #activationService: ActivationsService;
   #bindingService: BindingService;
+  readonly #deactivationParams: DeactivationParams;
   #deactivationService: DeactivationsService;
   #getActivationsResolutionParam: <TActivated>(
     serviceIdentifier: ServiceIdentifier<TActivated>,
@@ -69,6 +70,7 @@ export class Container {
   readonly #snapshots: Snapshot[];
 
   constructor(options?: ContainerOptions) {
+    this.#deactivationParams = this.#buildDeactivationParams();
     this.#getActivationsResolutionParam = <TActivated>(
       serviceIdentifier: ServiceIdentifier<TActivated>,
     ): Iterable<BindingActivation<TActivated>> | undefined =>
@@ -297,9 +299,6 @@ export class Container {
   }
 
   public async unbindAll(): Promise<void> {
-    const deactivationParams: DeactivationParams =
-      this.#buildDeactivationParams();
-
     const nonParentBoundServiceIds: ServiceIdentifier[] = [
       ...this.#bindingService.getNonParentBoundServices(),
     ];
@@ -307,7 +306,7 @@ export class Container {
     await Promise.all(
       nonParentBoundServiceIds.map(
         async (serviceId: ServiceIdentifier): Promise<void> =>
-          resolveServiceDeactivations(deactivationParams, serviceId),
+          resolveServiceDeactivations(this.#deactivationParams, serviceId),
       ),
     );
 
@@ -329,12 +328,9 @@ export class Container {
   }
 
   public async unload(...modules: ContainerModule[]): Promise<void> {
-    const deactivationParams: DeactivationParams =
-      this.#buildDeactivationParams();
-
     await Promise.all(
       modules.map((module: ContainerModule): void | Promise<void> =>
-        resolveModuleDeactivations(deactivationParams, module.id),
+        resolveModuleDeactivations(this.#deactivationParams, module.id),
       ),
     );
 
