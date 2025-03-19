@@ -7,7 +7,9 @@ import {
   BindToFluentSyntax,
   BindWhenFluentSyntax,
   BindWhenOnFluentSyntax,
+  BoundServiceSyntax,
 } from './binding/models/BindingFluentSyntax';
+import { BindingIdentifier } from './binding/models/BindingIdentifier';
 import {
   ResolvedValueInjectOptions,
   ResolvedValueMetadataInjectOptions,
@@ -23,12 +25,14 @@ import { InversifyContainerError } from './error/models/InversifyContainerError'
 import { InversifyContainerErrorKind } from './error/models/InversifyContainerErrorKind';
 
 export type {
+  BindingIdentifier,
   BindInFluentSyntax,
   BindInWhenOnFluentSyntax,
   BindOnFluentSyntax,
   BindToFluentSyntax,
   BindWhenFluentSyntax,
   BindWhenOnFluentSyntax,
+  BoundServiceSyntax,
   ContainerModuleLoadOptions,
   ContainerOptions,
   IsBoundOptions,

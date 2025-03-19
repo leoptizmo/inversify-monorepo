@@ -33,6 +33,7 @@ import {
 import { Writable } from '../../common/models/Writable';
 import { BindingConstraintUtils } from '../../container/binding/utils/BindingConstraintUtils';
 import { getBindingId } from '../actions/getBindingId';
+import { buildBindingIdentifier } from '../calculations/buildBindingIdentifier';
 import { isAnyAncestorBindingConstraints } from '../calculations/isAnyAncestorBindingConstraints';
 import { isAnyAncestorBindingConstraintsWithName } from '../calculations/isAnyAncestorBindingConstraintsWithName';
 import { isAnyAncestorBindingConstraintsWithServiceId } from '../calculations/isAnyAncestorBindingConstraintsWithServiceId';
@@ -61,6 +62,7 @@ import {
   BindWhenFluentSyntax,
   BindWhenOnFluentSyntax,
 } from './BindingFluentSyntax';
+import { BindingIdentifier } from './BindingIdentifier';
 import {
   ResolvedValueInjectOptions,
   ResolvedValueMetadataInjectTagOptions,
@@ -73,6 +75,10 @@ export class BindInFluentSyntaxImplementation<T>
 
   constructor(binding: Writable<ScopedBinding<BindingType, BindingScope, T>>) {
     this.#binding = binding;
+  }
+
+  public getIdentifier(): BindingIdentifier {
+    return buildBindingIdentifier(this.#binding);
   }
 
   public inRequestScope(): BindWhenOnFluentSyntax<T> {
@@ -344,6 +350,10 @@ export class BindOnFluentSyntaxImplementation<T>
     this.#binding = binding;
   }
 
+  public getIdentifier(): BindingIdentifier {
+    return buildBindingIdentifier(this.#binding);
+  }
+
   public onActivation(
     activation: BindingActivation<T>,
   ): BindWhenFluentSyntax<T> {
@@ -368,6 +378,10 @@ export class BindWhenFluentSyntaxImplementation<T>
 
   constructor(binding: Writable<ScopedBinding<BindingType, BindingScope, T>>) {
     this.#binding = binding;
+  }
+
+  public getIdentifier(): BindingIdentifier {
+    return buildBindingIdentifier(this.#binding);
   }
 
   public when(
