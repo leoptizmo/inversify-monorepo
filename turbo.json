@@ -76,12 +76,12 @@
     },
     "test:integration": {
       "dependsOn": ["^build"],
-      "inputs": ["{dist,lib}/**/*.{cjs,mjs,js}"],
+      "inputs": ["src/**/*.{cts,mts,ts}"],
       "outputs": []
     },
     "test:coverage": {
       "dependsOn": ["^build"],
-      "inputs": ["{dist,lib}/**/*.{cjs,mjs,js}"],
+      "inputs": ["src/**/*.{cts,mts,ts}"],
       "outputs": ["coverage/**"]
     },
     "test:mutation": {
@@ -96,7 +96,7 @@
     },
     "test:unit": {
       "dependsOn": ["^build"],
-      "inputs": ["{dist,lib}/**/*.{cjs,mjs,js}"],
+      "inputs": ["src/**/*.{cts,mts,ts}"],
       "outputs": []
     }
   },
