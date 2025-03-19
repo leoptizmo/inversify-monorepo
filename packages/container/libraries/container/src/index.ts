@@ -7,6 +7,7 @@ import {
   BindToFluentSyntax,
   BindWhenFluentSyntax,
   BindWhenOnFluentSyntax,
+  BoundServiceSyntax,
 } from './binding/models/BindingFluentSyntax';
 import { BindingIdentifier } from './binding/models/BindingIdentifier';
 import {
@@ -31,6 +32,7 @@ export type {
   BindToFluentSyntax,
   BindWhenFluentSyntax,
   BindWhenOnFluentSyntax,
+  BoundServiceSyntax,
   ContainerModuleLoadOptions,
   ContainerOptions,
   IsBoundOptions,
