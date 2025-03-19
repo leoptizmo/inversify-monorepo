@@ -11,6 +11,7 @@ import {
   FastifyPluginCallback,
   FastifyReply,
   FastifyRequest,
+  preHandlerAsyncHookHandler,
   preHandlerHookHandler,
   RouteHandlerMethod,
 } from 'fastify';
@@ -19,7 +20,7 @@ import { Container } from 'inversify';
 export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
   FastifyRequest,
   FastifyReply,
-  (err?: unknown) => void
+  (err?: Error) => void
 > {
   readonly #app: FastifyInstance;
 
@@ -192,13 +193,24 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
       FastifyReply,
       (err?: Error) => void
     >,
-  ): preHandlerHookHandler {
-    return (
-      request: FastifyRequest,
-      reply: FastifyReply,
-      done: (err?: Error) => void,
-    ) => {
-      void Promise.resolve(middleware(request, reply, done));
+  ): preHandlerAsyncHookHandler {
+    return async (request: FastifyRequest, reply: FastifyReply) => {
+      return new Promise(
+        (
+          resolve: (value?: unknown) => void,
+          reject: (error?: unknown) => void,
+        ) => {
+          const done: (err?: Error) => void = (err?: Error) => {
+            if (err !== undefined) {
+              reject(err);
+            } else {
+              resolve();
+            }
+          };
+
+          void Promise.resolve(middleware(request, reply, done));
+        },
+      );
     };
   }
 }
