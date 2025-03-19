@@ -1,18 +1,19 @@
 import { ConsoleLogger, Logger } from '@inversifyjs/logger';
 import { Container } from 'inversify';
 
+import { ControllerMethodParameterMetadata } from '../../routerExplorer/model/ControllerMethodParameterMetadata';
 import { RouterExplorerControllerMetadata } from '../../routerExplorer/model/RouterExplorerControllerMetadata';
 import { RouterExplorerControllerMethodMetadata } from '../../routerExplorer/model/RouterExplorerControllerMethodMetadata';
 import { RouterExplorer } from '../../routerExplorer/RouterExplorer';
-import { Guard } from '../guard/Guard';
+import { Guard } from '../guard/model/Guard';
+import { Middleware } from '../middleware/model/Middleware';
 import { Controller } from '../models/Controller';
-import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
 import { ControllerResponse } from '../models/ControllerResponse';
 import { HttpAdapterOptions } from '../models/HttpAdapterOptions';
 import { InternalHttpAdapterOptions } from '../models/InternalHttpAdapterOptions';
-import { Middleware } from '../models/Middleware';
 import { RequestHandler } from '../models/RequestHandler';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
+import { RouteParams } from '../models/RouteParams';
 import { RouterParams } from '../models/RouterParams';
 import { ForbiddenHttpResponse } from '../responses/error/ForbiddenHttpResponse';
 import { InternalServerErrorHttpResponse } from '../responses/error/InternalServerErrorHttpResponse';
@@ -75,19 +76,22 @@ export abstract class InversifyHttpAdapter<
       await this.#routerExplorer.getMetadataList();
 
     for (const routerExplorerControllerMetadata of routerExplorerControllerMetadataList) {
-      await this._buildRouter(
-        routerExplorerControllerMetadata.path,
-        await this.#buildHandlers(
+      await this._buildRouter({
+        guardList: await this.#getGuardHandlerFromMetadata(
+          routerExplorerControllerMetadata.guardList,
+        ),
+        path: routerExplorerControllerMetadata.path,
+        postHandlerMiddlewareList: await this.#getMiddlewareHandlerFromMetadata(
+          routerExplorerControllerMetadata.postHandlerMiddlewareList,
+        ),
+        preHandlerMiddlewareList: await this.#getMiddlewareHandlerFromMetadata(
+          routerExplorerControllerMetadata.preHandlerMiddlewareList,
+        ),
+        routeParamsList: await this.#buildHandlers(
           routerExplorerControllerMetadata.target,
           routerExplorerControllerMetadata.controllerMethodMetadataList,
         ),
-        await this.#getMiddlewareHandlerFromMetadata(
-          routerExplorerControllerMetadata.middlewareList,
-        ),
-        await this.#getGuardHandlerFromMetadata(
-          routerExplorerControllerMetadata.guardList,
-        ),
-      );
+      });
 
       if (this.#httpAdapterOptions.logger) {
         this.#printController(
@@ -102,7 +106,7 @@ export abstract class InversifyHttpAdapter<
   async #buildHandlers(
     target: NewableFunction,
     routerExplorerControllerMethodMetadata: RouterExplorerControllerMethodMetadata[],
-  ): Promise<RouterParams<TRequest, TResponse, TNextFunction>[]> {
+  ): Promise<RouteParams<TRequest, TResponse, TNextFunction>[]> {
     const controller: Controller = await this.#container.getAsync(target);
 
     return Promise.all(
@@ -119,10 +123,15 @@ export abstract class InversifyHttpAdapter<
             routerExplorerControllerMethodMetadata.parameterMetadataList,
             routerExplorerControllerMethodMetadata.statusCode,
           ),
-          middlewareList: await this.#getMiddlewareHandlerFromMetadata(
-            routerExplorerControllerMethodMetadata.middlewareList,
-          ),
           path: routerExplorerControllerMethodMetadata.path,
+          postHandlerMiddlewareList:
+            await this.#getMiddlewareHandlerFromMetadata(
+              routerExplorerControllerMethodMetadata.postHandlerMiddlewareList,
+            ),
+          preHandlerMiddlewareList:
+            await this.#getMiddlewareHandlerFromMetadata(
+              routerExplorerControllerMethodMetadata.preHandlerMiddlewareList,
+            ),
           requestMethodType:
             routerExplorerControllerMethodMetadata.requestMethodType,
         }),
@@ -247,12 +256,8 @@ export abstract class InversifyHttpAdapter<
   }
 
   async #getMiddlewareHandlerFromMetadata(
-    middlewareList: NewableFunction[] | undefined,
-  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[] | undefined> {
-    if (middlewareList === undefined) {
-      return undefined;
-    }
-
+    middlewareList: NewableFunction[],
+  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[]> {
     return Promise.all(
       middlewareList.map(async (newableFunction: NewableFunction) => {
         const middleware: Middleware<TRequest, TResponse, TNextFunction> =
@@ -264,12 +269,8 @@ export abstract class InversifyHttpAdapter<
   }
 
   async #getGuardHandlerFromMetadata(
-    guardList: NewableFunction[] | undefined,
-  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[] | undefined> {
-    if (guardList === undefined) {
-      return undefined;
-    }
-
+    guardList: NewableFunction[],
+  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[]> {
     return Promise.all(
       guardList.map(async (newableFunction: NewableFunction) => {
         const guard: Guard<TRequest> =
@@ -368,11 +369,6 @@ export abstract class InversifyHttpAdapter<
   ): void;
 
   protected abstract _buildRouter(
-    path: string,
-    routerParams: RouterParams<TRequest, TResponse, TNextFunction>[],
-    guardList: RequestHandler<TRequest, TResponse, TNextFunction>[] | undefined,
-    middlewareList:
-      | RequestHandler<TRequest, TResponse, TNextFunction>[]
-      | undefined,
+    routerParams: RouterParams<TRequest, TResponse, TNextFunction>,
   ): unknown;
 }

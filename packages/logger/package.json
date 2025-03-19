@@ -45,6 +45,7 @@
     }
   },
   "name": "@inversifyjs/logger",
+  "private": "true",
   "peerDependencies": {
     "winston": "^3.17.0"
   },

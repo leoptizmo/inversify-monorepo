@@ -10,7 +10,7 @@ import { Newable } from 'inversify';
 
 import { controllerMethodMiddlewareMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodMiddlewareMetadataReflectKey';
 import { controllerMiddlewareMetadataReflectKey } from '../../reflectMetadata/data/controllerMiddlewareMetadataReflectKey';
-import { Middleware } from '../models/Middleware';
+import { Middleware } from '../middleware/model/Middleware';
 import { applyMiddleware } from './ApplyMiddleware';
 
 describe(applyMiddleware.name, () => {
