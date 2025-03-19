@@ -28,12 +28,11 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     customApp?: Application,
   ) {
     super(container, httpAdapterOptions);
-    this.#app = customApp ?? express();
+
+    this.#app = customApp ?? this.#buildDefaultExpressApp();
   }
 
   public async build(): Promise<Application> {
-    this.#app.use(express.json());
-
     await this._buildServer();
 
     return this.#app;
@@ -137,6 +136,14 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     return parameterName !== undefined
       ? (request.cookies as Record<string, unknown>)[parameterName]
       : request.cookies;
+  }
+
+  #buildDefaultExpressApp(): Application {
+    const app: Application = express();
+
+    app.use(express.json());
+
+    return app;
   }
 
   #orderMiddlewares(
