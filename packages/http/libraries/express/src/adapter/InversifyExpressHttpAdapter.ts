@@ -39,46 +39,44 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
   }
 
   protected override _buildRouter(
-    path: string,
-    routerParams: RouterParams<Request, Response, NextFunction>[],
-    middlewareList:
-      | RequestHandler<Request, Response, NextFunction>[]
-      | undefined,
-    guardList: RequestHandler<Request, Response, NextFunction>[] | undefined,
+    routerParams: RouterParams<Request, Response, NextFunction>,
   ): void {
     const router: Router = Router();
 
-    const orderedMiddlewareList:
-      | RequestHandler<Request, Response, NextFunction>[]
-      | undefined = this.#orderMiddlewares(guardList, middlewareList);
+    const orderedMiddlewareList: RequestHandler<
+      Request,
+      Response,
+      NextFunction
+    >[] = [...routerParams.guardList, ...routerParams.preHandlerMiddlewareList];
 
-    if (orderedMiddlewareList !== undefined) {
+    if (orderedMiddlewareList.length > 0) {
       router.use(orderedMiddlewareList);
     }
 
-    for (const route of routerParams) {
-      const orderedMiddlewareList:
+    for (const routeParams of routerParams.routeParamsList) {
+      const orderedPreHandlerMiddlewareList:
         | RequestHandler<Request, Response, NextFunction>[]
-        | undefined = this.#orderMiddlewares(
-        route.guardList,
-        route.middlewareList,
-      );
+        | undefined = [
+        ...routeParams.guardList,
+        ...routeParams.preHandlerMiddlewareList,
+      ];
 
-      if (orderedMiddlewareList !== undefined) {
-        router[route.requestMethodType](
-          route.path,
-          ...(orderedMiddlewareList as ExpressRequestHandler[]),
-          route.handler as ExpressRequestHandler,
-        );
-      } else {
-        router[route.requestMethodType](
-          route.path,
-          route.handler as ExpressRequestHandler,
-        );
-      }
+      const orderedPostHandlerMiddlewareList:
+        | RequestHandler<Request, Response, NextFunction>[]
+        | undefined = [
+        ...routerParams.postHandlerMiddlewareList,
+        ...routeParams.postHandlerMiddlewareList,
+      ];
+
+      router[routeParams.requestMethodType](
+        routeParams.path,
+        ...(orderedPreHandlerMiddlewareList as ExpressRequestHandler[]),
+        routeParams.handler as ExpressRequestHandler,
+        ...(orderedPostHandlerMiddlewareList as ExpressRequestHandler[]),
+      );
     }
 
-    this.#app.use(path, router);
+    this.#app.use(routerParams.path, router);
   }
 
   protected _replyText(
@@ -138,36 +136,11 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
       : request.cookies;
   }
 
-  #buildDefaultExpressApp(): Application {
-    const app: Application = express();
+  #buildDefaultExpressApp(customApp?: Application): Application {
+    const app: Application = customApp ?? express();
 
     app.use(express.json());
 
     return app;
-  }
-
-  #orderMiddlewares(
-    guardList: RequestHandler<Request, Response, NextFunction>[] | undefined,
-    middlewareList:
-      | RequestHandler<Request, Response, NextFunction>[]
-      | undefined,
-  ): RequestHandler<Request, Response, NextFunction>[] | undefined {
-    let orderedMiddlewareList:
-      | RequestHandler<Request, Response, NextFunction>[]
-      | undefined = undefined;
-
-    if (guardList !== undefined || middlewareList !== undefined) {
-      orderedMiddlewareList = [];
-
-      if (guardList !== undefined) {
-        orderedMiddlewareList.push(...guardList);
-      }
-
-      if (middlewareList !== undefined) {
-        orderedMiddlewareList.push(...middlewareList);
-      }
-    }
-
-    return orderedMiddlewareList;
   }
 }
