@@ -1,5 +1,5 @@
 import { controller, GET } from '@inversifyjs/http-core';
-import { InversifyFastifyServer } from '@inversifyjs/http-fastify';
+import { InversifyFastifyHttpAdapter } from '@inversifyjs/http-fastify';
 import { Container } from 'inversify';
 
 import { CurrentInversifyFastifyBaseScenario } from './CurrentInversifyFastifyBaseScenario';
@@ -26,7 +26,7 @@ export class CurrentInversifyFastifyBasicGetScenario extends CurrentInversifyFas
 
     container.bind(AppController).toSelf();
 
-    const server: InversifyFastifyServer = new InversifyFastifyServer(
+    const server: InversifyFastifyHttpAdapter = new InversifyFastifyHttpAdapter(
       container,
       {
         logger: false,
