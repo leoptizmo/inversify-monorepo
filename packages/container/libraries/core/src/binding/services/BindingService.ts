@@ -5,11 +5,13 @@ import { OneToManyMapStar } from '../../common/models/OneToManyMapStar';
 import { Binding } from '../models/Binding';
 
 enum BindingRelationKind {
+  id = 'id',
   moduleId = 'moduleId',
   serviceId = 'serviceId',
 }
 
 export interface BindingRelation {
+  [BindingRelationKind.id]: number;
   [BindingRelationKind.moduleId]?: number;
   [BindingRelationKind.serviceId]: ServiceIdentifier;
 }
@@ -25,6 +27,9 @@ export class BindingService implements Cloneable<BindingService> {
     this.#bindingMaps =
       bindingMaps ??
       new OneToManyMapStar<Binding<unknown>, BindingRelation>({
+        id: {
+          isOptional: false,
+        },
         moduleId: {
           isOptional: true,
         },
@@ -58,6 +63,26 @@ export class BindingService implements Cloneable<BindingService> {
     );
   }
 
+  public getById<TResolved>(
+    id: number,
+  ): Iterable<Binding<TResolved>> | undefined {
+    return (
+      (this.#bindingMaps.get(BindingRelationKind.id, id) as
+        | Iterable<Binding<TResolved>>
+        | undefined) ?? this.#parent?.getById(id)
+    );
+  }
+
+  public getByModuleId<TResolved>(
+    moduleId: number,
+  ): Iterable<Binding<TResolved>> | undefined {
+    return (
+      (this.#bindingMaps.get(BindingRelationKind.moduleId, moduleId) as
+        | Iterable<Binding<TResolved>>
+        | undefined) ?? this.#parent?.getByModuleId(moduleId)
+    );
+  }
+
   public getNonParentBindings<TResolved>(
     serviceId: ServiceIdentifier,
   ): Iterable<Binding<TResolved>> | undefined {
@@ -70,14 +95,8 @@ export class BindingService implements Cloneable<BindingService> {
     return this.#bindingMaps.getAllKeys(BindingRelationKind.serviceId);
   }
 
-  public getByModuleId<TResolved>(
-    moduleId: number,
-  ): Iterable<Binding<TResolved>> | undefined {
-    return (
-      (this.#bindingMaps.get(BindingRelationKind.moduleId, moduleId) as
-        | Iterable<Binding<TResolved>>
-        | undefined) ?? this.#parent?.getByModuleId(moduleId)
-    );
+  public removeById(id: number): void {
+    this.#bindingMaps.removeByRelation(BindingRelationKind.id, id);
   }
 
   public removeAllByModuleId(moduleId: number): void {
@@ -93,6 +112,7 @@ export class BindingService implements Cloneable<BindingService> {
 
   public set<TInstance>(binding: Binding<TInstance>): void {
     const relation: BindingRelation = {
+      [BindingRelationKind.id]: binding.id,
       [BindingRelationKind.serviceId]: binding.serviceIdentifier,
     };
 
