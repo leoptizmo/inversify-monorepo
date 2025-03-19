@@ -24,12 +24,15 @@ import {
   PlanResultCacheService,
   ResolutionContext,
   resolve,
+  resolveBindingsDeactivations,
   resolveModuleDeactivations,
   resolveServiceDeactivations,
 } from '@inversifyjs/core';
 
+import { isBindingIdentifier } from '../../binding/calculations/isBindingIdentifier';
 import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
 import { BindToFluentSyntaxImplementation } from '../../binding/models/BindingFluentSyntaxImplementation';
+import { BindingIdentifier } from '../../binding/models/BindingIdentifier';
 import { InversifyContainerError } from '../../error/models/InversifyContainerError';
 import { InversifyContainerErrorKind } from '../../error/models/InversifyContainerErrorKind';
 import { Snapshot } from '../../snapshot/models/Snapshot';
@@ -55,6 +58,7 @@ const DEFAULT_DEFAULT_SCOPE: BindingScope = bindingScopeValues.Transient;
 export class Container {
   #activationService: ActivationsService;
   #bindingService: BindingService;
+  readonly #deactivationParams: DeactivationParams;
   #deactivationService: DeactivationsService;
   #getActivationsResolutionParam: <TActivated>(
     serviceIdentifier: ServiceIdentifier<TActivated>,
@@ -69,6 +73,7 @@ export class Container {
   readonly #snapshots: Snapshot[];
 
   constructor(options?: ContainerOptions) {
+    this.#deactivationParams = this.#buildDeactivationParams();
     this.#getActivationsResolutionParam = <TActivated>(
       serviceIdentifier: ServiceIdentifier<TActivated>,
     ): Iterable<BindingActivation<TActivated>> | undefined =>
@@ -283,23 +288,17 @@ export class Container {
     });
   }
 
-  public async unbind(serviceIdentifier: ServiceIdentifier): Promise<void> {
-    await resolveServiceDeactivations(
-      this.#buildDeactivationParams(),
-      serviceIdentifier,
-    );
-
-    this.#activationService.removeAllByServiceId(serviceIdentifier);
-    this.#bindingService.removeAllByServiceId(serviceIdentifier);
-    this.#deactivationService.removeAllByServiceId(serviceIdentifier);
-
-    this.#planResultCacheService.clearCache();
+  public async unbind(
+    identifier: BindingIdentifier | ServiceIdentifier,
+  ): Promise<void> {
+    if (isBindingIdentifier(identifier)) {
+      await this.#unbindBindingIdentifier(identifier);
+    } else {
+      await this.#unbindServiceIdentifier(identifier);
+    }
   }
 
   public async unbindAll(): Promise<void> {
-    const deactivationParams: DeactivationParams =
-      this.#buildDeactivationParams();
-
     const nonParentBoundServiceIds: ServiceIdentifier[] = [
       ...this.#bindingService.getNonParentBoundServices(),
     ];
@@ -307,7 +306,7 @@ export class Container {
     await Promise.all(
       nonParentBoundServiceIds.map(
         async (serviceId: ServiceIdentifier): Promise<void> =>
-          resolveServiceDeactivations(deactivationParams, serviceId),
+          resolveServiceDeactivations(this.#deactivationParams, serviceId),
       ),
     );
 
@@ -329,12 +328,9 @@ export class Container {
   }
 
   public async unload(...modules: ContainerModule[]): Promise<void> {
-    const deactivationParams: DeactivationParams =
-      this.#buildDeactivationParams();
-
     await Promise.all(
       modules.map((module: ContainerModule): void | Promise<void> =>
-        resolveModuleDeactivations(deactivationParams, module.id),
+        resolveModuleDeactivations(this.#deactivationParams, module.id),
       ),
     );
 
@@ -569,6 +565,27 @@ export class Container {
 
   #setBinding(binding: Binding): void {
     this.#bindingService.set(binding);
+
+    this.#planResultCacheService.clearCache();
+  }
+
+  async #unbindBindingIdentifier(identifier: BindingIdentifier): Promise<void> {
+    const bindings: Iterable<Binding<unknown>> | undefined =
+      this.#bindingService.getById(identifier.id);
+
+    await resolveBindingsDeactivations(this.#deactivationParams, bindings);
+
+    this.#bindingService.removeById(identifier.id);
+
+    this.#planResultCacheService.clearCache();
+  }
+
+  async #unbindServiceIdentifier(identifier: ServiceIdentifier): Promise<void> {
+    await resolveServiceDeactivations(this.#deactivationParams, identifier);
+
+    this.#activationService.removeAllByServiceId(identifier);
+    this.#bindingService.removeAllByServiceId(identifier);
+    this.#deactivationService.removeAllByServiceId(identifier);
 
     this.#planResultCacheService.clearCache();
   }
