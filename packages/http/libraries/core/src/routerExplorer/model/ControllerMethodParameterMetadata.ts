@@ -1,4 +1,4 @@
-import { RequestMethodParameterType } from './RequestMethodParameterType';
+import { RequestMethodParameterType } from '../../http/models/RequestMethodParameterType';
 
 export interface ControllerMethodParameterMetadata {
   index: number;

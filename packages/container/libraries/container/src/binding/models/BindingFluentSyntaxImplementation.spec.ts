@@ -12,6 +12,7 @@ import {
 vitest.mock('@inversifyjs/core');
 
 vitest.mock('../actions/getBindingId');
+vitest.mock('../calculations/buildBindingIdentifier');
 vitest.mock('../calculations/isAnyAncestorBindingConstraints');
 vitest.mock('../calculations/isAnyAncestorBindingConstraintsWithName');
 vitest.mock('../calculations/isAnyAncestorBindingConstraintsWithServiceId');
@@ -61,6 +62,7 @@ import { Writable } from '../../common/models/Writable';
 import { BindingConstraintUtils } from '../../container/binding/utils/BindingConstraintUtils';
 import { ClassMetadataFixtures } from '../../metadata/fixtures/ClassMetadataFixtures';
 import { getBindingId } from '../actions/getBindingId';
+import { buildBindingIdentifier } from '../calculations/buildBindingIdentifier';
 import { isAnyAncestorBindingConstraints } from '../calculations/isAnyAncestorBindingConstraints';
 import { isAnyAncestorBindingConstraintsWithName } from '../calculations/isAnyAncestorBindingConstraintsWithName';
 import { isAnyAncestorBindingConstraintsWithServiceId } from '../calculations/isAnyAncestorBindingConstraintsWithServiceId';
@@ -89,6 +91,7 @@ import {
   BindWhenFluentSyntaxImplementation,
   BindWhenOnFluentSyntaxImplementation,
 } from './BindingFluentSyntaxImplementation';
+import { BindingIdentifier } from './BindingIdentifier';
 import {
   ResolvedValueInjectOptions,
   ResolvedValueMetadataInjectOptions,
@@ -185,6 +188,34 @@ describe(BindInFluentSyntaxImplementation.name, () => {
       });
     },
   );
+
+  describe('.getIdentifier', () => {
+    let bindingIdentifierFixture: BindingIdentifier;
+
+    let result: unknown;
+
+    beforeAll(() => {
+      bindingIdentifierFixture = Symbol() as unknown as BindingIdentifier;
+
+      vitest
+        .mocked(buildBindingIdentifier)
+        .mockReturnValue(bindingIdentifierFixture);
+      result = bindInFluentSyntaxImplementation.getIdentifier();
+    });
+
+    afterAll(() => {
+      vitest.clearAllMocks();
+    });
+
+    it('should call buildBindingIdentifier', () => {
+      expect(buildBindingIdentifier).toHaveBeenCalledTimes(1);
+      expect(buildBindingIdentifier).toHaveBeenCalledWith(bindingMock);
+    });
+
+    it('should return the mocked identifier', () => {
+      expect(result).toBe(bindingIdentifierFixture);
+    });
+  });
 });
 
 describe(BindToFluentSyntaxImplementation.name, () => {
@@ -1007,6 +1038,34 @@ describe(BindOnFluentSyntaxImplementation.name, () => {
       });
     });
   });
+
+  describe('.getIdentifier', () => {
+    let bindingIdentifierFixture: BindingIdentifier;
+
+    let result: unknown;
+
+    beforeAll(() => {
+      bindingIdentifierFixture = Symbol() as unknown as BindingIdentifier;
+
+      vitest
+        .mocked(buildBindingIdentifier)
+        .mockReturnValue(bindingIdentifierFixture);
+      result = bindOnFluentSyntaxImplementation.getIdentifier();
+    });
+
+    afterAll(() => {
+      vitest.clearAllMocks();
+    });
+
+    it('should call buildBindingIdentifier', () => {
+      expect(buildBindingIdentifier).toHaveBeenCalledTimes(1);
+      expect(buildBindingIdentifier).toHaveBeenCalledWith(bindingFixture);
+    });
+
+    it('should return the mocked identifier', () => {
+      expect(result).toBe(bindingIdentifierFixture);
+    });
+  });
 });
 
 describe(BindWhenFluentSyntaxImplementation.name, () => {
@@ -1624,6 +1683,34 @@ describe(BindWhenFluentSyntaxImplementation.name, () => {
       expect(result).toBeInstanceOf(BindOnFluentSyntaxImplementation);
     });
   });
+
+  describe('.getIdentifier', () => {
+    let bindingIdentifierFixture: BindingIdentifier;
+
+    let result: unknown;
+
+    beforeAll(() => {
+      bindingIdentifierFixture = Symbol() as unknown as BindingIdentifier;
+
+      vitest
+        .mocked(buildBindingIdentifier)
+        .mockReturnValue(bindingIdentifierFixture);
+      result = bindWhenFluentSyntaxImplementation.getIdentifier();
+    });
+
+    afterAll(() => {
+      vitest.clearAllMocks();
+    });
+
+    it('should call buildBindingIdentifier', () => {
+      expect(buildBindingIdentifier).toHaveBeenCalledTimes(1);
+      expect(buildBindingIdentifier).toHaveBeenCalledWith(bindingFixture);
+    });
+
+    it('should return the mocked identifier', () => {
+      expect(result).toBe(bindingIdentifierFixture);
+    });
+  });
 });
 
 describe(BindWhenOnFluentSyntaxImplementation.name, () => {
@@ -1726,6 +1813,34 @@ describe(BindWhenOnFluentSyntaxImplementation.name, () => {
       });
     });
   });
+
+  describe('.getIdentifier', () => {
+    let bindingIdentifierFixture: BindingIdentifier;
+
+    let result: unknown;
+
+    beforeAll(() => {
+      bindingIdentifierFixture = Symbol() as unknown as BindingIdentifier;
+
+      vitest
+        .mocked(buildBindingIdentifier)
+        .mockReturnValue(bindingIdentifierFixture);
+      result = bindWhenOnFluentSyntaxImplementation.getIdentifier();
+    });
+
+    afterAll(() => {
+      vitest.clearAllMocks();
+    });
+
+    it('should call buildBindingIdentifier', () => {
+      expect(buildBindingIdentifier).toHaveBeenCalledTimes(1);
+      expect(buildBindingIdentifier).toHaveBeenCalledWith(bindingFixture);
+    });
+
+    it('should return the mocked identifier', () => {
+      expect(result).toBe(bindingIdentifierFixture);
+    });
+  });
 });
 
 describe(BindInWhenOnFluentSyntaxImplementation.name, () => {
@@ -1818,4 +1933,32 @@ describe(BindInWhenOnFluentSyntaxImplementation.name, () => {
       });
     },
   );
+
+  describe('.getIdentifier', () => {
+    let bindingIdentifierFixture: BindingIdentifier;
+
+    let result: unknown;
+
+    beforeAll(() => {
+      bindingIdentifierFixture = Symbol() as unknown as BindingIdentifier;
+
+      vitest
+        .mocked(buildBindingIdentifier)
+        .mockReturnValue(bindingIdentifierFixture);
+      result = bindInWhenOnFluentSyntaxImplementation.getIdentifier();
+    });
+
+    afterAll(() => {
+      vitest.clearAllMocks();
+    });
+
+    it('should call buildBindingIdentifier', () => {
+      expect(buildBindingIdentifier).toHaveBeenCalledTimes(1);
+      expect(buildBindingIdentifier).toHaveBeenCalledWith(bindingMock);
+    });
+
+    it('should return the mocked identifier', () => {
+      expect(result).toBe(bindingIdentifierFixture);
+    });
+  });
 });
