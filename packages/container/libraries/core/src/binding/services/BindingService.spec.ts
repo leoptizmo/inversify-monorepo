@@ -27,6 +27,9 @@ describe(BindingService.name, () => {
 
   beforeAll(() => {
     bindingMapsMock = new OneToManyMapStar<Binding<unknown>, BindingRelation>({
+      id: {
+        isOptional: false,
+      },
       moduleId: {
         isOptional: true,
       },
@@ -175,6 +178,71 @@ describe(BindingService.name, () => {
 
       it('should return the expected bindings', () => {
         expect(result).toBe(bindingsFixture);
+      });
+    });
+  });
+
+  describe('.getById', () => {
+    let idFixture: number;
+
+    beforeAll(() => {
+      idFixture = 1;
+    });
+
+    describe('when called, and bindingMaps.get() returns undefined and parent bindingMaps.get() returns Iterable', () => {
+      let bindingFixture: Binding<unknown>;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        bindingFixture = Symbol() as unknown as Binding<unknown>;
+
+        bindingMapsMock.get
+          .mockReturnValueOnce(undefined)
+          .mockReturnValueOnce([bindingFixture]);
+
+        result = bindingService.getById(idFixture);
+      });
+
+      afterAll(() => {
+        vitest.clearAllMocks();
+      });
+
+      it('should call bindingMaps.get()', () => {
+        expect(bindingMapsMock.get).toHaveBeenCalledTimes(2);
+        expect(bindingMapsMock.get).toHaveBeenNthCalledWith(1, 'id', idFixture);
+        expect(bindingMapsMock.get).toHaveBeenNthCalledWith(2, 'id', idFixture);
+      });
+
+      it('should return Binding[]', () => {
+        expect(result).toStrictEqual([bindingFixture]);
+      });
+    });
+
+    describe('when called, and bindingMaps.get() returns Iterable', () => {
+      let bindingFixture: Binding<unknown>;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        bindingFixture = Symbol() as unknown as Binding<unknown>;
+
+        bindingMapsMock.get.mockReturnValueOnce([bindingFixture]);
+
+        result = bindingService.getById(idFixture);
+      });
+
+      afterAll(() => {
+        vitest.clearAllMocks();
+      });
+
+      it('should call bindingMaps.get()', () => {
+        expect(bindingMapsMock.get).toHaveBeenCalledTimes(1);
+        expect(bindingMapsMock.get).toHaveBeenCalledWith('id', idFixture);
+      });
+
+      it('should return BindingActivation[]', () => {
+        expect(result).toStrictEqual([bindingFixture]);
       });
     });
   });
@@ -369,6 +437,7 @@ describe(BindingService.name, () => {
 
         it('should call bindingMaps.add()', () => {
           const expectedRelation: BindingRelation = {
+            id: bindingFixture.id,
             serviceId: bindingFixture.serviceIdentifier,
           };
 
@@ -405,6 +474,7 @@ describe(BindingService.name, () => {
 
         it('should call bindingMaps.add()', () => {
           const expectedRelation: BindingRelation = {
+            id: bindingFixture.id,
             moduleId: bindingFixture.moduleId as number,
             serviceId: bindingFixture.serviceIdentifier,
           };
@@ -419,6 +489,38 @@ describe(BindingService.name, () => {
         it('should return undefined', () => {
           expect(result).toBeUndefined();
         });
+      });
+    });
+  });
+
+  describe('.removeById', () => {
+    let idFixture: number;
+
+    beforeAll(() => {
+      idFixture = 3;
+    });
+
+    describe('when called', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        result = bindingService.removeById(idFixture);
+      });
+
+      afterAll(() => {
+        vitest.clearAllMocks();
+      });
+
+      it('should call bindingMapsMock.removeByRelation()', () => {
+        expect(bindingMapsMock.removeByRelation).toHaveBeenCalledTimes(1);
+        expect(bindingMapsMock.removeByRelation).toHaveBeenCalledWith(
+          'id',
+          idFixture,
+        );
+      });
+
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
       });
     });
   });
