@@ -25,7 +25,7 @@ const DEFAULT_ERROR_MESSAGE: string = 'An unexpected error occurred';
 export abstract class InversifyHttpAdapter<
   TRequest,
   TResponse,
-  TNextFunction extends (err?: Error) => void,
+  TNextFunction extends (err?: unknown) => void,
 > {
   readonly #container: Container;
   readonly #httpAdapterOptions: InternalHttpAdapterOptions;
