@@ -2,6 +2,7 @@ import { Given } from '@cucumber/cucumber';
 import { Newable } from '@inversifyjs/common';
 import {
   BindInFluentSyntax,
+  BindingIdentifier,
   BindInWhenOnFluentSyntax,
   BindOnFluentSyntax,
   BindWhenFluentSyntax,
@@ -90,9 +91,8 @@ function givenBindingToConstantValue(
   const bindingValue: unknown = Symbol();
 
   setBinding.bind(this)(parsedBindingAlias, {
-    bind: (container: Container): void => {
-      container.bind(serviceId).toConstantValue(bindingValue);
-    },
+    bind: (container: Container): BindingIdentifier =>
+      container.bind(serviceId).toConstantValue(bindingValue).getIdentifier(),
     kind: BindingParameterKind.constantValue,
     serviceIdentifier: serviceId,
     value: bindingValue,
@@ -110,11 +110,10 @@ function givenBindingToDynamicValue(
   const parsedBindingAlias: string = bindingAlias ?? defaultAlias;
 
   setBinding.bind(this)(parsedBindingAlias, {
-    bind: (container: Container): void => {
+    bind: (container: Container): BindingIdentifier =>
       bindInScope(parsedBindingScope)(
         container.bind(serviceId).toDynamicValue(() => Symbol()),
-      );
-    },
+      ).getIdentifier(),
     kind: BindingParameterKind.dynamicValue,
     serviceIdentifier: serviceId,
   });
@@ -129,11 +128,11 @@ function givenBindingToResolvedValue(
   const parsedBindingAlias: string = bindingAlias ?? defaultAlias;
 
   setBinding.bind(this)(parsedBindingAlias, {
-    bind: (container: Container): void => {
+    bind: (container: Container): BindingIdentifier =>
       container
         .bind(serviceId)
-        .toResolvedValue((...args: unknown[]) => args, injections);
-    },
+        .toResolvedValue((...args: unknown[]) => args, injections)
+        .getIdentifier(),
     kind: BindingParameterKind.dynamicValue,
     serviceIdentifier: serviceId,
   });
@@ -147,9 +146,8 @@ function givenDualWieldSwordmanTypeBinding(
   const parsedBindingAlias: string = bindingAlias ?? defaultAlias;
 
   setBinding.bind(this)(parsedBindingAlias, {
-    bind: (container: Container): void => {
-      container.bind(serviceId).to(DualWieldSwordsman);
-    },
+    bind: (container: Container): BindingIdentifier =>
+      container.bind(serviceId).to(DualWieldSwordsman).getIdentifier(),
     kind: BindingParameterKind.instance,
     serviceIdentifier: serviceId,
   });
@@ -173,7 +171,7 @@ function givenTypeBinding(
   const parsedBindingAlias: string = bindingAlias ?? defaultAlias;
 
   setBinding.bind(this)(parsedBindingAlias, {
-    bind: (container: Container): void => {
+    bind: (container: Container): BindingIdentifier => {
       const bindInWhenOnSyntax: BindInWhenOnFluentSyntax<unknown> =
         serviceIdentifier === undefined
           ? container.bind(type).toSelf()
@@ -189,9 +187,11 @@ function givenTypeBinding(
           ? bindWhenOnSyntax
           : bindWhenConstraint(bindWhenOnSyntax);
 
-      if (bindOnEvent !== undefined) {
-        bindOnEvent(bindOnSyntax);
+      if (bindOnEvent === undefined) {
+        return bindOnSyntax.getIdentifier();
       }
+
+      return bindOnEvent(bindOnSyntax).getIdentifier();
     },
     kind: BindingParameterKind.instance,
     serviceIdentifier: serviceIdentifier ?? type,
