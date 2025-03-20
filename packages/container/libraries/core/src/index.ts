@@ -70,6 +70,7 @@ import {
   PlanResultCacheService,
 } from './planning/services/PlanResultCacheService';
 import { resolve } from './resolution/actions/resolve';
+import { resolveBindingsDeactivations } from './resolution/actions/resolveBindingsDeactivations';
 import { resolveModuleDeactivations } from './resolution/actions/resolveModuleDeactivations';
 import { resolveServiceDeactivations } from './resolution/actions/resolveServiceDeactivations';
 import { DeactivationParams } from './resolution/models/DeactivationParams';
@@ -153,6 +154,7 @@ export {
   postConstruct,
   preDestroy,
   resolve,
+  resolveBindingsDeactivations,
   ResolvedValueElementMetadataKind,
   resolveModuleDeactivations,
   resolveServiceDeactivations,
