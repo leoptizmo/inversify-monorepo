@@ -1,4 +1,4 @@
-import { RequestMethodType } from './RequestMethodType';
+import { RequestMethodType } from '../../http/models/RequestMethodType';
 
 export interface ControllerMethodMetadata {
   path: string;

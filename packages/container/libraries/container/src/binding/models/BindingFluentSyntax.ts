@@ -11,7 +11,12 @@ import {
   ResolutionContext,
 } from '@inversifyjs/core';
 
+import { BindingIdentifier } from './BindingIdentifier';
 import { ResolvedValueInjectOptions } from './ResolvedValueInjectOptions';
+
+export interface BoundServiceSyntax {
+  getIdentifier(): BindingIdentifier;
+}
 
 export interface BindToFluentSyntax<T> {
   to(type: Newable<T>): BindInWhenOnFluentSyntax<T>;
@@ -38,7 +43,7 @@ export interface BindToFluentSyntax<T> {
   toService(service: ServiceIdentifier<T>): void;
 }
 
-export interface BindInFluentSyntax<T> {
+export interface BindInFluentSyntax<T> extends BoundServiceSyntax {
   inSingletonScope(): BindWhenOnFluentSyntax<T>;
   inTransientScope(): BindWhenOnFluentSyntax<T>;
   inRequestScope(): BindWhenOnFluentSyntax<T>;
@@ -48,7 +53,7 @@ export interface BindInWhenOnFluentSyntax<T>
   extends BindInFluentSyntax<T>,
     BindWhenOnFluentSyntax<T> {}
 
-export interface BindOnFluentSyntax<T> {
+export interface BindOnFluentSyntax<T> extends BoundServiceSyntax {
   onActivation(activation: BindingActivation<T>): BindWhenFluentSyntax<T>;
   onDeactivation(deactivation: BindingDeactivation<T>): BindWhenFluentSyntax<T>;
 }
@@ -57,7 +62,7 @@ export interface BindWhenOnFluentSyntax<T>
   extends BindWhenFluentSyntax<T>,
     BindOnFluentSyntax<T> {}
 
-export interface BindWhenFluentSyntax<T> {
+export interface BindWhenFluentSyntax<T> extends BoundServiceSyntax {
   when(
     constraint: (metadata: BindingConstraints) => boolean,
   ): BindOnFluentSyntax<T>;

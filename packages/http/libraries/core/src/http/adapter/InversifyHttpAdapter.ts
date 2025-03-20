@@ -1,23 +1,26 @@
 import { ConsoleLogger, Logger } from '@inversifyjs/logger';
 import { Container } from 'inversify';
 
+import { buildRouterExplorerControllerMetadataList } from '../../routerExplorer/calculations/buildRouterExplorerControllerMetadataList';
+import { ControllerMethodParameterMetadata } from '../../routerExplorer/model/ControllerMethodParameterMetadata';
 import { RouterExplorerControllerMetadata } from '../../routerExplorer/model/RouterExplorerControllerMetadata';
 import { RouterExplorerControllerMethodMetadata } from '../../routerExplorer/model/RouterExplorerControllerMethodMetadata';
-import { RouterExplorer } from '../../routerExplorer/RouterExplorer';
-import { Guard } from '../guard/Guard';
+import { Guard } from '../guard/model/Guard';
+import { Middleware } from '../middleware/model/Middleware';
 import { Controller } from '../models/Controller';
-import { ControllerMethodParameterMetadata } from '../models/ControllerMethodParameterMetadata';
 import { ControllerResponse } from '../models/ControllerResponse';
 import { HttpAdapterOptions } from '../models/HttpAdapterOptions';
 import { InternalHttpAdapterOptions } from '../models/InternalHttpAdapterOptions';
-import { Middleware } from '../models/Middleware';
 import { RequestHandler } from '../models/RequestHandler';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
+import { RouteParams } from '../models/RouteParams';
 import { RouterParams } from '../models/RouterParams';
 import { ForbiddenHttpResponse } from '../responses/error/ForbiddenHttpResponse';
 import { InternalServerErrorHttpResponse } from '../responses/error/InternalServerErrorHttpResponse';
 import { HttpResponse } from '../responses/HttpResponse';
 import { HttpStatusCode } from '../responses/HttpStatusCode';
+
+const DEFAULT_ERROR_MESSAGE: string = 'An unexpected error occurred';
 
 export abstract class InversifyHttpAdapter<
   TRequest,
@@ -27,12 +30,10 @@ export abstract class InversifyHttpAdapter<
   readonly #container: Container;
   readonly #httpAdapterOptions: InternalHttpAdapterOptions;
   readonly #logger: Logger;
-  readonly #routerExplorer: RouterExplorer;
 
   constructor(container: Container, httpAdapterOptions?: HttpAdapterOptions) {
     this.#container = container;
-    this.#routerExplorer = new RouterExplorer(container);
-    this.#logger = new ConsoleLogger();
+    this.#logger = this.#buildLogger(httpAdapterOptions);
     this.#httpAdapterOptions =
       this.#parseHttpAdapterOptions(httpAdapterOptions);
   }
@@ -41,32 +42,54 @@ export abstract class InversifyHttpAdapter<
     await this.#registerControllers();
   }
 
+  #buildLogger(httpAdapterOptions: HttpAdapterOptions | undefined): Logger {
+    if (
+      httpAdapterOptions?.logger === undefined ||
+      typeof httpAdapterOptions.logger === 'boolean'
+    ) {
+      return new ConsoleLogger();
+    }
+
+    return httpAdapterOptions.logger;
+  }
+
   #parseHttpAdapterOptions(
     httpAdapterOptions?: HttpAdapterOptions,
   ): InternalHttpAdapterOptions {
-    return {
-      logger: httpAdapterOptions?.logger ?? true,
+    const internalHttpAdapterOptions: InternalHttpAdapterOptions = {
+      logger: true,
     };
+
+    if (httpAdapterOptions?.logger !== undefined) {
+      if (typeof httpAdapterOptions.logger === 'boolean') {
+        internalHttpAdapterOptions.logger = httpAdapterOptions.logger;
+      }
+    }
+
+    return internalHttpAdapterOptions;
   }
 
   async #registerControllers(): Promise<void> {
     const routerExplorerControllerMetadataList: RouterExplorerControllerMetadata[] =
-      await this.#routerExplorer.getMetadataList();
+      await buildRouterExplorerControllerMetadataList(this.#container);
 
     for (const routerExplorerControllerMetadata of routerExplorerControllerMetadataList) {
-      await this._buildRouter(
-        routerExplorerControllerMetadata.path,
-        await this.#buildHandlers(
+      await this._buildRouter({
+        guardList: await this.#getGuardHandlerFromMetadata(
+          routerExplorerControllerMetadata.guardList,
+        ),
+        path: routerExplorerControllerMetadata.path,
+        postHandlerMiddlewareList: await this.#getMiddlewareHandlerFromMetadata(
+          routerExplorerControllerMetadata.postHandlerMiddlewareList,
+        ),
+        preHandlerMiddlewareList: await this.#getMiddlewareHandlerFromMetadata(
+          routerExplorerControllerMetadata.preHandlerMiddlewareList,
+        ),
+        routeParamsList: await this.#buildHandlers(
           routerExplorerControllerMetadata.target,
           routerExplorerControllerMetadata.controllerMethodMetadataList,
         ),
-        await this.#getMiddlewareHandlerFromMetadata(
-          routerExplorerControllerMetadata.middlewareList,
-        ),
-        await this.#getGuardHandlerFromMetadata(
-          routerExplorerControllerMetadata.guardList,
-        ),
-      );
+      });
 
       if (this.#httpAdapterOptions.logger) {
         this.#printController(
@@ -81,7 +104,7 @@ export abstract class InversifyHttpAdapter<
   async #buildHandlers(
     target: NewableFunction,
     routerExplorerControllerMethodMetadata: RouterExplorerControllerMethodMetadata[],
-  ): Promise<RouterParams<TRequest, TResponse, TNextFunction>[]> {
+  ): Promise<RouteParams<TRequest, TResponse, TNextFunction>[]> {
     const controller: Controller = await this.#container.getAsync(target);
 
     return Promise.all(
@@ -98,10 +121,15 @@ export abstract class InversifyHttpAdapter<
             routerExplorerControllerMethodMetadata.parameterMetadataList,
             routerExplorerControllerMethodMetadata.statusCode,
           ),
-          middlewareList: await this.#getMiddlewareHandlerFromMetadata(
-            routerExplorerControllerMethodMetadata.middlewareList,
-          ),
           path: routerExplorerControllerMethodMetadata.path,
+          postHandlerMiddlewareList:
+            await this.#getMiddlewareHandlerFromMetadata(
+              routerExplorerControllerMethodMetadata.postHandlerMiddlewareList,
+            ),
+          preHandlerMiddlewareList:
+            await this.#getMiddlewareHandlerFromMetadata(
+              routerExplorerControllerMethodMetadata.preHandlerMiddlewareList,
+            ),
           requestMethodType:
             routerExplorerControllerMethodMetadata.requestMethodType,
         }),
@@ -133,7 +161,8 @@ export abstract class InversifyHttpAdapter<
         ]?.(...handlerParams);
 
         return this.#reply(req, res, value, statusCode);
-      } catch (_error: unknown) {
+      } catch (error: unknown) {
+        this.#printError(error);
         return this.#reply(req, res, new InternalServerErrorHttpResponse());
       }
     };
@@ -225,12 +254,8 @@ export abstract class InversifyHttpAdapter<
   }
 
   async #getMiddlewareHandlerFromMetadata(
-    middlewareList: NewableFunction[] | undefined,
-  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[] | undefined> {
-    if (middlewareList === undefined) {
-      return undefined;
-    }
-
+    middlewareList: NewableFunction[],
+  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[]> {
     return Promise.all(
       middlewareList.map(async (newableFunction: NewableFunction) => {
         const middleware: Middleware<TRequest, TResponse, TNextFunction> =
@@ -242,12 +267,8 @@ export abstract class InversifyHttpAdapter<
   }
 
   async #getGuardHandlerFromMetadata(
-    guardList: NewableFunction[] | undefined,
-  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[] | undefined> {
-    if (guardList === undefined) {
-      return undefined;
-    }
-
+    guardList: NewableFunction[],
+  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[]> {
     return Promise.all(
       guardList.map(async (newableFunction: NewableFunction) => {
         const guard: Guard<TRequest> =
@@ -288,6 +309,16 @@ export abstract class InversifyHttpAdapter<
         `.${controllerMethodMetadata.methodKey as string}() mapped {${controllerMethodMetadata.path}, ${controllerMethodMetadata.requestMethodType}}`,
       );
     }
+  }
+
+  #printError(error: unknown): void {
+    const errorMessage: string = DEFAULT_ERROR_MESSAGE;
+
+    if (error instanceof Error) {
+      this.#logger.error(error.stack ?? error.message);
+    }
+
+    this.#logger.error(errorMessage);
   }
 
   public abstract build(): Promise<unknown>;
@@ -336,11 +367,6 @@ export abstract class InversifyHttpAdapter<
   ): void;
 
   protected abstract _buildRouter(
-    path: string,
-    routerParams: RouterParams<TRequest, TResponse, TNextFunction>[],
-    guardList: RequestHandler<TRequest, TResponse, TNextFunction>[] | undefined,
-    middlewareList:
-      | RequestHandler<TRequest, TResponse, TNextFunction>[]
-      | undefined,
+    routerParams: RouterParams<TRequest, TResponse, TNextFunction>,
   ): unknown;
 }
