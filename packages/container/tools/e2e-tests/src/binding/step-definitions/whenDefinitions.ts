@@ -1,11 +1,14 @@
 import { When } from '@cucumber/cucumber';
 import { Newable, ServiceIdentifier } from '@inversifyjs/common';
+import { BindingIdentifier } from '@inversifyjs/container';
 import { BindingActivation } from '@inversifyjs/core';
 
 import { defaultAlias } from '../../common/models/defaultAlias';
 import { InversifyWorld } from '../../common/models/InversifyWorld';
 import { getContainerOrFail } from '../../container/calculations/getContainerOrFail';
-import { getBindingOrFail } from '../calculations/getContainerOrFail';
+import { setBindingIdentifier } from '../actions/setBindingIdentifier';
+import { getBindingIdentifierOrFail } from '../calculations/getBindingIdentifierOrFail';
+import { getBindingOrFail } from '../calculations/getBindingOrFail';
 
 function whenActivationIsRegistered(
   this: InversifyWorld,
@@ -28,9 +31,41 @@ function whenBindingIsBound(
   const parsedBindingAlias: string = bindingAlias ?? defaultAlias;
   const parsedContainerAlias: string = containerAlias ?? defaultAlias;
 
-  getBindingOrFail
+  const bindingIdentifier: BindingIdentifier = getBindingOrFail
     .bind(this)(parsedBindingAlias)
     .bind(getContainerOrFail.bind(this)(parsedContainerAlias));
+
+  setBindingIdentifier.bind(this)(parsedBindingAlias, {
+    identifier: bindingIdentifier,
+  });
+}
+
+async function whenServiceBindingsAreUnbound(
+  this: InversifyWorld,
+  serviceAlias?: string,
+  containerAlias?: string,
+): Promise<void> {
+  const parsedServiceAlias: string = serviceAlias ?? defaultAlias;
+  const parsedContainerAlias: string = containerAlias ?? defaultAlias;
+
+  await getContainerOrFail
+    .bind(this)(parsedContainerAlias)
+    .unbind(parsedServiceAlias);
+}
+
+async function whenBindingByIdIsUnbound(
+  this: InversifyWorld,
+  bindingAlias?: string,
+  containerAlias?: string,
+): Promise<void> {
+  const parsedBindingAlias: string = bindingAlias ?? defaultAlias;
+  const parsedContainerAlias: string = containerAlias ?? defaultAlias;
+
+  await getContainerOrFail
+    .bind(this)(parsedContainerAlias)
+    .unbind(
+      getBindingIdentifierOrFail.bind(this)(parsedBindingAlias).identifier,
+    );
 }
 
 When<InversifyWorld>('binding is bound to container', function (): void {
@@ -38,9 +73,23 @@ When<InversifyWorld>('binding is bound to container', function (): void {
 });
 
 When<InversifyWorld>(
+  'binding is unbound by its id from container',
+  async function (): Promise<void> {
+    await whenBindingByIdIsUnbound.bind(this)();
+  },
+);
+
+When<InversifyWorld>(
   '{string} binding is bound to container',
   function (bindingAlias: string): void {
     whenBindingIsBound.bind(this)(bindingAlias);
+  },
+);
+
+When<InversifyWorld>(
+  'service {string} is unbound from container',
+  async function (serviceAlias: string): Promise<void> {
+    await whenServiceBindingsAreUnbound.bind(this)(serviceAlias);
   },
 );
 
