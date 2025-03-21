@@ -6,7 +6,7 @@ import { IsBoundOptions } from '@inversifyjs/container';
 import { defaultAlias } from '../../common/models/defaultAlias';
 import { InversifyWorld } from '../../common/models/InversifyWorld';
 import { getContainerOrFail } from '../../container/calculations/getContainerOrFail';
-import { getBindingOrFail } from '../calculations/getContainerOrFail';
+import { getBindingOrFail } from '../calculations/getBindingOrFail';
 
 function thenContainerAcknowledgesBindingToBeBound(
   this: InversifyWorld,
@@ -24,6 +24,22 @@ function thenContainerAcknowledgesBindingToBeBound(
         getBindingOrFail.bind(this)(parsedBindingAlias).serviceIdentifier,
         isBoundOptions,
       ),
+  );
+}
+
+function thenContainerAcknowledgesServiceBindingsToBeUnbound(
+  this: InversifyWorld,
+  isBoundOptions?: IsBoundOptions,
+  serviceAlias?: string,
+  containerAlias?: string,
+): void {
+  const serviceBindingAlias: string = serviceAlias ?? defaultAlias;
+  const parsedContainerAlias: string = containerAlias ?? defaultAlias;
+
+  assert.ok(
+    !getContainerOrFail
+      .bind(this)(parsedContainerAlias)
+      .isBound(serviceBindingAlias, isBoundOptions),
   );
 }
 
@@ -55,6 +71,16 @@ Then<InversifyWorld>(
         },
       },
       bindingAlias,
+    );
+  },
+);
+
+Then<InversifyWorld>(
+  'container acknowledges service {string} bindings to be unbound',
+  function (serviceAlias: string): void {
+    thenContainerAcknowledgesServiceBindingsToBeUnbound.bind(this)(
+      {},
+      serviceAlias,
     );
   },
 );

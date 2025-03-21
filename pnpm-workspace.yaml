@@ -8,6 +8,6 @@ packages:
   - packages/http/libraries/*
   - packages/http/tools/*
   - packages/logger
-
 onlyBuiltDependencies:
+  - '@nestjs/core'
   - '@swc/core'

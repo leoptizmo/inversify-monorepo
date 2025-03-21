@@ -26,10 +26,10 @@
     "url": "https://github.com/inversify/monorepo/issues"
   },
   "dependencies": {
-    "tinybench": "3.1.1"
+    "tinybench": "4.0.1"
   },
   "devDependencies": {
-    "@types/node": "22.13.10",
+    "@types/node": "22.13.11",
     "eslint": "9.22.0",
     "prettier": "3.5.3",
     "rimraf": "6.0.1",

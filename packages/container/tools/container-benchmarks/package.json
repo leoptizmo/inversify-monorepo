@@ -12,11 +12,11 @@
     "@nestjs/core": "11.0.12",
     "inversify6": "npm:inversify@6.2.2",
     "rxjs": "7.8.2",
-    "tinybench": "3.1.1",
+    "tinybench": "4.0.1",
     "tsyringe": "4.8.0"
   },
   "devDependencies": {
-    "@types/node": "^22.13.10",
+    "@types/node": "^22.13.11",
     "eslint": "9.22.0",
     "prettier": "3.5.3",
     "rimraf": "6.0.1",
