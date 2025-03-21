@@ -2,16 +2,24 @@ import {
   HttpAdapterOptions,
   HttpStatusCode,
   InversifyHttpAdapter,
+  RequestHandler,
   RouterParams,
 } from '@inversifyjs/http-core';
-import { Context, Hono, HonoRequest } from 'hono';
+import {
+  Context,
+  Handler,
+  Hono,
+  HonoRequest,
+  MiddlewareHandler,
+  Next,
+} from 'hono';
 import { StatusCode } from 'hono/utils/http-status';
 import { Container } from 'inversify';
 
 export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   HonoRequest,
   Context,
-  () => Promise<unknown>
+  Next
 > {
   readonly #app: Hono;
 
@@ -31,33 +39,40 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   protected _buildRouter(
-    path: string,
-    routerParams: RouterParams<HonoRequest, Context, () => unknown>[],
+    routerParams: RouterParams<HonoRequest, Context, Next>,
   ): void {
     const router: Hono = new Hono();
 
-    for (const routerParam of routerParams) {
-      const method: keyof Hono = routerParam.requestMethodType as keyof Hono;
-      (
-        router[method] as unknown as (
-          path: string,
-          handler: (
-            ctx: Context,
-            next: () => Promise<void>,
-          ) => Promise<Response>,
-        ) => void
-      )(
-        routerParam.path,
-        async (ctx: Context, next: () => Promise<void>): Promise<Response> =>
-          routerParam.handler(
-            ctx.req as HonoRequest,
-            ctx,
-            next,
-          ) as Promise<Response>,
+    const routerHonoMiddlewareList: MiddlewareHandler[] = [
+      ...this.#buildHonoMiddlewareList(routerParams.guardList),
+      ...this.#buildHonoMiddlewareList(routerParams.preHandlerMiddlewareList),
+      ...this.#buildHonoPostHandlerMiddlewareList(
+        routerParams.postHandlerMiddlewareList,
+      ),
+    ];
+
+    if (routerHonoMiddlewareList.length > 0) {
+      router.use(...routerHonoMiddlewareList);
+    }
+
+    for (const routeParams of routerParams.routeParamsList) {
+      const routeHonoMiddlewareList: MiddlewareHandler[] = [
+        ...this.#buildHonoMiddlewareList(routeParams.guardList),
+        ...this.#buildHonoMiddlewareList(routeParams.preHandlerMiddlewareList),
+        ...this.#buildHonoPostHandlerMiddlewareList(
+          routeParams.postHandlerMiddlewareList,
+        ),
+      ];
+
+      router.use(routeParams.path, ...routeHonoMiddlewareList);
+      router.on(
+        this.#convertRequestMethodType(routeParams.requestMethodType),
+        routeParams.path,
+        this.#buildHonoHandler(routeParams.handler),
       );
     }
 
-    this.#app.route(path, router);
+    this.#app.route(routerParams.path, router);
   }
 
   protected override async _getBody(
@@ -125,5 +140,54 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     statusCode: HttpStatusCode,
   ): void {
     response.status(statusCode as StatusCode);
+  }
+
+  #buildHonoHandler(
+    handler: RequestHandler<HonoRequest, Context, Next>,
+  ): Handler {
+    return async (ctx: Context, next: Next): Promise<Response> => {
+      return handler(ctx.req as HonoRequest, ctx, next) as Promise<Response>;
+    };
+  }
+
+  #buildHonoMiddleware(
+    handler: RequestHandler<HonoRequest, Context, Next>,
+  ): MiddlewareHandler {
+    return async (
+      ctx: Context,
+      next: () => Promise<void>,
+    ): Promise<Response> => {
+      return handler(ctx.req as HonoRequest, ctx, next) as Promise<Response>;
+    };
+  }
+
+  #buildHonoMiddlewareList(
+    handlers: RequestHandler<HonoRequest, Context, Next>[],
+  ): MiddlewareHandler[] {
+    return handlers.map((handler: RequestHandler<HonoRequest, Context, Next>) =>
+      this.#buildHonoMiddleware(handler),
+    );
+  }
+
+  #buildHonoPostHandlerMiddleware(
+    handler: RequestHandler<HonoRequest, Context, Next>,
+  ): MiddlewareHandler {
+    return async (ctx: Context, next: Next): Promise<Response> => {
+      await next();
+
+      return handler(ctx.req as HonoRequest, ctx, next) as Promise<Response>;
+    };
+  }
+
+  #buildHonoPostHandlerMiddlewareList(
+    handlers: RequestHandler<HonoRequest, Context, Next>[],
+  ): MiddlewareHandler[] {
+    return handlers.map((handler: RequestHandler<HonoRequest, Context, Next>) =>
+      this.#buildHonoPostHandlerMiddleware(handler),
+    );
+  }
+
+  #convertRequestMethodType(requestMethodType: string): string {
+    return requestMethodType.toUpperCase();
   }
 }
