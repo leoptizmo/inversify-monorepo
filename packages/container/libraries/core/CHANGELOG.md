@@ -1,5 +1,13 @@
 # @inversifyjs/core
 
+## 5.1.0
+
+### Minor Changes
+
+- 77150f5: Updated `BindingService` with `removeById`
+- 77150f5: Updated `BindingService` with `getById`
+- 78e1b49: Added `resolveBindingsDeactivations`
+
 ## 5.0.0
 
 ### Major Changes

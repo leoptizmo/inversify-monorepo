@@ -12,6 +12,7 @@ import bindingToSyntaxApiToResolvedValueSource from '@inversifyjs/code-examples/
 import bindingToSyntaxApiToResolvedValueAdvancedSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToResolvedValueAdvanced.ts.txt';
 import bindingToSyntaxApiToSelfSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToSelf.ts.txt';
 import bindingToSyntaxApiToServiceSource from '@inversifyjs/code-examples/generated/examples/v7/bindingToSyntaxApiToService.ts.txt';
+import bindingSyntaxApiGetIdentifierSource from '@inversifyjs/code-examples/generated/examples/v7/bindingSyntaxApiGetIdentifier.ts.txt';
 import bindingWhenSyntaxApiWhenSource from '@inversifyjs/code-examples/generated/examples/v7/bindingWhenSyntaxApiWhen.ts.txt';
 import CodeBlock from '@theme/CodeBlock';
 
@@ -19,15 +20,37 @@ import CodeBlock from '@theme/CodeBlock';
 
 Binding syntax is provided as a fluent interface resulting from using the [container API](./container.mdx#bind) or the [container module API](./container-module.mdx#bind).
 
+## BoundServiceSyntax
+
+```ts
+interface BoundServiceSyntax {
+  getIdentifier(): BindingIdentifier;
+}
+```
+
+Base interface implemented by all binding syntax interfaces. Provides access to the binding's unique identifier.
+
+### getIdentifier
+
+```ts
+getIdentifier(): BindingIdentifier;
+```
+
+Returns a unique identifier for this specific binding. This identifier can be used with `container.unbind()` to remove just this binding, rather than all bindings for a service.
+
+Example:
+
+<CodeBlock language="ts">{bindingSyntaxApiGetIdentifierSource}</CodeBlock>
+
 ## BindToFluentSyntax
 
 ```ts
-interface BindToFluentSyntax<T> {
+interface BindToFluentSyntax<T> extends BoundServiceSyntax {
   // ...
 }
 ```
 
-Represents a service binding given a service identifier.
+Represents a service binding given a service identifier. Implements `BoundServiceSyntax` to provide access to the binding's unique identifier.
 
 ```ts
 const bindingToSyntax = container.bind('service-id');
@@ -132,12 +155,12 @@ Binds the services bound to a target service identifier to the given service ide
 ## BindInFluentSyntax
 
 ```ts
-interface BindInFluentSyntax<T> {
+interface BindInFluentSyntax<T> extends BoundServiceSyntax {
   // ...
 }
 ```
 
-Represents a service binding given a service identifier and a service resolution such as a constructor, a factory, or a provider.
+Represents a service binding given a service identifier and a service resolution such as a constructor, a factory, or a provider. Implements `BoundServiceSyntax` to provide access to the binding's unique identifier.
 
 ### inSingletonScope
 
@@ -166,12 +189,12 @@ Sets the binding scope to request. Refer to the [docs](../fundamentals/binding.m
 ## BindOnFluentSyntax
 
 ```ts
-interface BindOnFluentSyntax<T> {
+interface BindOnFluentSyntax<T> extends BoundServiceSyntax {
   // ...
 }
 ```
 
-Allows setting binding activation and deactivation handlers.
+Allows setting binding activation and deactivation handlers. Implements `BoundServiceSyntax` to provide access to the binding's unique identifier.
 
 ### onActivation
 
@@ -194,12 +217,12 @@ Sets a binding deactivation handler on a singleton scope binding. The deactivati
 ## BindWhenFluentSyntax
 
 ```ts
-interface BindWhenFluentSyntax<T> {
+interface BindWhenFluentSyntax<T> extends BoundServiceSyntax {
   // ...
 }
 ```
 
-Allows setting binding constraints.
+Allows setting binding constraints. Implements `BoundServiceSyntax` to provide access to the binding's unique identifier.
 
 ### when
 
