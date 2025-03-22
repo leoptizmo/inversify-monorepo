@@ -1,5 +1,5 @@
 import { Given } from '@cucumber/cucumber';
-import { Container } from '@inversifyjs/container';
+import { Container } from 'inversify';
 
 import { defaultAlias } from '../../common/models/defaultAlias';
 import { InversifyHttpWorld } from '../../common/models/InversifyHttpWorld';

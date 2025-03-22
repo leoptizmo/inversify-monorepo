@@ -1,8 +1,11 @@
 import { IWorld } from '@cucumber/cucumber';
-import { Container } from '@inversifyjs/container';
+import { Container } from 'inversify';
+
+import { Server } from '../../server/models/Server';
 
 interface EntitiesMap {
-  containers: Map<string, Container>;
+  readonly containers: Map<string, Container>;
+  readonly servers: Map<string, Server>;
 }
 
 interface ContainerRequests {

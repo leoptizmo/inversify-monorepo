@@ -9,5 +9,6 @@ export function initializeWorld(
   };
   this.entities = {
     containers: new Map(),
+    servers: new Map(),
   };
 }

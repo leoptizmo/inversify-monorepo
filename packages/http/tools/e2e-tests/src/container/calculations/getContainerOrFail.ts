@@ -1,4 +1,4 @@
-import { Container } from '@inversifyjs/container';
+import { Container } from 'inversify';
 
 import { InversifyHttpWorld } from '../../common/models/InversifyHttpWorld';
 
