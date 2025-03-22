@@ -10,6 +10,7 @@ import containerApiIsBoundSource from '@inversifyjs/code-examples/generated/exam
 import containerApiIsCurrentBoundSource from '@inversifyjs/code-examples/generated/examples/v7/containerApiIsCurrentBound.ts.txt';
 import containerApiOnActivationSource from '@inversifyjs/code-examples/generated/examples/v7/containerApiOnActivation.ts.txt';
 import containerApiOnDeactivationSource from '@inversifyjs/code-examples/generated/examples/v7/containerApiOnDeactivation.ts.txt';
+import containerApiUnbindBindingIdSource from '@inversifyjs/code-examples/generated/examples/v7/containerApiUnbindBindingId.ts.txt';
 import CodeBlock from '@theme/CodeBlock';
 
 # Container
@@ -167,10 +168,18 @@ Save the state of the container to be later restored with the restore method. Re
 ## unbind
 
 ```ts
-unbind(serviceIdentifier: ServiceIdentifier): Promise<void>;
+unbind(identifier: BindingIdentifier | ServiceIdentifier): Promise<void>;
 ```
 
-Remove all bindings binded in this container to the service identifier. This will result in the [deactivation process](../fundamentals/lifecycle/deactivation.mdx).
+Removes bindings from the container. When passed:
+- A service identifier: removes all bindings bound to that service identifier
+- A binding identifier: removes the specific binding associated with that identifier
+
+This will result in the [deactivation process](../fundamentals/lifecycle/deactivation.mdx).
+
+### Example: Unbind a binding by its identifier
+
+<CodeBlock language="ts">{containerApiUnbindBindingIdSource}</CodeBlock>
 
 ## unbindAll
 
