@@ -1,5 +1,21 @@
 # @inversifyjs/container
 
+## 1.6.0
+
+### Minor Changes
+
+- 5617bce: Updated `BindInFluentSyntax` with `getIdentifier`
+- 0466884: Updated `Container.unbind` to handle `BindingIdentifier`
+- 5617bce: Updated `BindOnFluentSyntax` with `getIdentifier`
+- 5617bce: Updated `BindWhenFluentSyntax` with `getIdentifier`
+- d9ab759: Added `BindingIdentifier`
+- 5617bce: Added `BoundServiceSyntax`
+
+### Patch Changes
+
+- Updated dependencies
+  - @inversifyjs/core@5.1.0
+
 ## 1.5.4
 
 ### Patch Changes
