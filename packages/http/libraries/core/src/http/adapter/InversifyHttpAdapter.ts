@@ -28,15 +28,14 @@ export abstract class InversifyHttpAdapter<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TNextFunction extends (err?: any) => void,
 > {
+  protected readonly httpAdapterOptions: InternalHttpAdapterOptions;
   readonly #container: Container;
-  readonly #httpAdapterOptions: InternalHttpAdapterOptions;
   readonly #logger: Logger;
 
   constructor(container: Container, httpAdapterOptions?: HttpAdapterOptions) {
     this.#container = container;
     this.#logger = this.#buildLogger(httpAdapterOptions);
-    this.#httpAdapterOptions =
-      this.#parseHttpAdapterOptions(httpAdapterOptions);
+    this.httpAdapterOptions = this.#parseHttpAdapterOptions(httpAdapterOptions);
   }
 
   protected async _buildServer(): Promise<void> {
@@ -59,6 +58,7 @@ export abstract class InversifyHttpAdapter<
   ): InternalHttpAdapterOptions {
     const internalHttpAdapterOptions: InternalHttpAdapterOptions = {
       logger: true,
+      useJson: httpAdapterOptions?.useJson ?? true,
     };
 
     if (httpAdapterOptions?.logger !== undefined) {
@@ -92,7 +92,7 @@ export abstract class InversifyHttpAdapter<
         ),
       });
 
-      if (this.#httpAdapterOptions.logger) {
+      if (this.httpAdapterOptions.logger) {
         this.#printController(
           routerExplorerControllerMetadata.target.name,
           routerExplorerControllerMetadata.path,
