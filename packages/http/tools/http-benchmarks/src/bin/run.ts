@@ -23,7 +23,7 @@ export async function run(): Promise<void> {
 
     const summaryList: K6Summary[] = await executeHttpBenchmark(scenarioList);
 
-    printHttpBenchmarkResults(summaryList);
+    printHttpBenchmarkResults('Express Basic Get Request', summaryList);
   }
 
   // Run fastify basic get request scenarios
@@ -35,6 +35,6 @@ export async function run(): Promise<void> {
 
     const summaryList: K6Summary[] = await executeHttpBenchmark(scenarioList);
 
-    printHttpBenchmarkResults(summaryList);
+    printHttpBenchmarkResults('Fastify Basic Get Request', summaryList);
   }
 }

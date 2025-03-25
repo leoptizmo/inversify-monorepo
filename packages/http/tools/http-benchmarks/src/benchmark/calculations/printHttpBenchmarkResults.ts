@@ -2,7 +2,11 @@ import { K6Summary } from '../../k6/model/K6Summary';
 
 const FIXED_DECIMALS: number = 3;
 
-export function printHttpBenchmarkResults(summaryList: K6Summary[]): void {
+export function printHttpBenchmarkResults(
+  name: string,
+  summaryList: K6Summary[],
+): void {
+  console.log(name);
   console.table(
     summaryList.map((summary: K6Summary) => ({
       'Latency avg (ms)':
@@ -38,4 +42,5 @@ export function printHttpBenchmarkResults(summaryList: K6Summary[]): void {
       );
     }
   }
+  console.log();
 }
