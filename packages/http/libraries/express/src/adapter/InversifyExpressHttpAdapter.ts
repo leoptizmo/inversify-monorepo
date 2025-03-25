@@ -14,6 +14,7 @@ import express, {
   Router,
 } from 'express';
 import { Container } from 'inversify';
+import { Stream } from 'stream';
 
 export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
   Request,
@@ -93,6 +94,14 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     value?: object,
   ): unknown {
     return response.json(value);
+  }
+
+  protected _replyStream(
+    _request: Request,
+    response: Response,
+    value: Stream,
+  ): unknown {
+    return value.pipe(response);
   }
 
   protected _setStatus(

@@ -1,3 +1,5 @@
+import Stream from 'stream';
+
 import { HttpStatusCode } from './HttpStatusCode';
 
 const isHttpResponseSymbol: unique symbol = Symbol.for(
@@ -9,7 +11,7 @@ export class HttpResponse {
 
   constructor(
     public readonly statusCode: HttpStatusCode,
-    public body?: object | string | number | boolean,
+    public body?: object | string | number | boolean | Stream,
   ) {
     this[isHttpResponseSymbol] = true;
   }
