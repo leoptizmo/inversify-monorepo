@@ -19,14 +19,14 @@ export class CurrentInversifyHonoBasicGetScenario extends CurrentInversifyHonoBa
 
     container.bind(AppController).toSelf();
 
-    const server: InversifyHonoHttpAdapter = new InversifyHonoHttpAdapter(
+    const adapter: InversifyHonoHttpAdapter = new InversifyHonoHttpAdapter(
       container,
       {
         logger: false,
       },
     );
 
-    this._app = await server.build();
+    this._app = await adapter.build();
 
     this._server = serve({
       fetch: this._app.fetch,
