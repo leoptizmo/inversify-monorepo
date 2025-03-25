@@ -15,4 +15,6 @@ interface ContainerRequests {
 export interface InversifyHttpWorld extends IWorld {
   readonly containerRequests: ContainerRequests;
   readonly entities: EntitiesMap;
+  readonly serverRequests: Map<string, Request>;
+  readonly serverResponses: Map<string, Response>;
 }
