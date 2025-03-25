@@ -24,7 +24,7 @@ async function buildExpressServer(container: Container): Promise<Server> {
 
   return new Promise<Server>(
     (resolve: (value: Server | PromiseLike<Server>) => void) => {
-      httpServer.listen(0, () => {
+      httpServer.listen(0, '127.0.0.1', () => {
         const address: AddressInfo | string | null = httpServer.address();
 
         if (address === null || typeof address === 'string') {
@@ -81,11 +81,8 @@ async function givenServer(
 }
 
 Given<InversifyHttpWorld>(
-  'a {serverKind} server from container {string}',
-  async function (
-    serverKind: ServerKind,
-    containerAlias: string,
-  ): Promise<void> {
-    await givenServer.bind(this)(serverKind, containerAlias);
+  'a(n) "{serverKind}" server from container',
+  async function (serverKind: ServerKind): Promise<void> {
+    await givenServer.bind(this)(serverKind);
   },
 );
