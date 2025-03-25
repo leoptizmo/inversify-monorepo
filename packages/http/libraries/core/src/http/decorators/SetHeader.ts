@@ -18,7 +18,7 @@ export function setHeader(key: string, value: string): MethodDecorator {
         controllerMethodHeaderMetadataReflectKey,
       ) ?? new Map<string, string>();
 
-    headerMetadata.set(key, value);
+    headerMetadata.set(key.toLowerCase(), value);
 
     setReflectMetadata(
       descriptor.value as ControllerFunction,
