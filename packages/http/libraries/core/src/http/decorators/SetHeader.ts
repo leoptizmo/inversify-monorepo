@@ -18,7 +18,15 @@ export function setHeader(key: string, value: string): MethodDecorator {
         controllerMethodHeaderMetadataReflectKey,
       ) ?? new Map<string, string>();
 
-    headerMetadata.set(key.toLowerCase(), value);
+    const fixedKey: string = key.toLowerCase();
+
+    const headerValue: string | undefined = headerMetadata.get(fixedKey);
+
+    if (headerValue !== undefined) {
+      headerMetadata.set(fixedKey, `${headerValue}, ${value}`);
+    } else {
+      headerMetadata.set(fixedKey, value);
+    }
 
     setReflectMetadata(
       descriptor.value as ControllerFunction,

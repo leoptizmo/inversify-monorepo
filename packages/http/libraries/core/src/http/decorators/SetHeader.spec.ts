@@ -52,7 +52,7 @@ describe(setHeader.name, () => {
     });
   });
 
-  describe('when called and getReflectMetadata returns a Map', () => {
+  describe('when called and getReflectMetadata returns a Map with undefined key', () => {
     let descriptorFixture: PropertyDescriptor;
     let headerMetadataFixture: Map<string, string>;
     let keyFixture: string;
@@ -65,6 +65,54 @@ describe(setHeader.name, () => {
       headerMetadataFixture = new Map();
       keyFixture = 'key-example';
       valueFixture = 'value-example';
+
+      vitest
+        .mocked(getReflectMetadata)
+        .mockReturnValueOnce(headerMetadataFixture);
+
+      setHeader(keyFixture, valueFixture)(
+        {} as object,
+        'key',
+        descriptorFixture,
+      );
+    });
+
+    afterAll(() => {
+      vitest.clearAllMocks();
+    });
+
+    it('should call getReflectMetadata', () => {
+      expect(getReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(getReflectMetadata).toHaveBeenCalledWith(
+        descriptorFixture.value,
+        controllerMethodHeaderMetadataReflectKey,
+      );
+    });
+
+    it('should call setReflectMetadata', () => {
+      expect(setReflectMetadata).toHaveBeenCalledTimes(1);
+      expect(setReflectMetadata).toHaveBeenCalledWith(
+        descriptorFixture.value,
+        controllerMethodHeaderMetadataReflectKey,
+        headerMetadataFixture,
+      );
+    });
+  });
+
+  describe('when called and getReflectMetadata returns a Map with defined key', () => {
+    let descriptorFixture: PropertyDescriptor;
+    let headerMetadataFixture: Map<string, string>;
+    let keyFixture: string;
+    let valueFixture: string;
+
+    beforeAll(() => {
+      descriptorFixture = {
+        value: 'value-descriptor-example',
+      } as PropertyDescriptor;
+      headerMetadataFixture = new Map();
+      keyFixture = 'key-example';
+      valueFixture = 'value-example';
+      headerMetadataFixture.set(keyFixture, valueFixture);
 
       vitest
         .mocked(getReflectMetadata)
