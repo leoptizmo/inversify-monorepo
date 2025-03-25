@@ -1,6 +1,7 @@
+import { Stream } from 'node:stream';
+
 import { ConsoleLogger, Logger } from '@inversifyjs/logger';
 import { Container } from 'inversify';
-import { Stream } from 'stream';
 
 import { buildRouterExplorerControllerMetadataList } from '../../routerExplorer/calculations/buildRouterExplorerControllerMetadataList';
 import { ControllerMethodParameterMetadata } from '../../routerExplorer/model/ControllerMethodParameterMetadata';
@@ -249,11 +250,13 @@ export abstract class InversifyHttpAdapter<
     if (typeof body === 'string') {
       return this._replyText(request, response, body);
     } else if (body === undefined || typeof body === 'object') {
-      return this._replyJson(request, response, body);
-    } else if (typeof body === 'number' || typeof body === 'boolean') {
-      return this._replyText(request, response, JSON.stringify(body));
+      if (body instanceof Stream) {
+        return this._replyStream(request, response, body);
+      } else {
+        return this._replyJson(request, response, body);
+      }
     } else {
-      return this._replyStream(request, response, body);
+      return this._replyText(request, response, JSON.stringify(body));
     }
   }
 
