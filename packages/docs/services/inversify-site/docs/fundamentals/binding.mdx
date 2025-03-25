@@ -39,6 +39,12 @@ Whenever a promise-like value is resolved from a binding, the container will wai
 
 In the example, the `dbConnectionSymbol` database connection is resolved asynchronously. The container waits for promises to be resolved, passing an `AwesomeDbDriverConnection` instance to the resolve value factory instead of a `Promise<AwesomeDbDriverConnection>` one.
 
+:::warning
+
+Keep in mind async bindings require the use of `Container.getAsync` or `Container.getAllAsync` to resolve any related service.
+
+:::
+
 ## Binding properties
 
 A binding has the following properties:
