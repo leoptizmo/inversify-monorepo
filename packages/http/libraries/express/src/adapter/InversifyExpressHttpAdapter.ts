@@ -1,3 +1,5 @@
+import { Stream } from 'node:stream';
+
 import {
   HttpAdapterOptions,
   HttpStatusCode,
@@ -14,7 +16,6 @@ import express, {
   Router,
 } from 'express';
 import { Container } from 'inversify';
-import { Stream } from 'stream';
 
 export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
   Request,
