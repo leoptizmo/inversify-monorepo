@@ -64,10 +64,10 @@ const config: Config = {
     'A powerful and lightweight inversion of control container for JavaScript & Node.js apps powered by TypeScript',
   themeConfig: {
     algolia: {
-      apiKey: 'f1814910b25236de2107d45323b70469',
-      appId: '8BIUPXYCF9',
+      apiKey: 'bba69c8b4ce0627641339d92e177cdc1',
+      appId: 'FJYVAGM6L7',
       contextualSearch: true,
-      indexName: 'crawler_InversifyJS crawler',
+      indexName: 'inversify',
       insights: false,
     },
     footer: {
