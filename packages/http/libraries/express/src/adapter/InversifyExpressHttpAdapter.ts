@@ -149,7 +149,9 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
   #buildDefaultExpressApp(customApp?: Application): Application {
     const app: Application = customApp ?? express();
 
-    app.use(express.json());
+    if (this.httpAdapterOptions.useJson) {
+      app.use(express.json());
+    }
 
     return app;
   }

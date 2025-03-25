@@ -10,6 +10,7 @@
   "ignore": [
     "@inversifyjs/http-benchmarks",
     "@inversifyjs/http-core",
+    "@inversifyjs/http-e2e-tests",
     "@inversifyjs/http-express",
     "@inversifyjs/logger"
   ]
