@@ -5,6 +5,7 @@ vitest.mock('./exploreControllerMethodStatusCodeMetadata');
 vitest.mock('./exploreControllerMethodGuardList');
 vitest.mock('./exploreControllerMethodMiddlewareList');
 vitest.mock('./buildMiddlewareOptionsFromApplyMiddlewareOptions');
+vitest.mock('./exploreControllerMethodHeaderMetadataList');
 
 import { Controller } from '../../http/models/Controller';
 import { ControllerFunction } from '../../http/models/ControllerFunction';
@@ -15,6 +16,7 @@ import { MiddlewareOptions } from '../model/MiddlewareOptions';
 import { buildMiddlewareOptionsFromApplyMiddlewareOptions } from './buildMiddlewareOptionsFromApplyMiddlewareOptions';
 import { buildRouterExplorerControllerMethodMetadata } from './buildRouterExplorerControllerMethodMetadata';
 import { exploreControllerMethodGuardList } from './exploreControllerMethodGuardList';
+import { exploreControllerMethodHeaderMetadataList } from './exploreControllerMethodHeaderMetadataList';
 import { exploreControllerMethodMiddlewareList } from './exploreControllerMethodMiddlewareList';
 import { exploreControllerMethodParameterMetadataList } from './exploreControllerMethodParameterMetadataList';
 import { exploreControllerMethodStatusCodeMetadata } from './exploreControllerMethodStatusCodeMetadata';
@@ -28,6 +30,7 @@ describe(buildRouterExplorerControllerMethodMetadata.name, () => {
     let controllerMethodGuardListFixture: NewableFunction[];
     let controllerMethodMiddlewareListFixture: NewableFunction[];
     let middlewareOptionsFixture: MiddlewareOptions;
+    let headerMetadataListFixture: [string, string][];
     let result: unknown;
 
     beforeAll(() => {
@@ -48,6 +51,7 @@ describe(buildRouterExplorerControllerMethodMetadata.name, () => {
         postHandlerMiddlewareList: [],
         preHandlerMiddlewareList: [],
       };
+      headerMetadataListFixture = [];
 
       vitest
         .mocked(exploreControllerMethodParameterMetadataList)
@@ -68,6 +72,10 @@ describe(buildRouterExplorerControllerMethodMetadata.name, () => {
       vitest
         .mocked(buildMiddlewareOptionsFromApplyMiddlewareOptions)
         .mockReturnValue(middlewareOptionsFixture);
+
+      vitest
+        .mocked(exploreControllerMethodHeaderMetadataList)
+        .mockReturnValueOnce(headerMetadataListFixture);
 
       result = buildRouterExplorerControllerMethodMetadata(
         controllerFixture,
@@ -120,9 +128,19 @@ describe(buildRouterExplorerControllerMethodMetadata.name, () => {
       ).toHaveBeenCalledWith(controllerMethodMiddlewareListFixture);
     });
 
+    it('should call exploreControllerMethodHeaderMetadataList', () => {
+      expect(exploreControllerMethodHeaderMetadataList).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(exploreControllerMethodHeaderMetadataList).toHaveBeenCalledWith(
+        controllerFixture[controllerMethodMetadataFixture.methodKey],
+      );
+    });
+
     it('should return a RouterExplorerControllerMethodMetadata', () => {
       expect(result).toStrictEqual({
         guardList: controllerMethodGuardListFixture,
+        headerMetadataList: headerMetadataListFixture,
         methodKey: controllerMethodMetadataFixture.methodKey,
         parameterMetadataList: controllerMethodParameterMetadataListFixture,
         path: controllerMethodMetadataFixture.path,

@@ -7,6 +7,7 @@ import { MiddlewareOptions } from '../model/MiddlewareOptions';
 import { RouterExplorerControllerMethodMetadata } from '../model/RouterExplorerControllerMethodMetadata';
 import { buildMiddlewareOptionsFromApplyMiddlewareOptions } from './buildMiddlewareOptionsFromApplyMiddlewareOptions';
 import { exploreControllerMethodGuardList } from './exploreControllerMethodGuardList';
+import { exploreControllerMethodHeaderMetadataList } from './exploreControllerMethodHeaderMetadataList';
 import { exploreControllerMethodMiddlewareList } from './exploreControllerMethodMiddlewareList';
 import { exploreControllerMethodParameterMetadataList } from './exploreControllerMethodParameterMetadataList';
 import { exploreControllerMethodStatusCodeMetadata } from './exploreControllerMethodStatusCodeMetadata';
@@ -36,8 +37,12 @@ export function buildRouterExplorerControllerMethodMetadata(
       controllerMethodMiddlewareList,
     );
 
+  const headerMetadataList: [string, string][] =
+    exploreControllerMethodHeaderMetadataList(targetFunction);
+
   return {
     guardList: controllerMethodGuardList,
+    headerMetadataList,
     methodKey: controllerMethodMetadata.methodKey,
     parameterMetadataList: controllerMethodParameterMetadataList,
     path: controllerMethodMetadata.path,
