@@ -1,6 +1,7 @@
 import { When } from '@cucumber/cucumber';
 
 import { InversifyHttpWorld } from '../../common/models/InversifyHttpWorld';
+import { setServerResponse } from '../../server/actions/setServerResponse';
 import { getServerRequestOrFail } from '../../server/calculations/getServerRequestOrFail';
 
 async function whenRequestIsSend(
@@ -14,7 +15,7 @@ async function whenRequestIsSend(
 
   const response: Response = await fetch(request);
 
-  this.serverResponses.set(parsedRequestAlias, response);
+  setServerResponse.bind(this)(parsedRequestAlias, response);
 }
 
 When<InversifyHttpWorld>(

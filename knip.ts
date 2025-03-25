@@ -75,6 +75,19 @@ export default {
       project: defaultWorkspaceProjectConfig.project,
     },
     "packages/http/libraries/*": defaultWorkspaceProjectConfig,
+    "packages/http/tools/e2e-tests": {
+      entry: [
+        "config/*.mjs",
+        "src/*/parameters/*.ts",
+        "src/*/step-definitions/*.ts",
+        "src/app/hooks/*.ts",
+      ],
+      ignoreDependencies: [
+        ...defaultWorkspaceProjectConfig.ignoreDependencies,
+        "ts-node",
+      ],
+      project: [...defaultWorkspaceProjectConfig.project, "!config/*"],
+    },
     "packages/logger": defaultWorkspaceProjectConfig,
   },
 } satisfies KnipConfig;
