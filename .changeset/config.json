@@ -8,7 +8,9 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
+    "@inversifyjs/http-benchmarks",
     "@inversifyjs/http-core",
+    "@inversifyjs/http-express",
     "@inversifyjs/logger"
   ]
 }
