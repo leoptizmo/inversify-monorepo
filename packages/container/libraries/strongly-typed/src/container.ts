@@ -95,7 +95,7 @@ type Unbind<T extends BindingMap = any> = <
   TKey extends MappedServiceIdentifier<T>,
 >(
   serviceIdentifier: TKey,
-) => void;
+) => Promise<void>;
 
 type IsBound<T extends BindingMap = any> = <
   TKey extends MappedServiceIdentifier<T>,
