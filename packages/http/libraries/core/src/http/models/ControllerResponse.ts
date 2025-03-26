@@ -1,3 +1,5 @@
+import { Stream } from 'stream';
+
 import { HttpResponse } from '../responses/HttpResponse';
 
 export type ControllerResponse =
@@ -6,4 +8,5 @@ export type ControllerResponse =
   | string
   | number
   | boolean
+  | Stream
   | undefined;
