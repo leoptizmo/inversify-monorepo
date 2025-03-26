@@ -29,7 +29,7 @@ export abstract class BaseK6Scenario implements Scenario<Platform, K6Summary> {
 
   public async execute(): Promise<K6Summary> {
     const { stdout }: { stdout: string; stderr: string } = await execPromise(
-      `k6 run --quiet ${this.#benchFile}`,
+      `k6 run --quiet src/k6/scenario/${this.#benchFile}`,
     );
 
     return {
@@ -39,9 +39,19 @@ export abstract class BaseK6Scenario implements Scenario<Platform, K6Summary> {
   }
 
   public async setUp(): Promise<void> {
-    this.#serverProcess = spawn('node', [this.#serverFile], {
-      detached: true,
-    });
+    const buildTarget: string | undefined = process.env['BUILD_TARGET'];
+
+    if (buildTarget === undefined) {
+      throw new Error('BUILD_TARGET is not set');
+    }
+
+    this.#serverProcess = spawn(
+      'node',
+      [`lib/${buildTarget}/scenario/${this.#serverFile}`],
+      {
+        detached: true,
+      },
+    );
 
     await sleep();
   }

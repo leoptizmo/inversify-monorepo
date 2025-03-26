@@ -5,8 +5,8 @@ export class NestJsExpressBasicGetScenario extends BaseK6Scenario {
   constructor() {
     super(
       Platform.nestJsExpress,
-      'src/k6/scenario/BasicGetScenario.ts',
-      'lib/cjs/scenario/nestJSExpress/setUpNestJsExpressBasicGetScenario.js',
+      'BasicGetScenario.ts',
+      'nestJSExpress/setUpNestJsExpressBasicGetScenario.js',
     );
   }
 }

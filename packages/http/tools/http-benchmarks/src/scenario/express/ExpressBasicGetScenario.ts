@@ -5,8 +5,8 @@ export class ExpressBasicGetScenario extends BaseK6Scenario {
   constructor() {
     super(
       Platform.express,
-      'src/k6/scenario/BasicGetScenario.ts',
-      'lib/cjs/scenario/express/setUpExpressBasicGetScenario.js',
+      'BasicGetScenario.ts',
+      'express/setUpExpressBasicGetScenario.js',
     );
   }
 }

@@ -5,8 +5,8 @@ export class CurrentInversifyExpressBasicGetScenario extends BaseK6Scenario {
   constructor() {
     super(
       Platform.currentInversifyExpress,
-      'src/k6/scenario/BasicGetScenario.ts',
-      'lib/cjs/scenario/currentInversifyExpress/setUpCurrentInversifyExpressBasicGetScenario.js',
+      'BasicGetScenario.ts',
+      'currentInversifyExpress/setUpCurrentInversifyExpressBasicGetScenario.js',
     );
   }
 }
