@@ -1,5 +1,11 @@
 # @inversifyjs/strongly-typed
 
+## 2.0.1
+
+### Patch Changes
+
+- a107be1: Fix `.unbind()` return type to be `Promise`
+
 ## 2.0.0
 
 ### Major Changes
