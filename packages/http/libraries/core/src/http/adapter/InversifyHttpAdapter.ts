@@ -121,6 +121,7 @@ export abstract class InversifyHttpAdapter<
             controller,
             routerExplorerControllerMethodMetadata.methodKey,
             routerExplorerControllerMethodMetadata.parameterMetadataList,
+            routerExplorerControllerMethodMetadata.headerMetadataList,
             routerExplorerControllerMethodMetadata.statusCode,
           ),
           path: routerExplorerControllerMethodMetadata.path,
@@ -143,6 +144,7 @@ export abstract class InversifyHttpAdapter<
     controller: Controller,
     controllerMethodKey: string | symbol,
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
+    headerMetadataList: [string, string][],
     statusCode: HttpStatusCode | undefined,
   ): RequestHandler<TRequest, TResponse, TNextFunction> {
     return async (
@@ -157,6 +159,8 @@ export abstract class InversifyHttpAdapter<
           res,
           next,
         );
+
+        this.#setHeaders(req, res, headerMetadataList);
 
         const value: ControllerResponse = await controller[
           controllerMethodKey
@@ -224,6 +228,16 @@ export abstract class InversifyHttpAdapter<
         },
       ),
     );
+  }
+
+  #setHeaders(
+    request: TRequest,
+    response: TResponse,
+    headerList: [string, string][],
+  ): void {
+    for (const header of headerList) {
+      this._setHeader(request, response, header[0], header[1]);
+    }
   }
 
   #reply(
@@ -377,6 +391,13 @@ export abstract class InversifyHttpAdapter<
     request: TRequest,
     response: TResponse,
     statusCode: HttpStatusCode,
+  ): void;
+
+  protected abstract _setHeader(
+    request: TRequest,
+    response: TResponse,
+    key: string,
+    value: string,
   ): void;
 
   protected abstract _buildRouter(

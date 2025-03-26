@@ -113,6 +113,15 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     response.status(statusCode);
   }
 
+  protected _setHeader(
+    _request: Request,
+    response: Response,
+    key: string,
+    value: string,
+  ): void {
+    response.setHeader(key, value);
+  }
+
   protected async _getBody(
     request: Request,
     parameterName?: string,
