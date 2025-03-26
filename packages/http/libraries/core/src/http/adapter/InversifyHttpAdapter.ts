@@ -1,3 +1,5 @@
+import { Stream } from 'node:stream';
+
 import { ConsoleLogger, Logger } from '@inversifyjs/logger';
 import { Container } from 'inversify';
 
@@ -230,7 +232,8 @@ export abstract class InversifyHttpAdapter<
     value: ControllerResponse,
     statusCode?: HttpStatusCode,
   ): unknown {
-    let body: object | string | number | boolean | undefined = undefined;
+    let body: object | string | number | boolean | Stream | undefined =
+      undefined;
     let httpStatusCode: HttpStatusCode | undefined = statusCode;
 
     if (HttpResponse.is(value)) {
@@ -247,7 +250,11 @@ export abstract class InversifyHttpAdapter<
     if (typeof body === 'string') {
       return this._replyText(request, response, body);
     } else if (body === undefined || typeof body === 'object') {
-      return this._replyJson(request, response, body);
+      if (body instanceof Stream) {
+        return this._replyStream(request, response, body);
+      } else {
+        return this._replyJson(request, response, body);
+      }
     } else {
       return this._replyText(request, response, JSON.stringify(body));
     }
@@ -358,6 +365,12 @@ export abstract class InversifyHttpAdapter<
     request: TRequest,
     response: TResponse,
     value?: object,
+  ): unknown;
+
+  protected abstract _replyStream(
+    request: TRequest,
+    response: TResponse,
+    value: Stream,
   ): unknown;
 
   protected abstract _setStatus(

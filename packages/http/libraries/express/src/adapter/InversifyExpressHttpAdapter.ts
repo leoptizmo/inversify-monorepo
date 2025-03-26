@@ -1,3 +1,5 @@
+import { Stream } from 'node:stream';
+
 import {
   HttpAdapterOptions,
   HttpStatusCode,
@@ -93,6 +95,14 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     value?: object,
   ): unknown {
     return response.json(value);
+  }
+
+  protected _replyStream(
+    _request: Request,
+    response: Response,
+    value: Stream,
+  ): unknown {
+    return value.pipe(response);
   }
 
   protected _setStatus(
