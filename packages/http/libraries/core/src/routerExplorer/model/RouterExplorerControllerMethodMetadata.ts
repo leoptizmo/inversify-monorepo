@@ -4,6 +4,7 @@ import { ControllerMethodParameterMetadata } from './ControllerMethodParameterMe
 
 export interface RouterExplorerControllerMethodMetadata {
   guardList: NewableFunction[];
+  headerMetadataList: [string, string][];
   methodKey: string | symbol;
   parameterMetadataList: ControllerMethodParameterMetadata[];
   path: string;
