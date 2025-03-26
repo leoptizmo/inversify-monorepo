@@ -1,3 +1,5 @@
+import { Stream } from 'node:stream';
+
 import { ConsoleLogger, Logger } from '@inversifyjs/logger';
 import { Container } from 'inversify';
 
@@ -119,6 +121,7 @@ export abstract class InversifyHttpAdapter<
             controller,
             routerExplorerControllerMethodMetadata.methodKey,
             routerExplorerControllerMethodMetadata.parameterMetadataList,
+            routerExplorerControllerMethodMetadata.headerMetadataList,
             routerExplorerControllerMethodMetadata.statusCode,
           ),
           path: routerExplorerControllerMethodMetadata.path,
@@ -141,6 +144,7 @@ export abstract class InversifyHttpAdapter<
     controller: Controller,
     controllerMethodKey: string | symbol,
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
+    headerMetadataList: [string, string][],
     statusCode: HttpStatusCode | undefined,
   ): RequestHandler<TRequest, TResponse, TNextFunction> {
     return async (
@@ -155,6 +159,8 @@ export abstract class InversifyHttpAdapter<
           res,
           next,
         );
+
+        this.#setHeaders(req, res, headerMetadataList);
 
         const value: ControllerResponse = await controller[
           controllerMethodKey
@@ -224,13 +230,24 @@ export abstract class InversifyHttpAdapter<
     );
   }
 
+  #setHeaders(
+    request: TRequest,
+    response: TResponse,
+    headerList: [string, string][],
+  ): void {
+    for (const header of headerList) {
+      this._setHeader(request, response, header[0], header[1]);
+    }
+  }
+
   #reply(
     request: TRequest,
     response: TResponse,
     value: ControllerResponse,
     statusCode?: HttpStatusCode,
   ): unknown {
-    let body: object | string | number | boolean | undefined = undefined;
+    let body: object | string | number | boolean | Stream | undefined =
+      undefined;
     let httpStatusCode: HttpStatusCode | undefined = statusCode;
 
     if (HttpResponse.is(value)) {
@@ -247,7 +264,11 @@ export abstract class InversifyHttpAdapter<
     if (typeof body === 'string') {
       return this._replyText(request, response, body);
     } else if (body === undefined || typeof body === 'object') {
-      return this._replyJson(request, response, body);
+      if (body instanceof Stream) {
+        return this._replyStream(request, response, body);
+      } else {
+        return this._replyJson(request, response, body);
+      }
     } else {
       return this._replyText(request, response, JSON.stringify(body));
     }
@@ -360,10 +381,23 @@ export abstract class InversifyHttpAdapter<
     value?: object,
   ): unknown;
 
+  protected abstract _replyStream(
+    request: TRequest,
+    response: TResponse,
+    value: Stream,
+  ): unknown;
+
   protected abstract _setStatus(
     request: TRequest,
     response: TResponse,
     statusCode: HttpStatusCode,
+  ): void;
+
+  protected abstract _setHeader(
+    request: TRequest,
+    response: TResponse,
+    key: string,
+    value: string,
   ): void;
 
   protected abstract _buildRouter(
