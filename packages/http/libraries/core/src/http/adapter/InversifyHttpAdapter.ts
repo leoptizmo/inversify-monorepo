@@ -218,6 +218,7 @@ export abstract class InversifyHttpAdapter<
             case RequestMethodParameterType.COOKIES: {
               return this._getCookies(
                 request,
+                response,
                 controllerMethodParameterMetadata.parameterName,
               );
             }
@@ -366,6 +367,7 @@ export abstract class InversifyHttpAdapter<
 
   protected abstract _getCookies(
     request: TRequest,
+    response: TResponse,
     parameterName?: string,
   ): unknown;
 
