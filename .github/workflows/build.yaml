@@ -39,7 +39,7 @@ jobs:
         run: pnpm run unused --no-config-hints
 
   run-container-benchmarks:
-    name: Run benchmarks
+    name: Run container benchmarks
     environment: CI
     needs: build
     runs-on: ubuntu-latest
@@ -90,7 +90,7 @@ jobs:
             })
 
   run-http-benchmarks:
-    name: Run benchmarks
+    name: Run http benchmarks
     environment: CI
     needs: build
     runs-on: ubuntu-latest
