@@ -79,7 +79,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     this.#app.route(routerParams.path, router);
   }
 
-  protected override async _getBody(
+  protected async _getBody(
     request: HonoRequest,
     parameterName?: string,
   ): Promise<unknown> {
@@ -88,41 +88,32 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     return parameterName !== undefined ? body[parameterName] : body;
   }
 
-  protected override _getParams(
-    request: HonoRequest,
-    parameterName?: string,
-  ): unknown {
+  protected _getParams(request: HonoRequest, parameterName?: string): unknown {
     return parameterName !== undefined
       ? request.param(parameterName)
       : request.param();
   }
 
-  protected override _getQuery(
-    request: HonoRequest,
-    parameterName?: string,
-  ): unknown {
+  protected _getQuery(request: HonoRequest, parameterName?: string): unknown {
     return parameterName !== undefined
       ? request.query(parameterName)
       : request.query();
   }
 
-  protected override _getHeaders(
-    request: HonoRequest,
-    parameterName?: string,
-  ): unknown {
+  protected _getHeaders(request: HonoRequest, parameterName?: string): unknown {
     return parameterName !== undefined
       ? request.header(parameterName)
       : request.header();
   }
 
-  protected override _getCookies(
+  protected _getCookies(
     request: HonoRequest,
     parameterName?: string | symbol,
   ): unknown {
     return undefined;
   }
 
-  protected override _replyText(
+  protected _replyText(
     _request: HonoRequest,
     response: Context,
     value: string,
@@ -130,7 +121,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     return response.text(value);
   }
 
-  protected override _replyJson(
+  protected _replyJson(
     _request: HonoRequest,
     response: Context,
     value?: object,
@@ -138,7 +129,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     return response.json(value);
   }
 
-  protected override _replyStream(
+  protected _replyStream(
     _request: HonoRequest,
     response: Context,
     value: Stream,
@@ -148,7 +139,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     });
   }
 
-  protected override _setStatus(
+  protected _setStatus(
     _request: HonoRequest,
     response: Context,
     statusCode: HttpStatusCode,
@@ -156,7 +147,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     response.status(statusCode as StatusCode);
   }
 
-  protected override _setHeader(
+  protected _setHeader(
     _request: HonoRequest,
     response: Context,
     key: string,
