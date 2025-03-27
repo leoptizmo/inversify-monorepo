@@ -1,3 +1,5 @@
+import { Stream } from 'node:stream';
+
 import {
   HttpAdapterOptions,
   HttpStatusCode,
@@ -97,12 +99,29 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
     return response.send(value);
   }
 
+  protected _replyStream(
+    _request: FastifyRequest,
+    response: FastifyReply,
+    value: Stream,
+  ): unknown {
+    return response.send(value);
+  }
+
   protected override _setStatus(
     _request: FastifyRequest,
     response: FastifyReply,
     statusCode: HttpStatusCode,
   ): void {
     response.status(statusCode);
+  }
+
+  protected override _setHeader(
+    _request: FastifyRequest,
+    response: FastifyReply,
+    key: string,
+    value: string,
+  ): void {
+    response.header(key, value);
   }
 
   protected override _buildRouter(
