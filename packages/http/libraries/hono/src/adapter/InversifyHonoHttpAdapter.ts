@@ -1,3 +1,5 @@
+import { Stream } from 'node:stream';
+
 import {
   HttpAdapterOptions,
   HttpStatusCode,
@@ -13,7 +15,9 @@ import {
   MiddlewareHandler,
   Next,
 } from 'hono';
+import { stream } from 'hono/streaming';
 import { StatusCode } from 'hono/utils/http-status';
+import { StreamingApi } from 'hono/utils/stream';
 import { Container } from 'inversify';
 
 export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
@@ -134,12 +138,31 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     return response.json(value);
   }
 
+  protected override _replyStream(
+    _request: HonoRequest,
+    response: Context,
+    value: Stream,
+  ): unknown {
+    return stream(response, async (stream: StreamingApi): Promise<void> => {
+      await stream.pipe(value as unknown as ReadableStream);
+    });
+  }
+
   protected override _setStatus(
     _request: HonoRequest,
     response: Context,
     statusCode: HttpStatusCode,
   ): void {
     response.status(statusCode as StatusCode);
+  }
+
+  protected override _setHeader(
+    _request: HonoRequest,
+    response: Context,
+    key: string,
+    value: string,
+  ): void {
+    response.header(key, value);
   }
 
   #buildHonoHandler(
