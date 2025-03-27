@@ -122,30 +122,15 @@ container.getAsync('asyncNumber') // Promise<number>
 
 ### Container hierarchies
 
-A strongly-typed child container can be created from a parent container.
-
-This strong typing is optional for the child:
+If setting a `parent`, types will need to be manually merged:
 
 ```ts
-const parent = new TypedContainer<BindingMap>();
-const child = parent.createChild(); // weakly typed
-```
+type ParentMap  = {...};
+type ChildMap = {...};
 
-If the child is strongly-typed, its binding will automatically be adjusted to include the parent types:
-
-```ts
-const parent = new TypedContainer<{foo: Foo}>();
-const child = parent.createChild<{bar: Bar}>();
-child.get('bar') // ok
-child.get('foo') // ok
-```
-
-A child may also override a parent's bindings with a completely unrelated type:
-
-```ts
-const parent = new TypedContainer<{foo: Foo}>();
-const child = parent.createChild<{foo: Bar}>();
-const resolved: Bar = child.get('foo');
+const child = new TypedContainer<ParentMap & ChildMap>({
+  parent,
+});
 ```
 
 
