@@ -15,6 +15,7 @@ import {
   MiddlewareHandler,
   Next,
 } from 'hono';
+import { getCookie } from 'hono/cookie';
 import { stream } from 'hono/streaming';
 import { StatusCode } from 'hono/utils/http-status';
 import { StreamingApi } from 'hono/utils/stream';
@@ -107,10 +108,13 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   protected _getCookies(
-    request: HonoRequest,
-    parameterName?: string | symbol,
+    _request: HonoRequest,
+    response: Context,
+    parameterName?: string,
   ): unknown {
-    return undefined;
+    return parameterName !== undefined
+      ? getCookie(response, parameterName)
+      : getCookie(response);
   }
 
   protected _replyText(
