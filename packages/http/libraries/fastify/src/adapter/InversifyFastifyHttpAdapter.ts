@@ -50,7 +50,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
       : request.body;
   }
 
-  protected override _getParams(
+  protected _getParams(
     request: FastifyRequest,
     parameterName?: string,
   ): unknown {
@@ -58,7 +58,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
       ? (request.params as Record<string, unknown>)[parameterName]
       : request.params;
   }
-  protected override _getQuery(
+  protected _getQuery(
     request: FastifyRequest,
     parameterName?: string,
   ): unknown {
@@ -67,7 +67,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
       : request.query;
   }
 
-  protected override _getHeaders(
+  protected _getHeaders(
     request: FastifyRequest,
     parameterName?: string,
   ): unknown {
@@ -76,14 +76,14 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
       : request.headers;
   }
 
-  protected override _getCookies(
-    _request: FastifyRequest,
+  protected _getCookies(
+    request: FastifyRequest,
     _parameterName?: string | symbol,
   ): unknown {
     return undefined;
   }
 
-  protected override _replyText(
+  protected _replyText(
     _request: FastifyRequest,
     response: FastifyReply,
     value: string,
@@ -91,7 +91,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
     return response.send(value);
   }
 
-  protected override _replyJson(
+  protected _replyJson(
     _request: FastifyRequest,
     response: FastifyReply,
     value?: object,
@@ -107,7 +107,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
     return response.send(value);
   }
 
-  protected override _setStatus(
+  protected _setStatus(
     _request: FastifyRequest,
     response: FastifyReply,
     statusCode: HttpStatusCode,
@@ -115,7 +115,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
     response.status(statusCode);
   }
 
-  protected override _setHeader(
+  protected _setHeader(
     _request: FastifyRequest,
     response: FastifyReply,
     key: string,
@@ -124,7 +124,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
     response.header(key, value);
   }
 
-  protected override _buildRouter(
+  protected _buildRouter(
     routerParams: RouterParams<
       FastifyRequest,
       FastifyReply,
