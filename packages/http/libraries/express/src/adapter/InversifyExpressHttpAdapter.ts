@@ -4,7 +4,7 @@ import {
   HttpAdapterOptions,
   HttpStatusCode,
   InversifyHttpAdapter,
-  RequestHandler,
+  MiddlewareHandler,
   RouterParams,
 } from '@inversifyjs/http-core';
 import express, {
@@ -45,7 +45,7 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
   ): void {
     const router: Router = Router();
 
-    const orderedMiddlewareList: RequestHandler<
+    const orderedMiddlewareList: MiddlewareHandler<
       Request,
       Response,
       NextFunction
@@ -57,14 +57,14 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
 
     for (const routeParams of routerParams.routeParamsList) {
       const orderedPreHandlerMiddlewareList:
-        | RequestHandler<Request, Response, NextFunction>[]
+        | MiddlewareHandler<Request, Response, NextFunction>[]
         | undefined = [
         ...routeParams.guardList,
         ...routeParams.preHandlerMiddlewareList,
       ];
 
       const orderedPostHandlerMiddlewareList:
-        | RequestHandler<Request, Response, NextFunction>[]
+        | MiddlewareHandler<Request, Response, NextFunction>[]
         | undefined = [
         ...routerParams.postHandlerMiddlewareList,
         ...routeParams.postHandlerMiddlewareList,
@@ -73,7 +73,7 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
       router[routeParams.requestMethodType](
         routeParams.path,
         ...(orderedPreHandlerMiddlewareList as ExpressRequestHandler[]),
-        routeParams.handler as ExpressRequestHandler,
+        routeParams.handler,
         ...(orderedPostHandlerMiddlewareList as ExpressRequestHandler[]),
       );
     }
