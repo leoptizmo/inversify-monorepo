@@ -149,7 +149,11 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
       : request.headers;
   }
 
-  protected _getCookies(request: Request, parameterName?: string): unknown {
+  protected _getCookies(
+    request: Request,
+    _response: Response,
+    parameterName?: string,
+  ): unknown {
     return parameterName !== undefined
       ? (request.cookies as Record<string, unknown>)[parameterName]
       : request.cookies;
