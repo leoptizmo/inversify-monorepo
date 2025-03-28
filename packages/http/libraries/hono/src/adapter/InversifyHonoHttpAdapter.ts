@@ -4,6 +4,7 @@ import {
   HttpAdapterOptions,
   HttpStatusCode,
   InversifyHttpAdapter,
+  MiddlewareHandler,
   RequestHandler,
   RouterParams,
 } from '@inversifyjs/http-core';
@@ -12,7 +13,7 @@ import {
   Handler,
   Hono,
   HonoRequest,
-  MiddlewareHandler,
+  MiddlewareHandler as HonoMiddlewareHandler,
   Next,
 } from 'hono';
 import { getCookie } from 'hono/cookie';
@@ -48,7 +49,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   ): void {
     const router: Hono = new Hono();
 
-    const routerHonoMiddlewareList: MiddlewareHandler[] = [
+    const routerHonoMiddlewareList: HonoMiddlewareHandler[] = [
       ...this.#buildHonoMiddlewareList(routerParams.guardList),
       ...this.#buildHonoMiddlewareList(routerParams.preHandlerMiddlewareList),
       ...this.#buildHonoPostHandlerMiddlewareList(
@@ -61,7 +62,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     }
 
     for (const routeParams of routerParams.routeParamsList) {
-      const routeHonoMiddlewareList: MiddlewareHandler[] = [
+      const routeHonoMiddlewareList: HonoMiddlewareHandler[] = [
         ...this.#buildHonoMiddlewareList(routeParams.guardList),
         ...this.#buildHonoMiddlewareList(routeParams.preHandlerMiddlewareList),
         ...this.#buildHonoPostHandlerMiddlewareList(
@@ -160,17 +161,15 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     response.header(key, value);
   }
 
-  #buildHonoHandler(
-    handler: RequestHandler<HonoRequest, Context, Next>,
-  ): Handler {
-    return async (ctx: Context, next: Next): Promise<Response> => {
-      return handler(ctx.req as HonoRequest, ctx, next) as Promise<Response>;
+  #buildHonoHandler(handler: RequestHandler<HonoRequest, Context>): Handler {
+    return async (ctx: Context): Promise<Response> => {
+      return handler(ctx.req as HonoRequest, ctx) as Promise<Response>;
     };
   }
 
   #buildHonoMiddleware(
-    handler: RequestHandler<HonoRequest, Context, Next>,
-  ): MiddlewareHandler {
+    handler: MiddlewareHandler<HonoRequest, Context, Next>,
+  ): HonoMiddlewareHandler {
     return async (
       ctx: Context,
       next: () => Promise<void>,
@@ -180,16 +179,17 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildHonoMiddlewareList(
-    handlers: RequestHandler<HonoRequest, Context, Next>[],
-  ): MiddlewareHandler[] {
-    return handlers.map((handler: RequestHandler<HonoRequest, Context, Next>) =>
-      this.#buildHonoMiddleware(handler),
+    handlers: MiddlewareHandler<HonoRequest, Context, Next>[],
+  ): HonoMiddlewareHandler[] {
+    return handlers.map(
+      (handler: MiddlewareHandler<HonoRequest, Context, Next>) =>
+        this.#buildHonoMiddleware(handler),
     );
   }
 
   #buildHonoPostHandlerMiddleware(
-    handler: RequestHandler<HonoRequest, Context, Next>,
-  ): MiddlewareHandler {
+    handler: MiddlewareHandler<HonoRequest, Context, Next>,
+  ): HonoMiddlewareHandler {
     return async (ctx: Context, next: Next): Promise<Response> => {
       await next();
 
@@ -198,10 +198,11 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildHonoPostHandlerMiddlewareList(
-    handlers: RequestHandler<HonoRequest, Context, Next>[],
-  ): MiddlewareHandler[] {
-    return handlers.map((handler: RequestHandler<HonoRequest, Context, Next>) =>
-      this.#buildHonoPostHandlerMiddleware(handler),
+    handlers: MiddlewareHandler<HonoRequest, Context, Next>[],
+  ): HonoMiddlewareHandler[] {
+    return handlers.map(
+      (handler: MiddlewareHandler<HonoRequest, Context, Next>) =>
+        this.#buildHonoPostHandlerMiddleware(handler),
     );
   }
 
