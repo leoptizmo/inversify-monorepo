@@ -13,6 +13,7 @@ import { Controller } from '../models/Controller';
 import { ControllerResponse } from '../models/ControllerResponse';
 import { HttpAdapterOptions } from '../models/HttpAdapterOptions';
 import { InternalHttpAdapterOptions } from '../models/InternalHttpAdapterOptions';
+import { MiddlewareHandler } from '../models/MiddlewareHandler';
 import { RequestHandler } from '../models/RequestHandler';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 import { RouteParams } from '../models/RouteParams';
@@ -147,18 +148,13 @@ export abstract class InversifyHttpAdapter<
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
     headerMetadataList: [string, string][],
     statusCode: HttpStatusCode | undefined,
-  ): RequestHandler<TRequest, TResponse, TNextFunction> {
-    return async (
-      req: TRequest,
-      res: TResponse,
-      next: TNextFunction,
-    ): Promise<unknown> => {
+  ): RequestHandler<TRequest, TResponse> {
+    return async (req: TRequest, res: TResponse): Promise<unknown> => {
       try {
         const handlerParams: unknown[] = await this.#buildHandlerParams(
           controllerMethodParameterMetadataList,
           req,
           res,
-          next,
         );
 
         this.#setHeaders(req, res, headerMetadataList);
@@ -179,7 +175,6 @@ export abstract class InversifyHttpAdapter<
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
     request: TRequest,
     response: TResponse,
-    next: TNextFunction,
   ): Promise<unknown[]> {
     return Promise.all(
       controllerMethodParameterMetadataList.map(
@@ -221,9 +216,6 @@ export abstract class InversifyHttpAdapter<
                 request,
                 controllerMethodParameterMetadata.parameterName,
               );
-            }
-            case RequestMethodParameterType.NEXT: {
-              return next;
             }
           }
         },
@@ -277,7 +269,7 @@ export abstract class InversifyHttpAdapter<
 
   async #getMiddlewareHandlerFromMetadata(
     middlewareList: NewableFunction[],
-  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[]> {
+  ): Promise<MiddlewareHandler<TRequest, TResponse, TNextFunction>[]> {
     return Promise.all(
       middlewareList.map(async (newableFunction: NewableFunction) => {
         const middleware: Middleware<TRequest, TResponse, TNextFunction> =
@@ -290,7 +282,7 @@ export abstract class InversifyHttpAdapter<
 
   async #getGuardHandlerFromMetadata(
     guardList: NewableFunction[],
-  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction>[]> {
+  ): Promise<MiddlewareHandler<TRequest, TResponse, TNextFunction>[]> {
     return Promise.all(
       guardList.map(async (newableFunction: NewableFunction) => {
         const guard: Guard<TRequest> =
