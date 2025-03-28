@@ -11,7 +11,6 @@ import express, {
   Application,
   NextFunction,
   Request,
-  RequestHandler as ExpressRequestHandler,
   Response,
   Router,
 } from 'express';
@@ -72,9 +71,9 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
 
       router[routeParams.requestMethodType](
         routeParams.path,
-        ...(orderedPreHandlerMiddlewareList as ExpressRequestHandler[]),
+        ...orderedPreHandlerMiddlewareList,
         routeParams.handler,
-        ...(orderedPostHandlerMiddlewareList as ExpressRequestHandler[]),
+        ...orderedPostHandlerMiddlewareList,
       );
     }
 
@@ -127,7 +126,8 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     parameterName?: string,
   ): Promise<unknown> {
     return parameterName !== undefined
-      ? (request.body as Record<string, unknown>)[parameterName]
+      ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        request.body[parameterName]
       : request.body;
   }
 
@@ -151,7 +151,8 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
 
   protected _getCookies(request: Request, parameterName?: string): unknown {
     return parameterName !== undefined
-      ? (request.cookies as Record<string, unknown>)[parameterName]
+      ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        request.cookies[parameterName]
       : request.cookies;
   }
 
