@@ -4,7 +4,7 @@ import {
   HttpAdapterOptions,
   HttpStatusCode,
   InversifyHttpAdapter,
-  RequestHandler,
+  MiddlewareHandler,
   RouterParams,
 } from '@inversifyjs/http-core';
 import {
@@ -15,7 +15,6 @@ import {
   FastifyRequest,
   preHandlerAsyncHookHandler,
   preHandlerHookHandler,
-  RouteHandlerMethod,
 } from 'fastify';
 import { Container } from 'inversify';
 
@@ -136,7 +135,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
       _opts: Record<string, unknown>,
       done: () => void,
     ) => {
-      const orderedMiddlewareList: RequestHandler<
+      const orderedMiddlewareList: MiddlewareHandler<
         FastifyRequest,
         FastifyReply,
         (err?: Error) => void
@@ -160,7 +159,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
       }
 
       for (const routeParams of routerParams.routeParamsList) {
-        const orderedMiddlewareList: RequestHandler<
+        const orderedMiddlewareList: MiddlewareHandler<
           FastifyRequest,
           FastifyReply,
           (err?: Error) => void
@@ -170,7 +169,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
         ];
 
         fastifyInstance.route({
-          handler: routeParams.handler as RouteHandlerMethod,
+          handler: routeParams.handler,
           method: routeParams.requestMethodType,
           onResponse: this.#buildFastifySyncMiddlewareList(
             routeParams.postHandlerMiddlewareList,
@@ -189,7 +188,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildFastifySyncMiddlewareList(
-    middlewareList: RequestHandler<
+    middlewareList: MiddlewareHandler<
       FastifyRequest,
       FastifyReply,
       (err?: Error) => void
@@ -197,7 +196,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
   ): preHandlerHookHandler[] {
     return middlewareList.map(
       (
-        middleware: RequestHandler<
+        middleware: MiddlewareHandler<
           FastifyRequest,
           FastifyReply,
           (err?: Error) => void
@@ -207,7 +206,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildFastifySyncMiddleware(
-    middleware: RequestHandler<
+    middleware: MiddlewareHandler<
       FastifyRequest,
       FastifyReply,
       (err?: Error) => void
