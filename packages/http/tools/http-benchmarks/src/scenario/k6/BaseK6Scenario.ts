@@ -9,7 +9,9 @@ const execPromise: (
   command: string,
 ) => Promise<{ stdout: string; stderr: string }> = promisify(exec);
 
-async function sleep(ms: number = 2000): Promise<void> {
+const DEFAULT_SLEEP_TIME: number = 2000;
+
+async function sleep(ms: number = DEFAULT_SLEEP_TIME): Promise<void> {
   return new Promise((resolve: () => void) => setTimeout(resolve, ms));
 }
 
