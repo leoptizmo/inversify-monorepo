@@ -105,6 +105,7 @@ export default {
         "rxjs"
       ],
       ignore: [
+        "src/constant/*.ts",
         "src/scenario/*/setUp*.ts",
         "src/k6/scenario/*.ts",
         "src/scenario/nestJS/**/*.ts",
