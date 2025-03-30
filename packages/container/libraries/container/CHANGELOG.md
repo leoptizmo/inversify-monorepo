@@ -1,5 +1,18 @@
 # @inversifyjs/container
 
+## 1.7.0
+
+### Minor Changes
+
+- 378b122: Updated `Container` with `rebindSync`
+- bbdbe53: Updated `Container` with `unbindSync`
+- 378b122: Updated `Container` with `rebind`
+- ffe9447: Updated `ContainerModuleLoadOptions` with `unbindSync`
+
+### Patch Changes
+
+- ffe9447: Updated `ContainerModuleLoadOptions.unbind` to accept `BindingIdentifier`
+
 ## 1.6.0
 
 ### Minor Changes
