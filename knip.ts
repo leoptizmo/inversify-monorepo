@@ -91,8 +91,10 @@ export default {
     "packages/http/tools/http-benchmarks": {
       entry: defaultWorkspaceProjectConfig.entry,
       ignoreDependencies: [
+        "@hono/node-server",
         "@inversifyjs/http-core",
         "@inversifyjs/http-express",
+        "@inversifyjs/http-hono",
         "@nestjs/common",
         "@nestjs/core",
         "@nestjs/platform-express",
@@ -101,6 +103,7 @@ export default {
         "@types/k6",
         "express",
         "fastify",
+        "hono",
         "inversify",
         "rxjs"
       ],
@@ -108,6 +111,7 @@ export default {
         "src/constant/*.ts",
         "src/scenario/*/setUp*.ts",
         "src/k6/scenario/*.ts",
+        "src/scenario/currentInversify/**/*.ts",
         "src/scenario/nestJS/**/*.ts",
       ],
       project: defaultWorkspaceProjectConfig.project,
