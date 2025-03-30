@@ -53,10 +53,8 @@
   },
   "scripts": {
     "benchmarks:run:cjs": "BUILD_TARGET=cjs ./bin/run-cjs.cjs",
-    "benchmarks:run:esm": "BUILD_TARGET=esm ./bin/run-esm.mjs",
     "build": "pnpm run build:cjs && pnpm run build:esm",
     "build:cjs": "tsc --build tsconfig.cjs.json && pnpm exec foundation-ts-package-cjs ./lib/cjs",
-    "build:esm": "tsc --build tsconfig.esm.json && pnpm exec foundation-ts-package-esm ./lib/esm",
     "build:clean": "rimraf lib",
     "format": "prettier --write ./src",
     "lint": "eslint ./src",
