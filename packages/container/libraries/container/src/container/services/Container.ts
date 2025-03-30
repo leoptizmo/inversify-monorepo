@@ -281,6 +281,22 @@ export class Container {
     this.#resetComputedProperties();
   }
 
+  public async rebind<T>(
+    serviceIdentifier: ServiceIdentifier<T>,
+  ): Promise<BindToFluentSyntax<T>> {
+    await this.unbind(serviceIdentifier);
+
+    return this.bind(serviceIdentifier);
+  }
+
+  public rebindSync<T>(
+    serviceIdentifier: ServiceIdentifier<T>,
+  ): BindToFluentSyntax<T> {
+    this.unbindSync(serviceIdentifier);
+
+    return this.bind(serviceIdentifier);
+  }
+
   public snapshot(): void {
     this.#snapshots.push({
       activationService: this.#activationService.clone(),
