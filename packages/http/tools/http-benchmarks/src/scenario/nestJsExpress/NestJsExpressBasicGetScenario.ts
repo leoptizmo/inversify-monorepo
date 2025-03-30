@@ -1,12 +1,12 @@
 import { BaseK6Scenario } from '../k6/BaseK6Scenario';
 import { Platform } from '../models/Platform';
 
-export class NestJsFastifyBasicGetScenario extends BaseK6Scenario {
+export class NestJsExpressBasicGetScenario extends BaseK6Scenario {
   constructor() {
     super(
-      Platform.nestJsFastify,
+      Platform.nestJsExpress,
       'BasicGetScenario.ts',
-      'nestJSFastify/setup.js',
+      'nestJsExpress/setupBasicGetScenario.js',
     );
   }
 }

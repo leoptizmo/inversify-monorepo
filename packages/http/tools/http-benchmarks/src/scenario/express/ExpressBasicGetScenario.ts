@@ -3,6 +3,10 @@ import { Platform } from '../models/Platform';
 
 export class ExpressBasicGetScenario extends BaseK6Scenario {
   constructor() {
-    super(Platform.express, 'BasicGetScenario.ts', 'express/setup.js');
+    super(
+      Platform.express,
+      'BasicGetScenario.ts',
+      'express/setupBasicGetScenario.js',
+    );
   }
 }

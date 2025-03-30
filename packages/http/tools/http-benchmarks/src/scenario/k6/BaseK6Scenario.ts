@@ -49,7 +49,7 @@ export abstract class BaseK6Scenario implements Scenario<Platform, K6Summary> {
 
     this.#serverProcess = spawn(
       'node',
-      [`lib/${buildTarget}/scenario/${this.#serverFile}`],
+      [`lib/${buildTarget}/scenario-setups/${this.#serverFile}`],
       {
         detached: true,
       },
