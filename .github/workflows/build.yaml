@@ -137,7 +137,7 @@ jobs:
             ---
             \`\`\`bash
             ${{steps.run-cjs-benchmarks.outputs.result}}
-            \`\`\`
+            \`\`\``
             })
 
   test-package:
