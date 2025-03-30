@@ -87,7 +87,7 @@ export default {
       entry: [
         "src/bin/run.ts",
         "src/k6/scenario/*.ts",
-        "src/scenario/*/setup.ts",
+        "src/scenario-setups/*/*.ts",
       ],
       ignoreDependencies: [
         ...defaultWorkspaceProjectConfig.ignoreDependencies,
