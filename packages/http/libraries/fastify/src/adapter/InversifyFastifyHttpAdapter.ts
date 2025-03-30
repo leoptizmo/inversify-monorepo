@@ -1,5 +1,6 @@
 import { Stream } from 'node:stream';
 
+import cookie from '@fastify/cookie';
 import {
   HttpAdapterOptions,
   HttpStatusCode,
@@ -17,7 +18,6 @@ import {
   preHandlerHookHandler,
 } from 'fastify';
 import { Container } from 'inversify';
-
 export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
   FastifyRequest,
   FastifyReply,
@@ -31,7 +31,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
     customApp?: FastifyInstance,
   ) {
     super(container, httpAdapterOptions);
-    this.#app = customApp ?? fastify();
+    this.#app = this.#buildDefaultFastifyApp(customApp);
   }
 
   public async build(): Promise<FastifyInstance> {
@@ -77,9 +77,11 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
 
   protected _getCookies(
     request: FastifyRequest,
-    _parameterName?: string | symbol,
+    parameterName?: string,
   ): unknown {
-    return undefined;
+    return parameterName !== undefined
+      ? request.cookies[parameterName]
+      : request.cookies;
   }
 
   protected _replyText(
@@ -185,6 +187,14 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
     };
 
     this.#app.register(router, { prefix: routerParams.path });
+  }
+
+  #buildDefaultFastifyApp(customApp?: FastifyInstance): FastifyInstance {
+    const app: FastifyInstance = customApp ?? fastify();
+
+    this.#app.register(cookie);
+
+    return app;
   }
 
   #buildFastifySyncMiddlewareList(
