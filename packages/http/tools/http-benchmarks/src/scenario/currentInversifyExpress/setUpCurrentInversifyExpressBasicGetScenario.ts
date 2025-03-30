@@ -3,6 +3,8 @@ import { InversifyExpressHttpAdapter } from '@inversifyjs/http-express';
 import { Application } from 'express';
 import { Container } from 'inversify';
 
+import { DEFAULT_PORT } from '../../constant/defaultPort';
+
 @controller()
 class AppController {
   @GET()
@@ -25,7 +27,7 @@ async function setUp(): Promise<void> {
 
   const app: Application = await server.build();
 
-  app.listen(3000);
+  app.listen(DEFAULT_PORT);
 }
 
 void setUp();

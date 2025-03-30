@@ -1,5 +1,6 @@
 import { NestApplication, NestFactory } from '@nestjs/core';
 
+import { DEFAULT_PORT } from '../../constant/defaultPort';
 import { BasicGetAppModule } from '../nestJS/BasicGetAppModule';
 
 async function setUp(): Promise<void> {
@@ -7,7 +8,7 @@ async function setUp(): Promise<void> {
     logger: false,
   });
 
-  await app.listen(3000);
+  await app.listen(DEFAULT_PORT);
 }
 
 void setUp();

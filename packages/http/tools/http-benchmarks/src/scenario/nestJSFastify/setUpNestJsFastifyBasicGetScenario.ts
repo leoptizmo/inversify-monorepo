@@ -1,6 +1,7 @@
 import { NestApplication, NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 
+import { DEFAULT_PORT } from '../../constant/defaultPort';
 import { BasicGetAppModule } from '../nestJS/BasicGetAppModule';
 
 async function setUp(): Promise<void> {
@@ -9,7 +10,7 @@ async function setUp(): Promise<void> {
     new FastifyAdapter({ logger: false }),
   );
 
-  await app.listen(3000, '0.0.0.0');
+  await app.listen(DEFAULT_PORT, '0.0.0.0');
 }
 
 void setUp();

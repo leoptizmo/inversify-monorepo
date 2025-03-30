@@ -2,6 +2,9 @@ import { check } from 'k6';
 import http, { RefinedResponse, ResponseType } from 'k6/http';
 import { Options } from 'k6/options';
 
+import { ACCEPTED_HTTP_STATUS_CODE } from '../../constant/acceptedHttpStatusCode';
+import { DEFAULT_PORT } from '../../constant/defaultPort';
+
 export const options: Options = {
   batch: 8,
   stages: [
@@ -15,14 +18,15 @@ export const options: Options = {
   },
 };
 
-const BASEURL: string = 'http://localhost:3000/';
+const BASEURL: string = `http://localhost:${String(DEFAULT_PORT)}/`;
 
 export default function () {
   const response: RefinedResponse<ResponseType> = http.get(BASEURL);
 
   check(response, {
     'response is ok': (r: RefinedResponse<ResponseType>) => r.body === 'ok',
-    'status is 200': (r: RefinedResponse<ResponseType>) => r.status === 200,
+    'status is 200': (r: RefinedResponse<ResponseType>) =>
+      r.status === ACCEPTED_HTTP_STATUS_CODE,
   });
 }
 

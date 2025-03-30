@@ -1,5 +1,7 @@
 import express, { Application, Request, Response } from 'express';
 
+import { DEFAULT_PORT } from '../../constant/defaultPort';
+
 async function setUp(): Promise<void> {
   const app: Application = express();
 
@@ -7,7 +9,7 @@ async function setUp(): Promise<void> {
     res.send('ok');
   });
 
-  app.listen(3000);
+  app.listen(DEFAULT_PORT);
 }
 
 void setUp();

@@ -4,6 +4,8 @@ import fastify, {
   FastifyRequest,
 } from 'fastify';
 
+import { DEFAULT_PORT } from '../../constant/defaultPort';
+
 async function setUp(): Promise<void> {
   const app: FastifyInstance = fastify();
 
@@ -11,7 +13,7 @@ async function setUp(): Promise<void> {
     reply.send('ok');
   });
 
-  await app.listen({ host: '0.0.0.0', port: 3000 });
+  await app.listen({ host: '0.0.0.0', port: DEFAULT_PORT });
 }
 
 void setUp();
