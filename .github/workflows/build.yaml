@@ -98,7 +98,8 @@ jobs:
       (
         (
           ${{ contains(needs.build.outputs.affectedPackages, '@inversifyjs/http-core')}} ||
-          ${{ contains(needs.build.outputs.affectedPackages, '@inversifyjs/http-express')}}
+          ${{ contains(needs.build.outputs.affectedPackages, '@inversifyjs/http-express')}} ||
+          ${{ contains(needs.build.outputs.affectedPackages, '@inversifyjs/http-fastify')}}
         )
         &&
         github.event.pull_request.head.repo.fork != true
