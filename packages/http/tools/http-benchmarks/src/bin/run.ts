@@ -30,6 +30,7 @@ export async function run(): Promise<void> {
   // Run fastify basic get request scenarios
   {
     const scenarioList: Scenario<Platform, K6Summary>[] = [
+      new CurrentInversifyFastifyBasicGetScenario(),
       new FastifyBasicGetScenario(),
       new NestJsFastifyBasicGetScenario(),
     ];
