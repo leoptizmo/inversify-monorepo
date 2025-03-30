@@ -71,6 +71,14 @@ unbind: (serviceIdentifier: ServiceIdentifier) => Promise<void>
 
 Refer to the [docs](./container.mdx#unbind) for more information.
 
+### unbindSync
+
+```ts
+unbindSync: (identifier: BindingIdentifier | ServiceIdentifier) => void
+```
+
+Refer to the [docs](./container.mdx#unbindsync) for more information.
+
 ## Example: binding services through ContainerModule API
 
 When a container module is loaded into a Container, the load callback is invoked. This is the opportunity for the container module to register bindings and handlers.

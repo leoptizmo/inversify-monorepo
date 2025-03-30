@@ -57,9 +57,13 @@ This methods are now asynncronous and therefore return a promise.
 
 <CodeBlock language="ts">{containerModuleApiExampleSource}</CodeBlock>
 
+### rebind method
+
+`Container.rebind` has been updated to `Container.rebindSync`. The `rebind` method is now asynchronous and returns a promise. The `rebindSync` method is a synchronous version of the `rebind` method that will throw an error if the operation would trigger an asynchronous deactivation.
+
 ### unbind and unbindAll methods
 
-`Container.unbind` and `Container.unbindAll` methods are now asynchronous and return a promise. `Container.unbindAsync` and `Container.unbindAllAsync` methods have been removed.
+`Container.unbind` has been updated to `Container.unbindSync`. The `unbind` method is now asynchronous and returns a promise. The `unbindSync` method is a synchronous version of the `unbind` method that will throw an error if the operation would trigger an asynchronous deactivation.
 
 ### Parent and child containers
 
