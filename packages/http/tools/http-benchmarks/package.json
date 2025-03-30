@@ -53,7 +53,7 @@
   },
   "scripts": {
     "benchmarks:run:cjs": "BUILD_TARGET=cjs ./bin/run-cjs.cjs",
-    "build": "pnpm run build:cjs && pnpm run build:esm",
+    "build": "pnpm run build:cjs",
     "build:cjs": "tsc --build tsconfig.cjs.json && pnpm exec foundation-ts-package-cjs ./lib/cjs",
     "build:clean": "rimraf lib",
     "format": "prettier --write ./src",
