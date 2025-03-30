@@ -192,7 +192,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
   #buildDefaultFastifyApp(customApp?: FastifyInstance): FastifyInstance {
     const app: FastifyInstance = customApp ?? fastify();
 
-    this.#app.register(cookie);
+    app.register(cookie);
 
     return app;
   }
