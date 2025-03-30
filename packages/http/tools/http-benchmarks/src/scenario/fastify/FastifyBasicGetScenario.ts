@@ -3,10 +3,6 @@ import { Platform } from '../models/Platform';
 
 export class FastifyBasicGetScenario extends BaseK6Scenario {
   constructor() {
-    super(
-      Platform.fastify,
-      'BasicGetScenario.ts',
-      'fastify/setUpFastifyBasicGetScenario.js',
-    );
+    super(Platform.fastify, 'BasicGetScenario.ts', 'fastify/setup.js');
   }
 }

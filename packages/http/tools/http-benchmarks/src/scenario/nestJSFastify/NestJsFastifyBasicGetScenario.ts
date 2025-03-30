@@ -6,7 +6,7 @@ export class NestJsFastifyBasicGetScenario extends BaseK6Scenario {
     super(
       Platform.nestJsFastify,
       'BasicGetScenario.ts',
-      'nestJSFastify/setUpNestJsFastifyBasicGetScenario.js',
+      'nestJSFastify/setup.js',
     );
   }
 }
