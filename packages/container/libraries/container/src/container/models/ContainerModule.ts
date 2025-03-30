@@ -2,6 +2,7 @@ import { ServiceIdentifier } from '@inversifyjs/common';
 import { BindingActivation, BindingDeactivation } from '@inversifyjs/core';
 
 import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
+import { BindingIdentifier } from '../../binding/models/BindingIdentifier';
 import { getContainerModuleId } from '../actions/getContainerModuleId';
 import { IsBoundOptions } from './isBoundOptions';
 
@@ -19,7 +20,8 @@ export interface ContainerModuleLoadOptions {
     serviceIdentifier: ServiceIdentifier<T>,
     deactivation: BindingDeactivation<T>,
   ) => void;
-  unbind: (serviceIdentifier: ServiceIdentifier) => Promise<void>;
+  unbind: (identifier: BindingIdentifier | ServiceIdentifier) => Promise<void>;
+  unbindSync: (identifier: BindingIdentifier | ServiceIdentifier) => void;
 }
 
 export class ContainerModule {
