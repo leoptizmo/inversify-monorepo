@@ -2,8 +2,8 @@ import { check } from 'k6';
 import http, { RefinedResponse, ResponseType } from 'k6/http';
 import { Options } from 'k6/options';
 
-import { ACCEPTED_HTTP_STATUS_CODE } from '../../constant/acceptedHttpStatusCode';
-import { DEFAULT_PORT } from '../../constant/defaultPort';
+const DEFAULT_PORT: number = 3000;
+const ACCEPTED_HTTP_STATUS_CODE: number = 200;
 
 export const options: Options = {
   batch: 8,
