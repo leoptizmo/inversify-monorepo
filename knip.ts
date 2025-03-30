@@ -93,6 +93,7 @@ export default {
       ignoreDependencies: [
         "@inversifyjs/http-core",
         "@inversifyjs/http-express",
+        "@inversifyjs/http-fastify",
         "@nestjs/common",
         "@nestjs/core",
         "@nestjs/platform-express",
@@ -109,6 +110,7 @@ export default {
         "src/scenario/*/setUp*.ts",
         "src/k6/scenario/*.ts",
         "src/scenario/nestJS/**/*.ts",
+        "src/scenario/currentInversify/**/*.ts",
       ],
       project: defaultWorkspaceProjectConfig.project,
     },
