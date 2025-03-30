@@ -1,11 +1,6 @@
 #!/usr/bin/env node
 
-import {
-  buildBenchmark,
-  printBenchmarkResults,
-} from '@inversifyjs/benchmark-utils';
 import { Scenario } from '@inversifyjs/benchmark-utils';
-import { Bench } from 'tinybench';
 
 import { executeHttpBenchmark } from '../benchmark/calculations/executeHttpBenchmark';
 import { printHttpBenchmarkResults } from '../benchmark/calculations/printHttpBenchmarkResults';
@@ -47,19 +42,13 @@ export async function run(): Promise<void> {
 
   // Run Hono basic get request scenarios
   {
-    const benchmark: Bench = buildBenchmark({
-      benchOptions: {
-        name: 'Hono Basic Get Request',
-        time: MS_PER_SCENARIO,
-      },
-      scenarios: [
-        new CurrentInversifyHonoBasicGetScenario(),
-        new HonoBasicGetScenario(),
-      ],
-    });
+    const scenarioList: Scenario<Platform, K6Summary>[] = [
+      new CurrentInversifyHonoBasicGetScenario(),
+      new HonoBasicGetScenario(),
+    ];
 
-    await benchmark.run();
+    const summaryList: K6Summary[] = await executeHttpBenchmark(scenarioList);
 
-    printBenchmarkResults(benchmark);
+    printHttpBenchmarkResults('Hono Basic Get Request', summaryList);
   }
 }
