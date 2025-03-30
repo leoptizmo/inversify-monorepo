@@ -13,12 +13,7 @@ const defaultWorkspaceProjectConfig: WorkspaceProjectConfig & {
     "{index,cli,main}.{js,cjs,mjs,jsx,ts,cts,mts,tsx}",
     "src/{index,cli,main}.{js,cjs,mjs,jsx,ts,cts,mts,tsx}",
   ],
-  ignoreDependencies: [
-    "@inversifyjs/container-benchmarks",
-    "@inversifyjs/http-benchmarks",
-    "ts-loader",
-    "tslib",
-  ],
+  ignoreDependencies: ["ts-loader", "tslib"],
   project: [
     "**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}!",
     "!vitest.config.stryker.mjs",
@@ -89,26 +84,14 @@ export default {
       project: [...defaultWorkspaceProjectConfig.project, "!config/*"],
     },
     "packages/http/tools/http-benchmarks": {
-      entry: defaultWorkspaceProjectConfig.entry,
-      ignoreDependencies: [
-        "@inversifyjs/http-core",
-        "@inversifyjs/http-express",
-        "@nestjs/common",
-        "@nestjs/core",
-        "@nestjs/platform-express",
-        "@nestjs/platform-fastify",
-        "@types/express",
-        "@types/k6",
-        "express",
-        "fastify",
-        "inversify",
-        "rxjs"
-      ],
-      ignore: [
-        "src/constant/*.ts",
-        "src/scenario/*/setUp*.ts",
+      entry: [
+        "src/bin/run.ts",
         "src/k6/scenario/*.ts",
-        "src/scenario/nestJS/**/*.ts",
+        "src/scenario/*/setup.ts",
+      ],
+      ignoreDependencies: [
+        ...defaultWorkspaceProjectConfig.ignoreDependencies,
+        "ts-node",
       ],
       project: defaultWorkspaceProjectConfig.project,
     },
