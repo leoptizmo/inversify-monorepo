@@ -1,36 +1,12 @@
-import { serve } from '@hono/node-server';
-import { InversifyHonoHttpAdapter } from '@inversifyjs/http-hono';
-import { Container } from 'inversify';
+import { BaseK6Scenario } from '../k6/BaseK6Scenario';
+import { Platform } from '../models/Platform';
 
-import { AppController } from '../currentInversify/AppController';
-import { CurrentInversifyHonoBaseScenario } from './CurrentInversifyHonoBaseScenario';
-
-export class CurrentInversifyHonoBasicGetScenario extends CurrentInversifyHonoBaseScenario {
-  public override async execute(): Promise<void> {
-    try {
-      await fetch(`http://localhost:${String(this._port)}`);
-    } catch {
-      void 0;
-    }
-  }
-
-  public override async setUp(): Promise<void> {
-    const container: Container = new Container({ defaultScope: 'Singleton' });
-
-    container.bind(AppController).toSelf();
-
-    const adapter: InversifyHonoHttpAdapter = new InversifyHonoHttpAdapter(
-      container,
-      {
-        logger: false,
-      },
+export class CurrentInversifyHonoBasicGetScenario extends BaseK6Scenario {
+  constructor() {
+    super(
+      Platform.currentInversifyHono,
+      'BasicGetScenario.ts',
+      'currentInversifyHono/setUpCurrentInversifyHonoBasicGetScenario.js',
     );
-
-    this._app = await adapter.build();
-
-    this._server = serve({
-      fetch: this._app.fetch,
-      port: this._port,
-    });
   }
 }
