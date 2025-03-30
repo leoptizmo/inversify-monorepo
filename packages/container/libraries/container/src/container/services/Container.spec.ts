@@ -1674,8 +1674,11 @@ describe(Container.name, () => {
             activation: BindingDeactivation<T>,
           ) => void,
           unbind: expect.any(Function) as unknown as (
-            serviceIdentifier: ServiceIdentifier,
+            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
           ) => Promise<void>,
+          unbindSync: expect.any(Function) as unknown as (
+            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
+          ) => void,
         };
 
         expect(containerModuleMock.load).toHaveBeenCalledTimes(1);

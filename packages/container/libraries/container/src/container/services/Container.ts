@@ -392,6 +392,7 @@ export class Container {
         });
       },
       unbind: this.unbind.bind(this),
+      unbindSync: this.unbindSync.bind(this),
     };
   }
 
