@@ -6,7 +6,7 @@ export class FastifyBasicGetScenario extends BaseK6Scenario {
     super(
       Platform.fastify,
       'BasicGetScenario.ts',
-      'fastify/setUpFastifyBasicGetScenario.js',
+      'fastify/setupBasicGetScenario.js',
     );
   }
 }

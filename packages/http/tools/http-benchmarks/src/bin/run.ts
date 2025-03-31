@@ -11,8 +11,8 @@ import { ExpressBasicGetScenario } from '../scenario/express/ExpressBasicGetScen
 import { FastifyBasicGetScenario } from '../scenario/fastify/FastifyBasicGetScenario';
 import { HonoBasicGetScenario } from '../scenario/hono/HonoBasicGetScenario';
 import { Platform } from '../scenario/models/Platform';
-import { NestJsExpressBasicGetScenario } from '../scenario/nestJSExpress/NestJsExpressBasicGetScenario';
-import { NestJsFastifyBasicGetScenario } from '../scenario/nestJSFastify/NestJsFastifyBasicGetScenario';
+import { NestJsExpressBasicGetScenario } from '../scenario/nestJsExpress/NestJsExpressBasicGetScenario';
+import { NestJsFastifyBasicGetScenario } from '../scenario/nestJsFastify/NestJsFastifyBasicGetScenario';
 
 export async function run(): Promise<void> {
   // Run express basic get request scenarios
