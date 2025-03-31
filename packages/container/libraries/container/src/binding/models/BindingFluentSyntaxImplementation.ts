@@ -61,9 +61,9 @@ import {
   BindToFluentSyntax,
   BindWhenFluentSyntax,
   BindWhenOnFluentSyntax,
-  MapToResolvedValueInjectOptions,
 } from './BindingFluentSyntax';
 import { BindingIdentifier } from './BindingIdentifier';
+import { MapToResolvedValueInjectOptions } from './MapToResolvedValueInjectOptions';
 import {
   ResolvedValueInjectOptions,
   ResolvedValueMetadataInjectTagOptions,
@@ -201,6 +201,11 @@ export class BindToFluentSyntaxImplementation<T>
     return new BindInWhenOnFluentSyntaxImplementation(binding);
   }
 
+  public toResolvedValue(factory: () => T): BindInWhenOnFluentSyntax<T>;
+  public toResolvedValue<TArgs extends unknown[]>(
+    factory: (...args: TArgs) => T,
+    injectOptions: MapToResolvedValueInjectOptions<TArgs>,
+  ): BindInWhenOnFluentSyntax<T>;
   public toResolvedValue<TArgs extends unknown[]>(
     factory: (...args: TArgs) => T,
     injectOptions?: MapToResolvedValueInjectOptions<TArgs>,
