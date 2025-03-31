@@ -1,6 +1,10 @@
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
-export type MiddlewareHandler<TRequest, TResponse, TNextFunction> = (
+export type MiddlewareHandler<
+  TRequest,
+  TResponse,
+  TNextFunction,
+  TResult = unknown,
+> = (
   req: TRequest,
   res: TResponse,
   next: TNextFunction,
-) => Promise<unknown> | unknown;
+) => Promise<TResult> | TResult;

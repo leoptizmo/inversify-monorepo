@@ -1,18 +1,25 @@
 import { MiddlewareHandler } from './MiddlewareHandler';
 import { RouteParams } from './RouteParams';
 
-export interface RouterParams<TRequest, TResponse, TNextFunction> {
-  guardList: MiddlewareHandler<TRequest, TResponse, TNextFunction>[];
+export interface RouterParams<
+  TRequest,
+  TResponse,
+  TNextFunction,
+  TResult = unknown,
+> {
+  guardList: MiddlewareHandler<TRequest, TResponse, TNextFunction, TResult>[];
   path: string;
   postHandlerMiddlewareList: MiddlewareHandler<
     TRequest,
     TResponse,
-    TNextFunction
+    TNextFunction,
+    TResult
   >[];
   preHandlerMiddlewareList: MiddlewareHandler<
     TRequest,
     TResponse,
-    TNextFunction
+    TNextFunction,
+    TResult
   >[];
-  routeParamsList: RouteParams<TRequest, TResponse, TNextFunction>[];
+  routeParamsList: RouteParams<TRequest, TResponse, TNextFunction, TResult>[];
 }
