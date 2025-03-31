@@ -1,5 +1,5 @@
-export type RequestHandler<TRequest, TResponse, TNextFunction> = (
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
+export type RequestHandler<TRequest, TResponse> = (
   req: TRequest,
   res: TResponse,
-  next: TNextFunction,
-) => Promise<unknown>;
+) => Promise<unknown> | unknown;

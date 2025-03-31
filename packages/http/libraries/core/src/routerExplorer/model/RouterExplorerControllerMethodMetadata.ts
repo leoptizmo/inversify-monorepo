@@ -1,13 +1,15 @@
-import { ControllerMethodParameterMetadata } from '../../http/models/ControllerMethodParameterMetadata';
 import { RequestMethodType } from '../../http/models/RequestMethodType';
 import { HttpStatusCode } from '../../http/responses/HttpStatusCode';
+import { ControllerMethodParameterMetadata } from './ControllerMethodParameterMetadata';
 
 export interface RouterExplorerControllerMethodMetadata {
-  guardList: NewableFunction[] | undefined;
-  middlewareList: NewableFunction[] | undefined;
+  guardList: NewableFunction[];
+  headerMetadataList: [string, string][];
   methodKey: string | symbol;
-  path: string;
-  requestMethodType: RequestMethodType;
   parameterMetadataList: ControllerMethodParameterMetadata[];
+  path: string;
+  postHandlerMiddlewareList: NewableFunction[];
+  preHandlerMiddlewareList: NewableFunction[];
+  requestMethodType: RequestMethodType;
   statusCode: HttpStatusCode | undefined;
 }

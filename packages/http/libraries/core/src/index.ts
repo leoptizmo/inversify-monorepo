@@ -8,7 +8,6 @@ import { DELETE } from './http/decorators/Delete';
 import { GET } from './http/decorators/Get';
 import { HEAD } from './http/decorators/Head';
 import { headers } from './http/decorators/Headers';
-import { next } from './http/decorators/Next';
 import { OPTIONS } from './http/decorators/Options';
 import { params } from './http/decorators/Params';
 import { PATCH } from './http/decorators/Patch';
@@ -19,10 +18,12 @@ import { request } from './http/decorators/Request';
 import { response } from './http/decorators/Response';
 import { statusCode } from './http/decorators/StatusCode';
 import { useGuard } from './http/decorators/UseGuard';
-import { Guard } from './http/guard/Guard';
+import { Guard } from './http/guard/model/Guard';
+import { Middleware } from './http/middleware/model/Middleware';
 import { HttpAdapterOptions } from './http/models/HttpAdapterOptions';
-import { Middleware } from './http/models/Middleware';
+import { MiddlewareHandler } from './http/models/MiddlewareHandler';
 import { RequestHandler } from './http/models/RequestHandler';
+import { RouteParams } from './http/models/RouteParams';
 import { RouterParams } from './http/models/RouterParams';
 import { BadGatewayHttpResponse } from './http/responses/error/BadGatewayHttpResponse';
 import { BadRequestHttpResponse } from './http/responses/error/BadRequestHttpResponse';
@@ -54,7 +55,14 @@ import { OkHttpResponse } from './http/responses/success/OkHttpResponse';
 import { PartialContentHttpResponse } from './http/responses/success/PartialContentHttpResponse';
 import { ResetContentHttpResponse } from './http/responses/success/ResetContentHttpResponse';
 
-export type { HttpAdapterOptions, RequestHandler, RouterParams, Middleware };
+export type {
+  HttpAdapterOptions,
+  MiddlewareHandler,
+  RequestHandler,
+  RouteParams,
+  RouterParams,
+  Middleware,
+};
 
 export {
   BadRequestHttpResponse,
@@ -101,7 +109,6 @@ export {
   controller,
   cookies,
   headers,
-  next,
   params,
   query,
   request,

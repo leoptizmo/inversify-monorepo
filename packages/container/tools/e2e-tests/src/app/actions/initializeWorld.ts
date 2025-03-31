@@ -6,6 +6,7 @@ export function initializeWorld(this: Writable<Partial<InversifyWorld>>): void {
     get: new Map(),
   };
   this.entities = {
+    bindingIdentifiers: new Map(),
     bindings: new Map(),
     containers: new Map(),
   };

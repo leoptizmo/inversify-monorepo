@@ -13,12 +13,7 @@ const defaultWorkspaceProjectConfig: WorkspaceProjectConfig & {
     "{index,cli,main}.{js,cjs,mjs,jsx,ts,cts,mts,tsx}",
     "src/{index,cli,main}.{js,cjs,mjs,jsx,ts,cts,mts,tsx}",
   ],
-  ignoreDependencies: [
-    "@inversifyjs/container-benchmarks",
-    "@inversifyjs/http-benchmarks",
-    "ts-loader",
-    "tslib",
-  ],
+  ignoreDependencies: ["ts-loader", "tslib"],
   project: [
     "**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}!",
     "!vitest.config.stryker.mjs",
@@ -75,6 +70,31 @@ export default {
       project: defaultWorkspaceProjectConfig.project,
     },
     "packages/http/libraries/*": defaultWorkspaceProjectConfig,
+    "packages/http/tools/e2e-tests": {
+      entry: [
+        "config/*.mjs",
+        "src/*/parameters/*.ts",
+        "src/*/step-definitions/*.ts",
+        "src/app/hooks/*.ts",
+      ],
+      ignoreDependencies: [
+        ...defaultWorkspaceProjectConfig.ignoreDependencies,
+        "ts-node",
+      ],
+      project: [...defaultWorkspaceProjectConfig.project, "!config/*"],
+    },
+    "packages/http/tools/http-benchmarks": {
+      entry: [
+        "src/bin/run.ts",
+        "src/k6/scenario/*.ts",
+        "src/scenario-setups/*/*.ts",
+      ],
+      ignoreDependencies: [
+        ...defaultWorkspaceProjectConfig.ignoreDependencies,
+        "ts-node",
+      ],
+      project: defaultWorkspaceProjectConfig.project,
+    },
     "packages/logger": defaultWorkspaceProjectConfig,
   },
 } satisfies KnipConfig;

@@ -91,7 +91,6 @@ describe(controller.name, () => {
           controllerMetadataReflectKey,
           [
             {
-              controllerName: optionsFixture.controllerName,
               path: optionsFixture.path,
               target: targetFixture,
             },
@@ -107,7 +106,6 @@ describe(controller.name, () => {
 
       beforeAll(() => {
         optionsFixture = {
-          controllerName: 'TestController',
           path: '/api',
           scope: 'Singleton',
         };
@@ -136,7 +134,6 @@ describe(controller.name, () => {
           controllerMetadataReflectKey,
           [
             {
-              controllerName: optionsFixture.controllerName,
               path: optionsFixture.path,
               target: targetFixture,
             },

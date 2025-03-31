@@ -172,7 +172,7 @@ describe('interfaces', () => {
           child.bind('unknown').toConstantValue('unknown');
 
           expect(child.get('childProp')).toBe('child');
-          expect(child.get('foo')).toBeTruthy();
+          expect(child.get('foo')).toStrictEqual(new Foo());
         });
       });
 

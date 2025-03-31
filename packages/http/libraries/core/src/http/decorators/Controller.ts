@@ -5,7 +5,7 @@ import {
 import { BindingScope, injectable } from 'inversify';
 
 import { controllerMetadataReflectKey } from '../../reflectMetadata/data/controllerMetadataReflectKey';
-import { ControllerMetadata } from '../models/ControllerMetadata';
+import { ControllerMetadata } from '../../routerExplorer/model/ControllerMetadata';
 import { ControllerOptions } from '../models/ControllerOptions';
 
 export function controller(
@@ -23,7 +23,6 @@ export function controller(
       if (typeof pathOrOptions === 'string') {
         controllerMetadata.path = pathOrOptions;
       } else {
-        controllerMetadata.controllerName = pathOrOptions.controllerName;
         controllerMetadata.path = pathOrOptions.path ?? '/';
         scope = pathOrOptions.scope;
       }

@@ -236,7 +236,9 @@ Binding constraints:
           });
 
           it('should not be able to resolve Ninja', () => {
-            expect(() => container.get(Ninja)).toThrow();
+            expect(() => container.get(Ninja)).toThrow(
+              'No bindings found for service: "Ninja"',
+            );
           });
 
           it('should be able to resolve Samurai', () => {
@@ -249,7 +251,9 @@ Binding constraints:
             });
 
             it('should not be able to resolve Ninja', () => {
-              expect(() => container.get(Ninja)).toThrow();
+              expect(() => container.get(Ninja)).toThrow(
+                'No bindings found for service: "Ninja"',
+              );
             });
 
             it('should be able to resolve Samurai', () => {
@@ -272,7 +276,9 @@ Binding constraints:
                 });
 
                 it('should not be able to resolve Ninja', () => {
-                  expect(() => container.get(Ninja)).toThrow();
+                  expect(() => container.get(Ninja)).toThrow(
+                    'No bindings found for service: "Ninja"',
+                  );
                 });
 
                 it('should be able to resolve Samurai', () => {
