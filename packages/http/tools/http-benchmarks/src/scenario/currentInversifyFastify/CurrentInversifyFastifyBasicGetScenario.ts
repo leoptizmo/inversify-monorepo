@@ -6,7 +6,7 @@ export class CurrentInversifyFastifyBasicGetScenario extends BaseK6Scenario {
     super(
       Platform.currentInversifyFastify,
       'BasicGetScenario.ts',
-      'currentInversifyFastify/setUpCurrentInversifyFastifyBasicGetScenario.js',
+      'currentInversifyFastify/setupBasicGetScenario.js',
     );
   }
 }
