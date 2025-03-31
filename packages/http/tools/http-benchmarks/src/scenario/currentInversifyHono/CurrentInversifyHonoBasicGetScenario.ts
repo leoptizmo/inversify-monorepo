@@ -6,7 +6,7 @@ export class CurrentInversifyHonoBasicGetScenario extends BaseK6Scenario {
     super(
       Platform.currentInversifyHono,
       'BasicGetScenario.ts',
-      'currentInversifyHono/setUpCurrentInversifyHonoBasicGetScenario.js',
+      'currentInversifyHono/setupBasicGetScenario.js',
     );
   }
 }

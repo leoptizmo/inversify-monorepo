@@ -4,9 +4,9 @@ import { Hono } from 'hono';
 import { Container } from 'inversify';
 
 import { DEFAULT_PORT } from '../../constant/defaultPort';
-import { AppController } from '../currentInversify/AppController';
+import { AppController } from '../../scenario/currentInversify/AppController';
 
-async function setUpCurrentInversifyHonoBasicGetScenario(): Promise<void> {
+async function setUp(): Promise<void> {
   const container: Container = new Container({ defaultScope: 'Singleton' });
 
   container.bind(AppController).toSelf();
@@ -26,4 +26,4 @@ async function setUpCurrentInversifyHonoBasicGetScenario(): Promise<void> {
   });
 }
 
-void setUpCurrentInversifyHonoBasicGetScenario();
+void setUp();

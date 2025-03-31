@@ -3,7 +3,7 @@ import { Context, Hono } from 'hono';
 
 import { DEFAULT_PORT } from '../../constant/defaultPort';
 
-async function setUpHonoBasicGetScenario(): Promise<void> {
+async function setUp(): Promise<void> {
   const app: Hono = new Hono();
 
   app.get('/', (ctx: Context) => {
@@ -16,4 +16,4 @@ async function setUpHonoBasicGetScenario(): Promise<void> {
   });
 }
 
-void setUpHonoBasicGetScenario();
+void setUp();

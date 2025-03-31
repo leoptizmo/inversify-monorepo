@@ -6,7 +6,7 @@ export class HonoBasicGetScenario extends BaseK6Scenario {
     super(
       Platform.hono,
       'BasicGetScenario.ts',
-      'hono/setUpHonoBasicGetScenario.js',
+      'hono/setupBasicGetScenario.js',
     );
   }
 }
