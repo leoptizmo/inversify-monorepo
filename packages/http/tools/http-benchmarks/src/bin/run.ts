@@ -10,8 +10,8 @@ import { CurrentInversifyFastifyBasicGetScenario } from '../scenario/currentInve
 import { ExpressBasicGetScenario } from '../scenario/express/ExpressBasicGetScenario';
 import { FastifyBasicGetScenario } from '../scenario/fastify/FastifyBasicGetScenario';
 import { Platform } from '../scenario/models/Platform';
-import { NestJsExpressBasicGetScenario } from '../scenario/nestJSExpress/NestJsExpressBasicGetScenario';
-import { NestJsFastifyBasicGetScenario } from '../scenario/nestJSFastify/NestJsFastifyBasicGetScenario';
+import { NestJsExpressBasicGetScenario } from '../scenario/nestJsExpress/NestJsExpressBasicGetScenario';
+import { NestJsFastifyBasicGetScenario } from '../scenario/nestJsFastify/NestJsFastifyBasicGetScenario';
 
 export async function run(): Promise<void> {
   // Run express basic get request scenarios
