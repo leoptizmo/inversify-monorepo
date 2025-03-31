@@ -45,7 +45,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   protected _buildRouter(
-    routerParams: RouterParams<HonoRequest, Context, Next>,
+    routerParams: RouterParams<HonoRequest, Context, Next, Response>,
   ): void {
     const router: Hono = new Hono();
 
@@ -161,47 +161,44 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     response.header(key, value);
   }
 
-  #buildHonoHandler(handler: RequestHandler<HonoRequest, Context>): Handler {
-    return async (ctx: Context): Promise<Response> => {
-      return handler(ctx.req as HonoRequest, ctx) as Promise<Response>;
-    };
+  #buildHonoHandler(
+    handler: RequestHandler<HonoRequest, Context, Response>,
+  ): Handler {
+    return async (ctx: Context): Promise<Response> =>
+      handler(ctx.req as HonoRequest, ctx);
   }
 
   #buildHonoMiddleware(
-    handler: MiddlewareHandler<HonoRequest, Context, Next>,
+    handler: MiddlewareHandler<HonoRequest, Context, Next, Response>,
   ): HonoMiddlewareHandler {
-    return async (
-      ctx: Context,
-      next: () => Promise<void>,
-    ): Promise<Response> => {
-      return handler(ctx.req as HonoRequest, ctx, next) as Promise<Response>;
-    };
+    return async (ctx: Context, next: () => Promise<void>): Promise<Response> =>
+      handler(ctx.req as HonoRequest, ctx, next);
   }
 
   #buildHonoMiddlewareList(
-    handlers: MiddlewareHandler<HonoRequest, Context, Next>[],
+    handlers: MiddlewareHandler<HonoRequest, Context, Next, Response>[],
   ): HonoMiddlewareHandler[] {
     return handlers.map(
-      (handler: MiddlewareHandler<HonoRequest, Context, Next>) =>
+      (handler: MiddlewareHandler<HonoRequest, Context, Next, Response>) =>
         this.#buildHonoMiddleware(handler),
     );
   }
 
   #buildHonoPostHandlerMiddleware(
-    handler: MiddlewareHandler<HonoRequest, Context, Next>,
+    handler: MiddlewareHandler<HonoRequest, Context, Next, Response>,
   ): HonoMiddlewareHandler {
     return async (ctx: Context, next: Next): Promise<Response> => {
       await next();
 
-      return handler(ctx.req as HonoRequest, ctx, next) as Promise<Response>;
+      return handler(ctx.req as HonoRequest, ctx, next);
     };
   }
 
   #buildHonoPostHandlerMiddlewareList(
-    handlers: MiddlewareHandler<HonoRequest, Context, Next>[],
+    handlers: MiddlewareHandler<HonoRequest, Context, Next, Response>[],
   ): HonoMiddlewareHandler[] {
     return handlers.map(
-      (handler: MiddlewareHandler<HonoRequest, Context, Next>) =>
+      (handler: MiddlewareHandler<HonoRequest, Context, Next, Response>) =>
         this.#buildHonoPostHandlerMiddleware(handler),
     );
   }
