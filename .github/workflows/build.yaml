@@ -100,8 +100,7 @@ jobs:
           ${{ contains(needs.build.outputs.affectedPackages, '@inversifyjs/http-core')}} ||
           ${{ contains(needs.build.outputs.affectedPackages, '@inversifyjs/http-express')}}
         )
-        &&
-        github.event.pull_request.head.repo.fork != true
+        && github.event.pull_request.head.repo.fork != true
       )
     steps:
       - name: Checkout
