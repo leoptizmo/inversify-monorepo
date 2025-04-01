@@ -39,7 +39,7 @@ export interface MultipleResolvedValueMetadataInjectOptions<T>
   extends BaseResolvedValueMetadataInjectOptions<T>,
     BaseMultipleResolvedValueMetadataInjectOptions {}
 
-export interface MultipleOptionalResolvedValueMetadataInjectOptions<T>
+interface MultipleOptionalResolvedValueMetadataInjectOptions<T>
   extends BaseResolvedValueMetadataInjectOptions<T>,
     BaseMultipleResolvedValueMetadataInjectOptions,
     BaseOptionalResolvedValueMetadataInjectOptions {}
