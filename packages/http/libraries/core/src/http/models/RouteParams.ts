@@ -6,22 +6,28 @@ export interface RouteParams<
   TRequest,
   TResponse,
   TNextFunction,
-  TResult = unknown,
+  THandlerResult = unknown,
+  TMiddlewareHandlerResult = void,
 > {
-  guardList: MiddlewareHandler<TRequest, TResponse, TNextFunction, TResult>[];
-  handler: RequestHandler<TRequest, TResponse, TResult>;
+  guardList: MiddlewareHandler<
+    TRequest,
+    TResponse,
+    TNextFunction,
+    TMiddlewareHandlerResult
+  >[];
+  handler: RequestHandler<TRequest, TResponse, THandlerResult>;
   path: string;
   postHandlerMiddlewareList: MiddlewareHandler<
     TRequest,
     TResponse,
     TNextFunction,
-    TResult
+    TMiddlewareHandlerResult
   >[];
   preHandlerMiddlewareList: MiddlewareHandler<
     TRequest,
     TResponse,
     TNextFunction,
-    TResult
+    TMiddlewareHandlerResult
   >[];
   requestMethodType: RequestMethodType;
 }
