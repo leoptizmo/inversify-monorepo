@@ -25,7 +25,8 @@ import { Container } from 'inversify';
 export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   HonoRequest,
   Context,
-  Next
+  Next,
+  Response | undefined
 > {
   readonly #app: Hono;
 
@@ -45,7 +46,12 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   protected _buildRouter(
-    routerParams: RouterParams<HonoRequest, Context, Next, Response>,
+    routerParams: RouterParams<
+      HonoRequest,
+      Context,
+      Next,
+      Response | undefined
+    >,
   ): void {
     const router: Hono = new Hono();
 
@@ -122,7 +128,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     _request: HonoRequest,
     response: Context,
     value: string,
-  ): unknown {
+  ): Response {
     return response.text(value);
   }
 
@@ -130,7 +136,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     _request: HonoRequest,
     response: Context,
     value?: object,
-  ): unknown {
+  ): Response {
     return response.json(value);
   }
 
@@ -138,7 +144,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     _request: HonoRequest,
     response: Context,
     value: Stream,
-  ): unknown {
+  ): Response {
     return stream(response, async (stream: StreamingApi): Promise<void> => {
       await stream.pipe(value as unknown as ReadableStream);
     });
@@ -162,32 +168,56 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildHonoHandler(
-    handler: RequestHandler<HonoRequest, Context, Response>,
+    handler: RequestHandler<HonoRequest, Context, Response | undefined>,
   ): Handler {
-    return async (ctx: Context): Promise<Response> =>
+    return async (ctx: Context): Promise<Response | undefined> =>
       handler(ctx.req as HonoRequest, ctx);
   }
 
   #buildHonoMiddleware(
-    handler: MiddlewareHandler<HonoRequest, Context, Next, Response>,
+    handler: MiddlewareHandler<
+      HonoRequest,
+      Context,
+      Next,
+      Response | undefined
+    >,
   ): HonoMiddlewareHandler {
-    return async (ctx: Context, next: () => Promise<void>): Promise<Response> =>
+    return async (
+      ctx: Context,
+      next: () => Promise<void>,
+    ): Promise<Response | undefined> =>
       handler(ctx.req as HonoRequest, ctx, next);
   }
 
   #buildHonoMiddlewareList(
-    handlers: MiddlewareHandler<HonoRequest, Context, Next, Response>[],
+    handlers: MiddlewareHandler<
+      HonoRequest,
+      Context,
+      Next,
+      Response | undefined
+    >[],
   ): HonoMiddlewareHandler[] {
     return handlers.map(
-      (handler: MiddlewareHandler<HonoRequest, Context, Next, Response>) =>
-        this.#buildHonoMiddleware(handler),
+      (
+        handler: MiddlewareHandler<
+          HonoRequest,
+          Context,
+          Next,
+          Response | undefined
+        >,
+      ) => this.#buildHonoMiddleware(handler),
     );
   }
 
   #buildHonoPostHandlerMiddleware(
-    handler: MiddlewareHandler<HonoRequest, Context, Next, Response>,
+    handler: MiddlewareHandler<
+      HonoRequest,
+      Context,
+      Next,
+      Response | undefined
+    >,
   ): HonoMiddlewareHandler {
-    return async (ctx: Context, next: Next): Promise<Response> => {
+    return async (ctx: Context, next: Next): Promise<Response | undefined> => {
       await next();
 
       return handler(ctx.req as HonoRequest, ctx, next);
@@ -195,11 +225,22 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildHonoPostHandlerMiddlewareList(
-    handlers: MiddlewareHandler<HonoRequest, Context, Next, Response>[],
+    handlers: MiddlewareHandler<
+      HonoRequest,
+      Context,
+      Next,
+      Response | undefined
+    >[],
   ): HonoMiddlewareHandler[] {
     return handlers.map(
-      (handler: MiddlewareHandler<HonoRequest, Context, Next, Response>) =>
-        this.#buildHonoPostHandlerMiddleware(handler),
+      (
+        handler: MiddlewareHandler<
+          HonoRequest,
+          Context,
+          Next,
+          Response | undefined
+        >,
+      ) => this.#buildHonoPostHandlerMiddleware(handler),
     );
   }
 
