@@ -11,6 +11,7 @@ import express, {
   Application,
   NextFunction,
   Request,
+  RequestHandler as ExpressRequestHandler,
   Response,
   Router,
 } from 'express';
@@ -51,7 +52,7 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     >[] = [...routerParams.guardList, ...routerParams.preHandlerMiddlewareList];
 
     if (orderedMiddlewareList.length > 0) {
-      router.use(orderedMiddlewareList);
+      router.use(orderedMiddlewareList as ExpressRequestHandler[]);
     }
 
     for (const routeParams of routerParams.routeParamsList) {
@@ -71,9 +72,9 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
 
       router[routeParams.requestMethodType](
         routeParams.path,
-        ...orderedPreHandlerMiddlewareList,
-        routeParams.handler,
-        ...orderedPostHandlerMiddlewareList,
+        ...(orderedPreHandlerMiddlewareList as ExpressRequestHandler[]),
+        routeParams.handler as ExpressRequestHandler,
+        ...(orderedPostHandlerMiddlewareList as ExpressRequestHandler[]),
       );
     }
 
