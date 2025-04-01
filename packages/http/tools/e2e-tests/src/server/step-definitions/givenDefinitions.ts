@@ -1,4 +1,4 @@
-import http from 'node:http';
+import http, { RequestListener } from 'node:http';
 import { AddressInfo } from 'node:net';
 
 import { Given } from '@cucumber/cucumber';
@@ -20,7 +20,9 @@ async function buildExpressServer(container: Container): Promise<Server> {
   );
 
   const application: express.Application = await adapter.build();
-  const httpServer: http.Server = http.createServer(application);
+  const httpServer: http.Server = http.createServer(
+    application as RequestListener,
+  );
 
   return new Promise<Server>(
     (resolve: (value: Server | PromiseLike<Server>) => void) => {
