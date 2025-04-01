@@ -65,6 +65,8 @@ import {
 import { BindingIdentifier } from './BindingIdentifier';
 import { MapToResolvedValueInjectOptions } from './MapToResolvedValueInjectOptions';
 import {
+  MultipleResolvedValueMetadataInjectOptions,
+  OptionalResolvedValueMetadataInjectOptions,
   ResolvedValueInjectOptions,
   ResolvedValueMetadataInjectTagOptions,
 } from './ResolvedValueInjectOptions';
@@ -314,11 +316,20 @@ export class BindToFluentSyntaxImplementation<T>
           if (isResolvedValueMetadataInjectOptions(injectOption)) {
             return {
               kind:
-                injectOption.isMultiple === true
+                (
+                  injectOption as Partial<
+                    MultipleResolvedValueMetadataInjectOptions<unknown>
+                  >
+                ).isMultiple === true
                   ? ResolvedValueElementMetadataKind.multipleInjection
                   : ResolvedValueElementMetadataKind.singleInjection,
               name: injectOption.name,
-              optional: injectOption.optional ?? false,
+              optional:
+                (
+                  injectOption as Partial<
+                    OptionalResolvedValueMetadataInjectOptions<unknown>
+                  >
+                ).optional ?? false,
               tags: new Map<MetadataTag, unknown>(
                 (injectOption.tags ?? []).map(
                   (tag: ResolvedValueMetadataInjectTagOptions) => [
