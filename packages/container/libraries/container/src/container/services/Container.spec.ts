@@ -3090,4 +3090,122 @@ describe(Container.name, () => {
       });
     });
   });
+
+  describe('.unloadSync', () => {
+    let syncContainerModuleFixture: ContainerModule;
+    let asyncContainerModuleFixture: ContainerModule;
+
+    beforeAll(() => {
+      syncContainerModuleFixture = {
+        id: 2,
+      } as Partial<ContainerModule> as ContainerModule;
+
+      asyncContainerModuleFixture = {
+        id: 3,
+      } as Partial<ContainerModule> as ContainerModule;
+    });
+
+    describe('when called, and resolveModuleDeactivations() returns undefined', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        vitest
+          .mocked(resolveModuleDeactivations)
+          .mockReturnValueOnce(undefined);
+
+        result = new Container().unloadSync(syncContainerModuleFixture);
+      });
+
+      afterAll(() => {
+        vitest.clearAllMocks();
+      });
+
+      it('should call resolveModuleDeactivations', () => {
+        const expectedParams: DeactivationParams = {
+          getBindings: expect.any(Function) as unknown as <TInstance>(
+            serviceIdentifier: ServiceIdentifier<TInstance>,
+          ) => Binding<TInstance>[] | undefined,
+          getBindingsFromModule: expect.any(Function) as unknown as <TInstance>(
+            moduleId: number,
+          ) => Binding<TInstance>[] | undefined,
+          getClassMetadata: expect.any(Function) as unknown as (
+            type: Newable,
+          ) => ClassMetadata,
+          getDeactivations: expect.any(Function) as unknown as <TActivated>(
+            serviceIdentifier: ServiceIdentifier<TActivated>,
+          ) => Iterable<BindingDeactivation<TActivated>> | undefined,
+        };
+
+        expect(resolveModuleDeactivations).toHaveBeenCalledTimes(1);
+        expect(resolveModuleDeactivations).toHaveBeenCalledWith(
+          expectedParams,
+          syncContainerModuleFixture.id,
+        );
+      });
+
+      it('should call planResultCacheService.clearCache()', () => {
+        expect(clearCacheMock).toHaveBeenCalledTimes(1);
+        expect(clearCacheMock).toHaveBeenCalledWith();
+      });
+
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
+      });
+    });
+
+    describe('when called, and resolveModuleDeactivations() returns Promise', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        vitest
+          .mocked(resolveModuleDeactivations)
+          .mockResolvedValueOnce(undefined);
+
+        try {
+          new Container().unloadSync(asyncContainerModuleFixture);
+        } catch (error: unknown) {
+          result = error;
+        }
+      });
+
+      afterAll(() => {
+        vitest.clearAllMocks();
+      });
+
+      it('should call resolveModuleDeactivations', () => {
+        const expectedParams: DeactivationParams = {
+          getBindings: expect.any(Function) as unknown as <TInstance>(
+            serviceIdentifier: ServiceIdentifier<TInstance>,
+          ) => Binding<TInstance>[] | undefined,
+          getBindingsFromModule: expect.any(Function) as unknown as <TInstance>(
+            moduleId: number,
+          ) => Binding<TInstance>[] | undefined,
+          getClassMetadata: expect.any(Function) as unknown as (
+            type: Newable,
+          ) => ClassMetadata,
+          getDeactivations: expect.any(Function) as unknown as <TActivated>(
+            serviceIdentifier: ServiceIdentifier<TActivated>,
+          ) => Iterable<BindingDeactivation<TActivated>> | undefined,
+        };
+
+        expect(resolveModuleDeactivations).toHaveBeenCalledTimes(1);
+        expect(resolveModuleDeactivations).toHaveBeenCalledWith(
+          expectedParams,
+          asyncContainerModuleFixture.id,
+        );
+      });
+
+      it('should throw InversifyContainerError', () => {
+        const expectedErrorProperties: Partial<InversifyContainerError> = {
+          kind: InversifyContainerErrorKind.invalidOperation,
+          message:
+            'Unexpected asyncronous module unload. Consider using Container.unload() instead.',
+        };
+
+        expect(result).toStrictEqual(
+          expect.objectContaining(expectedErrorProperties),
+        );
+      });
+    });
+  });
 });
