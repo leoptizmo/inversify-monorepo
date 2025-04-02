@@ -5,6 +5,7 @@ import { Then } from '@cucumber/cucumber';
 import { InversifyHttpWorld } from '../../common/models/InversifyHttpWorld';
 import { getServerResponseOrFail } from '../../server/calculations/getServerResponseOrFail';
 import { WarriorCreationResponse } from '../models/WarriorCreationResponse';
+import { WarriorCreationResponseType } from '../models/WarriorCreationResponseType';
 import { WarriorWithId } from '../models/WarriorWithId';
 
 async function thenResponseStatusCodeIsOkIsh(
@@ -46,7 +47,7 @@ async function thenResponseContainsTheCorrectBodyData(
     (await response.json()) as WarriorCreationResponse;
 
   assert(warriorCreationResponse.name === 'Samurai');
-  assert(warriorCreationResponse.type === 'Melee');
+  assert(warriorCreationResponse.type === WarriorCreationResponseType.Melee);
 }
 
 Then<InversifyHttpWorld>(

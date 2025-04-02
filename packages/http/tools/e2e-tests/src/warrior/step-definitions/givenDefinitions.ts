@@ -34,6 +34,7 @@ import { WarriorsPutBodyNamedController } from '../controllers/WarriorsPutBodyNa
 import { WarriorsPutController } from '../controllers/WarriorsPutController';
 import { WarriorsPutParamsController } from '../controllers/WarriorsPutParamsController';
 import { WarriorsPutParamsNamedController } from '../controllers/WarriorsPutParamsNamedController';
+import { WarriorCreationResponseType } from '../models/WarriorCreationResponseType';
 import { WarriorRequest } from '../models/WarriorRequest';
 
 function getMethodWarriorController(method: HttpMethod): NewableFunction {
@@ -173,7 +174,7 @@ function givenWarriorRequestWithBodyForServer(
 
   const warriorRequest: WarriorRequest = {
     name: 'Samurai',
-    type: 'Melee',
+    type: WarriorCreationResponseType.Melee,
   };
 
   const requestInit: RequestInit = {

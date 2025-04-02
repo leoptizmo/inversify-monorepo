@@ -1,6 +1,7 @@
 import { body, controller, POST } from '@inversifyjs/http-core';
 
 import { WarriorCreationResponse } from '../models/WarriorCreationResponse';
+import { WarriorCreationResponseType } from '../models/WarriorCreationResponseType';
 
 @controller('/warriors')
 export class WarriorsPostBodyNamedController {
@@ -14,7 +15,7 @@ export class WarriorsPostBodyNamedController {
       name: name,
       range: 1,
       speed: 10,
-      type: 'Melee',
+      type: WarriorCreationResponseType.Melee,
     };
   }
 }
