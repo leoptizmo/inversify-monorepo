@@ -405,5 +405,5 @@ export abstract class InversifyHttpAdapter<
 
   protected abstract _buildRouter(
     routerParams: RouterParams<TRequest, TResponse, TNextFunction, TResult>,
-  ): unknown;
+  ): void | Promise<void>;
 }
