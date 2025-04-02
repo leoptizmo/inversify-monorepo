@@ -1,5 +1,6 @@
-import { InversifyExpressHttpAdapter } from '@inversifyjs/http-express';
-import { Application } from 'express';
+import { serve } from '@hono/node-server';
+import { InversifyHonoHttpAdapter } from '@inversifyjs/http-hono';
+import { Hono } from 'hono';
 import { Container } from 'inversify';
 
 import { DEFAULT_PORT } from '../../constant/defaultPort';
@@ -10,16 +11,19 @@ async function setUp(): Promise<void> {
 
   container.bind(AppController).toSelf();
 
-  const server: InversifyExpressHttpAdapter = new InversifyExpressHttpAdapter(
+  const adapter: InversifyHonoHttpAdapter = new InversifyHonoHttpAdapter(
     container,
     {
       logger: false,
     },
   );
 
-  const app: Application = await server.build();
+  const app: Hono = await adapter.build();
 
-  app.listen(DEFAULT_PORT);
+  serve({
+    fetch: app.fetch,
+    port: DEFAULT_PORT,
+  });
 }
 
 void setUp();
