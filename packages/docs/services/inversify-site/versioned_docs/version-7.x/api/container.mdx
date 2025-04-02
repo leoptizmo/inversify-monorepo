@@ -132,6 +132,14 @@ load(...modules: ContainerModule[]): Promise<void>;
 
 Calls the registration method of each module. See [ContainerModule API docs](./container-module.mdx).
 
+## loadSync
+
+```ts
+loadSync(...modules: ContainerModule[]): void;
+```
+
+Synchronous version of `load`. Calls the registration method of each module. Will throw an error if any module loading would be asynchronous. See [ContainerModule API docs](./container-module.mdx).
+
 ## onActivation
 
 ```ts
@@ -222,7 +230,6 @@ Removes bindings from the container synchronously. This method works like `unbin
 
 <CodeBlock language="ts">{containerApiUnbindSyncSource}</CodeBlock>
 
-
 ## unload
 
 ```ts
@@ -230,6 +237,15 @@ unload(...modules: ContainerModule[]): Promise<void>;
 ```
 
 Removes bindings and handlers added by the modules. This will result in the [deactivation process](../fundamentals/lifecycle/deactivation.mdx).
+See [ContainerModule API docs](./container-module.mdx).
+
+## unloadSync
+
+```ts
+unloadSync(...modules: ContainerModule[]): void;
+```
+
+Synchronous version of `unload`. Removes bindings and handlers added by the modules. Will throw an error if any module unloading would be asynchronous. This will result in the [deactivation process](../fundamentals/lifecycle/deactivation.mdx).
 See [ContainerModule API docs](./container-module.mdx).
 
 ## GetOptions

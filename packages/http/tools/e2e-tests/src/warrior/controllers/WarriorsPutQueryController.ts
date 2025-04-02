@@ -1,0 +1,19 @@
+import { controller, PUT, query } from '@inversifyjs/http-core';
+
+import { WarriorWithQuery } from '../models/WarriorWithQuery';
+
+@controller('/warriors')
+export class WarriorsPutQueryController {
+  @PUT()
+  public async putWarrior(
+    @query() queryParams: { filter: string },
+  ): Promise<WarriorWithQuery> {
+    return {
+      damage: 10,
+      filter: queryParams.filter,
+      health: 100,
+      range: 1,
+      speed: 10,
+    };
+  }
+}

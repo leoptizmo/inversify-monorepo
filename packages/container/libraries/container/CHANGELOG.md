@@ -1,5 +1,23 @@
 # @inversifyjs/container
 
+## 1.9.0
+
+### Minor Changes
+
+- 61e2502: Updated `Container` with `unloadSync`
+- 0695587: Updated `Container` with `loadSync`
+
+## 1.8.0
+
+### Minor Changes
+
+- dff4be4: Updated `ContainerModuleLoadOptions` with `rebind`
+- dff4be4: Updated `ContainerModuleLoadOptions` with `rebindSync`
+
+### Patch Changes
+
+- 3b11f02: Updated `BindToFluentSyntax.toResolvedValue` with additional type constraints
+
 ## 1.7.0
 
 ### Minor Changes
