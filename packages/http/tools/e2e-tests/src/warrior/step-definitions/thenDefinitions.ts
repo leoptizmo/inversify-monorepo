@@ -4,9 +4,23 @@ import { Then } from '@cucumber/cucumber';
 
 import { InversifyHttpWorld } from '../../common/models/InversifyHttpWorld';
 import { getServerResponseOrFail } from '../../server/calculations/getServerResponseOrFail';
+import { WarriorCreationResponse } from '../models/WarriorCreationResponse';
 import { WarriorWithId } from '../models/WarriorWithId';
 
-async function thenResponseContainsTheCorrectUrlParametersByName(
+async function thenResponseStatusCodeIsOkIsh(
+  this: InversifyHttpWorld,
+  responseAlias?: string,
+): Promise<void> {
+  const parsedResponseAlias: string = responseAlias ?? 'default';
+  const response: Response =
+    getServerResponseOrFail.bind(this)(parsedResponseAlias);
+  const responseStatus: number = response.status;
+
+  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+  assert(responseStatus >= 200 && responseStatus < 300);
+}
+
+async function thenResponseContainsTheCorrectUrlParameters(
   this: InversifyHttpWorld,
   responseAlias?: string,
 ): Promise<void> {
@@ -17,31 +31,41 @@ async function thenResponseContainsTheCorrectUrlParametersByName(
 
   const warriorWithId: WarriorWithId = (await response.json()) as WarriorWithId;
 
-  assert.ok(warriorWithId.id === '123');
+  assert(warriorWithId.id === '123');
 }
 
-function thenResponseStatusCodeIsSuccessful(
+async function thenResponseContainsTheCorrectBodyData(
   this: InversifyHttpWorld,
   responseAlias?: string,
-): void {
+): Promise<void> {
   const parsedResponseAlias: string = responseAlias ?? 'default';
-
   const response: Response =
     getServerResponseOrFail.bind(this)(parsedResponseAlias);
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-  assert.ok(response.status >= 200 && response.status < 300);
+
+  const warriorCreationResponse: WarriorCreationResponse =
+    (await response.json()) as WarriorCreationResponse;
+
+  assert(warriorCreationResponse.name === 'Samurai');
+  assert(warriorCreationResponse.type === 'Melee');
 }
 
 Then<InversifyHttpWorld>(
   'the response status code is Ok-ish',
-  function (): void {
-    thenResponseStatusCodeIsSuccessful.bind(this)();
+  async function (this: InversifyHttpWorld): Promise<void> {
+    await thenResponseStatusCodeIsOkIsh.bind(this)();
   },
 );
 
 Then<InversifyHttpWorld>(
   'the response contains the correct URL parameters',
   async function (this: InversifyHttpWorld): Promise<void> {
-    await thenResponseContainsTheCorrectUrlParametersByName.bind(this)();
+    await thenResponseContainsTheCorrectUrlParameters.bind(this)();
+  },
+);
+
+Then<InversifyHttpWorld>(
+  'the response contains the correct body data',
+  async function (this: InversifyHttpWorld): Promise<void> {
+    await thenResponseContainsTheCorrectBodyData.bind(this)();
   },
 );
