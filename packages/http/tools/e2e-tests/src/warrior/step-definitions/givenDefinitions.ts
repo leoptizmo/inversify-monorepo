@@ -9,19 +9,31 @@ import { setServerRequest } from '../../server/actions/setServerRequest';
 import { getServerOrFail } from '../../server/calculations/getServerOrFail';
 import { Server } from '../../server/models/Server';
 import { WarriorsDeleteController } from '../controllers/WarriorsDeleteController';
+import { WarriorsDeleteHeadersController } from '../controllers/WarriorsDeleteHeadersController';
+import { WarriorsDeleteHeadersNamedController } from '../controllers/WarriorsDeleteHeadersNamedController';
 import { WarriorsDeleteParamsController } from '../controllers/WarriorsDeleteParamsController';
 import { WarriorsDeleteParamsNamedController } from '../controllers/WarriorsDeleteParamsNamedController';
 import { WarriorsGetController } from '../controllers/WarriorsGetController';
+import { WarriorsGetHeadersController } from '../controllers/WarriorsGetHeadersController';
+import { WarriorsGetHeadersNamedController } from '../controllers/WarriorsGetHeadersNamedController';
 import { WarriorsGetParamsController } from '../controllers/WarriorsGetParamsController';
 import { WarriorsGetParamsNamedController } from '../controllers/WarriorsGetParamsNamedController';
 import { WarriorsOptionsController } from '../controllers/WarriorsOptionsController';
+import { WarriorsOptionsHeadersController } from '../controllers/WarriorsOptionsHeadersController';
+import { WarriorsOptionsHeadersNamedController } from '../controllers/WarriorsOptionsHeadersNamedController';
 import { WarriorsPatchController } from '../controllers/WarriorsPatchController';
+import { WarriorsPatchHeadersController } from '../controllers/WarriorsPatchHeadersController';
+import { WarriorsPatchHeadersNamedController } from '../controllers/WarriorsPatchHeadersNamedController';
 import { WarriorsPatchParamsController } from '../controllers/WarriorsPatchParamsController';
 import { WarriorsPatchParamsNamedController } from '../controllers/WarriorsPatchParamsNamedController';
 import { WarriorsPostController } from '../controllers/WarriorsPostController';
+import { WarriorsPostHeadersController } from '../controllers/WarriorsPostHeadersController';
+import { WarriorsPostHeadersNamedController } from '../controllers/WarriorsPostHeadersNamedController';
 import { WarriorsPostParamsController } from '../controllers/WarriorsPostParamsController';
 import { WarriorsPostParamsNamedController } from '../controllers/WarriorsPostParamsNamedController';
 import { WarriorsPutController } from '../controllers/WarriorsPutController';
+import { WarriorsPutHeadersController } from '../controllers/WarriorsPutHeadersController';
+import { WarriorsPutHeadersNamedController } from '../controllers/WarriorsPutHeadersNamedController';
 import { WarriorsPutParamsController } from '../controllers/WarriorsPutParamsController';
 import { WarriorsPutParamsNamedController } from '../controllers/WarriorsPutParamsNamedController';
 
@@ -78,6 +90,44 @@ function getMethodWarriorParamsNamedController(
   }
 }
 
+function getMethodWarriorHeadersController(
+  method: HttpMethod,
+): NewableFunction {
+  switch (method) {
+    case HttpMethod.delete:
+      return WarriorsDeleteHeadersController;
+    case HttpMethod.get:
+      return WarriorsGetHeadersController;
+    case HttpMethod.options:
+      return WarriorsOptionsHeadersController;
+    case HttpMethod.patch:
+      return WarriorsPatchHeadersController;
+    case HttpMethod.post:
+      return WarriorsPostHeadersController;
+    case HttpMethod.put:
+      return WarriorsPutHeadersController;
+  }
+}
+
+function getMethodWarriorHeadersNamedController(
+  method: HttpMethod,
+): NewableFunction {
+  switch (method) {
+    case HttpMethod.delete:
+      return WarriorsDeleteHeadersNamedController;
+    case HttpMethod.get:
+      return WarriorsGetHeadersNamedController;
+    case HttpMethod.options:
+      return WarriorsOptionsHeadersNamedController;
+    case HttpMethod.patch:
+      return WarriorsPatchHeadersNamedController;
+    case HttpMethod.post:
+      return WarriorsPostHeadersNamedController;
+    case HttpMethod.put:
+      return WarriorsPutHeadersNamedController;
+  }
+}
+
 function givenWarriorRequestForServer(
   this: InversifyHttpWorld,
   method: HttpMethod,
@@ -110,6 +160,29 @@ function givenWarriorRequestWithParamsForServer(
   const url: string = `http://${server.host}:${server.port.toString()}/warriors/123`;
 
   const requestInit: RequestInit = {
+    method,
+  };
+
+  const request: Request = new Request(url, requestInit);
+
+  setServerRequest.bind(this)(parsedServerAlias, request);
+}
+
+function givenWarriorRequestWithHeadersForServer(
+  this: InversifyHttpWorld,
+  method: HttpMethod,
+  serverAlias?: string,
+): void {
+  const parsedServerAlias: string = serverAlias ?? defaultAlias;
+
+  const server: Server = getServerOrFail.bind(this)(parsedServerAlias);
+
+  const url: string = `http://${server.host}:${server.port.toString()}/warriors`;
+
+  const requestInit: RequestInit = {
+    headers: {
+      'x-test-header': 'test-value',
+    },
     method,
   };
 
@@ -164,6 +237,37 @@ function givenWarriorParamsNamedControllerForContainer(
   container.bind(controller).toSelf().inSingletonScope();
 }
 
+function givenWarriorHeadersControllerForContainer(
+  this: InversifyHttpWorld,
+  method: HttpMethod,
+  containerAlias?: string,
+): void {
+  const parsedContainerAlias: string = containerAlias ?? defaultAlias;
+
+  const container: Container =
+    getContainerOrFail.bind(this)(parsedContainerAlias);
+
+  const controller: NewableFunction = getMethodWarriorHeadersController(method);
+
+  container.bind(controller).toSelf().inSingletonScope();
+}
+
+function givenWarriorHeadersNamedControllerForContainer(
+  this: InversifyHttpWorld,
+  method: HttpMethod,
+  containerAlias?: string,
+): void {
+  const parsedContainerAlias: string = containerAlias ?? defaultAlias;
+
+  const container: Container =
+    getContainerOrFail.bind(this)(parsedContainerAlias);
+
+  const controller: NewableFunction =
+    getMethodWarriorHeadersNamedController(method);
+
+  container.bind(controller).toSelf().inSingletonScope();
+}
+
 Given<InversifyHttpWorld>(
   'a "{httpMethod}" warrior controller for container',
   function (this: InversifyHttpWorld, httpMethod: HttpMethod): void {
@@ -186,6 +290,20 @@ Given<InversifyHttpWorld>(
 );
 
 Given<InversifyHttpWorld>(
+  'a warrior controller with headers decorator without parameter name for "{httpMethod}" method',
+  function (this: InversifyHttpWorld, httpMethod: HttpMethod): void {
+    givenWarriorHeadersControllerForContainer.bind(this)(httpMethod);
+  },
+);
+
+Given<InversifyHttpWorld>(
+  'a warrior controller with headers decorator with parameter name for "{httpMethod}" method',
+  function (this: InversifyHttpWorld, httpMethod: HttpMethod): void {
+    givenWarriorHeadersNamedControllerForContainer.bind(this)(httpMethod);
+  },
+);
+
+Given<InversifyHttpWorld>(
   'a "{httpMethod}" warriors HTTP request',
   function (this: InversifyHttpWorld, httpMethod: HttpMethod): void {
     givenWarriorRequestForServer.bind(this)(httpMethod);
@@ -196,5 +314,12 @@ Given<InversifyHttpWorld>(
   'a "{httpMethod}" warriors HTTP request with parameters',
   function (this: InversifyHttpWorld, httpMethod: HttpMethod): void {
     givenWarriorRequestWithParamsForServer.bind(this)(httpMethod);
+  },
+);
+
+Given<InversifyHttpWorld>(
+  'a "{httpMethod}" warriors HTTP request with headers',
+  function (this: InversifyHttpWorld, httpMethod: HttpMethod): void {
+    givenWarriorRequestWithHeadersForServer.bind(this)(httpMethod);
   },
 );

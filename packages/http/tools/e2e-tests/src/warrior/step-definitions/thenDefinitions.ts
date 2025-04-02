@@ -20,6 +20,22 @@ async function thenResponseContainsTheCorrectUrlParametersByName(
   assert.ok(warriorWithId.id === '123');
 }
 
+async function thenResponseContainsTheCorrectHeadersInformation(
+  this: InversifyHttpWorld,
+  responseAlias?: string,
+): Promise<void> {
+  const parsedResponseAlias: string = responseAlias ?? 'default';
+
+  const response: Response =
+    getServerResponseOrFail.bind(this)(parsedResponseAlias);
+
+  const responseBody: Record<string, string> =
+    (await response.json()) as Record<string, string>;
+
+  assert.ok(responseBody['x-test-header'] !== undefined);
+  assert.strictEqual(responseBody['x-test-header'], 'test-value');
+}
+
 function thenResponseStatusCodeIsSuccessful(
   this: InversifyHttpWorld,
   responseAlias?: string,
@@ -43,5 +59,12 @@ Then<InversifyHttpWorld>(
   'the response contains the correct URL parameters',
   async function (this: InversifyHttpWorld): Promise<void> {
     await thenResponseContainsTheCorrectUrlParametersByName.bind(this)();
+  },
+);
+
+Then<InversifyHttpWorld>(
+  'the response contains the correct headers information',
+  async function (this: InversifyHttpWorld): Promise<void> {
+    await thenResponseContainsTheCorrectHeadersInformation.bind(this)();
   },
 );
