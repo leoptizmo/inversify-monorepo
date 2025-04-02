@@ -12,6 +12,7 @@ The query decorator allows extracting query parameters from URL
         And a <server_kind> server from container
         And a <method> warriors HTTP request with query parameters
         When the request is send
+        Then the response status code is Ok-ish
         Then the response contains the correct URL query parameters
 
         Examples:
@@ -29,6 +30,7 @@ The query decorator allows extracting query parameters from URL
         And a <server_kind> server from container
         And a <method> warriors HTTP request with query parameters
         When the request is send
+        Then the response status code is Ok-ish
         Then the response contains the correct URL query parameters
 
         Examples:
@@ -38,4 +40,4 @@ The query decorator allows extracting query parameters from URL
           | "express"   | "OPTIONS"  |
           | "express"   | "PATCH"    |
           | "express"   | "POST"     |
-          | "express"   | "PUT"      | 
+          | "express"   | "PUT"      |
