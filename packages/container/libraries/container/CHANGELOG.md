@@ -1,5 +1,12 @@
 # @inversifyjs/container
 
+## 1.9.0
+
+### Minor Changes
+
+- 61e2502: Updated `Container` with `unloadSync`
+- 0695587: Updated `Container` with `loadSync`
+
 ## 1.8.0
 
 ### Minor Changes
