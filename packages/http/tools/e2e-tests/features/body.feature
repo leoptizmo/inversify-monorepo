@@ -12,6 +12,7 @@ The body decorator allows extracting the body from HTTP requests
         And a <server_kind> server from container
         And a <method> warriors HTTP request with body
         When the request is send
+        Then the response status code is Ok-ish
         Then the response contains the correct body data
 
         Examples:
@@ -28,6 +29,7 @@ The body decorator allows extracting the body from HTTP requests
         And a <server_kind> server from container
         And a <method> warriors HTTP request with body
         When the request is send
+        Then the response status code is Ok-ish
         Then the response contains the correct body data
 
         Examples:
