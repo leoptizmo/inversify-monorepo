@@ -1635,26 +1635,31 @@ describe(Container.name, () => {
   });
 
   describe('.load', () => {
-    let containerModuleMock: Mocked<ContainerModule>;
+    let asyncContainerModuleMock: Mocked<ContainerModule>;
+    let syncContainerModuleMock: Mocked<ContainerModule>;
 
     beforeAll(() => {
-      containerModuleMock = {
-        load: vitest.fn(),
+      asyncContainerModuleMock = {
+        load: vitest.fn().mockResolvedValue(undefined),
+      } as Partial<Mocked<ContainerModule>> as Mocked<ContainerModule>;
+
+      syncContainerModuleMock = {
+        load: vitest.fn().mockReturnValue(undefined),
       } as Partial<Mocked<ContainerModule>> as Mocked<ContainerModule>;
     });
 
-    describe('when called', () => {
+    describe('when called with an async module', () => {
       let result: unknown;
 
       beforeAll(async () => {
-        result = await new Container().load(containerModuleMock);
+        result = await new Container().load(asyncContainerModuleMock);
       });
 
       afterAll(() => {
         vitest.clearAllMocks();
       });
 
-      it('should call containerModuler.load', () => {
+      it('should call containerModule.load', () => {
         const options: ContainerModuleLoadOptions = {
           bind: expect.any(Function) as unknown as <T>(
             serviceIdentifier: ServiceIdentifier<T>,
@@ -1685,12 +1690,193 @@ describe(Container.name, () => {
           ) => void,
         };
 
-        expect(containerModuleMock.load).toHaveBeenCalledTimes(1);
-        expect(containerModuleMock.load).toHaveBeenCalledWith(options);
+        expect(asyncContainerModuleMock.load).toHaveBeenCalledTimes(1);
+        expect(asyncContainerModuleMock.load).toHaveBeenCalledWith(options);
       });
 
       it('should return undefined', () => {
         expect(result).toBeUndefined();
+      });
+    });
+
+    describe('when called with a sync module', () => {
+      let result: unknown;
+
+      beforeAll(async () => {
+        result = await new Container().load(syncContainerModuleMock);
+      });
+
+      afterAll(() => {
+        vitest.clearAllMocks();
+      });
+
+      it('should call containerModule.load', () => {
+        const options: ContainerModuleLoadOptions = {
+          bind: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+          ) => BindToFluentSyntax<T>,
+          isBound: expect.any(Function) as unknown as (
+            serviceIdentifier: ServiceIdentifier,
+            options?: IsBoundOptions,
+          ) => boolean,
+          onActivation: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+            activation: BindingActivation<T>,
+          ) => void,
+          onDeactivation: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+            activation: BindingDeactivation<T>,
+          ) => void,
+          rebind: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+          ) => Promise<BindToFluentSyntax<T>>,
+          rebindSync: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+          ) => BindToFluentSyntax<T>,
+          unbind: expect.any(Function) as unknown as (
+            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
+          ) => Promise<void>,
+          unbindSync: expect.any(Function) as unknown as (
+            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
+          ) => void,
+        };
+
+        expect(syncContainerModuleMock.load).toHaveBeenCalledTimes(1);
+        expect(syncContainerModuleMock.load).toHaveBeenCalledWith(options);
+      });
+
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe('.loadSync', () => {
+    let syncContainerModuleMock: Mocked<ContainerModule>;
+    let asyncContainerModuleMock: Mocked<ContainerModule>;
+
+    beforeAll(() => {
+      syncContainerModuleMock = {
+        load: vitest.fn().mockReturnValue(undefined),
+      } as Partial<Mocked<ContainerModule>> as Mocked<ContainerModule>;
+
+      asyncContainerModuleMock = {
+        load: vitest.fn().mockResolvedValue(undefined),
+      } as Partial<Mocked<ContainerModule>> as Mocked<ContainerModule>;
+    });
+
+    describe('when called with a sync module', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        result = new Container().loadSync(syncContainerModuleMock);
+      });
+
+      afterAll(() => {
+        vitest.clearAllMocks();
+      });
+
+      it('should call containerModule.load', () => {
+        const options: ContainerModuleLoadOptions = {
+          bind: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+          ) => BindToFluentSyntax<T>,
+          isBound: expect.any(Function) as unknown as (
+            serviceIdentifier: ServiceIdentifier,
+            options?: IsBoundOptions,
+          ) => boolean,
+          onActivation: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+            activation: BindingActivation<T>,
+          ) => void,
+          onDeactivation: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+            activation: BindingDeactivation<T>,
+          ) => void,
+          rebind: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+          ) => Promise<BindToFluentSyntax<T>>,
+          rebindSync: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+          ) => BindToFluentSyntax<T>,
+          unbind: expect.any(Function) as unknown as (
+            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
+          ) => Promise<void>,
+          unbindSync: expect.any(Function) as unknown as (
+            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
+          ) => void,
+        };
+
+        expect(syncContainerModuleMock.load).toHaveBeenCalledTimes(1);
+        expect(syncContainerModuleMock.load).toHaveBeenCalledWith(options);
+      });
+
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
+      });
+    });
+
+    describe('when called with an async module', () => {
+      let result: unknown;
+
+      beforeAll(() => {
+        try {
+          new Container().loadSync(asyncContainerModuleMock);
+        } catch (error: unknown) {
+          result = error;
+        }
+      });
+
+      afterAll(() => {
+        vitest.clearAllMocks();
+      });
+
+      it('should call containerModule.load', () => {
+        const options: ContainerModuleLoadOptions = {
+          bind: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+          ) => BindToFluentSyntax<T>,
+          isBound: expect.any(Function) as unknown as (
+            serviceIdentifier: ServiceIdentifier,
+            options?: IsBoundOptions,
+          ) => boolean,
+          onActivation: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+            activation: BindingActivation<T>,
+          ) => void,
+          onDeactivation: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+            activation: BindingDeactivation<T>,
+          ) => void,
+          rebind: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+          ) => Promise<BindToFluentSyntax<T>>,
+          rebindSync: expect.any(Function) as unknown as <T>(
+            serviceIdentifier: ServiceIdentifier<T>,
+          ) => BindToFluentSyntax<T>,
+          unbind: expect.any(Function) as unknown as (
+            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
+          ) => Promise<void>,
+          unbindSync: expect.any(Function) as unknown as (
+            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
+          ) => void,
+        };
+
+        expect(asyncContainerModuleMock.load).toHaveBeenCalledTimes(1);
+        expect(asyncContainerModuleMock.load).toHaveBeenCalledWith(options);
+      });
+
+      it('should throw an InversifyContainerError', () => {
+        const expectedErrorProperties: Partial<InversifyContainerError> = {
+          kind: InversifyContainerErrorKind.invalidOperation,
+          message:
+            'Unexpected asyncronous module load. Consider using Container.load() instead.',
+        };
+
+        expect(result).toBeInstanceOf(InversifyContainerError);
+        expect(result).toStrictEqual(
+          expect.objectContaining(expectedErrorProperties),
+        );
       });
     });
   });

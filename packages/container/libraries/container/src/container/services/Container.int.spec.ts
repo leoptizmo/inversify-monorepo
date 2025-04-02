@@ -201,6 +201,39 @@ Binding constraints:
           arsenal.guns.forEach((gun: Gun) => expect(gun).toBeInstanceOf(Gun));
         });
       });
+
+      describe('when container.get is called twice and gun binding is added using a ContainerModule with loadSync in the middle', () => {
+        let container: Container;
+        let arsenal: Arsenal;
+
+        beforeAll(() => {
+          container = new Container();
+
+          container.bind(Arsenal).to(Arsenal);
+
+          // First call to get Arsenal
+          container.get(Arsenal);
+
+          // Create and load a ContainerModule to bind Gun
+          const module: ContainerModule = new ContainerModule(
+            ({ bind }: ContainerModuleLoadOptions) => {
+              bind(Gun).to(Gun);
+            },
+          );
+
+          container.loadSync(module);
+
+          // Second call to get Arsenal
+          arsenal = container.get(Arsenal);
+        });
+
+        it('should provide an arsenal with one gun', () => {
+          expect(arsenal).toBeInstanceOf(Arsenal);
+          expect(arsenal.guns).toHaveLength(1);
+
+          arsenal.guns.forEach((gun: Gun) => expect(gun).toBeInstanceOf(Gun));
+        });
+      });
     });
   });
 
