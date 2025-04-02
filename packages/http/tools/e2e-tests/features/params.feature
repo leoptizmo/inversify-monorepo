@@ -36,4 +36,4 @@ The params decorator allows extracting parameters from URL
           | "express"   | "GET"    |
           | "express"   | "PATCH"  |
           | "express"   | "POST"   |
-          | "express"   | "PUT"    | 
+          | "express"   | "PUT"    |
