@@ -40,4 +40,4 @@ The headers decorator allows extracting headers from the HTTP request
           | "express"   | "OPTIONS" |
           | "express"   | "PATCH"   |
           | "express"   | "POST"    |
-          | "express"   | "PUT"     | 
+          | "express"   | "PUT"     |
