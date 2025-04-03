@@ -36,6 +36,22 @@ async function thenResponseContainsTheCorrectUrlQueryParametersByName(
   assert.ok(warriorWithQuery.filter === 'test');
 }
 
+async function thenResponseContainsTheCorrectHeadersInformation(
+  this: InversifyHttpWorld,
+  responseAlias?: string,
+): Promise<void> {
+  const parsedResponseAlias: string = responseAlias ?? 'default';
+
+  const response: Response =
+    getServerResponseOrFail.bind(this)(parsedResponseAlias);
+
+  const responseBody: Record<string, string> =
+    (await response.json()) as Record<string, string>;
+
+  assert.ok(responseBody['x-test-header'] !== undefined);
+  assert.strictEqual(responseBody['x-test-header'], 'test-value');
+}
+
 function thenResponseStatusCodeIsSuccessful(
   this: InversifyHttpWorld,
   responseAlias?: string,
@@ -66,5 +82,12 @@ Then<InversifyHttpWorld>(
   'the response contains the correct URL query parameters',
   async function (this: InversifyHttpWorld): Promise<void> {
     await thenResponseContainsTheCorrectUrlQueryParametersByName.bind(this)();
+  },
+);
+
+Then<InversifyHttpWorld>(
+  'the response contains the correct headers information',
+  async function (this: InversifyHttpWorld): Promise<void> {
+    await thenResponseContainsTheCorrectHeadersInformation.bind(this)();
   },
 );
