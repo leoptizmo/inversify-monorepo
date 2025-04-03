@@ -4,11 +4,11 @@ import { AddressInfo } from 'node:net';
 import { Given } from '@cucumber/cucumber';
 import { serve, ServerType } from '@hono/node-server';
 import { InversifyExpressHttpAdapter } from '@inversifyjs/http-express';
-import { InversifyHonoHttpAdapter } from '@inversifyjs/http-hono';
 import { InversifyFastifyHttpAdapter } from '@inversifyjs/http-fastify';
+import { InversifyHonoHttpAdapter } from '@inversifyjs/http-hono';
 import express from 'express';
-import { Hono } from 'hono';
 import { FastifyInstance } from 'fastify';
+import { Hono } from 'hono';
 import { Container } from 'inversify';
 
 import { defaultAlias } from '../../common/models/defaultAlias';
