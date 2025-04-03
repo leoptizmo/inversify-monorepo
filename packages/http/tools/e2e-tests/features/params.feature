@@ -21,6 +21,11 @@ The params decorator allows extracting parameters from URL
           | "express"   | "PATCH"  |
           | "express"   | "POST"   |
           | "express"   | "PUT"    |
+          | "hono"      | "DELETE" |
+          | "hono"      | "GET"    |
+          | "hono"      | "PATCH"  |
+          | "hono"      | "POST"   |
+          | "hono"      | "PUT"    |
 
       Scenario: URL parameters are correctly extracted with params decorator with parameter name
 
@@ -37,3 +42,8 @@ The params decorator allows extracting parameters from URL
           | "express"   | "PATCH"  |
           | "express"   | "POST"   |
           | "express"   | "PUT"    |
+          | "hono"      | "DELETE" |
+          | "hono"      | "GET"    |
+          | "hono"      | "PATCH"  |
+          | "hono"      | "POST"   |
+          | "hono"      | "PUT"    |
