@@ -22,6 +22,11 @@ The body decorator allows extracting the body from HTTP requests
           | "express"   | "PATCH"  |
           | "express"   | "POST"   |
           | "express"   | "PUT"    |
+          | "hono"      | "DELETE" |
+          | "hono"      | "OPTIONS"|
+          | "hono"      | "PATCH"  |
+          | "hono"      | "POST"   |
+          | "hono"      | "PUT"    |
 
       Scenario: HTTP request body is correctly extracted with body decorator with parameter name
 
@@ -39,3 +44,8 @@ The body decorator allows extracting the body from HTTP requests
           | "express"   | "PATCH"  |
           | "express"   | "POST"   |
           | "express"   | "PUT"    |
+          | "hono"      | "DELETE" |
+          | "hono"      | "OPTIONS"|
+          | "hono"      | "PATCH"  |
+          | "hono"      | "POST"   |
+          | "hono"      | "PUT"    |
