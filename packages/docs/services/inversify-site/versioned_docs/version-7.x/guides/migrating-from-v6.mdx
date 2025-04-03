@@ -32,7 +32,9 @@ The following table summarizes the key changes from v6 to v7:
 | `container.tryGetNamed`               | `container.get(X, { name: ..., optional: true })` | Combined named and optional parameters                  |
 | `container.tryGetTagged`              | `container.get(X, { tag: ..., optional: true })`  | Combined tagged and optional parameters                  |
 | `container.load`                      | `await container.load`                   | Now returns a Promise                                            |
+| `container.load`                      | `container.loadSync`                     | Synchronous alternative to async `load`                          |
 | `container.unload`                    | `await container.unload`                 | Now returns a Promise                                            |
+| `container.unload`                    | `container.unloadSync`                   | Synchronous alternative to async `unload`                        |
 | `container.rebind`                    | `await container.rebind` or `container.rebindSync` | Now async, with a sync alternative                     |
 | `container.unbind`                    | `await container.unbind` or `container.unbindSync` | Now async, with a sync alternative                     |
 | `container.createChild()`             | `new Container({ parent: container })`   | Child containers created via constructor                         |
@@ -80,7 +82,7 @@ In v6, `container.getAll` returned all bindings matching the service identifier.
 
 ### `load` and `unload` Methods
 
-These methods are now asynchronous and return a Promise.
+These methods are now asynchronous and return a Promise. Synchronous alternatives, `loadSync` and `unloadSync`, are also available.
 
 <CodeBlock language="ts">{containerModuleApiExampleSource}</CodeBlock>
 

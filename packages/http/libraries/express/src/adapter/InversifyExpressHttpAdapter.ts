@@ -20,7 +20,8 @@ import { Container } from 'inversify';
 export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
   Request,
   Response,
-  NextFunction
+  NextFunction,
+  void
 > {
   readonly #app: Application;
 
@@ -40,15 +41,16 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     return this.#app;
   }
 
-  protected override _buildRouter(
-    routerParams: RouterParams<Request, Response, NextFunction>,
+  protected _buildRouter(
+    routerParams: RouterParams<Request, Response, NextFunction, void>,
   ): void {
     const router: Router = Router();
 
     const orderedMiddlewareList: MiddlewareHandler<
       Request,
       Response,
-      NextFunction
+      NextFunction,
+      void
     >[] = [...routerParams.guardList, ...routerParams.preHandlerMiddlewareList];
 
     if (orderedMiddlewareList.length > 0) {
@@ -57,14 +59,14 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
 
     for (const routeParams of routerParams.routeParamsList) {
       const orderedPreHandlerMiddlewareList:
-        | MiddlewareHandler<Request, Response, NextFunction>[]
+        | MiddlewareHandler<Request, Response, NextFunction, void>[]
         | undefined = [
         ...routeParams.guardList,
         ...routeParams.preHandlerMiddlewareList,
       ];
 
       const orderedPostHandlerMiddlewareList:
-        | MiddlewareHandler<Request, Response, NextFunction>[]
+        | MiddlewareHandler<Request, Response, NextFunction, void>[]
         | undefined = [
         ...routerParams.postHandlerMiddlewareList,
         ...routeParams.postHandlerMiddlewareList,
@@ -85,24 +87,24 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     _request: Request,
     response: Response,
     value: string,
-  ): unknown {
-    return response.send(value);
+  ): void {
+    response.send(value);
   }
 
   protected _replyJson(
     _request: Request,
     response: Response,
     value?: object,
-  ): unknown {
-    return response.json(value);
+  ): void {
+    response.json(value);
   }
 
   protected _replyStream(
     _request: Request,
     response: Response,
     value: Stream,
-  ): unknown {
-    return value.pipe(response);
+  ): void {
+    value.pipe(response);
   }
 
   protected _setStatus(
@@ -150,7 +152,11 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
       : request.headers;
   }
 
-  protected _getCookies(request: Request, parameterName?: string): unknown {
+  protected _getCookies(
+    request: Request,
+    _response: Response,
+    parameterName?: string,
+  ): unknown {
     return parameterName !== undefined
       ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         request.cookies[parameterName]
