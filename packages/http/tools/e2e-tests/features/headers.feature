@@ -23,6 +23,12 @@ The headers decorator allows extracting headers from the HTTP request
           | "express"   | "PATCH"   |
           | "express"   | "POST"    |
           | "express"   | "PUT"     |
+          | "hono"      | "DELETE"  |
+          | "hono"      | "GET"     |
+          | "hono"      | "OPTIONS" |
+          | "hono"      | "PATCH"   |
+          | "hono"      | "POST"    |
+          | "hono"      | "PUT"     |
 
       Scenario: HTTP headers are correctly extracted with headers decorator with parameter name
 
@@ -41,3 +47,9 @@ The headers decorator allows extracting headers from the HTTP request
           | "express"   | "PATCH"   |
           | "express"   | "POST"    |
           | "express"   | "PUT"     |
+          | "hono"      | "DELETE"  |
+          | "hono"      | "GET"     |
+          | "hono"      | "OPTIONS" |
+          | "hono"      | "PATCH"   |
+          | "hono"      | "POST"    |
+          | "hono"      | "PUT"     |
