@@ -8,6 +8,8 @@ import { HttpMethod } from '../../http/models/HttpMethod';
 import { setServerRequest } from '../../server/actions/setServerRequest';
 import { getServerOrFail } from '../../server/calculations/getServerOrFail';
 import { Server } from '../../server/models/Server';
+import { WarriorsDeleteBodyController } from '../controllers/WarriorsDeleteBodyController';
+import { WarriorsDeleteBodyNamedController } from '../controllers/WarriorsDeleteBodyNamedController';
 import { WarriorsDeleteController } from '../controllers/WarriorsDeleteController';
 import { WarriorsDeleteHeadersController } from '../controllers/WarriorsDeleteHeadersController';
 import { WarriorsDeleteHeadersNamedController } from '../controllers/WarriorsDeleteHeadersNamedController';
@@ -22,11 +24,15 @@ import { WarriorsGetParamsController } from '../controllers/WarriorsGetParamsCon
 import { WarriorsGetParamsNamedController } from '../controllers/WarriorsGetParamsNamedController';
 import { WarriorsGetQueryController } from '../controllers/WarriorsGetQueryController';
 import { WarriorsGetQueryNamedController } from '../controllers/WarriorsGetQueryNamedController';
+import { WarriorsOptionsBodyController } from '../controllers/WarriorsOptionsBodyController';
+import { WarriorsOptionsBodyNamedController } from '../controllers/WarriorsOptionsBodyNamedController';
 import { WarriorsOptionsController } from '../controllers/WarriorsOptionsController';
 import { WarriorsOptionsHeadersController } from '../controllers/WarriorsOptionsHeadersController';
 import { WarriorsOptionsHeadersNamedController } from '../controllers/WarriorsOptionsHeadersNamedController';
 import { WarriorsOptionsQueryController } from '../controllers/WarriorsOptionsQueryController';
 import { WarriorsOptionsQueryNamedController } from '../controllers/WarriorsOptionsQueryNamedController';
+import { WarriorsPatchBodyController } from '../controllers/WarriorsPatchBodyController';
+import { WarriorsPatchBodyNamedController } from '../controllers/WarriorsPatchBodyNamedController';
 import { WarriorsPatchController } from '../controllers/WarriorsPatchController';
 import { WarriorsPatchHeadersController } from '../controllers/WarriorsPatchHeadersController';
 import { WarriorsPatchHeadersNamedController } from '../controllers/WarriorsPatchHeadersNamedController';
@@ -34,6 +40,8 @@ import { WarriorsPatchParamsController } from '../controllers/WarriorsPatchParam
 import { WarriorsPatchParamsNamedController } from '../controllers/WarriorsPatchParamsNamedController';
 import { WarriorsPatchQueryController } from '../controllers/WarriorsPatchQueryController';
 import { WarriorsPatchQueryNamedController } from '../controllers/WarriorsPatchQueryNamedController';
+import { WarriorsPostBodyController } from '../controllers/WarriorsPostBodyController';
+import { WarriorsPostBodyNamedController } from '../controllers/WarriorsPostBodyNamedController';
 import { WarriorsPostController } from '../controllers/WarriorsPostController';
 import { WarriorsPostHeadersController } from '../controllers/WarriorsPostHeadersController';
 import { WarriorsPostHeadersNamedController } from '../controllers/WarriorsPostHeadersNamedController';
@@ -41,6 +49,8 @@ import { WarriorsPostParamsController } from '../controllers/WarriorsPostParamsC
 import { WarriorsPostParamsNamedController } from '../controllers/WarriorsPostParamsNamedController';
 import { WarriorsPostQueryController } from '../controllers/WarriorsPostQueryController';
 import { WarriorsPostQueryNamedController } from '../controllers/WarriorsPostQueryNamedController';
+import { WarriorsPutBodyController } from '../controllers/WarriorsPutBodyController';
+import { WarriorsPutBodyNamedController } from '../controllers/WarriorsPutBodyNamedController';
 import { WarriorsPutController } from '../controllers/WarriorsPutController';
 import { WarriorsPutHeadersController } from '../controllers/WarriorsPutHeadersController';
 import { WarriorsPutHeadersNamedController } from '../controllers/WarriorsPutHeadersNamedController';
@@ -48,6 +58,8 @@ import { WarriorsPutParamsController } from '../controllers/WarriorsPutParamsCon
 import { WarriorsPutParamsNamedController } from '../controllers/WarriorsPutParamsNamedController';
 import { WarriorsPutQueryController } from '../controllers/WarriorsPutQueryController';
 import { WarriorsPutQueryNamedController } from '../controllers/WarriorsPutQueryNamedController';
+import { WarriorCreationResponseType } from '../models/WarriorCreationResponseType';
+import { WarriorRequest } from '../models/WarriorRequest';
 
 function getMethodWarriorController(method: HttpMethod): NewableFunction {
   switch (method) {
@@ -176,13 +188,48 @@ function getMethodWarriorHeadersNamedController(
   }
 }
 
+function getMethodWarriorBodyController(method: HttpMethod): NewableFunction {
+  switch (method) {
+    case HttpMethod.delete:
+      return WarriorsDeleteBodyController;
+    case HttpMethod.get:
+      throw new Error('Get not supported for body controller');
+    case HttpMethod.options:
+      return WarriorsOptionsBodyController;
+    case HttpMethod.patch:
+      return WarriorsPatchBodyController;
+    case HttpMethod.post:
+      return WarriorsPostBodyController;
+    case HttpMethod.put:
+      return WarriorsPutBodyController;
+  }
+}
+
+function getMethodWarriorBodyNamedController(
+  method: HttpMethod,
+): NewableFunction {
+  switch (method) {
+    case HttpMethod.delete:
+      return WarriorsDeleteBodyNamedController;
+    case HttpMethod.get:
+      throw new Error('Get not supported for body named controller');
+    case HttpMethod.options:
+      return WarriorsOptionsBodyNamedController;
+    case HttpMethod.patch:
+      return WarriorsPatchBodyNamedController;
+    case HttpMethod.post:
+      return WarriorsPostBodyNamedController;
+    case HttpMethod.put:
+      return WarriorsPutBodyNamedController;
+  }
+}
+
 function givenWarriorRequestForServer(
   this: InversifyHttpWorld,
   method: HttpMethod,
   serverAlias?: string,
 ): void {
   const parsedServerAlias: string = serverAlias ?? defaultAlias;
-
   const server: Server = getServerOrFail.bind(this)(parsedServerAlias);
 
   const url: string = `http://${server.host}:${server.port.toString()}/warriors`;
@@ -192,7 +239,6 @@ function givenWarriorRequestForServer(
   };
 
   const request: Request = new Request(url, requestInit);
-
   setServerRequest.bind(this)(parsedServerAlias, request);
 }
 
@@ -202,7 +248,6 @@ function givenWarriorRequestWithParamsForServer(
   serverAlias?: string,
 ): void {
   const parsedServerAlias: string = serverAlias ?? defaultAlias;
-
   const server: Server = getServerOrFail.bind(this)(parsedServerAlias);
 
   const url: string = `http://${server.host}:${server.port.toString()}/warriors/123`;
@@ -212,7 +257,33 @@ function givenWarriorRequestWithParamsForServer(
   };
 
   const request: Request = new Request(url, requestInit);
+  setServerRequest.bind(this)(parsedServerAlias, request);
+}
 
+function givenWarriorRequestWithBodyForServer(
+  this: InversifyHttpWorld,
+  method: HttpMethod,
+  serverAlias?: string,
+): void {
+  const parsedServerAlias: string = serverAlias ?? defaultAlias;
+  const server: Server = getServerOrFail.bind(this)(parsedServerAlias);
+
+  const url: string = `http://${server.host}:${server.port.toString()}/warriors`;
+
+  const warriorRequest: WarriorRequest = {
+    name: 'Samurai',
+    type: WarriorCreationResponseType.Melee,
+  };
+
+  const requestInit: RequestInit = {
+    body: JSON.stringify(warriorRequest),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method,
+  };
+
+  const request: Request = new Request(url, requestInit);
   setServerRequest.bind(this)(parsedServerAlias, request);
 }
 
@@ -232,7 +303,6 @@ function givenWarriorRequestWithQueryForServer(
   };
 
   const request: Request = new Request(url, requestInit);
-
   setServerRequest.bind(this)(parsedServerAlias, request);
 }
 
@@ -265,7 +335,6 @@ function givenWarriorControllerForContainer(
   containerAlias?: string,
 ): void {
   const parsedContainerAlias: string = containerAlias ?? defaultAlias;
-
   const container: Container =
     getContainerOrFail.bind(this)(parsedContainerAlias);
 
@@ -280,7 +349,6 @@ function givenWarriorParamsControllerForContainer(
   containerAlias?: string,
 ): void {
   const parsedContainerAlias: string = containerAlias ?? defaultAlias;
-
   const container: Container =
     getContainerOrFail.bind(this)(parsedContainerAlias);
 
@@ -295,7 +363,6 @@ function givenWarriorParamsNamedControllerForContainer(
   containerAlias?: string,
 ): void {
   const parsedContainerAlias: string = containerAlias ?? defaultAlias;
-
   const container: Container =
     getContainerOrFail.bind(this)(parsedContainerAlias);
 
@@ -367,6 +434,35 @@ function givenWarriorHeadersNamedControllerForContainer(
   container.bind(controller).toSelf().inSingletonScope();
 }
 
+function givenWarriorBodyControllerForContainer(
+  this: InversifyHttpWorld,
+  method: HttpMethod,
+  containerAlias?: string,
+): void {
+  const parsedContainerAlias: string = containerAlias ?? defaultAlias;
+  const container: Container =
+    getContainerOrFail.bind(this)(parsedContainerAlias);
+
+  const controller: NewableFunction = getMethodWarriorBodyController(method);
+
+  container.bind(controller).toSelf().inSingletonScope();
+}
+
+function givenWarriorBodyNamedControllerForContainer(
+  this: InversifyHttpWorld,
+  method: HttpMethod,
+  containerAlias?: string,
+): void {
+  const parsedContainerAlias: string = containerAlias ?? defaultAlias;
+  const container: Container =
+    getContainerOrFail.bind(this)(parsedContainerAlias);
+
+  const controller: NewableFunction =
+    getMethodWarriorBodyNamedController(method);
+
+  container.bind(controller).toSelf().inSingletonScope();
+}
+
 Given<InversifyHttpWorld>(
   'a "{httpMethod}" warrior controller for container',
   function (this: InversifyHttpWorld, httpMethod: HttpMethod): void {
@@ -417,6 +513,20 @@ Given<InversifyHttpWorld>(
 );
 
 Given<InversifyHttpWorld>(
+  'a warrior controller with body decorator without parameter name for "{httpMethod}" method',
+  function (this: InversifyHttpWorld, httpMethod: HttpMethod): void {
+    givenWarriorBodyControllerForContainer.bind(this)(httpMethod);
+  },
+);
+
+Given<InversifyHttpWorld>(
+  'a warrior controller with body decorator with parameter name for "{httpMethod}" method',
+  function (this: InversifyHttpWorld, httpMethod: HttpMethod): void {
+    givenWarriorBodyNamedControllerForContainer.bind(this)(httpMethod);
+  },
+);
+
+Given<InversifyHttpWorld>(
   'a "{httpMethod}" warriors HTTP request',
   function (this: InversifyHttpWorld, httpMethod: HttpMethod): void {
     givenWarriorRequestForServer.bind(this)(httpMethod);
@@ -441,5 +551,12 @@ Given<InversifyHttpWorld>(
   'a "{httpMethod}" warriors HTTP request with headers',
   function (this: InversifyHttpWorld, httpMethod: HttpMethod): void {
     givenWarriorRequestWithHeadersForServer.bind(this)(httpMethod);
+  },
+);
+
+Given<InversifyHttpWorld>(
+  'a "{httpMethod}" warriors HTTP request with body',
+  function (this: InversifyHttpWorld, httpMethod: HttpMethod): void {
+    givenWarriorRequestWithBodyForServer.bind(this)(httpMethod);
   },
 );
