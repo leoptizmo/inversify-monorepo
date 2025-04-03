@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
-export type RequestHandler<TRequest, TResponse> = (
+export type RequestHandler<TRequest, TResponse, TResult = unknown> = (
   req: TRequest,
   res: TResponse,
-) => Promise<unknown> | unknown;
+) => Promise<TResult> | TResult;

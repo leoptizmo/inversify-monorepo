@@ -28,3 +28,9 @@ An adapter provides a proper server able to serve HTTP services using different 
           | "fastify"   | "PATCH"  |
           | "fastify"   | "POST"   |
           | "fastify"   | "PUT"    |
+          | "hono"      | "DELETE" |
+          | "hono"      | "GET"    |
+          | "hono"      | "OPTIONS"|
+          | "hono"      | "PATCH"  |
+          | "hono"      | "POST"   |
+          | "hono"      | "PUT"    |

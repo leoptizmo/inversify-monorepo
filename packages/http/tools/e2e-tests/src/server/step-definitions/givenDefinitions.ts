@@ -2,9 +2,12 @@ import http from 'node:http';
 import { AddressInfo } from 'node:net';
 
 import { Given } from '@cucumber/cucumber';
+import { serve, ServerType } from '@hono/node-server';
 import { InversifyExpressHttpAdapter } from '@inversifyjs/http-express';
+import { InversifyHonoHttpAdapter } from '@inversifyjs/http-hono';
 import { InversifyFastifyHttpAdapter } from '@inversifyjs/http-fastify';
 import express from 'express';
+import { Hono } from 'hono';
 import { FastifyInstance } from 'fastify';
 import { Container } from 'inversify';
 
@@ -56,6 +59,51 @@ async function buildExpressServer(container: Container): Promise<Server> {
 
         resolve(server);
       });
+    },
+  );
+}
+
+async function buildHonoServer(container: Container): Promise<Server> {
+  const adapter: InversifyHonoHttpAdapter = new InversifyHonoHttpAdapter(
+    container,
+    { logger: true },
+  );
+
+  const application: Hono = await adapter.build();
+
+  return new Promise<Server>(
+    (resolve: (value: Server | PromiseLike<Server>) => void) => {
+      const httpServer: ServerType = serve(
+        {
+          fetch: application.fetch,
+          hostname: '0.0.0.0',
+          port: 0,
+        },
+        (info: AddressInfo) => {
+          const server: Server = {
+            host: info.address,
+            port: info.port,
+            shutdown: async (): Promise<void> => {
+              await new Promise<void>(
+                (
+                  resolve: (value: void | PromiseLike<void>) => void,
+                  reject: (reason?: unknown) => void,
+                ) => {
+                  httpServer.close((error: Error | undefined) => {
+                    if (error !== undefined) {
+                      reject(error);
+                    } else {
+                      resolve();
+                    }
+                  });
+                },
+              );
+            },
+          };
+
+          resolve(server);
+        },
+      );
     },
   );
 }
@@ -120,6 +168,13 @@ async function givenServer(
       const server: Server = await buildExpressServer(container);
 
       setServer.bind(this)(parsedServerAlias, server);
+      break;
+    }
+    case ServerKind.hono: {
+      const server: Server = await buildHonoServer(container);
+
+      setServer.bind(this)(parsedServerAlias, server);
+      break;
       break;
     }
     case ServerKind.fastify: {

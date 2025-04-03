@@ -30,6 +30,7 @@ export abstract class InversifyHttpAdapter<
   TResponse,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TNextFunction extends (err?: any) => void,
+  TResult,
 > {
   protected readonly httpAdapterOptions: InternalHttpAdapterOptions;
   readonly #container: Container;
@@ -108,7 +109,7 @@ export abstract class InversifyHttpAdapter<
   async #buildHandlers(
     target: NewableFunction,
     routerExplorerControllerMethodMetadata: RouterExplorerControllerMethodMetadata[],
-  ): Promise<RouteParams<TRequest, TResponse, TNextFunction>[]> {
+  ): Promise<RouteParams<TRequest, TResponse, TNextFunction, TResult>[]> {
     const controller: Controller = await this.#container.getAsync(target);
 
     return Promise.all(
@@ -148,8 +149,8 @@ export abstract class InversifyHttpAdapter<
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
     headerMetadataList: [string, string][],
     statusCode: HttpStatusCode | undefined,
-  ): RequestHandler<TRequest, TResponse> {
-    return async (req: TRequest, res: TResponse): Promise<unknown> => {
+  ): RequestHandler<TRequest, TResponse, TResult> {
+    return async (req: TRequest, res: TResponse): Promise<TResult> => {
       try {
         const handlerParams: unknown[] = await this.#buildHandlerParams(
           controllerMethodParameterMetadataList,
@@ -214,6 +215,7 @@ export abstract class InversifyHttpAdapter<
             case RequestMethodParameterType.COOKIES: {
               return this._getCookies(
                 request,
+                response,
                 controllerMethodParameterMetadata.parameterName,
               );
             }
@@ -238,7 +240,7 @@ export abstract class InversifyHttpAdapter<
     response: TResponse,
     value: ControllerResponse,
     statusCode?: HttpStatusCode,
-  ): unknown {
+  ): TResult {
     let body: object | string | number | boolean | Stream | undefined =
       undefined;
     let httpStatusCode: HttpStatusCode | undefined = statusCode;
@@ -269,11 +271,15 @@ export abstract class InversifyHttpAdapter<
 
   async #getMiddlewareHandlerFromMetadata(
     middlewareList: NewableFunction[],
-  ): Promise<MiddlewareHandler<TRequest, TResponse, TNextFunction>[]> {
+  ): Promise<MiddlewareHandler<TRequest, TResponse, TNextFunction, TResult>[]> {
     return Promise.all(
       middlewareList.map(async (newableFunction: NewableFunction) => {
-        const middleware: Middleware<TRequest, TResponse, TNextFunction> =
-          await this.#container.getAsync(newableFunction);
+        const middleware: Middleware<
+          TRequest,
+          TResponse,
+          TNextFunction,
+          TResult
+        > = await this.#container.getAsync(newableFunction);
 
         return middleware.execute.bind(middleware);
       }),
@@ -282,7 +288,9 @@ export abstract class InversifyHttpAdapter<
 
   async #getGuardHandlerFromMetadata(
     guardList: NewableFunction[],
-  ): Promise<MiddlewareHandler<TRequest, TResponse, TNextFunction>[]> {
+  ): Promise<
+    MiddlewareHandler<TRequest, TResponse, TNextFunction, TResult | undefined>[]
+  > {
     return Promise.all(
       guardList.map(async (newableFunction: NewableFunction) => {
         const guard: Guard<TRequest> =
@@ -292,11 +300,11 @@ export abstract class InversifyHttpAdapter<
           request: TRequest,
           response: TResponse,
           next: TNextFunction,
-        ) => {
+        ): Promise<TResult | undefined> => {
           const activate: boolean = await guard.activate(request);
 
           if (!activate) {
-            this.#reply(
+            return this.#reply(
               request,
               response,
               guard.getHttpResponse !== undefined
@@ -305,6 +313,8 @@ export abstract class InversifyHttpAdapter<
             );
           } else {
             next();
+
+            return undefined;
           }
         };
       }),
@@ -359,6 +369,7 @@ export abstract class InversifyHttpAdapter<
 
   protected abstract _getCookies(
     request: TRequest,
+    response: TResponse,
     parameterName?: string,
   ): unknown;
 
@@ -366,19 +377,19 @@ export abstract class InversifyHttpAdapter<
     request: TRequest,
     response: TResponse,
     value: string,
-  ): unknown;
+  ): TResult;
 
   protected abstract _replyJson(
     request: TRequest,
     response: TResponse,
     value?: object,
-  ): unknown;
+  ): TResult;
 
   protected abstract _replyStream(
     request: TRequest,
     response: TResponse,
     value: Stream,
-  ): unknown;
+  ): TResult;
 
   protected abstract _setStatus(
     request: TRequest,
@@ -394,6 +405,6 @@ export abstract class InversifyHttpAdapter<
   ): void;
 
   protected abstract _buildRouter(
-    routerParams: RouterParams<TRequest, TResponse, TNextFunction>,
-  ): unknown;
+    routerParams: RouterParams<TRequest, TResponse, TNextFunction, TResult>,
+  ): void | Promise<void>;
 }

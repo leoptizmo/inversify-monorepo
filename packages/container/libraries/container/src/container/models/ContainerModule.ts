@@ -20,6 +20,12 @@ export interface ContainerModuleLoadOptions {
     serviceIdentifier: ServiceIdentifier<T>,
     deactivation: BindingDeactivation<T>,
   ) => void;
+  rebind: <T>(
+    serviceIdentifier: ServiceIdentifier<T>,
+  ) => Promise<BindToFluentSyntax<T>>;
+  rebindSync: <T>(
+    serviceIdentifier: ServiceIdentifier<T>,
+  ) => BindToFluentSyntax<T>;
   unbind: (identifier: BindingIdentifier | ServiceIdentifier) => Promise<void>;
   unbindSync: (identifier: BindingIdentifier | ServiceIdentifier) => void;
 }
@@ -39,7 +45,7 @@ export class ContainerModule {
     return this.#id;
   }
 
-  public async load(options: ContainerModuleLoadOptions): Promise<void> {
-    await this.#load(options);
+  public load(options: ContainerModuleLoadOptions): void | Promise<void> {
+    return this.#load(options);
   }
 }
