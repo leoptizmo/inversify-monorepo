@@ -7,6 +7,7 @@ import { getServerResponseOrFail } from '../../server/calculations/getServerResp
 import { WarriorCreationResponse } from '../models/WarriorCreationResponse';
 import { WarriorCreationResponseType } from '../models/WarriorCreationResponseType';
 import { WarriorWithId } from '../models/WarriorWithId';
+import { WarriorWithQuery } from '../models/WarriorWithQuery';
 
 async function thenResponseStatusCodeIsOkIsh(
   this: InversifyHttpWorld,
@@ -50,20 +51,6 @@ async function thenResponseContainsTheCorrectUrlQueryParametersByName(
   assert.ok(warriorWithQuery.filter === 'test');
 }
 
-async function thenResponseContainsTheCorrectUrlQueryParametersByName(
-  this: InversifyHttpWorld,
-  responseAlias?: string,
-): Promise<void> {
-  const parsedResponseAlias: string = responseAlias ?? 'default';
-  const response: Response =
-    getServerResponseOrFail.bind(this)(parsedResponseAlias);
-
-  const warriorWithQuery: WarriorWithQuery =
-    (await response.json()) as WarriorWithQuery;
-
-  assert.ok(warriorWithQuery.filter === 'test');
-}
-
 async function thenResponseContainsTheCorrectBodyData(
   this: InversifyHttpWorld,
   responseAlias?: string,
@@ -97,13 +84,6 @@ Then<InversifyHttpWorld>(
   'the response contains the correct body data',
   async function (this: InversifyHttpWorld): Promise<void> {
     await thenResponseContainsTheCorrectBodyData.bind(this)();
-  },
-);
-
-Then<InversifyHttpWorld>(
-  'the response contains the correct URL query parameters',
-  async function (this: InversifyHttpWorld): Promise<void> {
-    await thenResponseContainsTheCorrectUrlQueryParametersByName.bind(this)();
   },
 );
 

@@ -256,53 +256,6 @@ function givenWarriorRequestWithQueryForServer(
   setServerRequest.bind(this)(parsedServerAlias, request);
 }
 
-function givenWarriorRequestWithBodyForServer(
-  this: InversifyHttpWorld,
-  method: HttpMethod,
-  serverAlias?: string,
-): void {
-  const parsedServerAlias: string = serverAlias ?? defaultAlias;
-  const server: Server = getServerOrFail.bind(this)(parsedServerAlias);
-
-  const url: string = `http://${server.host}:${server.port.toString()}/warriors`;
-
-  const warriorRequest: WarriorRequest = {
-    name: 'Samurai',
-    type: WarriorCreationResponseType.Melee,
-  };
-
-  const requestInit: RequestInit = {
-    body: JSON.stringify(warriorRequest),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method,
-  };
-
-  const request: Request = new Request(url, requestInit);
-  setServerRequest.bind(this)(parsedServerAlias, request);
-}
-
-function givenWarriorRequestWithQueryForServer(
-  this: InversifyHttpWorld,
-  method: HttpMethod,
-  serverAlias?: string,
-): void {
-  const parsedServerAlias: string = serverAlias ?? defaultAlias;
-
-  const server: Server = getServerOrFail.bind(this)(parsedServerAlias);
-
-  const url: string = `http://${server.host}:${server.port.toString()}/warriors?filter=test`;
-
-  const requestInit: RequestInit = {
-    method,
-  };
-
-  const request: Request = new Request(url, requestInit);
-
-  setServerRequest.bind(this)(parsedServerAlias, request);
-}
-
 function givenWarriorControllerForContainer(
   this: InversifyHttpWorld,
   method: HttpMethod,
