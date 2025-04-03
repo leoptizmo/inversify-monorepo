@@ -21,7 +21,8 @@ import { Container } from 'inversify';
 export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
   FastifyRequest,
   FastifyReply,
-  (err?: Error) => void
+  (err?: Error) => void,
+  void
 > {
   readonly #app: FastifyInstance;
 
@@ -77,6 +78,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
 
   protected _getCookies(
     request: FastifyRequest,
+    _response: FastifyReply,
     parameterName?: string,
   ): unknown {
     return parameterName !== undefined
@@ -88,24 +90,24 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
     _request: FastifyRequest,
     response: FastifyReply,
     value: string,
-  ): unknown {
-    return response.send(value);
+  ): void {
+    response.send(value);
   }
 
   protected _replyJson(
     _request: FastifyRequest,
     response: FastifyReply,
     value?: object,
-  ): unknown {
-    return response.send(value);
+  ): void {
+    response.send(value);
   }
 
   protected _replyStream(
     _request: FastifyRequest,
     response: FastifyReply,
     value: Stream,
-  ): unknown {
-    return response.send(value);
+  ): void {
+    response.send(value);
   }
 
   protected _setStatus(
@@ -129,7 +131,8 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
     routerParams: RouterParams<
       FastifyRequest,
       FastifyReply,
-      (err?: Error) => void
+      (err?: Error) => void,
+      void
     >,
   ): void {
     const router: FastifyPluginCallback = (
