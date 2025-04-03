@@ -12,6 +12,7 @@ The params decorator allows extracting parameters from URL
         And a <server_kind> server from container
         And a <method> warriors HTTP request with parameters
         When the request is send
+        Then the response status code is Ok-ish
         Then the response contains the correct URL parameters
 
         Examples:
@@ -21,6 +22,11 @@ The params decorator allows extracting parameters from URL
           | "express"   | "PATCH"  |
           | "express"   | "POST"   |
           | "express"   | "PUT"    |
+          | "hono"      | "DELETE" |
+          | "hono"      | "GET"    |
+          | "hono"      | "PATCH"  |
+          | "hono"      | "POST"   |
+          | "hono"      | "PUT"    |
 
       Scenario: URL parameters are correctly extracted with params decorator with parameter name
 
@@ -28,6 +34,7 @@ The params decorator allows extracting parameters from URL
         And a <server_kind> server from container
         And a <method> warriors HTTP request with parameters
         When the request is send
+        Then the response status code is Ok-ish
         Then the response contains the correct URL parameters
 
         Examples:
@@ -37,3 +44,8 @@ The params decorator allows extracting parameters from URL
           | "express"   | "PATCH"  |
           | "express"   | "POST"   |
           | "express"   | "PUT"    |
+          | "hono"      | "DELETE" |
+          | "hono"      | "GET"    |
+          | "hono"      | "PATCH"  |
+          | "hono"      | "POST"   |
+          | "hono"      | "PUT"    |
