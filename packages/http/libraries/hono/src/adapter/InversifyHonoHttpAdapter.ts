@@ -4,7 +4,6 @@ import {
   HttpAdapterOptions,
   HttpStatusCode,
   InversifyHttpAdapter,
-  MiddlewareHandler,
   RequestHandler,
   RouterParams,
 } from '@inversifyjs/http-core';
@@ -168,19 +167,14 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildHonoHandler(
-    handler: RequestHandler<HonoRequest, Context, Response | undefined>,
+    handler: RequestHandler<HonoRequest, Context, Next, Response | undefined>,
   ): Handler {
-    return async (ctx: Context): Promise<Response | undefined> =>
-      handler(ctx.req as HonoRequest, ctx);
+    return async (ctx: Context, next: Next): Promise<Response | undefined> =>
+      handler(ctx.req as HonoRequest, ctx, next);
   }
 
   #buildHonoMiddleware(
-    handler: MiddlewareHandler<
-      HonoRequest,
-      Context,
-      Next,
-      Response | undefined
-    >,
+    handler: RequestHandler<HonoRequest, Context, Next, Response | undefined>,
   ): HonoMiddlewareHandler {
     return async (
       ctx: Context,
@@ -190,7 +184,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildHonoMiddlewareList(
-    handlers: MiddlewareHandler<
+    handlers: RequestHandler<
       HonoRequest,
       Context,
       Next,
@@ -199,7 +193,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   ): HonoMiddlewareHandler[] {
     return handlers.map(
       (
-        handler: MiddlewareHandler<
+        handler: RequestHandler<
           HonoRequest,
           Context,
           Next,
@@ -210,12 +204,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildHonoPostHandlerMiddleware(
-    handler: MiddlewareHandler<
-      HonoRequest,
-      Context,
-      Next,
-      Response | undefined
-    >,
+    handler: RequestHandler<HonoRequest, Context, Next, Response | undefined>,
   ): HonoMiddlewareHandler {
     return async (ctx: Context, next: Next): Promise<Response | undefined> => {
       await next();
@@ -225,7 +214,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildHonoPostHandlerMiddlewareList(
-    handlers: MiddlewareHandler<
+    handlers: RequestHandler<
       HonoRequest,
       Context,
       Next,
@@ -234,7 +223,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   ): HonoMiddlewareHandler[] {
     return handlers.map(
       (
-        handler: MiddlewareHandler<
+        handler: RequestHandler<
           HonoRequest,
           Context,
           Next,
