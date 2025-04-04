@@ -9,13 +9,16 @@
     "@hono/node-server": "1.14.0",
     "@inversifyjs/http-core": "workspace:*",
     "@inversifyjs/http-express": "workspace:*",
+    "@inversifyjs/http-express4": "workspace:*",
     "@inversifyjs/http-hono": "workspace:*",
-    "@types/express": "^5.0.1",
     "express": "^5.1.0",
+    "express4": "npm:express@4.21.1",
     "hono": "^4.7.5",
     "inversify": "7.5.0"
   },
   "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/express4": "npm:@types/express@4.17.21",
     "eslint": "9.23.0",
     "prettier": "3.5.3",
     "rimraf": "6.0.1",
