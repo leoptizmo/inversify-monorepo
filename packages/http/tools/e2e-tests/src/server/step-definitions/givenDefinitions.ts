@@ -4,8 +4,10 @@ import { AddressInfo } from 'node:net';
 import { Given } from '@cucumber/cucumber';
 import { serve, ServerType } from '@hono/node-server';
 import { InversifyExpressHttpAdapter } from '@inversifyjs/http-express';
+import { InversifyExpressHttpAdapter as InversifyExpress4HttpAdapter } from '@inversifyjs/http-express4';
 import { InversifyHonoHttpAdapter } from '@inversifyjs/http-hono';
 import express from 'express';
+import express4 from 'express4';
 import { Hono } from 'hono';
 import { Container } from 'inversify';
 
@@ -23,6 +25,51 @@ async function buildExpressServer(container: Container): Promise<Server> {
   );
 
   const application: express.Application = await adapter.build();
+  const httpServer: http.Server = http.createServer(
+    application as RequestListener,
+  );
+
+  return new Promise<Server>(
+    (resolve: (value: Server | PromiseLike<Server>) => void) => {
+      httpServer.listen(0, '127.0.0.1', () => {
+        const address: AddressInfo | string | null = httpServer.address();
+
+        if (address === null || typeof address === 'string') {
+          throw new Error('Failed to get server address');
+        }
+
+        const server: Server = {
+          host: address.address,
+          port: address.port,
+          shutdown: async (): Promise<void> => {
+            await new Promise<void>(
+              (
+                resolve: (value: void | PromiseLike<void>) => void,
+                reject: (reason?: unknown) => void,
+              ) => {
+                httpServer.close((error: Error | undefined) => {
+                  if (error !== undefined) {
+                    reject(error);
+                  } else {
+                    resolve();
+                  }
+                });
+              },
+            );
+          },
+        };
+
+        resolve(server);
+      });
+    },
+  );
+}
+
+async function buildExpress4Server(container: Container): Promise<Server> {
+  const adapter: InversifyExpress4HttpAdapter =
+    new InversifyExpress4HttpAdapter(container, { logger: true });
+
+  const application: express4.Application = await adapter.build();
   const httpServer: http.Server = http.createServer(
     application as RequestListener,
   );
@@ -120,20 +167,24 @@ async function givenServer(
   const container: Container =
     getContainerOrFail.bind(this)(parsedContainerAlias);
 
+  let server: Server;
+
   switch (serverKind) {
     case ServerKind.express: {
-      const server: Server = await buildExpressServer(container);
-
-      setServer.bind(this)(parsedServerAlias, server);
+      server = await buildExpressServer(container);
+      break;
+    }
+    case ServerKind.express4: {
+      server = await buildExpress4Server(container);
       break;
     }
     case ServerKind.hono: {
-      const server: Server = await buildHonoServer(container);
-
-      setServer.bind(this)(parsedServerAlias, server);
+      server = await buildHonoServer(container);
       break;
     }
   }
+
+  setServer.bind(this)(parsedServerAlias, server);
 }
 
 Given<InversifyHttpWorld>(
