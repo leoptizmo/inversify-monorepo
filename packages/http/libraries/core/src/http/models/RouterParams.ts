@@ -1,21 +1,21 @@
-import { MiddlewareHandler } from './MiddlewareHandler';
+import { RequestHandler } from './RequestHandler';
 import { RouteParams } from './RouteParams';
 
 export interface RouterParams<TRequest, TResponse, TNextFunction, TResult> {
-  guardList: MiddlewareHandler<
+  guardList: RequestHandler<
     TRequest,
     TResponse,
     TNextFunction,
     TResult | undefined
   >[];
   path: string;
-  postHandlerMiddlewareList: MiddlewareHandler<
+  postHandlerMiddlewareList: RequestHandler<
     TRequest,
     TResponse,
     TNextFunction,
     TResult
   >[];
-  preHandlerMiddlewareList: MiddlewareHandler<
+  preHandlerMiddlewareList: RequestHandler<
     TRequest,
     TResponse,
     TNextFunction,
