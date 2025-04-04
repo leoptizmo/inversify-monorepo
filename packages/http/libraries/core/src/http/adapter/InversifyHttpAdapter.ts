@@ -124,6 +124,7 @@ export abstract class InversifyHttpAdapter<
             routerExplorerControllerMethodMetadata.parameterMetadataList,
             routerExplorerControllerMethodMetadata.headerMetadataList,
             routerExplorerControllerMethodMetadata.statusCode,
+            routerExplorerControllerMethodMetadata.useNativeHandler,
           ),
           path: routerExplorerControllerMethodMetadata.path,
           postHandlerMiddlewareList:
@@ -147,6 +148,7 @@ export abstract class InversifyHttpAdapter<
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
     headerMetadataList: [string, string][],
     statusCode: HttpStatusCode | undefined,
+    useNativeHandler: boolean,
   ): RequestHandler<TRequest, TResponse, TNextFunction, TResult> {
     return async (
       req: TRequest,
@@ -163,11 +165,15 @@ export abstract class InversifyHttpAdapter<
 
         this.#setHeaders(req, res, headerMetadataList);
 
-        const value: ControllerResponse = await controller[
+        const value: ControllerResponse | TResult = await controller[
           controllerMethodKey
         ]?.(...handlerParams);
 
-        return this.#reply(req, res, value, statusCode);
+        if (useNativeHandler) {
+          return value as TResult;
+        } else {
+          return this.#reply(req, res, value, statusCode);
+        }
       } catch (error: unknown) {
         this.#printError(error);
         return this.#reply(req, res, new InternalServerErrorHttpResponse());
