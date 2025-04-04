@@ -22,6 +22,11 @@ The body decorator allows extracting the body from HTTP requests
           | "express"   | "PATCH"  |
           | "express"   | "POST"   |
           | "express"   | "PUT"    |
+          | "express4"  | "DELETE" |
+          | "express4"  | "OPTIONS"|
+          | "express4"  | "PATCH"  |
+          | "express4"  | "POST"   |
+          | "express4"  | "PUT"    |
           | "hono"      | "DELETE" |
           | "hono"      | "OPTIONS"|
           | "hono"      | "PATCH"  |
@@ -44,6 +49,11 @@ The body decorator allows extracting the body from HTTP requests
           | "express"   | "PATCH"  |
           | "express"   | "POST"   |
           | "express"   | "PUT"    |
+          | "express4"  | "DELETE" |
+          | "express4"  | "OPTIONS"|
+          | "express4"  | "PATCH"  |
+          | "express4"  | "POST"   |
+          | "express4"  | "PUT"    |
           | "hono"      | "DELETE" |
           | "hono"      | "OPTIONS"|
           | "hono"      | "PATCH"  |
