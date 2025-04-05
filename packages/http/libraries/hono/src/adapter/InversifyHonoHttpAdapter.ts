@@ -168,10 +168,10 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildHonoHandler(
-    handler: RequestHandler<HonoRequest, Context, Response | undefined>,
+    handler: RequestHandler<HonoRequest, Context, Next, Response | undefined>,
   ): Handler {
-    return async (ctx: Context): Promise<Response | undefined> =>
-      handler(ctx.req as HonoRequest, ctx);
+    return async (ctx: Context, next: Next): Promise<Response | undefined> =>
+      handler(ctx.req as HonoRequest, ctx, next);
   }
 
   #buildHonoMiddleware(
@@ -182,10 +182,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
       Response | undefined
     >,
   ): HonoMiddlewareHandler {
-    return async (
-      ctx: Context,
-      next: () => Promise<void>,
-    ): Promise<Response | undefined> =>
+    return async (ctx: Context, next: Next): Promise<Response | undefined> =>
       handler(ctx.req as HonoRequest, ctx, next);
   }
 

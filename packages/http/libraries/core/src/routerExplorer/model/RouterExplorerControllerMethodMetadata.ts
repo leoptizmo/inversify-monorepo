@@ -12,4 +12,5 @@ export interface RouterExplorerControllerMethodMetadata {
   preHandlerMiddlewareList: NewableFunction[];
   requestMethodType: RequestMethodType;
   statusCode: HttpStatusCode | undefined;
+  useNativeHandler: boolean;
 }

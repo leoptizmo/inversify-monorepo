@@ -1,9 +1,10 @@
 export enum RequestMethodParameterType {
+  BODY = 'body',
+  COOKIES = 'cookies',
+  HEADERS = 'headers',
+  NEXT = 'next',
+  PARAMS = 'params',
   REQUEST = 'request',
   RESPONSE = 'response',
-  PARAMS = 'params',
   QUERY = 'query',
-  BODY = 'body',
-  HEADERS = 'headers',
-  COOKIES = 'cookies',
 }
