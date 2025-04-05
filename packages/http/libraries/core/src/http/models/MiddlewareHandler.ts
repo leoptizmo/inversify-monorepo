@@ -2,7 +2,7 @@ export type MiddlewareHandler<
   TRequest,
   TResponse,
   TNextFunction,
-  TResult = void,
+  TResult = unknown,
 > = (
   req: TRequest,
   res: TResponse,

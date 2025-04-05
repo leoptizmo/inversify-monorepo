@@ -57,11 +57,11 @@ import { ResetContentHttpResponse } from './http/responses/success/ResetContentH
 
 export type {
   HttpAdapterOptions,
+  Middleware,
   MiddlewareHandler,
   RequestHandler,
   RouteParams,
   RouterParams,
-  Middleware,
 };
 
 export {
