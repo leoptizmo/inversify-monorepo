@@ -21,6 +21,7 @@ import { useGuard } from './http/decorators/UseGuard';
 import { Guard } from './http/guard/model/Guard';
 import { Middleware } from './http/middleware/model/Middleware';
 import { HttpAdapterOptions } from './http/models/HttpAdapterOptions';
+import { MiddlewareHandler } from './http/models/MiddlewareHandler';
 import { RequestHandler } from './http/models/RequestHandler';
 import { RouteParams } from './http/models/RouteParams';
 import { RouterParams } from './http/models/RouterParams';
@@ -56,10 +57,11 @@ import { ResetContentHttpResponse } from './http/responses/success/ResetContentH
 
 export type {
   HttpAdapterOptions,
+  Middleware,
+  MiddlewareHandler,
   RequestHandler,
   RouteParams,
   RouterParams,
-  Middleware,
 };
 
 export {
