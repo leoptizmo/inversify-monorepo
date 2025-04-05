@@ -54,7 +54,7 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     >[] = [...routerParams.guardList, ...routerParams.preHandlerMiddlewareList];
 
     if (orderedMiddlewareList.length > 0) {
-      router.use(orderedMiddlewareList as ExpressRequestHandler[]);
+      router.use(orderedMiddlewareList);
     }
 
     for (const routeParams of routerParams.routeParamsList) {
