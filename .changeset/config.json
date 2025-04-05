@@ -12,6 +12,8 @@
     "@inversifyjs/http-core",
     "@inversifyjs/http-e2e-tests",
     "@inversifyjs/http-express",
+    "@inversifyjs/http-express-v4",
+    "@inversifyjs/http-hono",
     "@inversifyjs/logger"
   ]
 }
