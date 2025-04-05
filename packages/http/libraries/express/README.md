@@ -1,5 +1,5 @@
-[![Test coverage](https://codecov.io/gh/inversify/monorepo/branch/main/graph/badge.svg?flag=%40inversifyjs%2Fhttp-express-v4)](https://codecov.io/gh/inversify/monorepo/branch/main/graph/badge.svg?flag=%40inversifyjs%2Fhttp-express-v4) [![npm version](https://img.shields.io/github/package-json/v/inversify/monorepo?filename=packages%2Fhttp%2Flibraries%2Fexpress-v4%2Fpackage.json&style=plastic)](https://www.npmjs.com/package/@inversifyjs/http-express-v4)
+[![Test coverage](https://codecov.io/gh/inversify/monorepo/branch/main/graph/badge.svg?flag=%40inversifyjs%2Fhttp-express)](https://codecov.io/gh/inversify/monorepo/branch/main/graph/badge.svg?flag=%40inversifyjs%2Fhttp-express) [![npm version](https://img.shields.io/github/package-json/v/inversify/monorepo?filename=packages%2Fhttp%2Flibraries%2Fexpress%2Fpackage.json&style=plastic)](https://www.npmjs.com/package/@inversifyjs/http-express)
 
-# @inversifyjs/http-express-v4
+# @inversifyjs/http-express
 
-Inversify monorepo http express v4 modules.
+Inversify monorepo http express modules.
