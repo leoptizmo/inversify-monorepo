@@ -6,6 +6,7 @@ import {
 import { InversifyHttpAdapterError } from '../../error/models/InversifyHttpAdapterError';
 import { InversifyHttpAdapterErrorKind } from '../../error/models/InversifyHttpAdapterErrorKind';
 import { controllerMethodParameterMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
+import { controllerMethodUseNativeHandlerMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodUseNativeHandlerMetadataReflectKey';
 import { ControllerMethodParameterMetadata } from '../../routerExplorer/model/ControllerMethodParameterMetadata';
 import { Controller } from '../models/Controller';
 import { ControllerFunction } from '../models/ControllerFunction';
@@ -59,6 +60,17 @@ export function requestParam(
       controllerMethodParameterMetadataReflectKey,
       parameterMetadataList,
     );
+
+    if (
+      parameterType === RequestMethodParameterType.NEXT ||
+      parameterType === RequestMethodParameterType.RESPONSE
+    ) {
+      setReflectMetadata(
+        controllerFunction,
+        controllerMethodUseNativeHandlerMetadataReflectKey,
+        true,
+      );
+    }
   };
 }
 

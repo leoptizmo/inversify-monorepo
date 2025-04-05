@@ -11,6 +11,7 @@ import { exploreControllerMethodHeaderMetadataList } from './exploreControllerMe
 import { exploreControllerMethodMiddlewareList } from './exploreControllerMethodMiddlewareList';
 import { exploreControllerMethodParameterMetadataList } from './exploreControllerMethodParameterMetadataList';
 import { exploreControllerMethodStatusCodeMetadata } from './exploreControllerMethodStatusCodeMetadata';
+import { exploreControllerMethodUseNativeHandlerMetadata } from './exploreControllerMethodUseNativeHandlerMetadata';
 
 export function buildRouterExplorerControllerMethodMetadata(
   controller: Controller,
@@ -40,6 +41,9 @@ export function buildRouterExplorerControllerMethodMetadata(
   const headerMetadataList: [string, string][] =
     exploreControllerMethodHeaderMetadataList(targetFunction);
 
+  const useNativeHandler: boolean =
+    exploreControllerMethodUseNativeHandlerMetadata(targetFunction);
+
   return {
     guardList: controllerMethodGuardList,
     headerMetadataList,
@@ -50,5 +54,6 @@ export function buildRouterExplorerControllerMethodMetadata(
     preHandlerMiddlewareList: middlewareOptions.preHandlerMiddlewareList,
     requestMethodType: controllerMethodMetadata.requestMethodType,
     statusCode: controllerMethodStatusCode,
+    useNativeHandler,
   };
 }
