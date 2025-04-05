@@ -16,6 +16,7 @@ import {
   FastifyRequest,
   preHandlerAsyncHookHandler,
   preHandlerHookHandler,
+  RouteHandlerMethod,
 } from 'fastify';
 import { Container } from 'inversify';
 export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
@@ -174,7 +175,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
         ];
 
         fastifyInstance.route({
-          handler: routeParams.handler,
+          handler: routeParams.handler as RouteHandlerMethod,
           method: routeParams.requestMethodType,
           onResponse: this.#buildFastifySyncMiddlewareList(
             routeParams.postHandlerMiddlewareList,

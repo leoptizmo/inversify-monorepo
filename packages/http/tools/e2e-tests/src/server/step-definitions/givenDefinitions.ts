@@ -226,12 +226,9 @@ async function givenServer(
     case ServerKind.hono: {
       server = await buildHonoServer(container);
       break;
-      break;
     }
     case ServerKind.fastify: {
-      const server: Server = await buildFastifyServer(container);
-
-      setServer.bind(this)(parsedServerAlias, server);
+      server = await buildFastifyServer(container);
       break;
     }
   }
