@@ -4,6 +4,7 @@ import {
   HttpAdapterOptions,
   HttpStatusCode,
   InversifyHttpAdapter,
+  MiddlewareHandler,
   RequestHandler,
   RouterParams,
 } from '@inversifyjs/http-core';
@@ -174,7 +175,12 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildHonoMiddleware(
-    handler: RequestHandler<HonoRequest, Context, Next, Response | undefined>,
+    handler: MiddlewareHandler<
+      HonoRequest,
+      Context,
+      Next,
+      Response | undefined
+    >,
   ): HonoMiddlewareHandler {
     return async (
       ctx: Context,
@@ -184,7 +190,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildHonoMiddlewareList(
-    handlers: RequestHandler<
+    handlers: MiddlewareHandler<
       HonoRequest,
       Context,
       Next,
@@ -193,7 +199,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   ): HonoMiddlewareHandler[] {
     return handlers.map(
       (
-        handler: RequestHandler<
+        handler: MiddlewareHandler<
           HonoRequest,
           Context,
           Next,
@@ -204,7 +210,12 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildHonoPostHandlerMiddleware(
-    handler: RequestHandler<HonoRequest, Context, Next, Response | undefined>,
+    handler: MiddlewareHandler<
+      HonoRequest,
+      Context,
+      Next,
+      Response | undefined
+    >,
   ): HonoMiddlewareHandler {
     return async (ctx: Context, next: Next): Promise<Response | undefined> => {
       await next();
@@ -214,7 +225,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   }
 
   #buildHonoPostHandlerMiddlewareList(
-    handlers: RequestHandler<
+    handlers: MiddlewareHandler<
       HonoRequest,
       Context,
       Next,
@@ -223,7 +234,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
   ): HonoMiddlewareHandler[] {
     return handlers.map(
       (
-        handler: RequestHandler<
+        handler: MiddlewareHandler<
           HonoRequest,
           Context,
           Next,
