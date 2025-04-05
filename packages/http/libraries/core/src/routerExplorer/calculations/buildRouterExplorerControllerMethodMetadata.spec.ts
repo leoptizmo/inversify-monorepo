@@ -6,6 +6,7 @@ vitest.mock('./exploreControllerMethodGuardList');
 vitest.mock('./exploreControllerMethodMiddlewareList');
 vitest.mock('./buildMiddlewareOptionsFromApplyMiddlewareOptions');
 vitest.mock('./exploreControllerMethodHeaderMetadataList');
+vitest.mock('./exploreControllerMethodUseNativeHandlerMetadata');
 
 import { Controller } from '../../http/models/Controller';
 import { ControllerFunction } from '../../http/models/ControllerFunction';
@@ -20,6 +21,7 @@ import { exploreControllerMethodHeaderMetadataList } from './exploreControllerMe
 import { exploreControllerMethodMiddlewareList } from './exploreControllerMethodMiddlewareList';
 import { exploreControllerMethodParameterMetadataList } from './exploreControllerMethodParameterMetadataList';
 import { exploreControllerMethodStatusCodeMetadata } from './exploreControllerMethodStatusCodeMetadata';
+import { exploreControllerMethodUseNativeHandlerMetadata } from './exploreControllerMethodUseNativeHandlerMetadata';
 
 describe(buildRouterExplorerControllerMethodMetadata.name, () => {
   describe('when called', () => {
@@ -31,6 +33,7 @@ describe(buildRouterExplorerControllerMethodMetadata.name, () => {
     let controllerMethodMiddlewareListFixture: NewableFunction[];
     let middlewareOptionsFixture: MiddlewareOptions;
     let headerMetadataListFixture: [string, string][];
+    let useNativeHandlerFixture: boolean;
     let result: unknown;
 
     beforeAll(() => {
@@ -52,6 +55,7 @@ describe(buildRouterExplorerControllerMethodMetadata.name, () => {
         preHandlerMiddlewareList: [],
       };
       headerMetadataListFixture = [];
+      useNativeHandlerFixture = false;
 
       vitest
         .mocked(exploreControllerMethodParameterMetadataList)
@@ -76,6 +80,10 @@ describe(buildRouterExplorerControllerMethodMetadata.name, () => {
       vitest
         .mocked(exploreControllerMethodHeaderMetadataList)
         .mockReturnValueOnce(headerMetadataListFixture);
+
+      vitest
+        .mocked(exploreControllerMethodUseNativeHandlerMetadata)
+        .mockReturnValue(useNativeHandlerFixture);
 
       result = buildRouterExplorerControllerMethodMetadata(
         controllerFixture,
@@ -137,6 +145,17 @@ describe(buildRouterExplorerControllerMethodMetadata.name, () => {
       );
     });
 
+    it('should call exploreControllerMethodUseNativeHandlerMetadata', () => {
+      expect(
+        exploreControllerMethodUseNativeHandlerMetadata,
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        exploreControllerMethodUseNativeHandlerMetadata,
+      ).toHaveBeenCalledWith(
+        controllerFixture[controllerMethodMetadataFixture.methodKey],
+      );
+    });
+
     it('should return a RouterExplorerControllerMethodMetadata', () => {
       expect(result).toStrictEqual({
         guardList: controllerMethodGuardListFixture,
@@ -150,6 +169,7 @@ describe(buildRouterExplorerControllerMethodMetadata.name, () => {
           middlewareOptionsFixture.preHandlerMiddlewareList,
         requestMethodType: controllerMethodMetadataFixture.requestMethodType,
         statusCode: controllerMethodStatusCodeMetadataFixture,
+        useNativeHandler: useNativeHandlerFixture,
       });
     });
   });

@@ -10,10 +10,59 @@ import {
 import { InversifyHttpAdapterError } from '../../error/models/InversifyHttpAdapterError';
 import { InversifyHttpAdapterErrorKind } from '../../error/models/InversifyHttpAdapterErrorKind';
 import { controllerMethodParameterMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
+import { controllerMethodUseNativeHandlerMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodUseNativeHandlerMetadataReflectKey';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 import { requestParam } from './RequestParam';
 
 describe(requestParam.name, () => {
+  describe('having a parameterType RESPONSE or NEXT', () => {
+    describe('when called', () => {
+      let targetFixture: { [key: string | symbol]: unknown };
+      let keyFixture: string;
+      let indexFixture: number;
+      let parameterTypeFixture: RequestMethodParameterType;
+
+      beforeAll(() => {
+        keyFixture = 'keyFixture';
+        targetFixture = {
+          [keyFixture]: vitest.fn(),
+        };
+        indexFixture = 0;
+        parameterTypeFixture = RequestMethodParameterType.RESPONSE;
+
+        requestParam(parameterTypeFixture)(
+          targetFixture,
+          keyFixture,
+          indexFixture,
+        );
+      });
+
+      afterAll(() => {
+        vitest.clearAllMocks();
+      });
+
+      it('should call setReflectMetadata', () => {
+        expect(setReflectMetadata).toHaveBeenCalledTimes(2);
+        expect(setReflectMetadata).toHaveBeenCalledWith(
+          targetFixture[keyFixture],
+          controllerMethodParameterMetadataReflectKey,
+          [
+            {
+              index: indexFixture,
+              parameterName: undefined,
+              parameterType: parameterTypeFixture,
+            },
+          ],
+        );
+        expect(setReflectMetadata).toHaveBeenCalledWith(
+          targetFixture[keyFixture],
+          controllerMethodUseNativeHandlerMetadataReflectKey,
+          true,
+        );
+      });
+    });
+  });
+
   describe('having an undefined key', () => {
     describe('when called', () => {
       let targetFixture: object;

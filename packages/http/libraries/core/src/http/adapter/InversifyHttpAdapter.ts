@@ -125,6 +125,7 @@ export abstract class InversifyHttpAdapter<
             routerExplorerControllerMethodMetadata.parameterMetadataList,
             routerExplorerControllerMethodMetadata.headerMetadataList,
             routerExplorerControllerMethodMetadata.statusCode,
+            routerExplorerControllerMethodMetadata.useNativeHandler,
           ),
           path: routerExplorerControllerMethodMetadata.path,
           postHandlerMiddlewareList:
@@ -148,22 +149,32 @@ export abstract class InversifyHttpAdapter<
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
     headerMetadataList: [string, string][],
     statusCode: HttpStatusCode | undefined,
-  ): RequestHandler<TRequest, TResponse, TResult> {
-    return async (req: TRequest, res: TResponse): Promise<TResult> => {
+    useNativeHandler: boolean,
+  ): RequestHandler<TRequest, TResponse, TNextFunction, TResult> {
+    return async (
+      req: TRequest,
+      res: TResponse,
+      next: TNextFunction,
+    ): Promise<TResult> => {
       try {
         const handlerParams: unknown[] = await this.#buildHandlerParams(
           controllerMethodParameterMetadataList,
           req,
           res,
+          next,
         );
 
         this.#setHeaders(req, res, headerMetadataList);
 
-        const value: ControllerResponse = await controller[
+        const value: ControllerResponse | TResult = await controller[
           controllerMethodKey
         ]?.(...handlerParams);
 
-        return this.#reply(req, res, value, statusCode);
+        if (useNativeHandler) {
+          return value as TResult;
+        } else {
+          return this.#reply(req, res, value, statusCode);
+        }
       } catch (error: unknown) {
         this.#printError(error);
         return this.#reply(req, res, new InternalServerErrorHttpResponse());
@@ -175,6 +186,7 @@ export abstract class InversifyHttpAdapter<
     controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[],
     request: TRequest,
     response: TResponse,
+    next: TNextFunction,
   ): Promise<unknown[]> {
     return Promise.all(
       controllerMethodParameterMetadataList.map(
@@ -217,6 +229,9 @@ export abstract class InversifyHttpAdapter<
                 response,
                 controllerMethodParameterMetadata.parameterName,
               );
+            }
+            case RequestMethodParameterType.NEXT: {
+              return next;
             }
           }
         },
