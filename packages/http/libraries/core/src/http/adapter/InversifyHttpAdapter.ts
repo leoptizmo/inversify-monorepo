@@ -13,6 +13,7 @@ import { Controller } from '../models/Controller';
 import { ControllerResponse } from '../models/ControllerResponse';
 import { HttpAdapterOptions } from '../models/HttpAdapterOptions';
 import { InternalHttpAdapterOptions } from '../models/InternalHttpAdapterOptions';
+import { MiddlewareHandler } from '../models/MiddlewareHandler';
 import { RequestHandler } from '../models/RequestHandler';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 import { RouteParams } from '../models/RouteParams';
@@ -284,7 +285,7 @@ export abstract class InversifyHttpAdapter<
 
   async #getMiddlewareHandlerFromMetadata(
     middlewareList: NewableFunction[],
-  ): Promise<RequestHandler<TRequest, TResponse, TNextFunction, TResult>[]> {
+  ): Promise<MiddlewareHandler<TRequest, TResponse, TNextFunction, TResult>[]> {
     return Promise.all(
       middlewareList.map(async (newableFunction: NewableFunction) => {
         const middleware: Middleware<
@@ -302,7 +303,7 @@ export abstract class InversifyHttpAdapter<
   async #getGuardHandlerFromMetadata(
     guardList: NewableFunction[],
   ): Promise<
-    RequestHandler<TRequest, TResponse, TNextFunction, TResult | undefined>[]
+    MiddlewareHandler<TRequest, TResponse, TNextFunction, TResult | undefined>[]
   > {
     return Promise.all(
       guardList.map(async (newableFunction: NewableFunction) => {
