@@ -182,10 +182,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
       Response | undefined
     >,
   ): HonoMiddlewareHandler {
-    return async (
-      ctx: Context,
-      next: () => Promise<void>,
-    ): Promise<Response | undefined> =>
+    return async (ctx: Context, next: Next): Promise<Response | undefined> =>
       handler(ctx.req as HonoRequest, ctx, next);
   }
 
