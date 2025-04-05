@@ -4,7 +4,7 @@ import { AddressInfo } from 'node:net';
 import { Given } from '@cucumber/cucumber';
 import { serve, ServerType } from '@hono/node-server';
 import { InversifyExpressHttpAdapter } from '@inversifyjs/http-express';
-import { InversifyExpressHttpAdapter as InversifyExpress4HttpAdapter } from '@inversifyjs/http-express4';
+import { InversifyExpressHttpAdapter as InversifyExpress4HttpAdapter } from '@inversifyjs/http-express-v4';
 import { InversifyHonoHttpAdapter } from '@inversifyjs/http-hono';
 import express from 'express';
 import express4 from 'express4';

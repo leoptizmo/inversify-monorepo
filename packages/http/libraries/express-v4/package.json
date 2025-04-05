@@ -47,7 +47,7 @@
       "require": "./lib/cjs/index.js"
     }
   },
-  "name": "@inversifyjs/http-express4",
+  "name": "@inversifyjs/http-express-v4",
   "peerDependencies": {
     "express": "^4.21.2",
     "inversify": "^7.5.0"

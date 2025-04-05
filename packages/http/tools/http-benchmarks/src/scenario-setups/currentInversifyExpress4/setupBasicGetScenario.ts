@@ -1,4 +1,4 @@
-import { InversifyExpressHttpAdapter } from '@inversifyjs/http-express4';
+import { InversifyExpressHttpAdapter } from '@inversifyjs/http-express-v4';
 import express, { Application } from 'express4';
 import { Container } from 'inversify';
 

@@ -9,7 +9,7 @@
     "@hono/node-server": "1.14.0",
     "@inversifyjs/http-core": "workspace:*",
     "@inversifyjs/http-express": "workspace:*",
-    "@inversifyjs/http-express4": "workspace:*",
+    "@inversifyjs/http-express-v4": "workspace:*",
     "@inversifyjs/http-hono": "workspace:*",
     "express": "^5.1.0",
     "express4": "npm:express@4.21.1",
