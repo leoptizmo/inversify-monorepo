@@ -12,7 +12,7 @@
     "@inversifyjs/http-express-v4": "workspace:*",
     "@inversifyjs/http-hono": "workspace:*",
     "express": "^5.1.0",
-    "express4": "npm:express@4.21.1",
+    "express4": "npm:express@4.21.2",
     "hono": "^4.7.5",
     "inversify": "7.5.0"
   },
