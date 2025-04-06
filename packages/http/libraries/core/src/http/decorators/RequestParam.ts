@@ -8,6 +8,7 @@ import { InversifyHttpAdapterErrorKind } from '../../error/models/InversifyHttpA
 import { controllerMethodParameterMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
 import { controllerMethodUseNativeHandlerMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodUseNativeHandlerMetadataReflectKey';
 import { ControllerMethodParameterMetadata } from '../../routerExplorer/model/ControllerMethodParameterMetadata';
+import { insertParameterMetadata } from '../calculations/insertParameterMetadata';
 import { Controller } from '../models/Controller';
 import { ControllerFunction } from '../models/ControllerFunction';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
@@ -72,21 +73,4 @@ export function requestParam(
       );
     }
   };
-}
-
-function insertParameterMetadata(
-  parameterMetadataList: ControllerMethodParameterMetadata[],
-  newParameterMetadata: ControllerMethodParameterMetadata,
-): void {
-  let i: number = 0;
-
-  while (
-    i < parameterMetadataList.length &&
-    (parameterMetadataList[i] as ControllerMethodParameterMetadata).index <
-      newParameterMetadata.index
-  ) {
-    i++;
-  }
-
-  parameterMetadataList.splice(i, 0, newParameterMetadata);
 }
