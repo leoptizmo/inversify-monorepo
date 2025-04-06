@@ -3,4 +3,4 @@ export type CustomParameterDecoratorHandler<
   TRequest = any,
   TResponse = any,
   TResult = any,
-> = (request: TRequest, response: TResponse) => TResult;
+> = (request: TRequest, response: TResponse) => Promise<TResult> | TResult;
