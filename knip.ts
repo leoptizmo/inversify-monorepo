@@ -75,7 +75,7 @@ export default {
       entry: [
         "config/*.mjs",
         "src/*/parameters/*.ts",
-        "src/*/step-definitions/*.ts",
+        "src/**/step-definitions/*.ts",
         "src/app/hooks/*.ts",
       ],
       ignoreDependencies: [
