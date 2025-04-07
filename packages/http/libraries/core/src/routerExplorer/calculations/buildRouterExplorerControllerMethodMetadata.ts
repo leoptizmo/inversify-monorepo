@@ -21,8 +21,10 @@ export function buildRouterExplorerControllerMethodMetadata(
     controllerMethodMetadata.methodKey
   ] as ControllerFunction;
 
-  const controllerMethodParameterMetadataList: ControllerMethodParameterMetadata[] =
-    exploreControllerMethodParameterMetadataList(targetFunction);
+  const controllerMethodParameterMetadataList: (
+    | ControllerMethodParameterMetadata
+    | undefined
+  )[] = exploreControllerMethodParameterMetadataList(targetFunction);
 
   const controllerMethodStatusCode: HttpStatusCode | undefined =
     exploreControllerMethodStatusCodeMetadata(targetFunction);
