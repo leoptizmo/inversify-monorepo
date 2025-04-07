@@ -1,4 +1,4 @@
-import { Warrior } from './Warrior';
+import { Warrior } from '../../common/models/Warrior';
 import { WarriorCreationResponseType } from './WarriorCreationResponseType';
 
 export interface WarriorCreationResponse extends Warrior {

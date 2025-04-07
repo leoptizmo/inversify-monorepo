@@ -1,10 +1,10 @@
-import { controller, OPTIONS } from '@inversifyjs/http-core';
+import { controller, PUT } from '@inversifyjs/http-core';
 
-import { Warrior } from '../models/Warrior';
+import { Warrior } from '../../common/models/Warrior';
 
 @controller('/warriors')
-export class WarriorsOptionsController {
-  @OPTIONS()
+export class WarriorsPutController {
+  @PUT()
   public async updateWarrior(): Promise<Warrior> {
     return {
       damage: 10,
