@@ -11,6 +11,7 @@ import { InversifyHttpAdapterError } from '../../error/models/InversifyHttpAdapt
 import { InversifyHttpAdapterErrorKind } from '../../error/models/InversifyHttpAdapterErrorKind';
 import { controllerMethodParameterMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodParameterMetadataReflectKey';
 import { controllerMethodUseNativeHandlerMetadataReflectKey } from '../../reflectMetadata/data/controllerMethodUseNativeHandlerMetadataReflectKey';
+import { ControllerMethodParameterMetadata } from '../../routerExplorer/model/ControllerMethodParameterMetadata';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 import { requestParam } from './RequestParam';
 
@@ -48,7 +49,6 @@ describe(requestParam.name, () => {
           controllerMethodParameterMetadataReflectKey,
           [
             {
-              index: indexFixture,
               parameterName: undefined,
               parameterType: parameterTypeFixture,
             },
@@ -113,7 +113,7 @@ describe(requestParam.name, () => {
         targetFixture = {
           [keyFixture]: vitest.fn(),
         };
-        indexFixture = 0;
+        indexFixture = 2;
         parameterTypeFixture = RequestMethodParameterType.QUERY;
 
         requestParam(parameterTypeFixture)(
@@ -136,17 +136,20 @@ describe(requestParam.name, () => {
       });
 
       it('should call setReflectMetadata', () => {
+        const expectedControllerMethodParameterMetadata: (
+          | ControllerMethodParameterMetadata
+          | undefined
+        )[] = [];
+        expectedControllerMethodParameterMetadata[indexFixture] = {
+          parameterName: undefined,
+          parameterType: parameterTypeFixture,
+        };
+
         expect(setReflectMetadata).toHaveBeenCalledTimes(1);
         expect(setReflectMetadata).toHaveBeenCalledWith(
           targetFixture[keyFixture],
           controllerMethodParameterMetadataReflectKey,
-          [
-            {
-              index: indexFixture,
-              parameterName: undefined,
-              parameterType: parameterTypeFixture,
-            },
-          ],
+          expectedControllerMethodParameterMetadata,
         );
       });
     });
@@ -162,12 +165,11 @@ describe(requestParam.name, () => {
         targetFixture = {
           [keyFixture]: vitest.fn(),
         };
-        indexFixture = 1;
+        indexFixture = 2;
         parameterTypeFixture = RequestMethodParameterType.QUERY;
 
         vitest.mocked(getReflectMetadata).mockReturnValueOnce([
           {
-            index: 0,
             parameterName: 'parameterNameFixture',
             parameterType: RequestMethodParameterType.BODY,
           },
@@ -192,21 +194,24 @@ describe(requestParam.name, () => {
       });
 
       it('should call setReflectMetadata', () => {
+        const expectedControllerMethodParameterMetadata: (
+          | ControllerMethodParameterMetadata
+          | undefined
+        )[] = [
+          {
+            parameterName: 'parameterNameFixture',
+            parameterType: RequestMethodParameterType.BODY,
+          },
+        ];
+        expectedControllerMethodParameterMetadata[indexFixture] = {
+          parameterName: undefined,
+          parameterType: parameterTypeFixture,
+        };
+
         expect(setReflectMetadata).toHaveBeenCalledWith(
           targetFixture[keyFixture],
           controllerMethodParameterMetadataReflectKey,
-          [
-            {
-              index: 0,
-              parameterName: 'parameterNameFixture',
-              parameterType: RequestMethodParameterType.BODY,
-            },
-            {
-              index: indexFixture,
-              parameterName: undefined,
-              parameterType: parameterTypeFixture,
-            },
-          ],
+          expectedControllerMethodParameterMetadata,
         );
       });
     });
