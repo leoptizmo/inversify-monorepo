@@ -10,7 +10,7 @@ function getConfiguration(parallel) {
     ...getBaseConfiguration(parallel),
     require: [
       'src/*/parameters/*.ts',
-      'src/*/step-definitions/*.ts',
+      'src/**/step-definitions/*.ts',
       'src/app/hooks/*.ts',
     ],
     requireModule: ['ts-node/register'],
