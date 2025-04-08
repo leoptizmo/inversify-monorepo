@@ -3,7 +3,6 @@
 import {
   BindingActivation,
   BindingDeactivation,
-  BindToFluentSyntax,
   ContainerModule,
 } from 'inversify';
 
@@ -13,7 +12,10 @@ import {
   ContainerBinding,
   IsBound,
   MappedServiceIdentifier,
+  Rebind,
+  RebindSync,
   Unbind,
+  UnbindSync,
 } from './container';
 
 export interface TypedContainerModuleLoadOptions<T extends BindingMap = any> {
@@ -39,26 +41,6 @@ export interface TypedContainerModuleLoadOptions<T extends BindingMap = any> {
     onDeactivation: BindingDeactivation<TBound>,
   ): void;
 }
-
-export type UnbindSync<T extends BindingMap = any> = <
-  TKey extends MappedServiceIdentifier<T>,
->(
-  serviceIdentifier: TKey,
-) => void;
-
-export type Rebind<T extends BindingMap = any> = <
-  TBound extends ContainerBinding<T, TKey>,
-  TKey extends MappedServiceIdentifier<T> = any,
->(
-  serviceIdentifier: TKey,
-) => Promise<BindToFluentSyntax<TBound>>;
-
-export type RebindSync<T extends BindingMap = any> = <
-  TBound extends ContainerBinding<T, TKey>,
-  TKey extends MappedServiceIdentifier<T> = any,
->(
-  serviceIdentifier: TKey,
-) => BindToFluentSyntax<TBound>;
 
 export type TypedContainerModule<T extends BindingMap = any> = Omit<
   ContainerModule,
