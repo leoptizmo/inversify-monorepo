@@ -10,7 +10,7 @@ function getConfiguration(parallel) {
     ...getBaseConfiguration(parallel),
     require: [
       'lib/cjs/*/parameters/*.js',
-      'lib/cjs/*/step-definitions/*.js',
+      'lib/cjs/**/step-definitions/*.js',
       'lib/cjs/app/hooks/*.js',
     ],
   };

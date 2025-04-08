@@ -12,16 +12,18 @@ import {
   ServiceIdentifier,
 } from 'inversify';
 
+import { TypedContainerModule } from './module';
+
 type IfAny<T, TYes, TNo> = 0 extends 1 & T ? TYes : TNo;
 
 type BindingMapProperty = string | symbol;
 export type BindingMap = Record<BindingMapProperty, any>;
-type MappedServiceIdentifier<T extends BindingMap> = IfAny<
+export type MappedServiceIdentifier<T extends BindingMap> = IfAny<
   T,
   ServiceIdentifier,
   keyof T
 >;
-type ContainerBinding<
+export type ContainerBinding<
   TBindingMap extends BindingMap,
   TKey extends MappedServiceIdentifier<TBindingMap> = any,
 > = TKey extends keyof TBindingMap
@@ -67,7 +69,10 @@ interface ContainerOverrides<T extends BindingMap = any> {
   ) => Promise<Awaited<TBound>[]>;
   isBound: IsBound<T>;
   isCurrentBound: IsBound<T>;
+  rebind: Rebind<T>;
+  rebindSync: RebindSync<T>;
   unbind: Unbind<T>;
+  unbindSync: UnbindSync<T>;
   onActivation<
     TBound extends ContainerBinding<T, TKey>,
     TKey extends MappedServiceIdentifier<T> = any,
@@ -82,27 +87,49 @@ interface ContainerOverrides<T extends BindingMap = any> {
     serviceIdentifier: TKey,
     onDeactivation: BindingDeactivation<TBound>,
   ): void;
+  load(module: TypedContainerModule<T>): Promise<void>;
+  loadSync(module: TypedContainerModule<T>): void;
 }
 
-type Bind<T extends BindingMap = any> = <
+export type Bind<T extends BindingMap = any> = <
   TBound extends ContainerBinding<T, TKey>,
   TKey extends MappedServiceIdentifier<T> = any,
 >(
   serviceIdentifier: TKey,
 ) => BindToFluentSyntax<TBound>;
 
-type Unbind<T extends BindingMap = any> = <
-  TKey extends MappedServiceIdentifier<T>,
->(
-  serviceIdentifier: TKey,
-) => Promise<void>;
-
-type IsBound<T extends BindingMap = any> = <
+export type IsBound<T extends BindingMap = any> = <
   TKey extends MappedServiceIdentifier<T>,
 >(
   serviceIdentifier: TKey,
   options?: IsBoundOptions,
 ) => boolean;
+
+export type Unbind<T extends BindingMap = any> = <
+  TKey extends MappedServiceIdentifier<T>,
+>(
+  serviceIdentifier: TKey,
+) => Promise<void>;
+
+export type Rebind<T extends BindingMap = any> = <
+  TBound extends ContainerBinding<T, TKey>,
+  TKey extends MappedServiceIdentifier<T> = any,
+>(
+  serviceIdentifier: TKey,
+) => Promise<BindToFluentSyntax<TBound>>;
+
+export type RebindSync<T extends BindingMap = any> = <
+  TBound extends ContainerBinding<T, TKey>,
+  TKey extends MappedServiceIdentifier<T> = any,
+>(
+  serviceIdentifier: TKey,
+) => BindToFluentSyntax<TBound>;
+
+export type UnbindSync<T extends BindingMap = any> = <
+  TKey extends MappedServiceIdentifier<T>,
+>(
+  serviceIdentifier: TKey,
+) => void;
 
 export type TypedContainer<T extends BindingMap = any> = ContainerOverrides<T> &
   Omit<Container, keyof ContainerOverrides>;
