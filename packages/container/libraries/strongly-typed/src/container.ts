@@ -69,7 +69,10 @@ interface ContainerOverrides<T extends BindingMap = any> {
   ) => Promise<Awaited<TBound>[]>;
   isBound: IsBound<T>;
   isCurrentBound: IsBound<T>;
+  rebind: Rebind<T>;
+  rebindSync: RebindSync<T>;
   unbind: Unbind<T>;
+  unbindSync: UnbindSync<T>;
   onActivation<
     TBound extends ContainerBinding<T, TKey>,
     TKey extends MappedServiceIdentifier<T> = any,
