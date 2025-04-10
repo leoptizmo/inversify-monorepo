@@ -29,6 +29,12 @@ The headers decorator allows extracting headers from the HTTP request
           | "express4"  | "PATCH"   |
           | "express4"  | "POST"    |
           | "express4"  | "PUT"     |
+          | "fastify"   | "DELETE"  |
+          | "fastify"   | "GET"     |
+          | "fastify"   | "OPTIONS" |
+          | "fastify"   | "PATCH"   |
+          | "fastify"   | "POST"    |
+          | "fastify"   | "PUT"     |
           | "hono"      | "DELETE"  |
           | "hono"      | "GET"     |
           | "hono"      | "OPTIONS" |
@@ -59,6 +65,12 @@ The headers decorator allows extracting headers from the HTTP request
           | "express4"  | "PATCH"   |
           | "express4"  | "POST"    |
           | "express4"  | "PUT"     |
+          | "fastify"   | "DELETE"  |
+          | "fastify"   | "GET"     |
+          | "fastify"   | "OPTIONS" |
+          | "fastify"   | "PATCH"   |
+          | "fastify"   | "POST"    |
+          | "fastify"   | "PUT"     |
           | "hono"      | "DELETE"  |
           | "hono"      | "GET"     |
           | "hono"      | "OPTIONS" |

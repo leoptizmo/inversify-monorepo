@@ -7,6 +7,7 @@ import { printHttpBenchmarkResults } from '../benchmark/calculations/printHttpBe
 import { K6Summary } from '../k6/model/K6Summary';
 import { CurrentInversifyExpressBasicGetScenario } from '../scenario/currentInversifyExpress/CurrentInversifyExpressBasicGetScenario';
 import { CurrentInversifyExpress4BasicGetScenario } from '../scenario/currentInversifyExpress4/CurrentInversifyExpress4BasicGetScenario';
+import { CurrentInversifyFastifyBasicGetScenario } from '../scenario/currentInversifyFastify/CurrentInversifyFastifyBasicGetScenario';
 import { CurrentInversifyHonoBasicGetScenario } from '../scenario/currentInversifyHono/CurrentInversifyHonoBasicGetScenario';
 import { ExpressBasicGetScenario } from '../scenario/express/ExpressBasicGetScenario';
 import { Express4BasicGetScenario } from '../scenario/express4/Express4BasicGetScenario';
@@ -45,6 +46,7 @@ export async function run(): Promise<void> {
   // Run fastify basic get request scenarios
   {
     const scenarioList: Scenario<Platform, K6Summary>[] = [
+      new CurrentInversifyFastifyBasicGetScenario(),
       new FastifyBasicGetScenario(),
       new NestJsFastifyBasicGetScenario(),
     ];

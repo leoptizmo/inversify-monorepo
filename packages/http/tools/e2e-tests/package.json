@@ -10,9 +10,11 @@
     "@inversifyjs/http-core": "workspace:*",
     "@inversifyjs/http-express": "workspace:*",
     "@inversifyjs/http-express-v4": "workspace:*",
+    "@inversifyjs/http-fastify": "workspace:*",
     "@inversifyjs/http-hono": "workspace:*",
     "express": "^5.1.0",
     "express4": "npm:express@4.21.2",
+    "fastify": "^5.2.1",
     "hono": "^4.7.6",
     "inversify": "7.5.0"
   },

@@ -10,6 +10,7 @@
     "@inversifyjs/http-core": "workspace:*",
     "@inversifyjs/http-express": "workspace:*",
     "@inversifyjs/http-express-v4": "workspace:*",
+    "@inversifyjs/http-fastify": "workspace:*",
     "@inversifyjs/http-hono": "workspace:*",
     "@nestjs/common": "11.0.15",
     "@nestjs/core": "11.0.15",
