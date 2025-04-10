@@ -33,27 +33,24 @@ export function requestParam(
       );
     }
 
-    let parameterMetadataList: ControllerMethodParameterMetadata[] | undefined =
-      getReflectMetadata(
-        controllerFunction,
-        controllerMethodParameterMetadataReflectKey,
-      );
+    let parameterMetadataList:
+      | (ControllerMethodParameterMetadata | undefined)[]
+      | undefined = getReflectMetadata(
+      controllerFunction,
+      controllerMethodParameterMetadataReflectKey,
+    );
 
     const controllerMethodParameterMetadata: ControllerMethodParameterMetadata =
       {
-        index,
         parameterName,
         parameterType,
       };
 
     if (parameterMetadataList === undefined) {
-      parameterMetadataList = [controllerMethodParameterMetadata];
-    } else {
-      insertParameterMetadata(
-        parameterMetadataList,
-        controllerMethodParameterMetadata,
-      );
+      parameterMetadataList = [];
     }
+
+    parameterMetadataList[index] = controllerMethodParameterMetadata;
 
     setReflectMetadata(
       controllerFunction,
@@ -72,21 +69,4 @@ export function requestParam(
       );
     }
   };
-}
-
-function insertParameterMetadata(
-  parameterMetadataList: ControllerMethodParameterMetadata[],
-  newParameterMetadata: ControllerMethodParameterMetadata,
-): void {
-  let i: number = 0;
-
-  while (
-    i < parameterMetadataList.length &&
-    (parameterMetadataList[i] as ControllerMethodParameterMetadata).index <
-      newParameterMetadata.index
-  ) {
-    i++;
-  }
-
-  parameterMetadataList.splice(i, 0, newParameterMetadata);
 }
