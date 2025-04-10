@@ -187,10 +187,11 @@ async function buildFastifyServer(container: Container): Promise<Server> {
               resolve();
             },
             (err: unknown) => {
-              if (err instanceof Error) {
-                reject(err);
-              } else {
+              if (err === undefined) {
                 resolve();
+              } else {
+                // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+                reject(err);
               }
             },
           );

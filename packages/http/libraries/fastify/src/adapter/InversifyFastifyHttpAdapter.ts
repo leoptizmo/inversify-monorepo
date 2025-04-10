@@ -22,7 +22,7 @@ import { Container } from 'inversify';
 export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
   FastifyRequest,
   FastifyReply,
-  (err?: Error) => void,
+  (err?: unknown) => void,
   void
 > {
   readonly #app: FastifyInstance;

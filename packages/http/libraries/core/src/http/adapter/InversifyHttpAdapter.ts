@@ -28,8 +28,7 @@ const DEFAULT_ERROR_MESSAGE: string = 'An unexpected error occurred';
 export abstract class InversifyHttpAdapter<
   TRequest,
   TResponse,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  TNextFunction extends (err?: any) => void,
+  TNextFunction extends (err?: unknown) => void,
   TResult,
 > {
   protected readonly httpAdapterOptions: InternalHttpAdapterOptions;
