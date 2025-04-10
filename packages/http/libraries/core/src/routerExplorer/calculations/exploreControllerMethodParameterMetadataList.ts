@@ -6,7 +6,7 @@ import { ControllerMethodParameterMetadata } from '../model/ControllerMethodPara
 
 export function exploreControllerMethodParameterMetadataList(
   controllerMethod: ControllerFunction,
-): ControllerMethodParameterMetadata[] {
+): (ControllerMethodParameterMetadata | undefined)[] {
   return (
     getReflectMetadata(
       controllerMethod,

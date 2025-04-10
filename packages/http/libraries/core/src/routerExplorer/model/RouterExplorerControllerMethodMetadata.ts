@@ -6,7 +6,7 @@ export interface RouterExplorerControllerMethodMetadata {
   guardList: NewableFunction[];
   headerMetadataList: [string, string][];
   methodKey: string | symbol;
-  parameterMetadataList: ControllerMethodParameterMetadata[];
+  parameterMetadataList: (ControllerMethodParameterMetadata | undefined)[];
   path: string;
   postHandlerMiddlewareList: NewableFunction[];
   preHandlerMiddlewareList: NewableFunction[];
