@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { RequestMethodType } from '../../http/models/RequestMethodType';
 import { HttpStatusCode } from '../../http/responses/HttpStatusCode';
 import { ControllerMethodParameterMetadata } from './ControllerMethodParameterMetadata';
 
 export interface RouterExplorerControllerMethodMetadata<
-  TRequest = any,
-  TResponse = any,
-  TResult = any,
+  TRequest = unknown,
+  TResponse = unknown,
+  TResult = unknown,
 > {
   guardList: NewableFunction[];
   headerMetadataList: [string, string][];

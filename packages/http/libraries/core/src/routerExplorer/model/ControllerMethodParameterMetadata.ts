@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CustomParameterDecoratorHandler } from '../../http/models/CustomParameterDecoratorHandler';
 import { RequestMethodParameterType } from '../../http/models/RequestMethodParameterType';
 
 export interface ControllerMethodParameterMetadata<
-  TRequest = any,
-  TResponse = any,
-  TResult = any,
+  TRequest = unknown,
+  TResponse = unknown,
+  TResult = unknown,
 > {
   customParameterDecoratorHandler?:
     | CustomParameterDecoratorHandler<TRequest, TResponse, TResult>

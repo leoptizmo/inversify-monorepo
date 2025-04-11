@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export type CustomParameterDecoratorHandler<
-  TRequest = any,
-  TResponse = any,
-  TResult = any,
+  TRequest = unknown,
+  TResponse = unknown,
+  TResult = unknown,
 > = (request: TRequest, response: TResponse) => Promise<TResult> | TResult;
