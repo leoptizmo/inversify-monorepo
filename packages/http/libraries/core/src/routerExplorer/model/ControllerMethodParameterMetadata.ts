@@ -10,7 +10,6 @@ export interface ControllerMethodParameterMetadata<
   customParameterDecoratorHandler?:
     | CustomParameterDecoratorHandler<TRequest, TResponse, TResult>
     | undefined;
-  index: number;
   parameterType: RequestMethodParameterType;
   parameterName?: string | undefined;
 }

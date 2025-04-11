@@ -3,8 +3,9 @@
   "bugs": {
     "url": "https://github.com/inversify/monorepo/issues"
   },
-  "description": "InversifyJs http hono package",
+  "description": "InversifyJs http fastify package",
   "dependencies": {
+    "@fastify/cookie": "11.0.2",
     "@inversifyjs/http-core": "workspace:*"
   },
   "devDependencies": {
@@ -46,10 +47,10 @@
       "require": "./lib/cjs/index.js"
     }
   },
-  "name": "@inversifyjs/http-hono",
+  "name": "@inversifyjs/http-fastify",
   "peerDependencies": {
-    "hono": "^4.7.6",
-    "inversify": "^7.2.0"
+    "fastify": "^5.2.1",
+    "inversify": "^7.5.0"
   },
   "private": true,
   "repository": {

@@ -34,27 +34,24 @@ export function requestParam(
       );
     }
 
-    let parameterMetadataList: ControllerMethodParameterMetadata[] | undefined =
-      getReflectMetadata(
-        controllerFunction,
-        controllerMethodParameterMetadataReflectKey,
-      );
+    let parameterMetadataList:
+      | (ControllerMethodParameterMetadata | undefined)[]
+      | undefined = getReflectMetadata(
+      controllerFunction,
+      controllerMethodParameterMetadataReflectKey,
+    );
 
     const controllerMethodParameterMetadata: ControllerMethodParameterMetadata =
       {
-        index,
         parameterName,
         parameterType,
       };
 
     if (parameterMetadataList === undefined) {
-      parameterMetadataList = [controllerMethodParameterMetadata];
-    } else {
-      insertParameterMetadata(
-        parameterMetadataList,
-        controllerMethodParameterMetadata,
-      );
+      parameterMetadataList = [];
     }
+
+    parameterMetadataList[index] = controllerMethodParameterMetadata;
 
     setReflectMetadata(
       controllerFunction,

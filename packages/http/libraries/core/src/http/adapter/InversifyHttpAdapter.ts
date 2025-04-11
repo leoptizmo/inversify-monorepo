@@ -157,11 +157,10 @@ export abstract class InversifyHttpAdapter<
   #buildHandler(
     controller: Controller,
     controllerMethodKey: string | symbol,
-    controllerMethodParameterMetadataList: ControllerMethodParameterMetadata<
-      TRequest,
-      TResponse,
-      unknown
-    >[],
+    controllerMethodParameterMetadataList: (
+      | ControllerMethodParameterMetadata<TRequest, TResponse, unknown>
+      | undefined
+    )[],
     headerMetadataList: [string, string][],
     statusCode: HttpStatusCode | undefined,
     useNativeHandler: boolean,
@@ -198,11 +197,10 @@ export abstract class InversifyHttpAdapter<
   }
 
   async #buildHandlerParams(
-    controllerMethodParameterMetadataList: ControllerMethodParameterMetadata<
-      TRequest,
-      TResponse,
-      unknown
-    >[],
+    controllerMethodParameterMetadataList: (
+      | ControllerMethodParameterMetadata<TRequest, TResponse, unknown>
+      | undefined
+    )[],
     request: TRequest,
     response: TResponse,
     next: TNextFunction,
@@ -210,12 +208,14 @@ export abstract class InversifyHttpAdapter<
     return Promise.all(
       controllerMethodParameterMetadataList.map(
         async (
-          controllerMethodParameterMetadata: ControllerMethodParameterMetadata<
-            TRequest,
-            TResponse,
-            unknown
-          >,
+          controllerMethodParameterMetadata:
+            | ControllerMethodParameterMetadata<TRequest, TResponse, unknown>
+            | undefined,
         ) => {
+          if (controllerMethodParameterMetadata === undefined) {
+            return undefined;
+          }
+
           switch (controllerMethodParameterMetadata.parameterType) {
             case RequestMethodParameterType.BODY:
               return this._getBody(

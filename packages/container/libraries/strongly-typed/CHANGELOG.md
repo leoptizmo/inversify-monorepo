@@ -1,5 +1,14 @@
 # @inversifyjs/strongly-typed
 
+## 2.1.0
+
+### Minor Changes
+
+- 2516897: Updated `TypedContainer` with `rebindSync`
+- 2516897: Updated `TypedContainer` with `unbindSync`
+- ebac67a: Added support for strongly-typed container modules
+- 2516897: Updated `TypedContainer` with `rebind`
+
 ## 2.0.1
 
 ### Patch Changes

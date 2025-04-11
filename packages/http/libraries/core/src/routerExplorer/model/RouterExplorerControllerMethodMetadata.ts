@@ -11,11 +11,10 @@ export interface RouterExplorerControllerMethodMetadata<
   guardList: NewableFunction[];
   headerMetadataList: [string, string][];
   methodKey: string | symbol;
-  parameterMetadataList: ControllerMethodParameterMetadata<
-    TRequest,
-    TResponse,
-    TResult
-  >[];
+  parameterMetadataList: (
+    | ControllerMethodParameterMetadata<TRequest, TResponse, TResult>
+    | undefined
+  )[];
   path: string;
   postHandlerMiddlewareList: NewableFunction[];
   preHandlerMiddlewareList: NewableFunction[];
