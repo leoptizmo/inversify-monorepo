@@ -11,7 +11,6 @@ import { Controller } from '../models/Controller';
 import { ControllerFunction } from '../models/ControllerFunction';
 import { CustomParameterDecoratorHandler } from '../models/CustomParameterDecoratorHandler';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
-import { insertParameterMetadata } from './insertParameterMetadata';
 
 export function createCustomParameterDecorator<TRequest, TResponse, TResult>(
   handler: CustomParameterDecoratorHandler<TRequest, TResponse, TResult>,
@@ -42,18 +41,14 @@ export function createCustomParameterDecorator<TRequest, TResponse, TResult>(
     const controllerMethodParameterMetadata: ControllerMethodParameterMetadata =
       {
         customParameterDecoratorHandler: handler,
-        index,
         parameterType: RequestMethodParameterType.CUSTOM,
       };
 
     if (parameterMetadataList === undefined) {
-      parameterMetadataList = [controllerMethodParameterMetadata];
-    } else {
-      insertParameterMetadata(
-        parameterMetadataList,
-        controllerMethodParameterMetadata,
-      );
+      parameterMetadataList = [];
     }
+
+    parameterMetadataList[index] = controllerMethodParameterMetadata;
 
     setReflectMetadata(
       controllerFunction,
