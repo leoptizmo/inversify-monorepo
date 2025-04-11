@@ -32,17 +32,21 @@ export function createCustomParameterDecorator<TRequest, TResponse, TResult>(
       );
     }
 
-    let parameterMetadataList: ControllerMethodParameterMetadata[] | undefined =
-      getReflectMetadata(
-        controllerFunction,
-        controllerMethodParameterMetadataReflectKey,
-      );
+    let parameterMetadataList:
+      | ControllerMethodParameterMetadata<TRequest, TResponse, TResult>[]
+      | undefined = getReflectMetadata(
+      controllerFunction,
+      controllerMethodParameterMetadataReflectKey,
+    );
 
-    const controllerMethodParameterMetadata: ControllerMethodParameterMetadata =
-      {
-        customParameterDecoratorHandler: handler,
-        parameterType: RequestMethodParameterType.CUSTOM,
-      };
+    const controllerMethodParameterMetadata: ControllerMethodParameterMetadata<
+      TRequest,
+      TResponse,
+      TResult
+    > = {
+      customParameterDecoratorHandler: handler,
+      parameterType: RequestMethodParameterType.CUSTOM,
+    };
 
     if (parameterMetadataList === undefined) {
       parameterMetadataList = [];

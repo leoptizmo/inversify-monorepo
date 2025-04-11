@@ -367,7 +367,11 @@ export abstract class InversifyHttpAdapter<
   #printController(
     controllerName: string,
     path: string,
-    routerExplorerControllerMethodMetadataList: RouterExplorerControllerMethodMetadata[],
+    routerExplorerControllerMethodMetadataList: RouterExplorerControllerMethodMetadata<
+      TRequest,
+      TResponse,
+      unknown
+    >[],
   ): void {
     this.#logger.info(`${controllerName} {${path}}:`);
 
