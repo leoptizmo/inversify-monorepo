@@ -47,7 +47,13 @@ function givenWarriorRequestForServer(
   };
 
   const request: Request = new Request(url, requestInit);
-  setServerRequest.bind(this)(parsedServerAlias, request);
+
+  setServerRequest.bind(this)(parsedServerAlias, {
+    body: undefined,
+    queryParameters: {},
+    request,
+    urlParameters: {},
+  });
 }
 
 function givenWarriorControllerForContainer(

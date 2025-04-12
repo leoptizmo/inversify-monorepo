@@ -1,6 +1,7 @@
 import { IWorld } from '@cucumber/cucumber';
 import { Container } from 'inversify';
 
+import { RequestParameter } from '../../http/models/RequestParameter';
 import { Server } from '../../server/models/Server';
 
 interface EntitiesMap {
@@ -15,6 +16,6 @@ interface ContainerRequests {
 export interface InversifyHttpWorld extends IWorld {
   readonly containerRequests: ContainerRequests;
   readonly entities: EntitiesMap;
-  readonly serverRequests: Map<string, Request>;
+  readonly serverRequests: Map<string, RequestParameter>;
   readonly serverResponses: Map<string, Response>;
 }

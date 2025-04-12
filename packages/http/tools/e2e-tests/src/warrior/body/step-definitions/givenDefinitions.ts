@@ -60,8 +60,10 @@ function getMethodWarriorBodyNamedController(
 function givenWarriorRequestWithBodyForServer(
   this: InversifyHttpWorld,
   method: HttpMethod,
+  requestAlias?: string,
   serverAlias?: string,
 ): void {
+  const parsedRequestAlias: string = requestAlias ?? defaultAlias;
   const parsedServerAlias: string = serverAlias ?? defaultAlias;
   const server: Server = getServerOrFail.bind(this)(parsedServerAlias);
 
@@ -81,7 +83,13 @@ function givenWarriorRequestWithBodyForServer(
   };
 
   const request: Request = new Request(url, requestInit);
-  setServerRequest.bind(this)(parsedServerAlias, request);
+
+  setServerRequest.bind(this)(parsedRequestAlias, {
+    body: warriorRequest,
+    queryParameters: {},
+    request,
+    urlParameters: {},
+  });
 }
 
 function givenWarriorBodyControllerForContainer(

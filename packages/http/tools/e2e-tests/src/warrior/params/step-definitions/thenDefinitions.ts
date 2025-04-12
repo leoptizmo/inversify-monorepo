@@ -3,21 +3,30 @@ import assert from 'node:assert';
 import { Then } from '@cucumber/cucumber';
 
 import { InversifyHttpWorld } from '../../../common/models/InversifyHttpWorld';
+import { RequestParameter } from '../../../http/models/RequestParameter';
+import { getServerRequestOrFail } from '../../../server/calculations/getServerRequestOrFail';
 import { getServerResponseOrFail } from '../../../server/calculations/getServerResponseOrFail';
 import { WarriorWithId } from '../models/WarriorWithId';
 
 async function thenResponseContainsTheCorrectUrlParameters(
   this: InversifyHttpWorld,
+  requestAlias?: string,
   responseAlias?: string,
 ): Promise<void> {
+  const parsedRequestAlias: string = requestAlias ?? 'default';
   const parsedResponseAlias: string = responseAlias ?? 'default';
 
+  const requestParameter: RequestParameter =
+    getServerRequestOrFail.bind(this)(parsedRequestAlias);
   const response: Response =
     getServerResponseOrFail.bind(this)(parsedResponseAlias);
 
   const warriorWithId: WarriorWithId = (await response.json()) as WarriorWithId;
 
-  assert(warriorWithId.id === '123');
+  assert(
+    warriorWithId.id ===
+      (requestParameter.urlParameters as { warrior: string }).warrior,
+  );
 }
 
 Then<InversifyHttpWorld>(
