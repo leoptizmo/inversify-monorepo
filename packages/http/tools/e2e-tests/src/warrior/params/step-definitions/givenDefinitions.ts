@@ -63,14 +63,25 @@ function givenWarriorRequestWithParamsForServer(
   const parsedServerAlias: string = serverAlias ?? defaultAlias;
   const server: Server = getServerOrFail.bind(this)(parsedServerAlias);
 
-  const url: string = `http://${server.host}:${server.port.toString()}/warriors/123`;
+  const urlParameters: {
+    warrior: string;
+  } = {
+    warrior: '123',
+  };
+
+  const url: string = `http://${server.host}:${server.port.toString()}/warriors/${urlParameters.warrior}`;
 
   const requestInit: RequestInit = {
     method,
   };
 
   const request: Request = new Request(url, requestInit);
-  setServerRequest.bind(this)(parsedServerAlias, request);
+  setServerRequest.bind(this)(parsedServerAlias, {
+    body: undefined,
+    queryParameters: {},
+    request,
+    urlParameters,
+  });
 }
 
 function givenWarriorParamsControllerForContainer(

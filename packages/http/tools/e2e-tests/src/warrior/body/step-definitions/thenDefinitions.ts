@@ -3,23 +3,36 @@ import assert from 'node:assert';
 import { Then } from '@cucumber/cucumber';
 
 import { InversifyHttpWorld } from '../../../common/models/InversifyHttpWorld';
+import { RequestParameter } from '../../../http/models/RequestParameter';
+import { getServerRequestOrFail } from '../../../server/calculations/getServerRequestOrFail';
 import { getServerResponseOrFail } from '../../../server/calculations/getServerResponseOrFail';
 import { WarriorCreationResponse } from '../models/WarriorCreationResponse';
-import { WarriorCreationResponseType } from '../models/WarriorCreationResponseType';
+import { WarriorRequest } from '../models/WarriorRequest';
 
 async function thenResponseContainsTheCorrectBodyData(
   this: InversifyHttpWorld,
+  requestAlias?: string,
   responseAlias?: string,
 ): Promise<void> {
+  const parsedRequestAlias: string = requestAlias ?? 'default';
   const parsedResponseAlias: string = responseAlias ?? 'default';
+  const request: RequestParameter =
+    getServerRequestOrFail.bind(this)(parsedRequestAlias);
+
+  const requestBody: WarriorRequest | undefined = request.body as
+    | WarriorRequest
+    | undefined;
+
+  assert(requestBody !== undefined);
+
   const response: Response =
     getServerResponseOrFail.bind(this)(parsedResponseAlias);
 
   const warriorCreationResponse: WarriorCreationResponse =
     (await response.json()) as WarriorCreationResponse;
 
-  assert(warriorCreationResponse.name === 'Samurai');
-  assert(warriorCreationResponse.type === WarriorCreationResponseType.Melee);
+  assert(warriorCreationResponse.name === requestBody.name);
+  assert(warriorCreationResponse.type === requestBody.type);
 }
 
 Then<InversifyHttpWorld>(

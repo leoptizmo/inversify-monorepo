@@ -1,6 +1,7 @@
 import { When } from '@cucumber/cucumber';
 
 import { InversifyHttpWorld } from '../../../common/models/InversifyHttpWorld';
+import { RequestParameter } from '../../../http/models/RequestParameter';
 import { setServerResponse } from '../../../server/actions/setServerResponse';
 import { getServerRequestOrFail } from '../../../server/calculations/getServerRequestOrFail';
 
@@ -10,10 +11,10 @@ async function whenRequestIsSend(
 ): Promise<void> {
   const parsedRequestAlias: string = requestAlias ?? 'default';
 
-  const request: Request =
+  const requestParameter: RequestParameter =
     getServerRequestOrFail.bind(this)(parsedRequestAlias);
 
-  const response: Response = await fetch(request);
+  const response: Response = await fetch(requestParameter.request);
 
   setServerResponse.bind(this)(parsedRequestAlias, response);
 }

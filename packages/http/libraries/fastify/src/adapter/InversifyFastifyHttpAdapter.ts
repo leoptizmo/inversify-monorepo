@@ -1,6 +1,6 @@
 import { Stream } from 'node:stream';
 
-import cookie from '@fastify/cookie';
+import cookie, { FastifyCookieOptions } from '@fastify/cookie';
 import {
   HttpAdapterOptions,
   HttpStatusCode,
@@ -196,7 +196,11 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
   #buildDefaultFastifyApp(customApp?: FastifyInstance): FastifyInstance {
     const app: FastifyInstance = customApp ?? fastify();
 
-    app.register(cookie);
+    app.register(
+      cookie as unknown as FastifyPluginCallback<
+        NonNullable<FastifyCookieOptions>
+      >,
+    );
 
     return app;
   }

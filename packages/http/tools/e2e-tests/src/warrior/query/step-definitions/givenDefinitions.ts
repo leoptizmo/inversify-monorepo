@@ -66,14 +66,28 @@ function givenWarriorRequestWithQueryForServer(
 
   const server: Server = getServerOrFail.bind(this)(parsedServerAlias);
 
-  const url: string = `http://${server.host}:${server.port.toString()}/warriors?filter=test`;
+  const queryParameters: Record<string, string[]> = {
+    filter: ['test'],
+  };
+
+  const stringifiedQueryParameters: string = new URLSearchParams(
+    queryParameters,
+  ).toString();
+
+  const url: string = `http://${server.host}:${server.port.toString()}/warriors?${stringifiedQueryParameters}`;
 
   const requestInit: RequestInit = {
     method,
   };
 
   const request: Request = new Request(url, requestInit);
-  setServerRequest.bind(this)(parsedServerAlias, request);
+
+  setServerRequest.bind(this)(parsedServerAlias, {
+    body: undefined,
+    queryParameters,
+    request,
+    urlParameters: {},
+  });
 }
 
 function givenWarriorQueryControllerForContainer(
