@@ -48,7 +48,7 @@ function givenWarriorStatusCodeControllerForContainer(
 }
 
 Given<InversifyHttpWorld>(
-  'a warrior controller with statusCode decorator for "{httpMethod}" method',
+  'a warrior controller with NO_CONTENT statusCode decorator for "{httpMethod}" method',
   function (this: InversifyHttpWorld, httpMethod: HttpMethod): void {
     givenWarriorStatusCodeControllerForContainer.bind(this)(httpMethod);
   },

@@ -8,7 +8,7 @@ The statusCode decorator allows set response status code
     Rule: statusCode decorator allows set response status code
       Scenario: Response status code is correctly set
 
-        Given a warrior controller with statusCode decorator for <method> method
+        Given a warrior controller with NO_CONTENT statusCode decorator for <method> method
         And a <server_kind> server from container
         And a <method> warriors HTTP request with headers
         When the request is send
