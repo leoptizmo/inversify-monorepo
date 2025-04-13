@@ -14,8 +14,12 @@ async function thenResponseStatusCodeIsNoContent(
     getServerResponseOrFail.bind(this)(parsedResponseAlias);
   const responseStatus: number = response.status;
 
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-  assert(responseStatus === 204);
+  assert.strictEqual(
+    responseStatus,
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+    204,
+    `Expected status code to be 204, but got ${String(responseStatus)}`,
+  );
 }
 
 Then<InversifyHttpWorld>(
