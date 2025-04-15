@@ -1,4 +1,5 @@
 packages:
+  - packages/container/examples/*
   - packages/container/libraries/*
   - packages/container/tools/*
   - packages/docs/services/*
