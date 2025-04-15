@@ -1,6 +1,16 @@
 import { PluginApi } from './PluginApi';
+import { PluginContext } from './PluginContext';
 
-export interface Plugin {
-  load(api: PluginApi): void;
-  supports(version: string): boolean;
+export const isPlugin: symbol = Symbol.for('@inversifyjs/plugin/isPlugin');
+
+export abstract class Plugin {
+  public readonly [isPlugin]: true = true as const;
+
+  protected readonly _context: PluginContext;
+
+  constructor(context: PluginContext) {
+    this._context = context;
+  }
+
+  public abstract load(api: PluginApi): void;
 }
