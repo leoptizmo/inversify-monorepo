@@ -6,7 +6,6 @@
   "description": "InversifyJs plugin example package",
   "dependencies": {
     "@inversifyjs/container": "workspace:*",
-    "@inversifyjs/core": "workspace:*",
     "@inversifyjs/plugin": "workspace:*"
   },
   "devDependencies": {

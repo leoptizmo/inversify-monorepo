@@ -5,7 +5,6 @@
   },
   "description": "InversifyJs plugin package",
   "dependencies": {
-    "@inversifyjs/common": "workspace:*",
     "@inversifyjs/container": "workspace:*",
     "@inversifyjs/core": "workspace:*"
   },
