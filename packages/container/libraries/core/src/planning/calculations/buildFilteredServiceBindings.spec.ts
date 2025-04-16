@@ -10,6 +10,10 @@ import {
 
 import { Newable } from '@inversifyjs/common';
 
+vitest.mock('../../binding/actions/getBindingId');
+vitest.mock('../../metadata/calculations/getClassMetadata');
+
+import { getBindingId } from '../../binding/actions/getBindingId';
 import { Binding } from '../../binding/models/Binding';
 import { BindingConstraints } from '../../binding/models/BindingConstraints';
 import {
@@ -18,6 +22,8 @@ import {
 } from '../../binding/models/BindingScope';
 import { bindingTypeValues } from '../../binding/models/BindingType';
 import { InstanceBinding } from '../../binding/models/InstanceBinding';
+import { getClassMetadata } from '../../metadata/calculations/getClassMetadata';
+import { ClassMetadata } from '../../metadata/models/ClassMetadata';
 import { BasePlanParams } from '../models/BasePlanParams';
 import {
   buildFilteredServiceBindings,
@@ -108,7 +114,7 @@ describe(buildFilteredServiceBindings.name, () => {
         );
       });
 
-      it('should return empty array', () => {
+      it('should return an array with a binding', () => {
         expect(result).toStrictEqual([bindingFixture]);
       });
     });
@@ -138,10 +144,31 @@ describe(buildFilteredServiceBindings.name, () => {
       optionsFixture = {};
     });
 
-    describe('when called, and params.getBinding() returns undefined', () => {
+    describe('when called, and params.getBinding() returns undefined and getClassMetadata() returns ClassMetadata with undefined scope', () => {
+      let bindingIdFixture: number;
+      let classMetadataFixture: ClassMetadata;
+
       let result: unknown;
 
       beforeAll(() => {
+        bindingIdFixture = 0;
+
+        classMetadataFixture = {
+          constructorArguments: [],
+          lifecycle: {
+            postConstructMethodName: undefined,
+            preDestroyMethodName: undefined,
+          },
+          properties: new Map(),
+          scope: undefined,
+        };
+
+        vitest
+          .mocked(getClassMetadata)
+          .mockReturnValueOnce(classMetadataFixture);
+
+        vitest.mocked(getBindingId).mockReturnValueOnce(bindingIdFixture);
+
         result = buildFilteredServiceBindings(
           paramsMock,
           bindingConstraintsFixture,
@@ -160,7 +187,41 @@ describe(buildFilteredServiceBindings.name, () => {
         );
       });
 
+      it('should call getClassMetadata()', () => {
+        expect(getClassMetadata).toHaveBeenCalledTimes(1);
+        expect(getClassMetadata).toHaveBeenCalledWith(
+          bindingConstraintsFixture.serviceIdentifier,
+        );
+      });
+
+      it('should call getBindingId()', () => {
+        expect(getBindingId).toHaveBeenCalledTimes(1);
+        expect(getBindingId).toHaveBeenCalledWith();
+      });
+
       it('should call params.setBinding()', () => {
+        const expected: InstanceBinding<unknown> = {
+          cache: {
+            isRight: false,
+            value: undefined,
+          },
+          id: bindingIdFixture,
+          implementationType:
+            bindingConstraintsFixture.serviceIdentifier as Newable,
+          isSatisfiedBy: expect.any(Function) as unknown as () => boolean,
+          moduleId: undefined,
+          onActivation: undefined,
+          onDeactivation: undefined,
+          scope: bindingScopeFixture,
+          serviceIdentifier: bindingConstraintsFixture.serviceIdentifier,
+          type: bindingTypeValues.Instance,
+        };
+
+        expect(paramsMock.setBinding).toHaveBeenCalledTimes(1);
+        expect(paramsMock.setBinding).toHaveBeenCalledWith(expected);
+      });
+
+      it('should return an array with a binding', () => {
         const expected: InstanceBinding<unknown> = {
           cache: {
             isRight: false,
@@ -178,24 +239,103 @@ describe(buildFilteredServiceBindings.name, () => {
           type: bindingTypeValues.Instance,
         };
 
-        expect(paramsMock.setBinding).toHaveBeenCalledTimes(1);
-        expect(paramsMock.setBinding).toHaveBeenCalledWith(expected);
+        expect(result).toStrictEqual([expected]);
+      });
+    });
+
+    describe('when called, and params.getBinding() returns undefined and getClassMetadata() returns ClassMetadata with scope', () => {
+      let bindingIdFixture: number;
+      let classMetadataFixture: ClassMetadata;
+      let classMetadataScopeFixture: BindingScope;
+
+      let result: unknown;
+
+      beforeAll(() => {
+        bindingIdFixture = 0;
+
+        classMetadataScopeFixture = bindingScopeValues.Request;
+        classMetadataFixture = {
+          constructorArguments: [],
+          lifecycle: {
+            postConstructMethodName: undefined,
+            preDestroyMethodName: undefined,
+          },
+          properties: new Map(),
+          scope: classMetadataScopeFixture,
+        };
+
+        vitest
+          .mocked(getClassMetadata)
+          .mockReturnValueOnce(classMetadataFixture);
+
+        vitest.mocked(getBindingId).mockReturnValueOnce(bindingIdFixture);
+
+        result = buildFilteredServiceBindings(
+          paramsMock,
+          bindingConstraintsFixture,
+          optionsFixture,
+        );
       });
 
-      it('should return empty array', () => {
+      afterAll(() => {
+        vitest.clearAllMocks();
+      });
+
+      it('should call params.getBinding()', () => {
+        expect(paramsMock.getBindings).toHaveBeenCalledTimes(1);
+        expect(paramsMock.getBindings).toHaveBeenCalledWith(
+          bindingConstraintsFixture.serviceIdentifier,
+        );
+      });
+
+      it('should call getClassMetadata()', () => {
+        expect(getClassMetadata).toHaveBeenCalledTimes(1);
+        expect(getClassMetadata).toHaveBeenCalledWith(
+          bindingConstraintsFixture.serviceIdentifier,
+        );
+      });
+
+      it('should call getBindingId()', () => {
+        expect(getBindingId).toHaveBeenCalledTimes(1);
+        expect(getBindingId).toHaveBeenCalledWith();
+      });
+
+      it('should call params.setBinding()', () => {
         const expected: InstanceBinding<unknown> = {
           cache: {
             isRight: false,
             value: undefined,
           },
-          id: 0,
+          id: bindingIdFixture,
           implementationType:
             bindingConstraintsFixture.serviceIdentifier as Newable,
           isSatisfiedBy: expect.any(Function) as unknown as () => boolean,
           moduleId: undefined,
           onActivation: undefined,
           onDeactivation: undefined,
-          scope: bindingScopeFixture,
+          scope: classMetadataScopeFixture,
+          serviceIdentifier: bindingConstraintsFixture.serviceIdentifier,
+          type: bindingTypeValues.Instance,
+        };
+
+        expect(paramsMock.setBinding).toHaveBeenCalledTimes(1);
+        expect(paramsMock.setBinding).toHaveBeenCalledWith(expected);
+      });
+
+      it('should return an array with a binding', () => {
+        const expected: InstanceBinding<unknown> = {
+          cache: {
+            isRight: false,
+            value: undefined,
+          },
+          id: bindingIdFixture,
+          implementationType:
+            bindingConstraintsFixture.serviceIdentifier as Newable,
+          isSatisfiedBy: expect.any(Function) as unknown as () => boolean,
+          moduleId: undefined,
+          onActivation: undefined,
+          onDeactivation: undefined,
+          scope: classMetadataScopeFixture,
           serviceIdentifier: bindingConstraintsFixture.serviceIdentifier,
           type: bindingTypeValues.Instance,
         };
