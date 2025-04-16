@@ -278,10 +278,12 @@ export abstract class InversifyHttpAdapter<
             }
           }
 
-          result = await this.#applyPipeList(
-            result,
-            controllerMethodParameterMetadata.pipeList,
-          );
+          if (controllerMethodParameterMetadata.pipeList.length > 0) {
+            result = await this.#applyPipeList(
+              result,
+              controllerMethodParameterMetadata.pipeList,
+            );
+          }
 
           return result;
         },
@@ -297,11 +299,11 @@ export abstract class InversifyHttpAdapter<
 
     for (const pipe of pipeList) {
       if (isPipe(pipe)) {
-        result = pipe.execute(value);
+        result = await pipe.execute(result);
       } else {
         const pipeInstance: Pipe = await this.#container.getAsync(pipe);
 
-        result = pipeInstance.execute(value);
+        result = await pipeInstance.execute(result);
       }
     }
 
