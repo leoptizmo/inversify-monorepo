@@ -7,6 +7,8 @@ export function isApplyMiddlewareOptions(
     value as ApplyMiddlewareOptions;
 
   return (
+    value !== undefined &&
+    typeof applyMiddlewareOptions === 'object' &&
     typeof applyMiddlewareOptions.middleware === 'function' &&
     typeof applyMiddlewareOptions.phase === 'string'
   );
