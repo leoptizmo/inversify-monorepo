@@ -29,10 +29,10 @@ import {
   ScopedBinding,
   ServiceRedirectionBinding,
 } from '@inversifyjs/core';
+import { getBindingId } from '@inversifyjs/core';
 
 import { Writable } from '../../common/models/Writable';
 import { BindingConstraintUtils } from '../../container/binding/utils/BindingConstraintUtils';
-import { getBindingId } from '../actions/getBindingId';
 import { buildBindingIdentifier } from '../calculations/buildBindingIdentifier';
 import { isAnyAncestorBindingConstraints } from '../calculations/isAnyAncestorBindingConstraints';
 import { isAnyAncestorBindingConstraintsWithName } from '../calculations/isAnyAncestorBindingConstraintsWithName';
