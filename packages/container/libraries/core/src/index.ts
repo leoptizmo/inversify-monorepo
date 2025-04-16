@@ -1,3 +1,4 @@
+import { getBindingId } from './binding/actions/getBindingId';
 import { BaseBinding } from './binding/models/BaseBinding';
 import { Binding } from './binding/models/Binding';
 import { BindingActivation } from './binding/models/BindingActivation';
@@ -142,6 +143,7 @@ export {
   ClassElementMetadataKind,
   DeactivationsService,
   decorate,
+  getBindingId,
   getClassMetadata,
   inject,
   injectable,
