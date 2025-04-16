@@ -1,10 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it, vitest } from 'vitest';
 
-vitest.mock('./RequestParam');
+vitest.mock('../calculations/requestParamFactory');
 
+import { requestParamFactory } from '../calculations/requestParamFactory';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 import { headers } from './Headers';
-import { requestParam } from './RequestParam';
 
 describe(headers.name, () => {
   describe('when called', () => {
@@ -17,7 +17,7 @@ describe(headers.name, () => {
       parameterDecoratorFixture = {} as ParameterDecorator;
 
       vitest
-        .mocked(requestParam)
+        .mocked(requestParamFactory)
         .mockReturnValueOnce(parameterDecoratorFixture);
 
       result = headers(parameterNameFixture);
@@ -27,10 +27,11 @@ describe(headers.name, () => {
       vitest.clearAllMocks();
     });
 
-    it('should call requestParam', () => {
-      expect(requestParam).toHaveBeenCalledTimes(1);
-      expect(requestParam).toHaveBeenCalledWith(
+    it('should call requestParamFactory', () => {
+      expect(requestParamFactory).toHaveBeenCalledTimes(1);
+      expect(requestParamFactory).toHaveBeenCalledWith(
         RequestMethodParameterType.HEADERS,
+        [],
         parameterNameFixture,
       );
     });

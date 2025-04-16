@@ -1,6 +1,16 @@
-import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
-import { requestParam } from './RequestParam';
+import { Newable } from 'inversify';
 
-export function cookies(parameterName?: string): ParameterDecorator {
-  return requestParam(RequestMethodParameterType.COOKIES, parameterName);
+import { requestParamFactory } from '../calculations/requestParamFactory';
+import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
+import { Pipe } from '../pipe/model/Pipe';
+
+export function cookies(
+  parameterNameOrPipe?: string | (Newable<Pipe> | Pipe),
+  ...parameterPipeList: (Newable<Pipe> | Pipe)[]
+): ParameterDecorator {
+  return requestParamFactory(
+    RequestMethodParameterType.COOKIES,
+    parameterPipeList,
+    parameterNameOrPipe,
+  );
 }

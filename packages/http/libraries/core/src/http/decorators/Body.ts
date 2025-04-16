@@ -1,6 +1,16 @@
-import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
-import { requestParam } from './RequestParam';
+import { Newable } from 'inversify';
 
-export function body(parameterName?: string): ParameterDecorator {
-  return requestParam(RequestMethodParameterType.BODY, parameterName);
+import { requestParamFactory } from '../calculations/requestParamFactory';
+import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
+import { Pipe } from '../pipe/model/Pipe';
+
+export function body(
+  parameterNameOrPipe?: string | (Newable<Pipe> | Pipe),
+  ...parameterPipeList: (Newable<Pipe> | Pipe)[]
+): ParameterDecorator {
+  return requestParamFactory(
+    RequestMethodParameterType.BODY,
+    parameterPipeList,
+    parameterNameOrPipe,
+  );
 }

@@ -1,26 +1,26 @@
 import { afterAll, beforeAll, describe, expect, it, vitest } from 'vitest';
 
-vitest.mock('./RequestParam');
+vitest.mock('../calculations/requestParamFactory');
 
+import { requestParamFactory } from '../calculations/requestParamFactory';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 import { query } from './Query';
-import { requestParam } from './RequestParam';
 
 describe(query.name, () => {
   describe('when called', () => {
-    let parameterNameFixture: string | undefined;
+    let parameterFixture: undefined;
     let parameterDecoratorFixture: ParameterDecorator;
     let result: unknown;
 
     beforeAll(() => {
-      parameterNameFixture = undefined;
+      parameterFixture = undefined;
       parameterDecoratorFixture = {} as ParameterDecorator;
 
       vitest
-        .mocked(requestParam)
+        .mocked(requestParamFactory)
         .mockReturnValueOnce(parameterDecoratorFixture);
 
-      result = query(parameterNameFixture);
+      result = query(parameterFixture);
     });
 
     afterAll(() => {
@@ -28,10 +28,11 @@ describe(query.name, () => {
     });
 
     it('should call requestParam', () => {
-      expect(requestParam).toHaveBeenCalledTimes(1);
-      expect(requestParam).toHaveBeenCalledWith(
+      expect(requestParamFactory).toHaveBeenCalledTimes(1);
+      expect(requestParamFactory).toHaveBeenCalledWith(
         RequestMethodParameterType.QUERY,
-        parameterNameFixture,
+        [],
+        parameterFixture,
       );
     });
 

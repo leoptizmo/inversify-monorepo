@@ -1,6 +1,6 @@
+import { requestParamFactory } from '../calculations/requestParamFactory';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
-import { requestParam } from './RequestParam';
 
 export function next(): ParameterDecorator {
-  return requestParam(RequestMethodParameterType.NEXT);
+  return requestParamFactory(RequestMethodParameterType.NEXT, []);
 }
