@@ -9,7 +9,6 @@
 
 ### Patch Changes
 
-- Updated dependencies [1bb859a]
-- Updated dependencies [56dc0cd]
+- Updated dependencies
   - @inversifyjs/core@5.2.0
   - @inversifyjs/container@1.9.1
