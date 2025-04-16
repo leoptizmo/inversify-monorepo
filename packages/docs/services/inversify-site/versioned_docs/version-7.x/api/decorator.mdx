@@ -25,6 +25,22 @@ Decorator used to set class metadata so containers can receive class-emitted met
 
 It's highly recommended to annotate every class provided as a service with the `@injectable` decorator. However, it's not mandatory in every single case.
 
+### Parameters
+
+The `injectable` decorator accepts an optional `scope` parameter that allows you to define the lifecycle of the bound instance:
+
+```ts
+@injectable('Singleton') // or 'Transient' or 'Request'
+class MyService {
+  // ...
+}
+```
+
+Valid scope values are:
+- `'Singleton'`: The container will create only one instance and will return that instance for all requests.
+- `'Transient'`: The container will create a new instance for each request.
+- `'Request'`: The container will create an instance for each unique request (useful in web applications with request scoping).
+
 ### When is injectable mandatory?
 
 Whenever class-emitted metadata is expected.

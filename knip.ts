@@ -36,6 +36,7 @@ export default {
       ignoreDependencies: defaultWorkspaceProjectConfig.ignoreDependencies,
       project: [],
     },
+    "packages/container/examples/*": defaultWorkspaceProjectConfig,
     "packages/container/libraries/*": defaultWorkspaceProjectConfig,
     "packages/container/tools/*": defaultWorkspaceProjectConfig,
     "packages/container/tools/e2e-tests": {

@@ -5,7 +5,8 @@
   },
   "description": "InversifyJs plugin package",
   "dependencies": {
-    "@inversifyjs/container": "workspace:*"
+    "@inversifyjs/container": "workspace:*",
+    "@inversifyjs/core": "workspace:*"
   },
   "devDependencies": {
     "@stryker-mutator/core": "8.7.1",
@@ -15,7 +16,6 @@
     "@vitest/coverage-v8": "3.1.1",
     "eslint": "9.24.0",
     "prettier": "3.5.3",
-    "reflect-metadata": "0.2.2",
     "rimraf": "6.0.1",
     "rollup": "4.40.0",
     "ts-loader": "9.5.2",
@@ -70,5 +70,5 @@
     "test:uncommitted": "pnpm run test --changed=HEAD",
     "test:unit": "pnpm run test --project Unit"
   },
-  "version": "1.0.0"
+  "version": "0.1.0"
 }
