@@ -12,7 +12,7 @@ import { InversifyCoreErrorKind } from '../../error/models/InversifyCoreErrorKin
 import { classIsInjectableFlagReflectKey } from '../../reflectMetadata/data/classIsInjectableFlagReflectKey';
 import { setIsInjectableFlag } from './setIsInjectableFlag';
 
-describe('setIsInjectableFlag', () => {
+describe(setIsInjectableFlag, () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   let targetFixture: Function;
 
