@@ -3,6 +3,8 @@ import { Readable } from 'node:stream';
 import { ConsoleLogger, Logger } from '@inversifyjs/logger';
 import { Container, Newable } from 'inversify';
 
+import { InversifyHttpAdapterError } from '../../error/models/InversifyHttpAdapterError';
+import { InversifyHttpAdapterErrorKind } from '../../error/models/InversifyHttpAdapterErrorKind';
 import { buildRouterExplorerControllerMetadataList } from '../../routerExplorer/calculations/buildRouterExplorerControllerMetadataList';
 import { ControllerMethodParameterMetadata } from '../../routerExplorer/model/ControllerMethodParameterMetadata';
 import { RouterExplorerControllerMetadata } from '../../routerExplorer/model/RouterExplorerControllerMetadata';
@@ -19,6 +21,7 @@ import { RequestMethodParameterType } from '../models/RequestMethodParameterType
 import { RouteParams } from '../models/RouteParams';
 import { RouterParams } from '../models/RouterParams';
 import { Pipe } from '../pipe/model/Pipe';
+import { BadRequestHttpResponse } from '../responses/error/BadRequestHttpResponse';
 import { ForbiddenHttpResponse } from '../responses/error/ForbiddenHttpResponse';
 import { InternalServerErrorHttpResponse } from '../responses/error/InternalServerErrorHttpResponse';
 import { HttpResponse } from '../responses/HttpResponse';
@@ -193,7 +196,17 @@ export abstract class InversifyHttpAdapter<
         }
       } catch (error: unknown) {
         this.#printError(error);
-        return this.#reply(req, res, new InternalServerErrorHttpResponse());
+
+        if (
+          InversifyHttpAdapterError.isErrorOfKind(
+            error,
+            InversifyHttpAdapterErrorKind.pipeError,
+          )
+        ) {
+          return this.#reply(req, res, new BadRequestHttpResponse());
+        } else {
+          return this.#reply(req, res, new InternalServerErrorHttpResponse());
+        }
       }
     };
   }
@@ -297,13 +310,19 @@ export abstract class InversifyHttpAdapter<
   ): Promise<unknown> {
     let result: unknown = value;
 
-    for (const pipe of pipeList) {
-      if (isPipe(pipe)) {
-        result = await pipe.execute(result);
-      } else {
-        const pipeInstance: Pipe = await this.#container.getAsync(pipe);
+    for (const pipeOrNewable of pipeList) {
+      const pipe: Pipe = isPipe(pipeOrNewable)
+        ? pipeOrNewable
+        : await this.#container.getAsync(pipeOrNewable);
 
-        result = await pipeInstance.execute(result);
+      try {
+        result = await pipe.execute(result);
+      } catch (error: unknown) {
+        throw new InversifyHttpAdapterError(
+          InversifyHttpAdapterErrorKind.pipeError,
+          'Pipe error',
+          { cause: error },
+        );
       }
     }
 
