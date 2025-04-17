@@ -7,6 +7,7 @@
   "dependencies": {
     "@inversifyjs/common": "workspace:*",
     "@inversifyjs/core": "workspace:*",
+    "@inversifyjs/plugin": "workspace:*",
     "@inversifyjs/reflect-metadata-utils": "workspace:*"
   },
   "devDependencies": {

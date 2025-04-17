@@ -1,5 +1,6 @@
 import {
   isPromise,
+  Newable,
   ServiceIdentifier,
   stringifyServiceIdentifier,
 } from '@inversifyjs/common';
@@ -28,6 +29,12 @@ import {
   resolveModuleDeactivations,
   resolveServiceDeactivations,
 } from '@inversifyjs/core';
+import {
+  isPlugin,
+  Plugin,
+  PluginApi,
+  PluginContext,
+} from '@inversifyjs/plugin';
 
 import { isBindingIdentifier } from '../../binding/calculations/isBindingIdentifier';
 import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
@@ -69,6 +76,8 @@ export class Container {
   ) => Iterable<Binding<TInstance>> | undefined;
   readonly #options: InternalContainerOptions;
   readonly #planResultCacheService: PlanResultCacheService;
+  readonly #pluginApi: PluginApi<Container>;
+  readonly #pluginContext: PluginContext;
   #resolutionContext: ResolutionContext;
   #setBindingParamsPlan: <TInstance>(binding: Binding<TInstance>) => void;
   readonly #snapshots: Snapshot[];
@@ -82,6 +91,8 @@ export class Container {
         | Iterable<BindingActivation<TActivated>>
         | undefined;
     this.#planResultCacheService = new PlanResultCacheService();
+    this.#pluginApi = this.#buildPluginApi();
+    this.#pluginContext = this.#buildPluginContext();
     this.#resolutionContext = this.#buildResolutionContext();
 
     if (options?.parent === undefined) {
@@ -270,6 +281,21 @@ export class Container {
     this.#deactivationService.add(deactivation as BindingDeactivation, {
       serviceId: serviceIdentifier,
     });
+  }
+
+  public register(pluginConstructor: Newable): void {
+    const pluginInstance: Partial<Plugin<Container>> = new pluginConstructor(
+      this.#pluginContext,
+    ) as Partial<Plugin<Container>>;
+
+    if (pluginInstance[isPlugin] !== true) {
+      throw new InversifyContainerError(
+        InversifyContainerErrorKind.invalidOperation,
+        'Invalid plugin. The plugin must extend the Plugin class',
+      );
+    }
+
+    (pluginInstance as Plugin<Container>).load(this.#pluginApi);
   }
 
   public restore(): void {
@@ -518,6 +544,45 @@ export class Container {
     this.#planResultCacheService.set(getPlanOptions, planResult);
 
     return planResult;
+  }
+
+  #buildPluginApi(): PluginApi<Container> {
+    return {
+      define: (
+        name: string | symbol,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        method: (this: Container, ...args: any[]) => unknown,
+      ): void => {
+        if (Object.prototype.hasOwnProperty.call(this, name)) {
+          throw new InversifyContainerError(
+            InversifyContainerErrorKind.invalidOperation,
+            `Container already has a method named "${String(name)}"`,
+          );
+        }
+
+        (this as Record<string | symbol, unknown>)[name] = method.bind(this);
+      },
+    };
+  }
+
+  #buildPluginContext(): PluginContext {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self: Container = this;
+
+    return {
+      get activationService() {
+        return self.#activationService;
+      },
+      get bindingService() {
+        return self.#bindingService;
+      },
+      get deactivationService() {
+        return self.#deactivationService;
+      },
+      get planResultCacheService() {
+        return self.#planResultCacheService;
+      },
+    };
   }
 
   #buildResolutionContext(): ResolutionContext {

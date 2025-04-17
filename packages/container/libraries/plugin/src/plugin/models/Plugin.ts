@@ -1,9 +1,11 @@
 import { PluginApi } from './PluginApi';
 import { PluginContext } from './PluginContext';
 
-export const isPlugin: symbol = Symbol.for('@inversifyjs/plugin/isPlugin');
+export const isPlugin: unique symbol = Symbol.for(
+  '@inversifyjs/plugin/isPlugin',
+);
 
-export abstract class Plugin {
+export abstract class Plugin<TContainer> {
   public readonly [isPlugin]: true = true as const;
 
   protected readonly _context: PluginContext;
@@ -12,5 +14,5 @@ export abstract class Plugin {
     this._context = context;
   }
 
-  public abstract load(api: PluginApi): void;
+  public abstract load(api: PluginApi<TContainer>): void;
 }

@@ -44,6 +44,7 @@ import {
   resolveModuleDeactivations,
   resolveServiceDeactivations,
 } from '@inversifyjs/core';
+import { PluginContext } from '@inversifyjs/plugin';
 
 import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
 import { BindToFluentSyntaxImplementation } from '../../binding/models/BindingFluentSyntaxImplementation';
@@ -61,7 +62,7 @@ import {
 import { IsBoundOptions } from '../models/isBoundOptions';
 import { Container } from './Container';
 
-describe(Container.name, () => {
+describe(Container, () => {
   let activationServiceMock: Mocked<ActivationsService>;
   let bindingServiceMock: Mocked<BindingService>;
   let deactivationServiceMock: Mocked<DeactivationsService>;
@@ -2133,6 +2134,56 @@ describe(Container.name, () => {
           );
 
         expect(result).toStrictEqual(expected);
+      });
+    });
+  });
+
+  describe('.register', () => {
+    describe('having a non plugin newable type', () => {
+      let pluginType: Newable;
+
+      beforeAll(() => {
+        pluginType = vitest.fn();
+      });
+
+      describe('when called', () => {
+        let result: unknown;
+
+        beforeAll(() => {
+          try {
+            new Container().register(pluginType);
+          } catch (error: unknown) {
+            result = error;
+          }
+        });
+
+        afterAll(() => {
+          vitest.clearAllMocks();
+        });
+
+        it('should call pluginType', () => {
+          const expected: Mocked<PluginContext> = {
+            activationService: expect.any(Object),
+            bindingService: expect.any(Object),
+            deactivationService: expect.any(Object),
+            planResultCacheService: expect.any(Object),
+          } as Partial<Mocked<PluginContext>> as Mocked<PluginContext>;
+
+          expect(pluginType).toHaveBeenCalledTimes(1);
+          expect(pluginType).toHaveBeenCalledWith(expected);
+        });
+
+        it('should throw an InversifyContainerError', () => {
+          const expectedErrorProperties: Partial<InversifyContainerError> = {
+            kind: InversifyContainerErrorKind.invalidOperation,
+            message: 'Invalid plugin. The plugin must extend the Plugin class',
+          };
+
+          expect(result).toBeInstanceOf(InversifyContainerError);
+          expect(result).toStrictEqual(
+            expect.objectContaining(expectedErrorProperties),
+          );
+        });
       });
     });
   });
