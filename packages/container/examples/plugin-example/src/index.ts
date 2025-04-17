@@ -18,8 +18,8 @@ declare module '@inversifyjs/container' {
   }
 }
 
-export class PluginExample extends Plugin {
-  public load(api: PluginApi): void {
+export class PluginExample extends Plugin<Container> {
+  public load(api: PluginApi<Container>): void {
     api.define(pluginExample, function (this: Container): void {});
   }
 }
