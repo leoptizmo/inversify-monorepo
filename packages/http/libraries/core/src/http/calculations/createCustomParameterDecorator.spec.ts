@@ -1,11 +1,11 @@
 import { afterAll, beforeAll, describe, expect, it, vitest } from 'vitest';
 
-vitest.mock('../calculations/requestParamFactory');
+vitest.mock('../calculations/buildRequestParameterDecorator');
 
 import { CustomParameterDecoratorHandler } from '../models/CustomParameterDecoratorHandler';
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
+import { buildRequestParameterDecorator } from './buildRequestParameterDecorator';
 import { createCustomParameterDecorator } from './createCustomParameterDecorator';
-import { requestParamFactory } from './requestParamFactory';
 
 describe(createCustomParameterDecorator.name, () => {
   describe('when called', () => {
@@ -18,7 +18,7 @@ describe(createCustomParameterDecorator.name, () => {
       parameterDecoratorFixture = {} as ParameterDecorator;
 
       vitest
-        .mocked(requestParamFactory)
+        .mocked(buildRequestParameterDecorator)
         .mockReturnValueOnce(parameterDecoratorFixture);
 
       result = createCustomParameterDecorator(handlerFixture);
@@ -29,8 +29,8 @@ describe(createCustomParameterDecorator.name, () => {
     });
 
     it('should call requestParamFactory', () => {
-      expect(requestParamFactory).toHaveBeenCalledTimes(1);
-      expect(requestParamFactory).toHaveBeenCalledWith(
+      expect(buildRequestParameterDecorator).toHaveBeenCalledTimes(1);
+      expect(buildRequestParameterDecorator).toHaveBeenCalledWith(
         RequestMethodParameterType.CUSTOM,
         [],
         undefined,

@@ -6,10 +6,10 @@ import { Newable } from 'inversify';
 
 import { RequestMethodParameterType } from '../models/RequestMethodParameterType';
 import { Pipe } from '../pipe/model/Pipe';
+import { buildRequestParameterDecorator } from './buildRequestParameterDecorator';
 import { requestParam } from './requestParam';
-import { requestParamFactory } from './requestParamFactory';
 
-describe(requestParamFactory.name, () => {
+describe(buildRequestParameterDecorator.name, () => {
   describe('having a parameterNameOrPipe with type string', () => {
     describe('when called', () => {
       let parameterTypeFixture: RequestMethodParameterType;
@@ -28,7 +28,7 @@ describe(requestParamFactory.name, () => {
           .mocked(requestParam)
           .mockReturnValueOnce(parameterDecoratorFixture);
 
-        result = requestParamFactory(
+        result = buildRequestParameterDecorator(
           parameterTypeFixture,
           parameterPipeListFixture,
           parameterNameOrPipeFixture,
@@ -72,7 +72,7 @@ describe(requestParamFactory.name, () => {
           .mocked(requestParam)
           .mockReturnValueOnce(parameterDecoratorFixture);
 
-        result = requestParamFactory(
+        result = buildRequestParameterDecorator(
           parameterTypeFixture,
           parameterPipeListFixture,
           parameterNameOrPipeFixture,
@@ -115,7 +115,7 @@ describe(requestParamFactory.name, () => {
           .mocked(requestParam)
           .mockReturnValueOnce(parameterDecoratorFixture);
 
-        result = requestParamFactory(
+        result = buildRequestParameterDecorator(
           parameterTypeFixture,
           parameterPipeListFixture,
           parameterNameOrPipeFixture,

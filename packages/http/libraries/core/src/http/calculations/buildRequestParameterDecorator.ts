@@ -6,7 +6,7 @@ import { RequestMethodParameterType } from '../models/RequestMethodParameterType
 import { Pipe } from '../pipe/model/Pipe';
 import { requestParam } from './requestParam';
 
-export function requestParamFactory(
+export function buildRequestParameterDecorator(
   parameterType: RequestMethodParameterType,
   parameterPipeList: (Newable<Pipe> | Pipe)[],
   parameterNameOrPipe?: string | (Newable<Pipe> | Pipe),
