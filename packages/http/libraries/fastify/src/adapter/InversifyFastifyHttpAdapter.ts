@@ -1,4 +1,4 @@
-import { Stream } from 'node:stream';
+import { Readable } from 'node:stream';
 
 import cookie, { FastifyCookieOptions } from '@fastify/cookie';
 import {
@@ -106,7 +106,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
   protected _replyStream(
     _request: FastifyRequest,
     response: FastifyReply,
-    value: Stream,
+    value: Readable,
   ): void {
     response.send(value);
   }
