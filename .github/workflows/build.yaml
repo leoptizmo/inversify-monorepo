@@ -171,7 +171,7 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       ${{
-        contains(needs.build.outputs.buildAffectedPackages, '@inversifyjs/http-e2e-tests')
+        contains(needs.build.outputs.buildAffectedPackages, '@inversifyjs/container-e2e-tests')
       }}
     steps:
 
