@@ -17,6 +17,7 @@ import { PUT } from './http/decorators/Put';
 import { query } from './http/decorators/Query';
 import { request } from './http/decorators/Request';
 import { response } from './http/decorators/Response';
+import { setHeader } from './http/decorators/SetHeader';
 import { statusCode } from './http/decorators/StatusCode';
 import { useGuard } from './http/decorators/UseGuard';
 import { Guard } from './http/guard/model/Guard';
@@ -115,6 +116,7 @@ export {
   query,
   request,
   response,
+  setHeader,
   statusCode,
   useGuard,
 };

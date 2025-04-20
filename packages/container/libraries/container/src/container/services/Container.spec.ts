@@ -19,15 +19,11 @@ import {
   Binding,
   BindingActivation,
   BindingActivationRelation,
-  BindingConstraints,
   BindingDeactivation,
   BindingDeactivationRelation,
   BindingScope,
   bindingScopeValues,
   BindingService,
-  bindingTypeValues,
-  ClassMetadata,
-  DeactivationParams,
   DeactivationsService,
   getClassMetadata,
   GetOptions,
@@ -40,33 +36,30 @@ import {
   ResolutionContext,
   ResolutionParams,
   resolve,
-  resolveBindingsDeactivations,
-  resolveModuleDeactivations,
-  resolveServiceDeactivations,
 } from '@inversifyjs/core';
+import { PluginContext } from '@inversifyjs/plugin';
+
+vitest.mock('./BindingManager');
+vitest.mock('./ContainerModuleManager');
+vitest.mock('./SnapshotManager');
 
 import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
-import { BindToFluentSyntaxImplementation } from '../../binding/models/BindingFluentSyntaxImplementation';
-import {
-  BindingIdentifier,
-  bindingIdentifierSymbol,
-} from '../../binding/models/BindingIdentifier';
-import { getFirstIterableResult } from '../../common/calculations/getFirstIterableResult';
 import { InversifyContainerError } from '../../error/models/InversifyContainerError';
 import { InversifyContainerErrorKind } from '../../error/models/InversifyContainerErrorKind';
-import {
-  ContainerModule,
-  ContainerModuleLoadOptions,
-} from '../models/ContainerModule';
-import { IsBoundOptions } from '../models/isBoundOptions';
+import { ContainerModule } from '../models/ContainerModule';
+import { BindingManager } from './BindingManager';
 import { Container } from './Container';
+import { ContainerModuleManager } from './ContainerModuleManager';
+import { SnapshotManager } from './SnapshotManager';
 
-describe(Container.name, () => {
+describe(Container, () => {
   let activationServiceMock: Mocked<ActivationsService>;
+  let bindingManagerMock: Mocked<BindingManager>;
   let bindingServiceMock: Mocked<BindingService>;
+  let containerModuleManagerMock: Mocked<ContainerModuleManager>;
   let deactivationServiceMock: Mocked<DeactivationsService>;
+  let snapshotManagerMock: Mocked<SnapshotManager>;
 
-  let clearCacheMock: Mock<() => void>;
   let getPlanResultMock: Mock<
     (options: GetPlanOptions) => PlanResult | undefined
   >;
@@ -82,27 +75,56 @@ describe(Container.name, () => {
       removeAllByModuleId: vitest.fn(),
       removeAllByServiceId: vitest.fn(),
     } as Partial<Mocked<ActivationsService>> as Mocked<ActivationsService>;
+    bindingManagerMock = {
+      bind: vitest.fn(),
+      isBound: vitest.fn(),
+      isCurrentBound: vitest.fn(),
+      rebind: vitest.fn(),
+      rebindSync: vitest.fn(),
+      unbind: vitest.fn(),
+      unbindAll: vitest.fn(),
+      unbindSync: vitest.fn(),
+    } as Partial<Mocked<BindingManager>> as Mocked<BindingManager>;
     bindingServiceMock = {
       clone: vitest.fn().mockReturnThis(),
       get: vitest.fn(),
-      getById: vitest.fn(),
-      getNonParentBindings: vitest.fn(),
-      getNonParentBoundServices: vitest.fn(),
       removeAllByModuleId: vitest.fn(),
-      removeAllByServiceId: vitest.fn(),
-      removeById: vitest.fn(),
-      set: vitest.fn(),
     } as Partial<Mocked<BindingService>> as Mocked<BindingService>;
+    containerModuleManagerMock = {
+      load: vitest.fn(),
+      loadSync: vitest.fn(),
+      unload: vitest.fn(),
+      unloadSync: vitest.fn(),
+    } as Partial<
+      Mocked<ContainerModuleManager>
+    > as Mocked<ContainerModuleManager>;
     deactivationServiceMock = {
       add: vitest.fn(),
       clone: vitest.fn().mockReturnThis(),
       removeAllByModuleId: vitest.fn(),
       removeAllByServiceId: vitest.fn(),
     } as Partial<Mocked<DeactivationsService>> as Mocked<DeactivationsService>;
+    snapshotManagerMock = {
+      restore: vitest.fn(),
+      snapshot: vitest.fn(),
+    } as Partial<Mocked<SnapshotManager>> as Mocked<SnapshotManager>;
 
-    clearCacheMock = vitest.fn();
     getPlanResultMock = vitest.fn();
     setPlanResultMock = vitest.fn();
+
+    vitest.mocked(BindingManager).mockImplementation((): BindingManager => {
+      return bindingManagerMock;
+    });
+
+    vitest
+      .mocked(ContainerModuleManager)
+      .mockImplementation((): ContainerModuleManager => {
+        return containerModuleManagerMock;
+      });
+
+    vitest.mocked(SnapshotManager).mockImplementation((): SnapshotManager => {
+      return snapshotManagerMock;
+    });
 
     vitest
       .mocked(ActivationsService.build)
@@ -117,7 +139,6 @@ describe(Container.name, () => {
     vitest.mocked(PlanResultCacheService).mockImplementation(function (
       this: PlanResultCacheService,
     ): PlanResultCacheService {
-      this.clearCache = clearCacheMock;
       this.get = getPlanResultMock;
       this.set = setPlanResultMock;
 
@@ -182,28 +203,30 @@ describe(Container.name, () => {
 
   describe('.bind', () => {
     describe('when called', () => {
+      let bindToFluentSyntaxFixture: BindToFluentSyntax<unknown>;
       let serviceIdentifierFixture: ServiceIdentifier;
 
       let result: unknown;
 
       beforeAll(() => {
+        bindToFluentSyntaxFixture =
+          Symbol() as unknown as BindToFluentSyntax<unknown>;
         serviceIdentifierFixture = 'service-id';
+
+        bindingManagerMock.bind.mockReturnValueOnce(bindToFluentSyntaxFixture);
 
         result = new Container().bind(serviceIdentifierFixture);
       });
 
-      it('should return BindToFluentSyntax', () => {
-        const expected: BindToFluentSyntax<unknown> =
-          new BindToFluentSyntaxImplementation(
-            expect.any(Function) as unknown as (
-              binding: Binding<unknown>,
-            ) => void,
-            undefined,
-            bindingScopeValues.Transient,
-            serviceIdentifierFixture,
-          );
+      it('should call bindingManager.bind()', () => {
+        expect(bindingManagerMock.bind).toHaveBeenCalledTimes(1);
+        expect(bindingManagerMock.bind).toHaveBeenCalledWith(
+          serviceIdentifierFixture,
+        );
+      });
 
-        expect(result).toStrictEqual(expected);
+      it('should return BindToFluentSyntax', () => {
+        expect(result).toBe(bindToFluentSyntaxFixture);
       });
     });
   });
@@ -531,7 +554,7 @@ describe(Container.name, () => {
         it('should throw an InversifyContainerError', () => {
           const expectedErrorProperties: Partial<InversifyContainerError> = {
             kind: InversifyContainerErrorKind.invalidOperation,
-            message: `Unexpected asyncronous service when resolving service "${serviceIdentifierFixture as string}"`,
+            message: `Unexpected asynchronous service when resolving service "${serviceIdentifierFixture as string}"`,
           };
 
           expect(result).toBeInstanceOf(InversifyContainerError);
@@ -1035,7 +1058,7 @@ describe(Container.name, () => {
       it('should throw an InversifyContainerError', () => {
         const expectedErrorProperties: Partial<InversifyContainerError> = {
           kind: InversifyContainerErrorKind.invalidOperation,
-          message: `Unexpected asyncronous service when resolving service "${serviceIdentifierFixture as string}"`,
+          message: `Unexpected asynchronous service when resolving service "${serviceIdentifierFixture as string}"`,
         };
 
         expect(result).toBeInstanceOf(InversifyContainerError);
@@ -1298,10 +1321,15 @@ describe(Container.name, () => {
       };
     });
 
-    describe('when called, and bindingService.get() returns undefined', () => {
+    describe('when called', () => {
+      let isBoundResult: boolean;
       let result: unknown;
 
       beforeAll(() => {
+        isBoundResult = false;
+
+        bindingManagerMock.isBound.mockReturnValueOnce(isBoundResult);
+
         result = new Container().isBound(serviceIdentifierFixture, {
           name: nameFixture,
           tag: tagFixture,
@@ -1312,143 +1340,19 @@ describe(Container.name, () => {
         vitest.clearAllMocks();
       });
 
-      it('should call bindingService.get()', () => {
-        expect(bindingServiceMock.get).toHaveBeenCalledTimes(1);
-        expect(bindingServiceMock.get).toHaveBeenCalledWith(
+      it('should call bindingService.isBound()', () => {
+        expect(bindingManagerMock.isBound).toHaveBeenCalledTimes(1);
+        expect(bindingManagerMock.isBound).toHaveBeenCalledWith(
           serviceIdentifierFixture,
-        );
-      });
-
-      it('should return false', () => {
-        expect(result).toBe(false);
-      });
-    });
-
-    describe('when called, and bindingService.get() returns binding ann binding.isSatisfiedBy() returns false', () => {
-      let bindingMock: Mocked<Binding>;
-
-      let result: unknown;
-
-      beforeAll(() => {
-        bindingMock = {
-          cache: {
-            isRight: false,
-            value: undefined,
+          {
+            name: nameFixture,
+            tag: tagFixture,
           },
-          id: 1,
-          isSatisfiedBy: vitest.fn(),
-          moduleId: undefined,
-          onActivation: undefined,
-          onDeactivation: undefined,
-          scope: bindingScopeValues.Singleton,
-          serviceIdentifier: 'service-id',
-          type: bindingTypeValues.ConstantValue,
-          value: Symbol.for('constant-value-binding-fixture-value'),
-        };
-
-        bindingServiceMock.get.mockReturnValueOnce([bindingMock]);
-
-        bindingMock.isSatisfiedBy.mockReturnValueOnce(false);
-
-        result = new Container().isBound(serviceIdentifierFixture, {
-          name: nameFixture,
-          tag: tagFixture,
-        });
-      });
-
-      afterAll(() => {
-        vitest.clearAllMocks();
-      });
-
-      it('should call bindingService.get()', () => {
-        expect(bindingServiceMock.get).toHaveBeenCalledTimes(1);
-        expect(bindingServiceMock.get).toHaveBeenCalledWith(
-          serviceIdentifierFixture,
         );
       });
 
-      it('should call binding.isSatisfiedBy()', () => {
-        const expectedBindingConstraints: BindingConstraints = {
-          getAncestor: expect.any(Function) as unknown as () =>
-            | BindingConstraints
-            | undefined,
-          name: nameFixture,
-          serviceIdentifier: serviceIdentifierFixture,
-          tags: new Map([[tagFixture.key, tagFixture.value]]),
-        };
-
-        expect(bindingMock.isSatisfiedBy).toHaveBeenCalledTimes(1);
-        expect(bindingMock.isSatisfiedBy).toHaveBeenCalledWith(
-          expectedBindingConstraints,
-        );
-      });
-
-      it('should return false', () => {
-        expect(result).toBe(false);
-      });
-    });
-
-    describe('when called, and bindingService.get() returns binding ann binding.isSatisfiedBy() returns true', () => {
-      let bindingMock: Mocked<Binding>;
-
-      let result: unknown;
-
-      beforeAll(() => {
-        bindingMock = {
-          cache: {
-            isRight: false,
-            value: undefined,
-          },
-          id: 1,
-          isSatisfiedBy: vitest.fn(),
-          moduleId: undefined,
-          onActivation: undefined,
-          onDeactivation: undefined,
-          scope: bindingScopeValues.Singleton,
-          serviceIdentifier: 'service-id',
-          type: bindingTypeValues.ConstantValue,
-          value: Symbol.for('constant-value-binding-fixture-value'),
-        };
-
-        bindingServiceMock.get.mockReturnValueOnce([bindingMock]);
-
-        bindingMock.isSatisfiedBy.mockReturnValueOnce(true);
-
-        result = new Container().isBound(serviceIdentifierFixture, {
-          name: nameFixture,
-          tag: tagFixture,
-        });
-      });
-
-      afterAll(() => {
-        vitest.clearAllMocks();
-      });
-
-      it('should call bindingService.get()', () => {
-        expect(bindingServiceMock.get).toHaveBeenCalledTimes(1);
-        expect(bindingServiceMock.get).toHaveBeenCalledWith(
-          serviceIdentifierFixture,
-        );
-      });
-
-      it('should call binding.isSatisfiedBy()', () => {
-        const expectedBindingConstraints: BindingConstraints = {
-          getAncestor: expect.any(Function) as unknown as () =>
-            | BindingConstraints
-            | undefined,
-          name: nameFixture,
-          serviceIdentifier: serviceIdentifierFixture,
-          tags: new Map([[tagFixture.key, tagFixture.value]]),
-        };
-
-        expect(bindingMock.isSatisfiedBy).toHaveBeenCalledTimes(1);
-        expect(bindingMock.isSatisfiedBy).toHaveBeenCalledWith(
-          expectedBindingConstraints,
-        );
-      });
-
-      it('should return true', () => {
-        expect(result).toBe(true);
+      it('should return expected result', () => {
+        expect(result).toBe(isBoundResult);
       });
     });
   });
@@ -1467,11 +1371,14 @@ describe(Container.name, () => {
       };
     });
 
-    describe('when called, and bindingService.getNonParentBindings() returns undefined', () => {
+    describe('when called', () => {
+      let isBoundResult: boolean;
       let result: unknown;
 
       beforeAll(() => {
-        bindingServiceMock.getNonParentBindings.mockReturnValueOnce(undefined);
+        isBoundResult = false;
+
+        bindingManagerMock.isCurrentBound.mockReturnValueOnce(isBoundResult);
 
         result = new Container().isCurrentBound(serviceIdentifierFixture, {
           name: nameFixture,
@@ -1483,266 +1390,48 @@ describe(Container.name, () => {
         vitest.clearAllMocks();
       });
 
-      it('should call bindingService.getNonParentBindings()', () => {
-        expect(bindingServiceMock.getNonParentBindings).toHaveBeenCalledTimes(
-          1,
-        );
-        expect(bindingServiceMock.getNonParentBindings).toHaveBeenCalledWith(
+      it('should call bindingService.isCurrentBound()', () => {
+        expect(bindingManagerMock.isCurrentBound).toHaveBeenCalledTimes(1);
+        expect(bindingManagerMock.isCurrentBound).toHaveBeenCalledWith(
           serviceIdentifierFixture,
-        );
-      });
-
-      it('should return false', () => {
-        expect(result).toBe(false);
-      });
-    });
-
-    describe('when called, and bindingService.getNonParentBindings() returns bindings and binding.isSatisfiedBy() returns false', () => {
-      let bindingMock: Mocked<Binding>;
-
-      let result: unknown;
-
-      beforeAll(() => {
-        bindingMock = {
-          cache: {
-            isRight: false,
-            value: undefined,
+          {
+            name: nameFixture,
+            tag: tagFixture,
           },
-          id: 1,
-          isSatisfiedBy: vitest.fn(),
-          moduleId: undefined,
-          onActivation: undefined,
-          onDeactivation: undefined,
-          scope: bindingScopeValues.Singleton,
-          serviceIdentifier: 'service-id',
-          type: bindingTypeValues.ConstantValue,
-          value: Symbol.for('constant-value-binding-fixture-value'),
-        };
-
-        bindingServiceMock.getNonParentBindings.mockReturnValueOnce([
-          bindingMock,
-        ]);
-
-        bindingMock.isSatisfiedBy.mockReturnValueOnce(false);
-
-        result = new Container().isCurrentBound(serviceIdentifierFixture, {
-          name: nameFixture,
-          tag: tagFixture,
-        });
-      });
-
-      afterAll(() => {
-        vitest.clearAllMocks();
-      });
-
-      it('should call bindingService.getNonParentBindings()', () => {
-        expect(bindingServiceMock.getNonParentBindings).toHaveBeenCalledTimes(
-          1,
-        );
-        expect(bindingServiceMock.getNonParentBindings).toHaveBeenCalledWith(
-          serviceIdentifierFixture,
         );
       });
 
-      it('should call binding.isSatisfiedBy()', () => {
-        const expectedBindingConstraints: BindingConstraints = {
-          getAncestor: expect.any(Function) as unknown as () =>
-            | BindingConstraints
-            | undefined,
-          name: nameFixture,
-          serviceIdentifier: serviceIdentifierFixture,
-          tags: new Map([[tagFixture.key, tagFixture.value]]),
-        };
-
-        expect(bindingMock.isSatisfiedBy).toHaveBeenCalledTimes(1);
-        expect(bindingMock.isSatisfiedBy).toHaveBeenCalledWith(
-          expectedBindingConstraints,
-        );
-      });
-
-      it('should return false', () => {
-        expect(result).toBe(false);
-      });
-    });
-
-    describe('when called, and bindingService.getNonParentBindings() returns bindings and binding.isSatisfiedBy() returns true', () => {
-      let bindingMock: Mocked<Binding>;
-
-      let result: unknown;
-
-      beforeAll(() => {
-        bindingMock = {
-          cache: {
-            isRight: false,
-            value: undefined,
-          },
-          id: 1,
-          isSatisfiedBy: vitest.fn(),
-          moduleId: undefined,
-          onActivation: undefined,
-          onDeactivation: undefined,
-          scope: bindingScopeValues.Singleton,
-          serviceIdentifier: 'service-id',
-          type: bindingTypeValues.ConstantValue,
-          value: Symbol.for('constant-value-binding-fixture-value'),
-        };
-
-        bindingServiceMock.getNonParentBindings.mockReturnValueOnce([
-          bindingMock,
-        ]);
-
-        bindingMock.isSatisfiedBy.mockReturnValueOnce(true);
-
-        result = new Container().isCurrentBound(serviceIdentifierFixture, {
-          name: nameFixture,
-          tag: tagFixture,
-        });
-      });
-
-      afterAll(() => {
-        vitest.clearAllMocks();
-      });
-
-      it('should call bindingService.getNonParentBindings()', () => {
-        expect(bindingServiceMock.getNonParentBindings).toHaveBeenCalledTimes(
-          1,
-        );
-        expect(bindingServiceMock.getNonParentBindings).toHaveBeenCalledWith(
-          serviceIdentifierFixture,
-        );
-      });
-
-      it('should call binding.isSatisfiedBy()', () => {
-        const expectedBindingConstraints: BindingConstraints = {
-          getAncestor: expect.any(Function) as unknown as () =>
-            | BindingConstraints
-            | undefined,
-          name: nameFixture,
-          serviceIdentifier: serviceIdentifierFixture,
-          tags: new Map([[tagFixture.key, tagFixture.value]]),
-        };
-
-        expect(bindingMock.isSatisfiedBy).toHaveBeenCalledTimes(1);
-        expect(bindingMock.isSatisfiedBy).toHaveBeenCalledWith(
-          expectedBindingConstraints,
-        );
-      });
-
-      it('should return true', () => {
-        expect(result).toBe(true);
+      it('should return expected result', () => {
+        expect(result).toBe(isBoundResult);
       });
     });
   });
 
   describe('.load', () => {
-    let asyncContainerModuleMock: Mocked<ContainerModule>;
-    let syncContainerModuleMock: Mocked<ContainerModule>;
+    let containerModuleMock: Mocked<ContainerModule>;
 
     beforeAll(() => {
-      asyncContainerModuleMock = {
-        load: vitest.fn().mockResolvedValue(undefined),
-      } as Partial<Mocked<ContainerModule>> as Mocked<ContainerModule>;
-
-      syncContainerModuleMock = {
+      containerModuleMock = {
         load: vitest.fn().mockReturnValue(undefined),
       } as Partial<Mocked<ContainerModule>> as Mocked<ContainerModule>;
     });
 
-    describe('when called with an async module', () => {
+    describe('when called', () => {
       let result: unknown;
 
       beforeAll(async () => {
-        result = await new Container().load(asyncContainerModuleMock);
+        result = await new Container().load(containerModuleMock);
       });
 
       afterAll(() => {
         vitest.clearAllMocks();
       });
 
-      it('should call containerModule.load', () => {
-        const options: ContainerModuleLoadOptions = {
-          bind: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-          ) => BindToFluentSyntax<T>,
-          isBound: expect.any(Function) as unknown as (
-            serviceIdentifier: ServiceIdentifier,
-            options?: IsBoundOptions,
-          ) => boolean,
-          onActivation: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-            activation: BindingActivation<T>,
-          ) => void,
-          onDeactivation: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-            activation: BindingDeactivation<T>,
-          ) => void,
-          rebind: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-          ) => Promise<BindToFluentSyntax<T>>,
-          rebindSync: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-          ) => BindToFluentSyntax<T>,
-          unbind: expect.any(Function) as unknown as (
-            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
-          ) => Promise<void>,
-          unbindSync: expect.any(Function) as unknown as (
-            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
-          ) => void,
-        };
-
-        expect(asyncContainerModuleMock.load).toHaveBeenCalledTimes(1);
-        expect(asyncContainerModuleMock.load).toHaveBeenCalledWith(options);
-      });
-
-      it('should return undefined', () => {
-        expect(result).toBeUndefined();
-      });
-    });
-
-    describe('when called with a sync module', () => {
-      let result: unknown;
-
-      beforeAll(async () => {
-        result = await new Container().load(syncContainerModuleMock);
-      });
-
-      afterAll(() => {
-        vitest.clearAllMocks();
-      });
-
-      it('should call containerModule.load', () => {
-        const options: ContainerModuleLoadOptions = {
-          bind: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-          ) => BindToFluentSyntax<T>,
-          isBound: expect.any(Function) as unknown as (
-            serviceIdentifier: ServiceIdentifier,
-            options?: IsBoundOptions,
-          ) => boolean,
-          onActivation: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-            activation: BindingActivation<T>,
-          ) => void,
-          onDeactivation: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-            activation: BindingDeactivation<T>,
-          ) => void,
-          rebind: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-          ) => Promise<BindToFluentSyntax<T>>,
-          rebindSync: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-          ) => BindToFluentSyntax<T>,
-          unbind: expect.any(Function) as unknown as (
-            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
-          ) => Promise<void>,
-          unbindSync: expect.any(Function) as unknown as (
-            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
-          ) => void,
-        };
-
-        expect(syncContainerModuleMock.load).toHaveBeenCalledTimes(1);
-        expect(syncContainerModuleMock.load).toHaveBeenCalledWith(options);
+      it('should call containerModuleManager.load', () => {
+        expect(containerModuleManagerMock.load).toHaveBeenCalledTimes(1);
+        expect(containerModuleManagerMock.load).toHaveBeenCalledWith(
+          containerModuleMock,
+        );
       });
 
       it('should return undefined', () => {
@@ -1752,131 +1441,34 @@ describe(Container.name, () => {
   });
 
   describe('.loadSync', () => {
-    let syncContainerModuleMock: Mocked<ContainerModule>;
-    let asyncContainerModuleMock: Mocked<ContainerModule>;
+    let containerModuleMock: Mocked<ContainerModule>;
 
     beforeAll(() => {
-      syncContainerModuleMock = {
+      containerModuleMock = {
         load: vitest.fn().mockReturnValue(undefined),
-      } as Partial<Mocked<ContainerModule>> as Mocked<ContainerModule>;
-
-      asyncContainerModuleMock = {
-        load: vitest.fn().mockResolvedValue(undefined),
       } as Partial<Mocked<ContainerModule>> as Mocked<ContainerModule>;
     });
 
-    describe('when called with a sync module', () => {
+    describe('when called', () => {
       let result: unknown;
 
       beforeAll(() => {
-        result = new Container().loadSync(syncContainerModuleMock);
+        result = new Container().loadSync(containerModuleMock);
       });
 
       afterAll(() => {
         vitest.clearAllMocks();
       });
 
-      it('should call containerModule.load', () => {
-        const options: ContainerModuleLoadOptions = {
-          bind: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-          ) => BindToFluentSyntax<T>,
-          isBound: expect.any(Function) as unknown as (
-            serviceIdentifier: ServiceIdentifier,
-            options?: IsBoundOptions,
-          ) => boolean,
-          onActivation: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-            activation: BindingActivation<T>,
-          ) => void,
-          onDeactivation: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-            activation: BindingDeactivation<T>,
-          ) => void,
-          rebind: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-          ) => Promise<BindToFluentSyntax<T>>,
-          rebindSync: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-          ) => BindToFluentSyntax<T>,
-          unbind: expect.any(Function) as unknown as (
-            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
-          ) => Promise<void>,
-          unbindSync: expect.any(Function) as unknown as (
-            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
-          ) => void,
-        };
-
-        expect(syncContainerModuleMock.load).toHaveBeenCalledTimes(1);
-        expect(syncContainerModuleMock.load).toHaveBeenCalledWith(options);
+      it('should call containerModuleManager.loadSync', () => {
+        expect(containerModuleManagerMock.loadSync).toHaveBeenCalledTimes(1);
+        expect(containerModuleManagerMock.loadSync).toHaveBeenCalledWith(
+          containerModuleMock,
+        );
       });
 
       it('should return undefined', () => {
         expect(result).toBeUndefined();
-      });
-    });
-
-    describe('when called with an async module', () => {
-      let result: unknown;
-
-      beforeAll(() => {
-        try {
-          new Container().loadSync(asyncContainerModuleMock);
-        } catch (error: unknown) {
-          result = error;
-        }
-      });
-
-      afterAll(() => {
-        vitest.clearAllMocks();
-      });
-
-      it('should call containerModule.load', () => {
-        const options: ContainerModuleLoadOptions = {
-          bind: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-          ) => BindToFluentSyntax<T>,
-          isBound: expect.any(Function) as unknown as (
-            serviceIdentifier: ServiceIdentifier,
-            options?: IsBoundOptions,
-          ) => boolean,
-          onActivation: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-            activation: BindingActivation<T>,
-          ) => void,
-          onDeactivation: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-            activation: BindingDeactivation<T>,
-          ) => void,
-          rebind: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-          ) => Promise<BindToFluentSyntax<T>>,
-          rebindSync: expect.any(Function) as unknown as <T>(
-            serviceIdentifier: ServiceIdentifier<T>,
-          ) => BindToFluentSyntax<T>,
-          unbind: expect.any(Function) as unknown as (
-            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
-          ) => Promise<void>,
-          unbindSync: expect.any(Function) as unknown as (
-            serviceIdentifier: BindingIdentifier | ServiceIdentifier,
-          ) => void,
-        };
-
-        expect(asyncContainerModuleMock.load).toHaveBeenCalledTimes(1);
-        expect(asyncContainerModuleMock.load).toHaveBeenCalledWith(options);
-      });
-
-      it('should throw an InversifyContainerError', () => {
-        const expectedErrorProperties: Partial<InversifyContainerError> = {
-          kind: InversifyContainerErrorKind.invalidOperation,
-          message:
-            'Unexpected asyncronous module load. Consider using Container.load() instead.',
-        };
-
-        expect(result).toBeInstanceOf(InversifyContainerError);
-        expect(result).toStrictEqual(
-          expect.objectContaining(expectedErrorProperties),
-        );
       });
     });
   });
@@ -1965,12 +1557,19 @@ describe(Container.name, () => {
 
   describe('.rebind', () => {
     describe('when called', () => {
+      let bindToFluentSyntaxFixture: BindToFluentSyntax<unknown>;
       let serviceIdentifierFixture: ServiceIdentifier;
 
       let result: unknown;
 
       beforeAll(async () => {
+        bindToFluentSyntaxFixture =
+          Symbol() as unknown as BindToFluentSyntax<unknown>;
         serviceIdentifierFixture = 'service-id';
+
+        vitest
+          .mocked(bindingManagerMock.rebind)
+          .mockResolvedValueOnce(bindToFluentSyntaxFixture);
 
         result = await new Container().rebind(serviceIdentifierFixture);
       });
@@ -1979,85 +1578,34 @@ describe(Container.name, () => {
         vitest.clearAllMocks();
       });
 
-      it('should call resolveServiceDeactivations', () => {
-        const expectedParams: DeactivationParams = {
-          getBindings: expect.any(Function) as unknown as <TInstance>(
-            serviceIdentifier: ServiceIdentifier<TInstance>,
-          ) => Binding<TInstance>[] | undefined,
-          getBindingsFromModule: expect.any(Function) as unknown as <TInstance>(
-            moduleId: number,
-          ) => Binding<TInstance>[] | undefined,
-          getClassMetadata: expect.any(Function) as unknown as (
-            type: Newable,
-          ) => ClassMetadata,
-          getDeactivations: expect.any(Function) as unknown as <TActivated>(
-            serviceIdentifier: ServiceIdentifier<TActivated>,
-          ) => Iterable<BindingDeactivation<TActivated>> | undefined,
-        };
-
-        expect(resolveServiceDeactivations).toHaveBeenCalledTimes(1);
-        expect(resolveServiceDeactivations).toHaveBeenCalledWith(
-          expectedParams,
+      it('should call bindingManager.rebind()', () => {
+        expect(bindingManagerMock.rebind).toHaveBeenCalledTimes(1);
+        expect(bindingManagerMock.rebind).toHaveBeenCalledWith(
           serviceIdentifierFixture,
         );
-      });
-
-      it('should call activationService.removeAllByServiceId()', () => {
-        expect(
-          activationServiceMock.removeAllByServiceId,
-        ).toHaveBeenCalledTimes(1);
-        expect(activationServiceMock.removeAllByServiceId).toHaveBeenCalledWith(
-          serviceIdentifierFixture,
-        );
-      });
-
-      it('should call bindingService.removeAllByServiceId()', () => {
-        expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledTimes(
-          1,
-        );
-        expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledWith(
-          serviceIdentifierFixture,
-        );
-      });
-
-      it('should call deactivationService.removeAllByServiceId()', () => {
-        expect(
-          deactivationServiceMock.removeAllByServiceId,
-        ).toHaveBeenCalledTimes(1);
-        expect(
-          deactivationServiceMock.removeAllByServiceId,
-        ).toHaveBeenCalledWith(serviceIdentifierFixture);
-      });
-
-      it('should call planResultCacheService.clearCache()', () => {
-        expect(clearCacheMock).toHaveBeenCalledTimes(1);
-        expect(clearCacheMock).toHaveBeenCalledWith();
       });
 
       it('should return BindToFluentSyntax', () => {
-        const expected: BindToFluentSyntax<unknown> =
-          new BindToFluentSyntaxImplementation(
-            expect.any(Function) as unknown as (
-              binding: Binding<unknown>,
-            ) => void,
-            undefined,
-            bindingScopeValues.Singleton,
-            serviceIdentifierFixture,
-          );
-
-        expect(result).toStrictEqual(expected);
+        expect(result).toBe(bindToFluentSyntaxFixture);
       });
     });
   });
 
   describe('.rebindSync', () => {
     describe('when called', () => {
+      let bindToFluentSyntaxFixture: BindToFluentSyntax<unknown>;
       let serviceIdentifierFixture: ServiceIdentifier;
 
       let result: unknown;
 
-      beforeAll(async () => {
+      beforeAll(() => {
+        bindToFluentSyntaxFixture =
+          Symbol() as unknown as BindToFluentSyntax<unknown>;
         serviceIdentifierFixture = 'service-id';
+
+        vitest
+          .mocked(bindingManagerMock.rebindSync)
+          .mockReturnValueOnce(bindToFluentSyntaxFixture);
 
         result = new Container().rebindSync(serviceIdentifierFixture);
       });
@@ -2066,83 +1614,25 @@ describe(Container.name, () => {
         vitest.clearAllMocks();
       });
 
-      it('should call resolveServiceDeactivations', () => {
-        const expectedParams: DeactivationParams = {
-          getBindings: expect.any(Function) as unknown as <TInstance>(
-            serviceIdentifier: ServiceIdentifier<TInstance>,
-          ) => Binding<TInstance>[] | undefined,
-          getBindingsFromModule: expect.any(Function) as unknown as <TInstance>(
-            moduleId: number,
-          ) => Binding<TInstance>[] | undefined,
-          getClassMetadata: expect.any(Function) as unknown as (
-            type: Newable,
-          ) => ClassMetadata,
-          getDeactivations: expect.any(Function) as unknown as <TActivated>(
-            serviceIdentifier: ServiceIdentifier<TActivated>,
-          ) => Iterable<BindingDeactivation<TActivated>> | undefined,
-        };
-
-        expect(resolveServiceDeactivations).toHaveBeenCalledTimes(1);
-        expect(resolveServiceDeactivations).toHaveBeenCalledWith(
-          expectedParams,
+      it('should call bindingManager.rebindSync()', () => {
+        expect(bindingManagerMock.rebindSync).toHaveBeenCalledTimes(1);
+        expect(bindingManagerMock.rebindSync).toHaveBeenCalledWith(
           serviceIdentifierFixture,
         );
-      });
-
-      it('should call activationService.removeAllByServiceId()', () => {
-        expect(
-          activationServiceMock.removeAllByServiceId,
-        ).toHaveBeenCalledTimes(1);
-        expect(activationServiceMock.removeAllByServiceId).toHaveBeenCalledWith(
-          serviceIdentifierFixture,
-        );
-      });
-
-      it('should call bindingService.removeAllByServiceId()', () => {
-        expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledTimes(
-          1,
-        );
-        expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledWith(
-          serviceIdentifierFixture,
-        );
-      });
-
-      it('should call deactivationService.removeAllByServiceId()', () => {
-        expect(
-          deactivationServiceMock.removeAllByServiceId,
-        ).toHaveBeenCalledTimes(1);
-        expect(
-          deactivationServiceMock.removeAllByServiceId,
-        ).toHaveBeenCalledWith(serviceIdentifierFixture);
-      });
-
-      it('should call planResultCacheService.clearCache()', () => {
-        expect(clearCacheMock).toHaveBeenCalledTimes(1);
-        expect(clearCacheMock).toHaveBeenCalledWith();
       });
 
       it('should return BindToFluentSyntax', () => {
-        const expected: BindToFluentSyntax<unknown> =
-          new BindToFluentSyntaxImplementation(
-            expect.any(Function) as unknown as (
-              binding: Binding<unknown>,
-            ) => void,
-            undefined,
-            bindingScopeValues.Singleton,
-            serviceIdentifierFixture,
-          );
-
-        expect(result).toStrictEqual(expected);
+        expect(result).toStrictEqual(bindToFluentSyntaxFixture);
       });
     });
   });
 
-  describe('.restore', () => {
-    describe('having a container with no snapshots', () => {
-      let container: Container;
+  describe('.register', () => {
+    describe('having a non plugin newable type', () => {
+      let pluginType: Newable;
 
       beforeAll(() => {
-        container = new Container();
+        pluginType = vitest.fn();
       });
 
       describe('when called', () => {
@@ -2150,7 +1640,7 @@ describe(Container.name, () => {
 
         beforeAll(() => {
           try {
-            container.restore();
+            new Container().register(pluginType);
           } catch (error: unknown) {
             result = error;
           }
@@ -2160,10 +1650,22 @@ describe(Container.name, () => {
           vitest.clearAllMocks();
         });
 
+        it('should call pluginType', () => {
+          const expected: Mocked<PluginContext> = {
+            activationService: expect.any(Object),
+            bindingService: expect.any(Object),
+            deactivationService: expect.any(Object),
+            planResultCacheService: expect.any(Object),
+          } as Partial<Mocked<PluginContext>> as Mocked<PluginContext>;
+
+          expect(pluginType).toHaveBeenCalledTimes(1);
+          expect(pluginType).toHaveBeenCalledWith(expected);
+        });
+
         it('should throw an InversifyContainerError', () => {
           const expectedErrorProperties: Partial<InversifyContainerError> = {
             kind: InversifyContainerErrorKind.invalidOperation,
-            message: 'No snapshot available to restore',
+            message: 'Invalid plugin. The plugin must extend the Plugin class',
           };
 
           expect(result).toBeInstanceOf(InversifyContainerError);
@@ -2173,35 +1675,27 @@ describe(Container.name, () => {
         });
       });
     });
+  });
 
-    describe('having a container with a snapshot', () => {
-      let container: Container;
+  describe('.restore', () => {
+    describe('when called', () => {
+      let result: unknown;
 
       beforeAll(() => {
-        container = new Container();
+        new Container().restore();
       });
 
-      describe('when called', () => {
-        let result: unknown;
+      afterAll(() => {
+        vitest.clearAllMocks();
+      });
 
-        beforeAll(() => {
-          container.snapshot();
+      it('should call snapshotManager.restore()', () => {
+        expect(snapshotManagerMock.restore).toHaveBeenCalledTimes(1);
+        expect(snapshotManagerMock.restore).toHaveBeenCalledWith();
+      });
 
-          result = container.restore();
-        });
-
-        afterAll(() => {
-          vitest.clearAllMocks();
-        });
-
-        it('should call planResultCacheService.clearCache()', () => {
-          expect(clearCacheMock).toHaveBeenCalledTimes(1);
-          expect(clearCacheMock).toHaveBeenCalledWith();
-        });
-
-        it('should return undefined', () => {
-          expect(result).toBeUndefined();
-        });
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
       });
     });
   });
@@ -2211,26 +1705,16 @@ describe(Container.name, () => {
       let result: unknown;
 
       beforeAll(() => {
-        result = new Container().snapshot();
+        new Container().snapshot();
       });
 
       afterAll(() => {
         vitest.clearAllMocks();
       });
 
-      it('should call activationService.clone()', () => {
-        expect(activationServiceMock.clone).toHaveBeenCalledTimes(1);
-        expect(activationServiceMock.clone).toHaveBeenCalledWith();
-      });
-
-      it('should call bindingService.clone()', () => {
-        expect(bindingServiceMock.clone).toHaveBeenCalledTimes(1);
-        expect(bindingServiceMock.clone).toHaveBeenCalledWith();
-      });
-
-      it('should call deactivationService.clone()', () => {
-        expect(deactivationServiceMock.clone).toHaveBeenCalledTimes(1);
-        expect(deactivationServiceMock.clone).toHaveBeenCalledWith();
+      it('should call snapshotManager.snapshot()', () => {
+        expect(snapshotManagerMock.snapshot).toHaveBeenCalledTimes(1);
+        expect(snapshotManagerMock.snapshot).toHaveBeenCalledWith();
       });
 
       it('should return undefined', () => {
@@ -2240,735 +1724,77 @@ describe(Container.name, () => {
   });
 
   describe('.unbind', () => {
-    describe('having a ServiceIdentifier', () => {
-      let serviceIdentifierFixture: ServiceIdentifier;
+    let serviceIdentifierFixture: ServiceIdentifier;
 
-      beforeAll(() => {
-        serviceIdentifierFixture = 'serviceId';
-      });
-
-      describe('when called', () => {
-        let result: unknown;
-
-        beforeAll(async () => {
-          result = await new Container().unbind(serviceIdentifierFixture);
-        });
-
-        afterAll(() => {
-          vitest.clearAllMocks();
-        });
-
-        it('should call resolveServiceDeactivations', () => {
-          const expectedParams: DeactivationParams = {
-            getBindings: expect.any(Function) as unknown as <TInstance>(
-              serviceIdentifier: ServiceIdentifier<TInstance>,
-            ) => Binding<TInstance>[] | undefined,
-            getBindingsFromModule: expect.any(Function) as unknown as <
-              TInstance,
-            >(
-              moduleId: number,
-            ) => Binding<TInstance>[] | undefined,
-            getClassMetadata: expect.any(Function) as unknown as (
-              type: Newable,
-            ) => ClassMetadata,
-            getDeactivations: expect.any(Function) as unknown as <TActivated>(
-              serviceIdentifier: ServiceIdentifier<TActivated>,
-            ) => Iterable<BindingDeactivation<TActivated>> | undefined,
-          };
-
-          expect(resolveServiceDeactivations).toHaveBeenCalledTimes(1);
-          expect(resolveServiceDeactivations).toHaveBeenCalledWith(
-            expectedParams,
-            serviceIdentifierFixture,
-          );
-        });
-
-        it('should call activationService.removeAllByServiceId()', () => {
-          expect(
-            activationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledTimes(1);
-          expect(
-            activationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledWith(serviceIdentifierFixture);
-        });
-
-        it('should call bindingService.removeAllByServiceId()', () => {
-          expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledTimes(
-            1,
-          );
-          expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledWith(
-            serviceIdentifierFixture,
-          );
-        });
-
-        it('should call deactivationService.removeAllByServiceId()', () => {
-          expect(
-            deactivationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledTimes(1);
-          expect(
-            deactivationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledWith(serviceIdentifierFixture);
-        });
-
-        it('should call planResultCacheService.clearCache()', () => {
-          expect(clearCacheMock).toHaveBeenCalledTimes(1);
-          expect(clearCacheMock).toHaveBeenCalledWith();
-        });
-
-        it('should return undefined', () => {
-          expect(result).toBeUndefined();
-        });
-      });
-
-      describe('when called, and resolveServiceDeactivations() returns Promise', () => {
-        let result: unknown;
-
-        beforeAll(async () => {
-          vitest
-            .mocked(resolveServiceDeactivations)
-            .mockResolvedValueOnce(undefined);
-
-          result = await new Container().unbind(serviceIdentifierFixture);
-        });
-
-        afterAll(() => {
-          vitest.clearAllMocks();
-        });
-
-        it('should call resolveServiceDeactivations', () => {
-          const expectedParams: DeactivationParams = {
-            getBindings: expect.any(Function) as unknown as <TInstance>(
-              serviceIdentifier: ServiceIdentifier<TInstance>,
-            ) => Binding<TInstance>[] | undefined,
-            getBindingsFromModule: expect.any(Function) as unknown as <
-              TInstance,
-            >(
-              moduleId: number,
-            ) => Binding<TInstance>[] | undefined,
-            getClassMetadata: expect.any(Function) as unknown as (
-              type: Newable,
-            ) => ClassMetadata,
-            getDeactivations: expect.any(Function) as unknown as <TActivated>(
-              serviceIdentifier: ServiceIdentifier<TActivated>,
-            ) => Iterable<BindingDeactivation<TActivated>> | undefined,
-          };
-
-          expect(resolveServiceDeactivations).toHaveBeenCalledTimes(1);
-          expect(resolveServiceDeactivations).toHaveBeenCalledWith(
-            expectedParams,
-            serviceIdentifierFixture,
-          );
-        });
-
-        it('should call activationService.removeAllByServiceId()', () => {
-          expect(
-            activationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledTimes(1);
-          expect(
-            activationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledWith(serviceIdentifierFixture);
-        });
-
-        it('should call bindingService.removeAllByServiceId()', () => {
-          expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledTimes(
-            1,
-          );
-          expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledWith(
-            serviceIdentifierFixture,
-          );
-        });
-
-        it('should call deactivationService.removeAllByServiceId()', () => {
-          expect(
-            deactivationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledTimes(1);
-          expect(
-            deactivationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledWith(serviceIdentifierFixture);
-        });
-
-        it('should call planResultCacheService.clearCache()', () => {
-          expect(clearCacheMock).toHaveBeenCalledTimes(1);
-          expect(clearCacheMock).toHaveBeenCalledWith();
-        });
-
-        it('should return undefined', () => {
-          expect(result).toBeUndefined();
-        });
-      });
+    beforeAll(() => {
+      serviceIdentifierFixture = 'serviceId';
     });
 
-    describe('having a BindingIdentifier', () => {
-      let bindingIdentifierFixture: BindingIdentifier;
+    describe('when called', () => {
+      let result: unknown;
 
-      beforeAll(() => {
-        bindingIdentifierFixture = {
-          [bindingIdentifierSymbol]: true,
-          id: 1,
-        };
+      beforeAll(async () => {
+        bindingManagerMock.unbind.mockResolvedValueOnce(undefined);
+
+        result = await new Container().unbind(serviceIdentifierFixture);
       });
 
-      describe('when called', () => {
-        let bindingMock: Mocked<Binding>;
-        let result: unknown;
-
-        beforeAll(async () => {
-          bindingMock = {
-            cache: {
-              isRight: false,
-              value: undefined,
-            },
-            id: bindingIdentifierFixture.id,
-            isSatisfiedBy: vitest.fn(),
-            moduleId: undefined,
-            onActivation: undefined,
-            onDeactivation: undefined,
-            scope: bindingScopeValues.Singleton,
-            serviceIdentifier: 'service-id',
-            type: bindingTypeValues.ConstantValue,
-            value: Symbol.for('constant-value-binding-fixture-value'),
-          };
-
-          bindingServiceMock.getById.mockReturnValueOnce([bindingMock]);
-
-          result = await new Container().unbind(bindingIdentifierFixture);
-        });
-
-        afterAll(() => {
-          vitest.clearAllMocks();
-        });
-
-        it('should call bindingService.getById()', () => {
-          expect(bindingServiceMock.getById).toHaveBeenCalledTimes(1);
-          expect(bindingServiceMock.getById).toHaveBeenCalledWith(
-            bindingIdentifierFixture.id,
-          );
-        });
-
-        it('should call resolveBindingsDeactivations()', () => {
-          expect(resolveBindingsDeactivations).toHaveBeenCalledTimes(1);
-          expect(resolveBindingsDeactivations).toHaveBeenCalledWith(
-            expect.any(Object),
-            [bindingMock],
-          );
-        });
-
-        it('should call bindingService.removeById()', () => {
-          expect(bindingServiceMock.removeById).toHaveBeenCalledTimes(1);
-          expect(bindingServiceMock.removeById).toHaveBeenCalledWith(
-            bindingIdentifierFixture.id,
-          );
-        });
-
-        it('should call planResultCacheService.clearCache()', () => {
-          expect(clearCacheMock).toHaveBeenCalledTimes(1);
-          expect(clearCacheMock).toHaveBeenCalledWith();
-        });
-
-        it('should return undefined', () => {
-          expect(result).toBeUndefined();
-        });
+      afterAll(() => {
+        vitest.clearAllMocks();
       });
 
-      describe('when called, and resolveBindingsDeactivations() returns a Promise', () => {
-        let bindingMock: Mocked<Binding>;
-        let result: unknown;
+      it('should call bindingManager.unbind()', () => {
+        expect(bindingManagerMock.unbind).toHaveBeenCalledTimes(1);
+        expect(bindingManagerMock.unbind).toHaveBeenCalledWith(
+          serviceIdentifierFixture,
+        );
+      });
 
-        beforeAll(async () => {
-          bindingMock = {
-            cache: {
-              isRight: false,
-              value: undefined,
-            },
-            id: bindingIdentifierFixture.id,
-            isSatisfiedBy: vitest.fn(),
-            moduleId: undefined,
-            onActivation: undefined,
-            onDeactivation: undefined,
-            scope: bindingScopeValues.Singleton,
-            serviceIdentifier: 'service-id',
-            type: bindingTypeValues.ConstantValue,
-            value: Symbol.for('constant-value-binding-fixture-value'),
-          };
-
-          bindingServiceMock.getById.mockReturnValueOnce([bindingMock]);
-
-          vitest
-            .mocked(resolveBindingsDeactivations)
-            .mockResolvedValueOnce(undefined);
-
-          result = await new Container().unbind(bindingIdentifierFixture);
-        });
-
-        afterAll(() => {
-          vitest.clearAllMocks();
-        });
-
-        it('should call bindingService.getById()', () => {
-          expect(bindingServiceMock.getById).toHaveBeenCalledTimes(1);
-          expect(bindingServiceMock.getById).toHaveBeenCalledWith(
-            bindingIdentifierFixture.id,
-          );
-        });
-
-        it('should call resolveBindingsDeactivations()', () => {
-          expect(resolveBindingsDeactivations).toHaveBeenCalledTimes(1);
-          expect(resolveBindingsDeactivations).toHaveBeenCalledWith(
-            expect.any(Object),
-            [bindingMock],
-          );
-        });
-
-        it('should call bindingService.removeById()', () => {
-          expect(bindingServiceMock.removeById).toHaveBeenCalledTimes(1);
-          expect(bindingServiceMock.removeById).toHaveBeenCalledWith(
-            bindingIdentifierFixture.id,
-          );
-        });
-
-        it('should call planResultCacheService.clearCache()', () => {
-          expect(clearCacheMock).toHaveBeenCalledTimes(1);
-          expect(clearCacheMock).toHaveBeenCalledWith();
-        });
-
-        it('should return undefined', () => {
-          expect(result).toBeUndefined();
-        });
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
       });
     });
   });
 
   describe('unbindSync', () => {
-    describe('having a ServiceIdentifier', () => {
-      let serviceIdentifierFixture: ServiceIdentifier;
+    let serviceIdentifierFixture: ServiceIdentifier;
 
-      beforeAll(() => {
-        serviceIdentifierFixture = 'serviceId';
-      });
-
-      describe('when called', () => {
-        let result: unknown;
-
-        beforeAll(() => {
-          result = new Container().unbindSync(serviceIdentifierFixture);
-        });
-
-        afterAll(() => {
-          vitest.clearAllMocks();
-        });
-
-        it('should call resolveServiceDeactivations', () => {
-          const expectedParams: DeactivationParams = {
-            getBindings: expect.any(Function) as unknown as <TInstance>(
-              serviceIdentifier: ServiceIdentifier<TInstance>,
-            ) => Binding<TInstance>[] | undefined,
-            getBindingsFromModule: expect.any(Function) as unknown as <
-              TInstance,
-            >(
-              moduleId: number,
-            ) => Binding<TInstance>[] | undefined,
-            getClassMetadata: expect.any(Function) as unknown as (
-              type: Newable,
-            ) => ClassMetadata,
-            getDeactivations: expect.any(Function) as unknown as <TActivated>(
-              serviceIdentifier: ServiceIdentifier<TActivated>,
-            ) => Iterable<BindingDeactivation<TActivated>> | undefined,
-          };
-
-          expect(resolveServiceDeactivations).toHaveBeenCalledTimes(1);
-          expect(resolveServiceDeactivations).toHaveBeenCalledWith(
-            expectedParams,
-            serviceIdentifierFixture,
-          );
-        });
-
-        it('should call activationService.removeAllByServiceId()', () => {
-          expect(
-            activationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledTimes(1);
-          expect(
-            activationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledWith(serviceIdentifierFixture);
-        });
-
-        it('should call bindingService.removeAllByServiceId()', () => {
-          expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledTimes(
-            1,
-          );
-          expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledWith(
-            serviceIdentifierFixture,
-          );
-        });
-
-        it('should call deactivationService.removeAllByServiceId()', () => {
-          expect(
-            deactivationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledTimes(1);
-          expect(
-            deactivationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledWith(serviceIdentifierFixture);
-        });
-
-        it('should call planResultCacheService.clearCache()', () => {
-          expect(clearCacheMock).toHaveBeenCalledTimes(1);
-          expect(clearCacheMock).toHaveBeenCalledWith();
-        });
-
-        it('should return undefined', () => {
-          expect(result).toBeUndefined();
-        });
-      });
-
-      describe('when called, and resolveServiceDeactivations() returns Promise', () => {
-        let result: unknown;
-
-        beforeAll(() => {
-          vitest
-            .mocked(resolveServiceDeactivations)
-            .mockResolvedValueOnce(undefined);
-
-          try {
-            new Container().unbindSync(serviceIdentifierFixture);
-          } catch (error: unknown) {
-            result = error;
-          }
-        });
-
-        afterAll(() => {
-          vitest.clearAllMocks();
-        });
-
-        it('should call resolveServiceDeactivations', () => {
-          const expectedParams: DeactivationParams = {
-            getBindings: expect.any(Function) as unknown as <TInstance>(
-              serviceIdentifier: ServiceIdentifier<TInstance>,
-            ) => Binding<TInstance>[] | undefined,
-            getBindingsFromModule: expect.any(Function) as unknown as <
-              TInstance,
-            >(
-              moduleId: number,
-            ) => Binding<TInstance>[] | undefined,
-            getClassMetadata: expect.any(Function) as unknown as (
-              type: Newable,
-            ) => ClassMetadata,
-            getDeactivations: expect.any(Function) as unknown as <TActivated>(
-              serviceIdentifier: ServiceIdentifier<TActivated>,
-            ) => Iterable<BindingDeactivation<TActivated>> | undefined,
-          };
-
-          expect(resolveServiceDeactivations).toHaveBeenCalledTimes(1);
-          expect(resolveServiceDeactivations).toHaveBeenCalledWith(
-            expectedParams,
-            serviceIdentifierFixture,
-          );
-        });
-
-        it('should call activationService.removeAllByServiceId()', () => {
-          expect(
-            activationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledTimes(1);
-          expect(
-            activationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledWith(serviceIdentifierFixture);
-        });
-
-        it('should call bindingService.removeAllByServiceId()', () => {
-          expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledTimes(
-            1,
-          );
-          expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledWith(
-            serviceIdentifierFixture,
-          );
-        });
-
-        it('should call deactivationService.removeAllByServiceId()', () => {
-          expect(
-            deactivationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledTimes(1);
-          expect(
-            deactivationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledWith(serviceIdentifierFixture);
-        });
-
-        it('should call planResultCacheService.clearCache()', () => {
-          expect(clearCacheMock).toHaveBeenCalledTimes(1);
-          expect(clearCacheMock).toHaveBeenCalledWith();
-        });
-
-        it('should throw an InversifyContainerError', () => {
-          const expectedErrorProperties: Partial<InversifyContainerError> = {
-            kind: InversifyContainerErrorKind.invalidOperation,
-            message:
-              'Unexpected asyncronous deactivation when unbinding "serviceId" service. Consider using Container.unbind() instead.',
-          };
-
-          expect(result).toStrictEqual(
-            expect.objectContaining(expectedErrorProperties),
-          );
-        });
-      });
+    beforeAll(() => {
+      serviceIdentifierFixture = 'serviceId';
     });
 
-    describe('having a BindingIdentifier', () => {
-      let bindingIdentifierFixture: BindingIdentifier;
+    describe('when called', () => {
+      let result: unknown;
 
       beforeAll(() => {
-        bindingIdentifierFixture = {
-          [bindingIdentifierSymbol]: true,
-          id: 1,
-        };
+        bindingManagerMock.unbindSync.mockReturnValueOnce(undefined);
+
+        result = new Container().unbindSync(serviceIdentifierFixture);
       });
 
-      describe('when called', () => {
-        let bindingMock: Mocked<Binding>;
-        let result: unknown;
-
-        beforeAll(() => {
-          bindingMock = {
-            cache: {
-              isRight: false,
-              value: undefined,
-            },
-            id: bindingIdentifierFixture.id,
-            isSatisfiedBy: vitest.fn(),
-            moduleId: undefined,
-            onActivation: undefined,
-            onDeactivation: undefined,
-            scope: bindingScopeValues.Singleton,
-            serviceIdentifier: 'service-id',
-            type: bindingTypeValues.ConstantValue,
-            value: Symbol.for('constant-value-binding-fixture-value'),
-          };
-
-          bindingServiceMock.getById.mockReturnValueOnce([bindingMock]);
-
-          result = new Container().unbindSync(bindingIdentifierFixture);
-        });
-
-        afterAll(() => {
-          vitest.clearAllMocks();
-        });
-
-        it('should call bindingService.getById()', () => {
-          expect(bindingServiceMock.getById).toHaveBeenCalledTimes(1);
-          expect(bindingServiceMock.getById).toHaveBeenCalledWith(
-            bindingIdentifierFixture.id,
-          );
-        });
-
-        it('should call resolveBindingsDeactivations()', () => {
-          expect(resolveBindingsDeactivations).toHaveBeenCalledTimes(1);
-          expect(resolveBindingsDeactivations).toHaveBeenCalledWith(
-            expect.any(Object),
-            [bindingMock],
-          );
-        });
-
-        it('should call bindingService.removeById()', () => {
-          expect(bindingServiceMock.removeById).toHaveBeenCalledTimes(1);
-          expect(bindingServiceMock.removeById).toHaveBeenCalledWith(
-            bindingIdentifierFixture.id,
-          );
-        });
-
-        it('should call planResultCacheService.clearCache()', () => {
-          expect(clearCacheMock).toHaveBeenCalledTimes(1);
-          expect(clearCacheMock).toHaveBeenCalledWith();
-        });
-
-        it('should return undefined', () => {
-          expect(result).toBeUndefined();
-        });
+      afterAll(() => {
+        vitest.clearAllMocks();
       });
 
-      describe('when called, and resolveBindingsDeactivations() returns a  and getFirstIterableResult() returns undefined', () => {
-        let bindingMock: Mocked<Binding>;
-        let result: unknown;
-
-        beforeAll(() => {
-          bindingMock = {
-            cache: {
-              isRight: false,
-              value: undefined,
-            },
-            id: bindingIdentifierFixture.id,
-            isSatisfiedBy: vitest.fn(),
-            moduleId: undefined,
-            onActivation: undefined,
-            onDeactivation: undefined,
-            scope: bindingScopeValues.Singleton,
-            serviceIdentifier: 'service-id',
-            type: bindingTypeValues.ConstantValue,
-            value: Symbol.for('constant-value-binding-fixture-value'),
-          };
-
-          bindingServiceMock.getById
-            .mockReturnValueOnce([bindingMock])
-            .mockReturnValueOnce(undefined);
-
-          vitest
-            .mocked(resolveBindingsDeactivations)
-            .mockResolvedValueOnce(undefined);
-
-          vitest.mocked(getFirstIterableResult).mockReturnValueOnce(undefined);
-
-          try {
-            new Container().unbindSync(bindingIdentifierFixture);
-          } catch (error: unknown) {
-            result = error;
-          }
-        });
-
-        afterAll(() => {
-          vitest.clearAllMocks();
-        });
-
-        it('should call bindingService.getById()', () => {
-          expect(bindingServiceMock.getById).toHaveBeenCalledTimes(2);
-          expect(bindingServiceMock.getById).toHaveBeenNthCalledWith(
-            1,
-            bindingIdentifierFixture.id,
-          );
-          expect(bindingServiceMock.getById).toHaveBeenNthCalledWith(
-            2,
-            bindingIdentifierFixture.id,
-          );
-        });
-
-        it('should call resolveBindingsDeactivations()', () => {
-          expect(resolveBindingsDeactivations).toHaveBeenCalledTimes(1);
-          expect(resolveBindingsDeactivations).toHaveBeenCalledWith(
-            expect.any(Object),
-            [bindingMock],
-          );
-        });
-
-        it('should call bindingService.removeById()', () => {
-          expect(bindingServiceMock.removeById).toHaveBeenCalledTimes(1);
-          expect(bindingServiceMock.removeById).toHaveBeenCalledWith(
-            bindingIdentifierFixture.id,
-          );
-        });
-
-        it('should call planResultCacheService.clearCache()', () => {
-          expect(clearCacheMock).toHaveBeenCalledTimes(1);
-          expect(clearCacheMock).toHaveBeenCalledWith();
-        });
-
-        it('should throw an InversifyContainerError', () => {
-          const expectedErrorProperties: Partial<InversifyContainerError> = {
-            kind: InversifyContainerErrorKind.invalidOperation,
-            message:
-              'Unexpected asyncronous deactivation when unbinding binding identifier. Consider using Container.unbind() instead.',
-          };
-
-          expect(result).toStrictEqual(
-            expect.objectContaining(expectedErrorProperties),
-          );
-        });
+      it('should call bindingManager.unbindSync()', () => {
+        expect(bindingManagerMock.unbindSync).toHaveBeenCalledTimes(1);
+        expect(bindingManagerMock.unbindSync).toHaveBeenCalledWith(
+          serviceIdentifierFixture,
+        );
       });
 
-      describe('when called, and resolveBindingsDeactivations() returns a  and getFirstIterableResult() returns Binding', () => {
-        let bindingMock: Mocked<Binding>;
-        let result: unknown;
-
-        beforeAll(() => {
-          bindingMock = {
-            cache: {
-              isRight: false,
-              value: undefined,
-            },
-            id: bindingIdentifierFixture.id,
-            isSatisfiedBy: vitest.fn(),
-            moduleId: undefined,
-            onActivation: undefined,
-            onDeactivation: undefined,
-            scope: bindingScopeValues.Singleton,
-            serviceIdentifier: 'service-id',
-            type: bindingTypeValues.ConstantValue,
-            value: Symbol.for('constant-value-binding-fixture-value'),
-          };
-
-          bindingServiceMock.getById
-            .mockReturnValueOnce([bindingMock])
-            .mockReturnValueOnce([bindingMock]);
-
-          vitest
-            .mocked(resolveBindingsDeactivations)
-            .mockResolvedValueOnce(undefined);
-
-          vitest
-            .mocked(getFirstIterableResult)
-            .mockReturnValueOnce(bindingMock);
-
-          try {
-            new Container().unbindSync(bindingIdentifierFixture);
-          } catch (error: unknown) {
-            result = error;
-          }
-        });
-
-        afterAll(() => {
-          vitest.clearAllMocks();
-        });
-
-        it('should call bindingService.getById()', () => {
-          expect(bindingServiceMock.getById).toHaveBeenCalledTimes(2);
-          expect(bindingServiceMock.getById).toHaveBeenNthCalledWith(
-            1,
-            bindingIdentifierFixture.id,
-          );
-          expect(bindingServiceMock.getById).toHaveBeenNthCalledWith(
-            2,
-            bindingIdentifierFixture.id,
-          );
-        });
-
-        it('should call resolveBindingsDeactivations()', () => {
-          expect(resolveBindingsDeactivations).toHaveBeenCalledTimes(1);
-          expect(resolveBindingsDeactivations).toHaveBeenCalledWith(
-            expect.any(Object),
-            [bindingMock],
-          );
-        });
-
-        it('should call bindingService.removeById()', () => {
-          expect(bindingServiceMock.removeById).toHaveBeenCalledTimes(1);
-          expect(bindingServiceMock.removeById).toHaveBeenCalledWith(
-            bindingIdentifierFixture.id,
-          );
-        });
-
-        it('should call planResultCacheService.clearCache()', () => {
-          expect(clearCacheMock).toHaveBeenCalledTimes(1);
-          expect(clearCacheMock).toHaveBeenCalledWith();
-        });
-
-        it('should throw an InversifyContainerError', () => {
-          const expectedErrorProperties: Partial<InversifyContainerError> = {
-            kind: InversifyContainerErrorKind.invalidOperation,
-            message:
-              'Unexpected asyncronous deactivation when unbinding "service-id" binding. Consider using Container.unbind() instead.',
-          };
-
-          expect(result).toStrictEqual(
-            expect.objectContaining(expectedErrorProperties),
-          );
-        });
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
       });
     });
   });
 
   describe('.unbindAll', () => {
     describe('when called', () => {
-      let serviceIdsFixture: string[];
       let result: unknown;
 
       beforeAll(async () => {
-        serviceIdsFixture = ['service1', 'service2'];
-        bindingServiceMock.getNonParentBoundServices.mockReturnValueOnce(
-          serviceIdsFixture,
-        );
+        bindingManagerMock.unbindAll.mockResolvedValueOnce(undefined);
 
         result = await new Container().unbindAll();
       });
@@ -2977,58 +1803,9 @@ describe(Container.name, () => {
         vitest.clearAllMocks();
       });
 
-      it('should call resolveServiceDeactivations for each service', () => {
-        expect(resolveServiceDeactivations).toHaveBeenCalledTimes(
-          serviceIdsFixture.length,
-        );
-
-        for (const serviceId of serviceIdsFixture) {
-          expect(resolveServiceDeactivations).toHaveBeenCalledWith(
-            expect.any(Object),
-            serviceId,
-          );
-        }
-      });
-
-      it('should call removeAllByServiceId on activationService for each service', () => {
-        expect(
-          activationServiceMock.removeAllByServiceId,
-        ).toHaveBeenCalledTimes(serviceIdsFixture.length);
-
-        for (const serviceId of serviceIdsFixture) {
-          expect(
-            activationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledWith(serviceId);
-        }
-      });
-
-      it('should call removeAllByServiceId on bindingService for each service', () => {
-        expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledTimes(
-          serviceIdsFixture.length,
-        );
-
-        for (const serviceId of serviceIdsFixture) {
-          expect(bindingServiceMock.removeAllByServiceId).toHaveBeenCalledWith(
-            serviceId,
-          );
-        }
-      });
-
-      it('should call removeAllByServiceId on deactivationService for each service', () => {
-        expect(
-          deactivationServiceMock.removeAllByServiceId,
-        ).toHaveBeenCalledTimes(serviceIdsFixture.length);
-
-        for (const serviceId of serviceIdsFixture) {
-          expect(
-            deactivationServiceMock.removeAllByServiceId,
-          ).toHaveBeenCalledWith(serviceId);
-        }
-      });
-
-      it('should call planResultCacheService.clearCache()', () => {
-        expect(clearCacheMock).toHaveBeenCalledTimes(1);
-        expect(clearCacheMock).toHaveBeenCalledWith();
+      it('should call bindingManager.unbindAll()', () => {
+        expect(bindingManagerMock.unbindAll).toHaveBeenCalledTimes(1);
+        expect(bindingManagerMock.unbindAll).toHaveBeenCalledWith();
       });
 
       it('should return undefined', () => {
@@ -3057,32 +1834,11 @@ describe(Container.name, () => {
         vitest.clearAllMocks();
       });
 
-      it('should call resolveModuleDeactivations', () => {
-        const expectedParams: DeactivationParams = {
-          getBindings: expect.any(Function) as unknown as <TInstance>(
-            serviceIdentifier: ServiceIdentifier<TInstance>,
-          ) => Binding<TInstance>[] | undefined,
-          getBindingsFromModule: expect.any(Function) as unknown as <TInstance>(
-            moduleId: number,
-          ) => Binding<TInstance>[] | undefined,
-          getClassMetadata: expect.any(Function) as unknown as (
-            type: Newable,
-          ) => ClassMetadata,
-          getDeactivations: expect.any(Function) as unknown as <TActivated>(
-            serviceIdentifier: ServiceIdentifier<TActivated>,
-          ) => Iterable<BindingDeactivation<TActivated>> | undefined,
-        };
-
-        expect(resolveModuleDeactivations).toHaveBeenCalledTimes(1);
-        expect(resolveModuleDeactivations).toHaveBeenCalledWith(
-          expectedParams,
-          containerModuleFixture.id,
+      it('should call containerModuleManager.unload()', () => {
+        expect(containerModuleManagerMock.unload).toHaveBeenCalledTimes(1);
+        expect(containerModuleManagerMock.unload).toHaveBeenCalledWith(
+          containerModuleFixture,
         );
-      });
-
-      it('should call planResultCacheService.clearCache()', () => {
-        expect(clearCacheMock).toHaveBeenCalledTimes(1);
-        expect(clearCacheMock).toHaveBeenCalledWith();
       });
 
       it('should return undefined', () => {
@@ -3092,119 +1848,34 @@ describe(Container.name, () => {
   });
 
   describe('.unloadSync', () => {
-    let syncContainerModuleFixture: ContainerModule;
-    let asyncContainerModuleFixture: ContainerModule;
+    let containerModuleFixture: ContainerModule;
 
     beforeAll(() => {
-      syncContainerModuleFixture = {
+      containerModuleFixture = {
         id: 2,
-      } as Partial<ContainerModule> as ContainerModule;
-
-      asyncContainerModuleFixture = {
-        id: 3,
       } as Partial<ContainerModule> as ContainerModule;
     });
 
-    describe('when called, and resolveModuleDeactivations() returns undefined', () => {
+    describe('when called', () => {
       let result: unknown;
 
       beforeAll(() => {
-        vitest
-          .mocked(resolveModuleDeactivations)
-          .mockReturnValueOnce(undefined);
-
-        result = new Container().unloadSync(syncContainerModuleFixture);
+        result = new Container().unloadSync(containerModuleFixture);
       });
 
       afterAll(() => {
         vitest.clearAllMocks();
       });
 
-      it('should call resolveModuleDeactivations', () => {
-        const expectedParams: DeactivationParams = {
-          getBindings: expect.any(Function) as unknown as <TInstance>(
-            serviceIdentifier: ServiceIdentifier<TInstance>,
-          ) => Binding<TInstance>[] | undefined,
-          getBindingsFromModule: expect.any(Function) as unknown as <TInstance>(
-            moduleId: number,
-          ) => Binding<TInstance>[] | undefined,
-          getClassMetadata: expect.any(Function) as unknown as (
-            type: Newable,
-          ) => ClassMetadata,
-          getDeactivations: expect.any(Function) as unknown as <TActivated>(
-            serviceIdentifier: ServiceIdentifier<TActivated>,
-          ) => Iterable<BindingDeactivation<TActivated>> | undefined,
-        };
-
-        expect(resolveModuleDeactivations).toHaveBeenCalledTimes(1);
-        expect(resolveModuleDeactivations).toHaveBeenCalledWith(
-          expectedParams,
-          syncContainerModuleFixture.id,
+      it('should call containerModuleManager.unloadSync()', () => {
+        expect(containerModuleManagerMock.unloadSync).toHaveBeenCalledTimes(1);
+        expect(containerModuleManagerMock.unloadSync).toHaveBeenCalledWith(
+          containerModuleFixture,
         );
-      });
-
-      it('should call planResultCacheService.clearCache()', () => {
-        expect(clearCacheMock).toHaveBeenCalledTimes(1);
-        expect(clearCacheMock).toHaveBeenCalledWith();
       });
 
       it('should return undefined', () => {
         expect(result).toBeUndefined();
-      });
-    });
-
-    describe('when called, and resolveModuleDeactivations() returns Promise', () => {
-      let result: unknown;
-
-      beforeAll(() => {
-        vitest
-          .mocked(resolveModuleDeactivations)
-          .mockResolvedValueOnce(undefined);
-
-        try {
-          new Container().unloadSync(asyncContainerModuleFixture);
-        } catch (error: unknown) {
-          result = error;
-        }
-      });
-
-      afterAll(() => {
-        vitest.clearAllMocks();
-      });
-
-      it('should call resolveModuleDeactivations', () => {
-        const expectedParams: DeactivationParams = {
-          getBindings: expect.any(Function) as unknown as <TInstance>(
-            serviceIdentifier: ServiceIdentifier<TInstance>,
-          ) => Binding<TInstance>[] | undefined,
-          getBindingsFromModule: expect.any(Function) as unknown as <TInstance>(
-            moduleId: number,
-          ) => Binding<TInstance>[] | undefined,
-          getClassMetadata: expect.any(Function) as unknown as (
-            type: Newable,
-          ) => ClassMetadata,
-          getDeactivations: expect.any(Function) as unknown as <TActivated>(
-            serviceIdentifier: ServiceIdentifier<TActivated>,
-          ) => Iterable<BindingDeactivation<TActivated>> | undefined,
-        };
-
-        expect(resolveModuleDeactivations).toHaveBeenCalledTimes(1);
-        expect(resolveModuleDeactivations).toHaveBeenCalledWith(
-          expectedParams,
-          asyncContainerModuleFixture.id,
-        );
-      });
-
-      it('should throw InversifyContainerError', () => {
-        const expectedErrorProperties: Partial<InversifyContainerError> = {
-          kind: InversifyContainerErrorKind.invalidOperation,
-          message:
-            'Unexpected asyncronous module unload. Consider using Container.unload() instead.',
-        };
-
-        expect(result).toStrictEqual(
-          expect.objectContaining(expectedErrorProperties),
-        );
       });
     });
   });

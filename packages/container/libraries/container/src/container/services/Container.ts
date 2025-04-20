@@ -1,5 +1,6 @@
 import {
   isPromise,
+  Newable,
   ServiceIdentifier,
   stringifyServiceIdentifier,
 } from '@inversifyjs/common';
@@ -7,7 +8,6 @@ import {
   ActivationsService,
   Binding,
   BindingActivation,
-  BindingConstraints,
   BindingDeactivation,
   BindingScope,
   bindingScopeValues,
@@ -24,24 +24,24 @@ import {
   PlanResultCacheService,
   ResolutionContext,
   resolve,
-  resolveBindingsDeactivations,
-  resolveModuleDeactivations,
-  resolveServiceDeactivations,
 } from '@inversifyjs/core';
+import {
+  isPlugin,
+  Plugin,
+  PluginApi,
+  PluginContext,
+} from '@inversifyjs/plugin';
 
-import { isBindingIdentifier } from '../../binding/calculations/isBindingIdentifier';
 import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
-import { BindToFluentSyntaxImplementation } from '../../binding/models/BindingFluentSyntaxImplementation';
 import { BindingIdentifier } from '../../binding/models/BindingIdentifier';
-import { getFirstIterableResult } from '../../common/calculations/getFirstIterableResult';
 import { InversifyContainerError } from '../../error/models/InversifyContainerError';
 import { InversifyContainerErrorKind } from '../../error/models/InversifyContainerErrorKind';
-import { Snapshot } from '../../snapshot/models/Snapshot';
-import {
-  ContainerModule,
-  ContainerModuleLoadOptions,
-} from '../models/ContainerModule';
+import { ContainerModule } from '../models/ContainerModule';
 import { IsBoundOptions } from '../models/isBoundOptions';
+import { BindingManager } from './BindingManager';
+import { ContainerModuleManager } from './ContainerModuleManager';
+import { ServiceReferenceManager } from './ServiceReferenceManager';
+import { SnapshotManager } from './SnapshotManager';
 
 export interface ContainerOptions {
   autobind?: true;
@@ -57,76 +57,71 @@ interface InternalContainerOptions {
 const DEFAULT_DEFAULT_SCOPE: BindingScope = bindingScopeValues.Transient;
 
 export class Container {
-  #activationService: ActivationsService;
-  #bindingService: BindingService;
-  readonly #deactivationParams: DeactivationParams;
-  #deactivationService: DeactivationsService;
-  #getActivationsResolutionParam: <TActivated>(
+  readonly #bindingManager: BindingManager;
+  readonly #containerModuleManager: ContainerModuleManager;
+  readonly #getActivationsResolutionParam: <TActivated>(
     serviceIdentifier: ServiceIdentifier<TActivated>,
   ) => Iterable<BindingActivation<TActivated>> | undefined;
   #getBindingsPlanParams: <TInstance>(
     serviceIdentifier: ServiceIdentifier<TInstance>,
   ) => Iterable<Binding<TInstance>> | undefined;
   readonly #options: InternalContainerOptions;
-  readonly #planResultCacheService: PlanResultCacheService;
+  readonly #pluginApi: PluginApi<Container>;
+  readonly #pluginContext: PluginContext;
   #resolutionContext: ResolutionContext;
+  readonly #serviceReferenceManager: ServiceReferenceManager;
+  readonly #snapshotManager: SnapshotManager;
   #setBindingParamsPlan: <TInstance>(binding: Binding<TInstance>) => void;
-  readonly #snapshots: Snapshot[];
 
   constructor(options?: ContainerOptions) {
-    this.#deactivationParams = this.#buildDeactivationParams();
     this.#getActivationsResolutionParam = <TActivated>(
       serviceIdentifier: ServiceIdentifier<TActivated>,
     ): Iterable<BindingActivation<TActivated>> | undefined =>
-      this.#activationService.get(serviceIdentifier) as
+      this.#serviceReferenceManager.activationService.get(serviceIdentifier) as
         | Iterable<BindingActivation<TActivated>>
         | undefined;
-    this.#planResultCacheService = new PlanResultCacheService();
+
+    this.#pluginApi = this.#buildPluginApi();
+    this.#pluginContext = this.#buildPluginContext();
     this.#resolutionContext = this.#buildResolutionContext();
 
-    if (options?.parent === undefined) {
-      this.#activationService = ActivationsService.build(undefined);
-      this.#bindingService = BindingService.build(undefined);
-      this.#deactivationService = DeactivationsService.build(undefined);
-    } else {
-      this.#activationService = ActivationsService.build(
-        options.parent.#activationService,
-      );
-      this.#bindingService = BindingService.build(
-        options.parent.#bindingService,
-      );
-      this.#deactivationService = DeactivationsService.build(
-        options.parent.#deactivationService,
-      );
-
-      options.parent.#planResultCacheService.subscribe(
-        this.#planResultCacheService,
-      );
-    }
-
-    this.#getBindingsPlanParams = this.#bindingService.get.bind(
-      this.#bindingService,
+    this.#serviceReferenceManager = this.#buildServiceReferenceManager(options);
+    this.#serviceReferenceManager.onReset(
+      this.#resetComputedProperties.bind(this),
     );
+
+    this.#getBindingsPlanParams =
+      this.#serviceReferenceManager.bindingService.get.bind(
+        this.#serviceReferenceManager.bindingService,
+      );
     this.#setBindingParamsPlan = this.#setBinding.bind(this);
 
     this.#options = {
       autobind: options?.autobind ?? false,
       defaultScope: options?.defaultScope ?? DEFAULT_DEFAULT_SCOPE,
     };
-    this.#snapshots = [];
+
+    const deactivationParams: DeactivationParams =
+      this.#buildDeactivationParams();
+
+    this.#bindingManager = new BindingManager(
+      deactivationParams,
+      this.#options.defaultScope,
+      this.#serviceReferenceManager,
+    );
+    this.#containerModuleManager = new ContainerModuleManager(
+      this.#bindingManager,
+      deactivationParams,
+      this.#options.defaultScope,
+      this.#serviceReferenceManager,
+    );
+    this.#snapshotManager = new SnapshotManager(this.#serviceReferenceManager);
   }
 
   public bind<T>(
     serviceIdentifier: ServiceIdentifier<T>,
   ): BindToFluentSyntax<T> {
-    return new BindToFluentSyntaxImplementation(
-      (binding: Binding): void => {
-        this.#setBinding(binding);
-      },
-      undefined,
-      this.#options.defaultScope,
-      serviceIdentifier,
-    );
+    return this.#bindingManager.bind(serviceIdentifier);
   }
 
   public get<T>(
@@ -153,7 +148,7 @@ export class Container {
     if (isPromise(resolvedValue)) {
       throw new InversifyContainerError(
         InversifyContainerErrorKind.invalidOperation,
-        `Unexpected asyncronous service when resolving service "${stringifyServiceIdentifier(serviceIdentifier)}"`,
+        `Unexpected asynchronous service when resolving service "${stringifyServiceIdentifier(serviceIdentifier)}"`,
       );
     }
 
@@ -176,7 +171,7 @@ export class Container {
     if (isPromise(resolvedValue)) {
       throw new InversifyContainerError(
         InversifyContainerErrorKind.invalidOperation,
-        `Unexpected asyncronous service when resolving service "${stringifyServiceIdentifier(serviceIdentifier)}"`,
+        `Unexpected asynchronous service when resolving service "${stringifyServiceIdentifier(serviceIdentifier)}"`,
       );
     }
 
@@ -221,218 +216,103 @@ export class Container {
     serviceIdentifier: ServiceIdentifier,
     options?: IsBoundOptions,
   ): boolean {
-    const bindings: Iterable<Binding<unknown>> | undefined =
-      this.#bindingService.get(serviceIdentifier);
-
-    return this.#isAnyValidBinding(serviceIdentifier, bindings, options);
+    return this.#bindingManager.isBound(serviceIdentifier, options);
   }
 
   public isCurrentBound(
     serviceIdentifier: ServiceIdentifier,
     options?: IsBoundOptions,
   ): boolean {
-    const bindings: Iterable<Binding<unknown>> | undefined =
-      this.#bindingService.getNonParentBindings(serviceIdentifier);
-
-    return this.#isAnyValidBinding(serviceIdentifier, bindings, options);
+    return this.#bindingManager.isCurrentBound(serviceIdentifier, options);
   }
 
   public async load(...modules: ContainerModule[]): Promise<void> {
-    await Promise.all(this.#load(...modules));
+    return this.#containerModuleManager.load(...modules);
   }
 
   public loadSync(...modules: ContainerModule[]): void {
-    const results: (void | Promise<void>)[] = this.#load(...modules);
-
-    for (const result of results) {
-      if (result !== undefined) {
-        throw new InversifyContainerError(
-          InversifyContainerErrorKind.invalidOperation,
-          'Unexpected asyncronous module load. Consider using Container.load() instead.',
-        );
-      }
-    }
+    this.#containerModuleManager.loadSync(...modules);
   }
 
   public onActivation<T>(
     serviceIdentifier: ServiceIdentifier<T>,
     activation: BindingActivation<T>,
   ): void {
-    this.#activationService.add(activation as BindingActivation, {
-      serviceId: serviceIdentifier,
-    });
+    this.#serviceReferenceManager.activationService.add(
+      activation as BindingActivation,
+      {
+        serviceId: serviceIdentifier,
+      },
+    );
   }
 
   public onDeactivation<T>(
     serviceIdentifier: ServiceIdentifier<T>,
     deactivation: BindingDeactivation<T>,
   ): void {
-    this.#deactivationService.add(deactivation as BindingDeactivation, {
-      serviceId: serviceIdentifier,
-    });
+    this.#serviceReferenceManager.deactivationService.add(
+      deactivation as BindingDeactivation,
+      {
+        serviceId: serviceIdentifier,
+      },
+    );
   }
 
-  public restore(): void {
-    const snapshot: Snapshot | undefined = this.#snapshots.pop();
+  public register(pluginConstructor: Newable): void {
+    const pluginInstance: Partial<Plugin<Container>> = new pluginConstructor(
+      this.#pluginContext,
+    ) as Partial<Plugin<Container>>;
 
-    if (snapshot === undefined) {
+    if (pluginInstance[isPlugin] !== true) {
       throw new InversifyContainerError(
         InversifyContainerErrorKind.invalidOperation,
-        'No snapshot available to restore',
+        'Invalid plugin. The plugin must extend the Plugin class',
       );
     }
 
-    this.#activationService = snapshot.activationService;
-    this.#bindingService = snapshot.bindingService;
-    this.#deactivationService = snapshot.deactivationService;
+    (pluginInstance as Plugin<Container>).load(this.#pluginApi);
+  }
 
-    this.#resetComputedProperties();
+  public restore(): void {
+    this.#snapshotManager.restore();
   }
 
   public async rebind<T>(
     serviceIdentifier: ServiceIdentifier<T>,
   ): Promise<BindToFluentSyntax<T>> {
-    await this.unbind(serviceIdentifier);
-
-    return this.bind(serviceIdentifier);
+    return this.#bindingManager.rebind(serviceIdentifier);
   }
 
   public rebindSync<T>(
     serviceIdentifier: ServiceIdentifier<T>,
   ): BindToFluentSyntax<T> {
-    this.unbindSync(serviceIdentifier);
-
-    return this.bind(serviceIdentifier);
+    return this.#bindingManager.rebindSync(serviceIdentifier);
   }
 
   public snapshot(): void {
-    this.#snapshots.push({
-      activationService: this.#activationService.clone(),
-      bindingService: this.#bindingService.clone(),
-      deactivationService: this.#deactivationService.clone(),
-    });
+    this.#snapshotManager.snapshot();
   }
 
   public async unbind(
     identifier: BindingIdentifier | ServiceIdentifier,
   ): Promise<void> {
-    await this.#unbind(identifier);
+    await this.#bindingManager.unbind(identifier);
   }
 
   public async unbindAll(): Promise<void> {
-    const nonParentBoundServiceIds: ServiceIdentifier[] = [
-      ...this.#bindingService.getNonParentBoundServices(),
-    ];
-
-    await Promise.all(
-      nonParentBoundServiceIds.map(
-        async (serviceId: ServiceIdentifier): Promise<void> =>
-          resolveServiceDeactivations(this.#deactivationParams, serviceId),
-      ),
-    );
-
-    /*
-     * Removing service related objects here so unbindAll is deterministic.
-     *
-     * Removing service related objects as soon as resolveModuleDeactivations takes
-     * effect leads to module deactivations not triggering previously deleted
-     * deactivations, introducing non determinism depending in the order in which
-     * services are deactivated.
-     */
-    for (const serviceId of nonParentBoundServiceIds) {
-      this.#activationService.removeAllByServiceId(serviceId);
-      this.#bindingService.removeAllByServiceId(serviceId);
-      this.#deactivationService.removeAllByServiceId(serviceId);
-    }
-
-    this.#planResultCacheService.clearCache();
+    return this.#bindingManager.unbindAll();
   }
 
   public unbindSync(identifier: BindingIdentifier | ServiceIdentifier): void {
-    const result: void | Promise<void> = this.#unbind(identifier);
-
-    if (result !== undefined) {
-      this.#throwUnexpectedAsyncUnbindOperation(identifier);
-    }
+    this.#bindingManager.unbindSync(identifier);
   }
 
   public async unload(...modules: ContainerModule[]): Promise<void> {
-    await Promise.all(this.#unload(...modules));
-
-    /*
-     * Removing module related objects here so unload is deterministic.
-     *
-     * Removing modules as soon as resolveModuleDeactivations takes effect leads to
-     * module deactivations not triggering previously deleted deactivations,
-     * introducing non determinism depending in the order in which modules are
-     * deactivated.
-     */
-    this.#clearAfterUnloadModules(modules);
+    return this.#containerModuleManager.unload(...modules);
   }
 
   public unloadSync(...modules: ContainerModule[]): void {
-    const results: (void | Promise<void>)[] = this.#unload(...modules);
-
-    for (const result of results) {
-      if (result !== undefined) {
-        throw new InversifyContainerError(
-          InversifyContainerErrorKind.invalidOperation,
-          'Unexpected asyncronous module unload. Consider using Container.unload() instead.',
-        );
-      }
-    }
-
-    /*
-     * Removing module related objects here so unload is deterministic.
-     *
-     * Removing modules as soon as resolveModuleDeactivations takes effect leads to
-     * module deactivations not triggering previously deleted deactivations,
-     * introducing non determinism depending in the order in which modules are
-     * deactivated.
-     */
-    this.#clearAfterUnloadModules(modules);
-  }
-
-  #buildContainerModuleLoadOptions(
-    moduleId: number,
-  ): ContainerModuleLoadOptions {
-    return {
-      bind: <T>(
-        serviceIdentifier: ServiceIdentifier<T>,
-      ): BindToFluentSyntax<T> => {
-        return new BindToFluentSyntaxImplementation(
-          (binding: Binding): void => {
-            this.#setBinding(binding);
-          },
-          moduleId,
-          this.#options.defaultScope,
-          serviceIdentifier,
-        );
-      },
-      isBound: this.isBound.bind(this),
-      onActivation: <T>(
-        serviceIdentifier: ServiceIdentifier<T>,
-        activation: BindingActivation<T>,
-      ): void => {
-        this.#activationService.add(activation as BindingActivation, {
-          moduleId,
-          serviceId: serviceIdentifier,
-        });
-      },
-      onDeactivation: <T>(
-        serviceIdentifier: ServiceIdentifier<T>,
-        deactivation: BindingDeactivation<T>,
-      ): void => {
-        this.#deactivationService.add(deactivation as BindingDeactivation, {
-          moduleId,
-          serviceId: serviceIdentifier,
-        });
-      },
-      rebind: this.rebind.bind(this),
-      rebindSync: this.rebindSync.bind(this),
-      unbind: this.unbind.bind(this),
-      unbindSync: this.unbindSync.bind(this),
-    };
+    this.#containerModuleManager.unloadSync(...modules);
   }
 
   #buildDeactivationParams(): DeactivationParams {
@@ -440,15 +320,18 @@ export class Container {
       getBindings: <TInstance>(
         serviceIdentifier: ServiceIdentifier<TInstance>,
       ): Iterable<Binding<TInstance>> | undefined =>
-        this.#bindingService.get(serviceIdentifier),
+        this.#serviceReferenceManager.bindingService.get(serviceIdentifier),
       getBindingsFromModule: <TInstance>(
         moduleId: number,
       ): Iterable<Binding<TInstance>> | undefined =>
-        this.#bindingService.getByModuleId(moduleId),
+        this.#serviceReferenceManager.bindingService.getByModuleId(moduleId),
       getClassMetadata,
       getDeactivations: <TActivated>(
         serviceIdentifier: ServiceIdentifier<TActivated>,
-      ) => this.#deactivationService.get(serviceIdentifier),
+      ) =>
+        this.#serviceReferenceManager.deactivationService.get(
+          serviceIdentifier,
+        ),
     };
   }
 
@@ -505,7 +388,7 @@ export class Container {
     );
 
     const planResultFromCache: PlanResult | undefined =
-      this.#planResultCacheService.get(getPlanOptions);
+      this.#serviceReferenceManager.planResultCacheService.get(getPlanOptions);
 
     if (planResultFromCache !== undefined) {
       return planResultFromCache;
@@ -515,9 +398,51 @@ export class Container {
       this.#buildPlanParams(serviceIdentifier, isMultiple, options),
     );
 
-    this.#planResultCacheService.set(getPlanOptions, planResult);
+    this.#serviceReferenceManager.planResultCacheService.set(
+      getPlanOptions,
+      planResult,
+    );
 
     return planResult;
+  }
+
+  #buildPluginApi(): PluginApi<Container> {
+    return {
+      define: (
+        name: string | symbol,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        method: (this: Container, ...args: any[]) => unknown,
+      ): void => {
+        if (Object.prototype.hasOwnProperty.call(this, name)) {
+          throw new InversifyContainerError(
+            InversifyContainerErrorKind.invalidOperation,
+            `Container already has a method named "${String(name)}"`,
+          );
+        }
+
+        (this as Record<string | symbol, unknown>)[name] = method.bind(this);
+      },
+    };
+  }
+
+  #buildPluginContext(): PluginContext {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self: Container = this;
+
+    return {
+      get activationService() {
+        return self.#serviceReferenceManager.activationService;
+      },
+      get bindingService() {
+        return self.#serviceReferenceManager.bindingService;
+      },
+      get deactivationService() {
+        return self.#serviceReferenceManager.deactivationService;
+      },
+      get planResultCacheService() {
+        return self.#serviceReferenceManager.planResultCacheService;
+      },
+    };
   }
 
   #buildResolutionContext(): ResolutionContext {
@@ -527,6 +452,39 @@ export class Container {
       getAllAsync: this.getAllAsync.bind(this),
       getAsync: this.getAsync.bind(this),
     };
+  }
+
+  #buildServiceReferenceManager(
+    options?: ContainerOptions,
+  ): ServiceReferenceManager {
+    if (options?.parent === undefined) {
+      return new ServiceReferenceManager(
+        ActivationsService.build(undefined),
+        BindingService.build(undefined),
+        DeactivationsService.build(undefined),
+        new PlanResultCacheService(),
+      );
+    }
+
+    const planResultCacheService: PlanResultCacheService =
+      new PlanResultCacheService();
+
+    options.parent.#serviceReferenceManager.planResultCacheService.subscribe(
+      planResultCacheService,
+    );
+
+    return new ServiceReferenceManager(
+      ActivationsService.build(
+        options.parent.#serviceReferenceManager.activationService,
+      ),
+      BindingService.build(
+        options.parent.#serviceReferenceManager.bindingService,
+      ),
+      DeactivationsService.build(
+        options.parent.#serviceReferenceManager.deactivationService,
+      ),
+      planResultCacheService,
+    );
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
@@ -563,164 +521,18 @@ export class Container {
     }
   }
 
-  #isAnyValidBinding(
-    serviceIdentifier: ServiceIdentifier,
-    bindings: Iterable<Binding<unknown>> | undefined,
-    options?: IsBoundOptions,
-  ): boolean {
-    if (bindings === undefined) {
-      return false;
-    }
-
-    const bindingConstraints: BindingConstraints = {
-      getAncestor: () => undefined,
-      name: options?.name,
-      serviceIdentifier,
-      tags: new Map(),
-    };
-
-    if (options?.tag !== undefined) {
-      bindingConstraints.tags.set(options.tag.key, options.tag.value);
-    }
-
-    for (const binding of bindings) {
-      if (binding.isSatisfiedBy(bindingConstraints)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  #load(...modules: ContainerModule[]): (void | Promise<void>)[] {
-    return modules.map((module: ContainerModule): void | Promise<void> =>
-      module.load(this.#buildContainerModuleLoadOptions(module.id)),
-    );
-  }
-
-  #unload(...modules: ContainerModule[]): (void | Promise<void>)[] {
-    return modules.map((module: ContainerModule): void | Promise<void> =>
-      resolveModuleDeactivations(this.#deactivationParams, module.id),
-    );
-  }
-
   #resetComputedProperties(): void {
-    this.#planResultCacheService.clearCache();
-
-    this.#getActivationsResolutionParam = <TActivated>(
-      serviceIdentifier: ServiceIdentifier<TActivated>,
-    ): Iterable<BindingActivation<TActivated>> | undefined =>
-      this.#activationService.get(serviceIdentifier) as
-        | Iterable<BindingActivation<TActivated>>
-        | undefined;
-    this.#getBindingsPlanParams = this.#bindingService.get.bind(
-      this.#bindingService,
-    );
+    this.#getBindingsPlanParams =
+      this.#serviceReferenceManager.bindingService.get.bind(
+        this.#serviceReferenceManager.bindingService,
+      );
     this.#resolutionContext = this.#buildResolutionContext();
     this.#setBindingParamsPlan = this.#setBinding.bind(this);
   }
 
   #setBinding(binding: Binding): void {
-    this.#bindingService.set(binding);
+    this.#serviceReferenceManager.bindingService.set(binding);
 
-    this.#planResultCacheService.clearCache();
-  }
-
-  #throwUnexpectedAsyncUnbindOperation(
-    identifier: BindingIdentifier | ServiceIdentifier,
-  ): never {
-    let errorMessage: string;
-
-    if (isBindingIdentifier(identifier)) {
-      const bindingsById: Iterable<Binding<unknown>> | undefined =
-        this.#bindingService.getById(identifier.id);
-
-      const bindingServiceIdentifier: ServiceIdentifier | undefined =
-        getFirstIterableResult(bindingsById)?.serviceIdentifier;
-
-      if (bindingServiceIdentifier === undefined) {
-        errorMessage =
-          'Unexpected asyncronous deactivation when unbinding binding identifier. Consider using Container.unbind() instead.';
-      } else {
-        errorMessage = `Unexpected asyncronous deactivation when unbinding "${stringifyServiceIdentifier(bindingServiceIdentifier)}" binding. Consider using Container.unbind() instead.`;
-      }
-    } else {
-      errorMessage = `Unexpected asyncronous deactivation when unbinding "${stringifyServiceIdentifier(identifier)}" service. Consider using Container.unbind() instead.`;
-    }
-
-    throw new InversifyContainerError(
-      InversifyContainerErrorKind.invalidOperation,
-      errorMessage,
-    );
-  }
-
-  #unbind(
-    identifier: BindingIdentifier | ServiceIdentifier,
-  ): void | Promise<void> {
-    if (isBindingIdentifier(identifier)) {
-      return this.#unbindBindingIdentifier(identifier);
-    }
-
-    return this.#unbindServiceIdentifier(identifier);
-  }
-
-  #unbindBindingIdentifier(
-    identifier: BindingIdentifier,
-  ): void | Promise<void> {
-    const bindings: Iterable<Binding<unknown>> | undefined =
-      this.#bindingService.getById(identifier.id);
-
-    const result: void | Promise<void> = resolveBindingsDeactivations(
-      this.#deactivationParams,
-      bindings,
-    );
-
-    if (result === undefined) {
-      this.#clearAfterUnbindBindingIdentifier(identifier);
-    } else {
-      return result.then((): void => {
-        this.#clearAfterUnbindBindingIdentifier(identifier);
-      });
-    }
-  }
-
-  #clearAfterUnbindBindingIdentifier(identifier: BindingIdentifier): void {
-    this.#bindingService.removeById(identifier.id);
-    this.#planResultCacheService.clearCache();
-  }
-
-  #clearAfterUnloadModules(modules: ContainerModule[]): void {
-    for (const module of modules) {
-      this.#activationService.removeAllByModuleId(module.id);
-      this.#bindingService.removeAllByModuleId(module.id);
-      this.#deactivationService.removeAllByModuleId(module.id);
-    }
-
-    this.#planResultCacheService.clearCache();
-  }
-
-  #unbindServiceIdentifier(
-    identifier: ServiceIdentifier,
-  ): void | Promise<void> {
-    const result: void | Promise<void> = resolveServiceDeactivations(
-      this.#deactivationParams,
-      identifier,
-    );
-
-    if (result === undefined) {
-      this.#clearAfterUnbindServiceIdentifier(identifier);
-    } else {
-      return result.then((): void => {
-        this.#clearAfterUnbindServiceIdentifier(identifier);
-      });
-    }
-  }
-
-  #clearAfterUnbindServiceIdentifier(identifier: ServiceIdentifier): void {
-    this.#activationService.removeAllByServiceId(identifier);
-    this.#bindingService.removeAllByServiceId(identifier);
-    this.#deactivationService.removeAllByServiceId(identifier);
-
-    this.#planResultCacheService.clearCache();
+    this.#serviceReferenceManager.planResultCacheService.clearCache();
   }
 }
