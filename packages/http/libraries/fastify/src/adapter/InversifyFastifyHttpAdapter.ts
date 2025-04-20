@@ -6,6 +6,7 @@ import {
   HttpStatusCode,
   InversifyHttpAdapter,
   MiddlewareHandler,
+  RequestMethodParameterType,
   RouterParams,
 } from '@inversifyjs/http-core';
 import {
@@ -32,7 +33,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
     httpAdapterOptions?: HttpAdapterOptions,
     customApp?: FastifyInstance,
   ) {
-    super(container, httpAdapterOptions);
+    super(container, httpAdapterOptions, undefined);
     this.#app = this.#buildDefaultFastifyApp(customApp);
   }
 
@@ -42,10 +43,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
     return this.#app;
   }
 
-  protected async _getBody(
-    request: FastifyRequest,
-    parameterName?: string,
-  ): Promise<unknown> {
+  protected _getBody(request: FastifyRequest, parameterName?: string): unknown {
     return parameterName !== undefined
       ? (request.body as Record<string, unknown>)[parameterName]
       : request.body;

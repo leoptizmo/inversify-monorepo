@@ -30,7 +30,7 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     httpAdapterOptions?: HttpAdapterOptions,
     customApp?: Application,
   ) {
-    super(container, httpAdapterOptions);
+    super(container, httpAdapterOptions, undefined);
 
     this.#app = customApp ?? this.#buildDefaultExpressApp();
   }
@@ -124,10 +124,7 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     response.setHeader(key, value);
   }
 
-  protected async _getBody(
-    request: Request,
-    parameterName?: string,
-  ): Promise<unknown> {
+  protected _getBody(request: Request, parameterName?: string): unknown {
     return parameterName !== undefined
       ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         request.body[parameterName]
