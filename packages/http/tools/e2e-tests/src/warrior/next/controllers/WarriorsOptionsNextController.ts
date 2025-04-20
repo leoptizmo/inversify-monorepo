@@ -1,9 +1,11 @@
 import { controller, next, OPTIONS } from '@inversifyjs/http-core';
 
-@controller('warriors')
+@controller('/warriors')
 export class WarriorsOptionsNextController {
   @OPTIONS()
-  public async optionsWarrior(@next() nextFn: () => void): Promise<void> {
-    nextFn();
+  public async optionsWarrior(
+    @next() nextFn: () => Promise<void>,
+  ): Promise<void> {
+    await nextFn();
   }
 }

@@ -1,9 +1,9 @@
 import { controller, next, PUT } from '@inversifyjs/http-core';
 
-@controller('warriors')
+@controller('/warriors')
 export class WarriorsPutNextController {
   @PUT()
-  public async putWarrior(@next() nextFn: () => void): Promise<void> {
-    nextFn();
+  public async putWarrior(@next() nextFn: () => Promise<void>): Promise<void> {
+    await nextFn();
   }
 }
