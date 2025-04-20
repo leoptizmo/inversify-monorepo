@@ -39,7 +39,7 @@ export abstract class InversifyHttpAdapter<
   constructor(
     container: Container,
     httpAdapterOptions: HttpAdapterOptions | undefined,
-    awaitableRequestMethodParamTypes:
+    awaitableRequestMethodParamTypes?:
       | Iterable<RequestMethodParameterType>
       | undefined,
   ) {

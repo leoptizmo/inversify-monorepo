@@ -30,7 +30,7 @@ export class InversifyExpressHttpAdapter extends InversifyHttpAdapter<
     httpAdapterOptions?: HttpAdapterOptions,
     customApp?: Application,
   ) {
-    super(container, httpAdapterOptions, undefined);
+    super(container, httpAdapterOptions);
 
     this.#app = customApp ?? this.#buildDefaultExpressApp();
   }

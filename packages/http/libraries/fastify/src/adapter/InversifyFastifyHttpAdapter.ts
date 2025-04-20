@@ -6,7 +6,6 @@ import {
   HttpStatusCode,
   InversifyHttpAdapter,
   MiddlewareHandler,
-  RequestMethodParameterType,
   RouterParams,
 } from '@inversifyjs/http-core';
 import {
@@ -33,7 +32,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
     httpAdapterOptions?: HttpAdapterOptions,
     customApp?: FastifyInstance,
   ) {
-    super(container, httpAdapterOptions, undefined);
+    super(container, httpAdapterOptions);
     this.#app = this.#buildDefaultFastifyApp(customApp);
   }
 
