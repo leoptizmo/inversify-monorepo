@@ -554,7 +554,7 @@ describe(Container, () => {
         it('should throw an InversifyContainerError', () => {
           const expectedErrorProperties: Partial<InversifyContainerError> = {
             kind: InversifyContainerErrorKind.invalidOperation,
-            message: `Unexpected asyncronous service when resolving service "${serviceIdentifierFixture as string}"`,
+            message: `Unexpected asynchronous service when resolving service "${serviceIdentifierFixture as string}"`,
           };
 
           expect(result).toBeInstanceOf(InversifyContainerError);
@@ -1058,7 +1058,7 @@ describe(Container, () => {
       it('should throw an InversifyContainerError', () => {
         const expectedErrorProperties: Partial<InversifyContainerError> = {
           kind: InversifyContainerErrorKind.invalidOperation,
-          message: `Unexpected asyncronous service when resolving service "${serviceIdentifierFixture as string}"`,
+          message: `Unexpected asynchronous service when resolving service "${serviceIdentifierFixture as string}"`,
         };
 
         expect(result).toBeInstanceOf(InversifyContainerError);

@@ -148,7 +148,7 @@ export class Container {
     if (isPromise(resolvedValue)) {
       throw new InversifyContainerError(
         InversifyContainerErrorKind.invalidOperation,
-        `Unexpected asyncronous service when resolving service "${stringifyServiceIdentifier(serviceIdentifier)}"`,
+        `Unexpected asynchronous service when resolving service "${stringifyServiceIdentifier(serviceIdentifier)}"`,
       );
     }
 
@@ -171,7 +171,7 @@ export class Container {
     if (isPromise(resolvedValue)) {
       throw new InversifyContainerError(
         InversifyContainerErrorKind.invalidOperation,
-        `Unexpected asyncronous service when resolving service "${stringifyServiceIdentifier(serviceIdentifier)}"`,
+        `Unexpected asynchronous service when resolving service "${stringifyServiceIdentifier(serviceIdentifier)}"`,
       );
     }
 

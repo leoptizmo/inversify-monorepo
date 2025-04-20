@@ -327,7 +327,7 @@ describe(ContainerModuleManager, () => {
         const expectedErrorProperties: Partial<InversifyContainerError> = {
           kind: InversifyContainerErrorKind.invalidOperation,
           message:
-            'Unexpected asyncronous module load. Consider using Container.load() instead.',
+            'Unexpected asynchronous module load. Consider using Container.load() instead.',
         };
 
         expect(result).toBeInstanceOf(InversifyContainerError);

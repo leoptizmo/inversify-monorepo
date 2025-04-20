@@ -48,7 +48,7 @@ export class ContainerModuleManager {
       if (result !== undefined) {
         throw new InversifyContainerError(
           InversifyContainerErrorKind.invalidOperation,
-          'Unexpected asyncronous module load. Consider using Container.load() instead.',
+          'Unexpected asynchronous module load. Consider using Container.load() instead.',
         );
       }
     }
@@ -75,7 +75,7 @@ export class ContainerModuleManager {
       if (result !== undefined) {
         throw new InversifyContainerError(
           InversifyContainerErrorKind.invalidOperation,
-          'Unexpected asyncronous module unload. Consider using Container.unload() instead.',
+          'Unexpected asynchronous module unload. Consider using Container.unload() instead.',
         );
       }
     }

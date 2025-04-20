@@ -155,12 +155,12 @@ export class BindingManager {
 
       if (bindingServiceIdentifier === undefined) {
         errorMessage =
-          'Unexpected asyncronous deactivation when unbinding binding identifier. Consider using Container.unbind() instead.';
+          'Unexpected asynchronous deactivation when unbinding binding identifier. Consider using Container.unbind() instead.';
       } else {
-        errorMessage = `Unexpected asyncronous deactivation when unbinding "${stringifyServiceIdentifier(bindingServiceIdentifier)}" binding. Consider using Container.unbind() instead.`;
+        errorMessage = `Unexpected asynchronous deactivation when unbinding "${stringifyServiceIdentifier(bindingServiceIdentifier)}" binding. Consider using Container.unbind() instead.`;
       }
     } else {
-      errorMessage = `Unexpected asyncronous deactivation when unbinding "${stringifyServiceIdentifier(identifier)}" service. Consider using Container.unbind() instead.`;
+      errorMessage = `Unexpected asynchronous deactivation when unbinding "${stringifyServiceIdentifier(identifier)}" service. Consider using Container.unbind() instead.`;
     }
 
     throw new InversifyContainerError(
