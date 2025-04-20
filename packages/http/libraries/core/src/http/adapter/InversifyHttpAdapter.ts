@@ -28,7 +28,7 @@ const DEFAULT_ERROR_MESSAGE: string = 'An unexpected error occurred';
 export abstract class InversifyHttpAdapter<
   TRequest,
   TResponse,
-  TNextFunction extends (err?: unknown) => void,
+  TNextFunction extends (err?: unknown) => Promise<void> | void,
   TResult,
 > {
   protected readonly httpAdapterOptions: InternalHttpAdapterOptions;
@@ -355,7 +355,7 @@ export abstract class InversifyHttpAdapter<
                 : new ForbiddenHttpResponse(),
             );
           } else {
-            next();
+            await next();
 
             return undefined;
           }
