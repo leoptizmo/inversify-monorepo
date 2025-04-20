@@ -14,8 +14,11 @@ async function thenResponseStatusCodeIsOkIsh(
     getServerResponseOrFail.bind(this)(parsedResponseAlias);
   const responseStatus: number = response.status;
 
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-  assert(responseStatus >= 200 && responseStatus < 300);
+  assert(
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+    responseStatus >= 200 && responseStatus < 300,
+    `Status code is not Ok-ish: ${String(responseStatus)}`,
+  );
 }
 
 Then<InversifyHttpWorld>(
