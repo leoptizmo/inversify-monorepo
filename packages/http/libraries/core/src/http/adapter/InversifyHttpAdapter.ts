@@ -32,10 +32,20 @@ export abstract class InversifyHttpAdapter<
   TResult,
 > {
   protected readonly httpAdapterOptions: InternalHttpAdapterOptions;
+  readonly #awaitableRequestMethodParamTypes: Set<RequestMethodParameterType>;
   readonly #container: Container;
   readonly #logger: Logger;
 
-  constructor(container: Container, httpAdapterOptions?: HttpAdapterOptions) {
+  constructor(
+    container: Container,
+    httpAdapterOptions: HttpAdapterOptions | undefined,
+    awaitableRequestMethodParamTypes?:
+      | Iterable<RequestMethodParameterType>
+      | undefined,
+  ) {
+    this.#awaitableRequestMethodParamTypes = new Set(
+      awaitableRequestMethodParamTypes,
+    );
     this.#container = container;
     this.#logger = this.#buildLogger(httpAdapterOptions);
     this.httpAdapterOptions = this.#parseHttpAdapterOptions(httpAdapterOptions);
@@ -43,6 +53,17 @@ export abstract class InversifyHttpAdapter<
 
   protected async _buildServer(): Promise<void> {
     await this.#registerControllers();
+  }
+
+  async #appendHandlerParam(
+    params: unknown[],
+    index: number,
+    param: unknown,
+    type: RequestMethodParameterType,
+  ): Promise<void> {
+    params[index] = this.#awaitableRequestMethodParamTypes.has(type)
+      ? await param
+      : param;
   }
 
   #buildLogger(httpAdapterOptions: HttpAdapterOptions | undefined): Logger {
@@ -205,67 +226,91 @@ export abstract class InversifyHttpAdapter<
     response: TResponse,
     next: TNextFunction,
   ): Promise<unknown[]> {
-    return Promise.all(
+    const params: unknown[] = new Array(
+      controllerMethodParameterMetadataList.length,
+    );
+
+    await Promise.all(
       controllerMethodParameterMetadataList.map(
         async (
           controllerMethodParameterMetadata:
             | ControllerMethodParameterMetadata<TRequest, TResponse, unknown>
             | undefined,
-        ) => {
-          if (controllerMethodParameterMetadata === undefined) {
-            return undefined;
-          }
+          index: number,
+        ): Promise<void> => {
+          if (controllerMethodParameterMetadata !== undefined) {
+            let param: unknown;
 
-          switch (controllerMethodParameterMetadata.parameterType) {
-            case RequestMethodParameterType.BODY:
-              return this._getBody(
-                request,
-                controllerMethodParameterMetadata.parameterName,
-              );
-            case RequestMethodParameterType.REQUEST: {
-              return request;
+            switch (controllerMethodParameterMetadata.parameterType) {
+              case RequestMethodParameterType.BODY:
+                param = this._getBody(
+                  request,
+                  controllerMethodParameterMetadata.parameterName,
+                );
+                break;
+              case RequestMethodParameterType.REQUEST: {
+                param = request;
+                break;
+              }
+              case RequestMethodParameterType.RESPONSE: {
+                param = response;
+                break;
+              }
+              case RequestMethodParameterType.PARAMS: {
+                param = this._getParams(
+                  request,
+                  controllerMethodParameterMetadata.parameterName,
+                );
+                break;
+              }
+              case RequestMethodParameterType.QUERY: {
+                param = this._getQuery(
+                  request,
+                  controllerMethodParameterMetadata.parameterName,
+                );
+                break;
+              }
+              case RequestMethodParameterType.HEADERS: {
+                param = this._getHeaders(
+                  request,
+                  controllerMethodParameterMetadata.parameterName,
+                );
+                break;
+              }
+              case RequestMethodParameterType.COOKIES: {
+                param = this._getCookies(
+                  request,
+                  response,
+                  controllerMethodParameterMetadata.parameterName,
+                );
+                break;
+              }
+              case RequestMethodParameterType.CUSTOM: {
+                param =
+                  controllerMethodParameterMetadata.customParameterDecoratorHandler?.(
+                    request,
+                    response,
+                  );
+                break;
+              }
+              case RequestMethodParameterType.NEXT: {
+                param = next;
+                break;
+              }
             }
-            case RequestMethodParameterType.RESPONSE: {
-              return response;
-            }
-            case RequestMethodParameterType.PARAMS: {
-              return this._getParams(
-                request,
-                controllerMethodParameterMetadata.parameterName,
-              );
-            }
-            case RequestMethodParameterType.QUERY: {
-              return this._getQuery(
-                request,
-                controllerMethodParameterMetadata.parameterName,
-              );
-            }
-            case RequestMethodParameterType.HEADERS: {
-              return this._getHeaders(
-                request,
-                controllerMethodParameterMetadata.parameterName,
-              );
-            }
-            case RequestMethodParameterType.COOKIES: {
-              return this._getCookies(
-                request,
-                response,
-                controllerMethodParameterMetadata.parameterName,
-              );
-            }
-            case RequestMethodParameterType.CUSTOM: {
-              return controllerMethodParameterMetadata.customParameterDecoratorHandler?.(
-                request,
-                response,
-              );
-            }
-            case RequestMethodParameterType.NEXT: {
-              return next;
-            }
+
+            return this.#appendHandlerParam(
+              params,
+              index,
+              param,
+              controllerMethodParameterMetadata.parameterType,
+            );
           }
         },
       ),
     );
+
+    return params;
   }
 
   #setHeaders(
@@ -397,7 +442,7 @@ export abstract class InversifyHttpAdapter<
   protected abstract _getBody(
     request: TRequest,
     parameterName?: string,
-  ): Promise<unknown>;
+  ): unknown;
 
   protected abstract _getParams(
     request: TRequest,
