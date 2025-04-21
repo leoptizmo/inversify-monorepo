@@ -2,7 +2,7 @@
 
 **Important**: Apply this instructions **only** when you are told to write or update unit test files.
 
-When writting unit tests, we expect external modules are mocked using `jest.fn`.
+When writting unit tests, we expect external modules are mocked using `vitest.fn`.
 
 ## Structure of a test module
 
@@ -26,7 +26,7 @@ Could be tested with the following implementation
 
 ```ts
 describe(Foo.name, () => {
-  let barMock: jest.Mocked<Bar>;
+  let barMock: vitest.Mocked<Bar>;
   let foo: Foo;
 
   beforeAll(() => {
@@ -63,7 +63,7 @@ Could be tested with the following implementation
 
 ```ts
 describe(Foo.name, () => {
-  let barMock: jest.Mocked<Bar>;
+  let barMock: vitest.Mocked<Bar>;
   let foo: Foo;
 
   beforeAll(() => {
@@ -124,7 +124,7 @@ Could be tested with the following implementation
 
 ```ts
 describe(Foo.name, () => {
-  let barMock: jest.Mocked<Bar>;
+  let barMock: vitest.Mocked<Bar>;
   let foo: Foo;
 
   beforeAll(() => {
@@ -189,7 +189,7 @@ Could be tested with the following implementation
 
 ```ts
 describe(Foo.name, () => {
-  let barMock: jest.Mocked<Bar>;
+  let barMock: vitest.Mocked<Bar>;
   let foo: Foo;
 
   beforeAll(() => {
@@ -218,7 +218,7 @@ describe(Foo.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should call bar.getUndesirableName()', () => {
@@ -239,7 +239,7 @@ describe(Foo.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should return a string', () => {
@@ -263,7 +263,7 @@ describe(Foo.name, () => {
       });
 
       afterAll(() => {
-        jest.clearAllMocks();
+        vitest.clearAllMocks();
       });
 
       it('should return a string', () => {
