@@ -376,7 +376,7 @@ describe(resolve.name, () => {
       if (isPromise(resolveResult)) {
         throw new InversifyCoreError(
           InversifyCoreErrorKind.resolution,
-          'Unexpected asyncronous value',
+          'Unexpected asynchronous value',
         );
       }
 
@@ -419,7 +419,7 @@ describe(resolve.name, () => {
         if (isPromise(resolveResult)) {
           throw new InversifyCoreError(
             InversifyCoreErrorKind.resolution,
-            'Unexpected asyncronous value',
+            'Unexpected asynchronous value',
           );
         }
 
