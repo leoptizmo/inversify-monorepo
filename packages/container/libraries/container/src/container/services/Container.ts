@@ -1,7 +1,6 @@
 import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 import {
   ActivationsService,
-  Binding,
   BindingActivation,
   BindingDeactivation,
   BindingScope,
@@ -9,82 +8,64 @@ import {
   BindingService,
   DeactivationParams,
   DeactivationsService,
-  getClassMetadata,
   GetOptions,
   OptionalGetOptions,
   PlanResultCacheService,
 } from '@inversifyjs/core';
-import {
-  isPlugin,
-  Plugin,
-  PluginApi,
-  PluginContext,
-} from '@inversifyjs/plugin';
 
 import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
 import { BindingIdentifier } from '../../binding/models/BindingIdentifier';
-import { InversifyContainerError } from '../../error/models/InversifyContainerError';
-import { InversifyContainerErrorKind } from '../../error/models/InversifyContainerErrorKind';
+import { buildDeactivationParams } from '../calculations/buildDeactivationParams';
 import { ContainerModule } from '../models/ContainerModule';
+import { ContainerOptions } from '../models/ContainerOptions';
 import { IsBoundOptions } from '../models/isBoundOptions';
 import { BindingManager } from './BindingManager';
 import { ContainerModuleManager } from './ContainerModuleManager';
+import { PluginManager } from './PluginManager';
 import { ServiceReferenceManager } from './ServiceReferenceManager';
 import { ServiceResolutionManager } from './ServiceResolutionManager';
 import { SnapshotManager } from './SnapshotManager';
-
-export interface ContainerOptions {
-  autobind?: true;
-  defaultScope?: BindingScope | undefined;
-  parent?: Container | undefined;
-}
-
-interface InternalContainerOptions {
-  autobind: boolean;
-  defaultScope: BindingScope;
-}
 
 const DEFAULT_DEFAULT_SCOPE: BindingScope = bindingScopeValues.Transient;
 
 export class Container {
   readonly #bindingManager: BindingManager;
   readonly #containerModuleManager: ContainerModuleManager;
-  readonly #options: InternalContainerOptions;
-  readonly #pluginApi: PluginApi<Container>;
-  readonly #pluginContext: PluginContext;
+  readonly #pluginManager: PluginManager;
   readonly #serviceReferenceManager: ServiceReferenceManager;
   readonly #serviceResolutionManager: ServiceResolutionManager;
   readonly #snapshotManager: SnapshotManager;
 
   constructor(options?: ContainerOptions) {
-    this.#pluginApi = this.#buildPluginApi();
-    this.#pluginContext = this.#buildPluginContext();
-
     this.#serviceReferenceManager = this.#buildServiceReferenceManager(options);
 
-    this.#options = {
-      autobind: options?.autobind ?? false,
-      defaultScope: options?.defaultScope ?? DEFAULT_DEFAULT_SCOPE,
-    };
+    const autobind: boolean = options?.autobind ?? false;
+    const defaultScope: BindingScope =
+      options?.defaultScope ?? DEFAULT_DEFAULT_SCOPE;
 
-    const deactivationParams: DeactivationParams =
-      this.#buildDeactivationParams();
+    const deactivationParams: DeactivationParams = buildDeactivationParams(
+      this.#serviceReferenceManager,
+    );
 
     this.#bindingManager = new BindingManager(
       deactivationParams,
-      this.#options.defaultScope,
+      defaultScope,
       this.#serviceReferenceManager,
     );
     this.#containerModuleManager = new ContainerModuleManager(
       this.#bindingManager,
       deactivationParams,
-      this.#options.defaultScope,
+      defaultScope,
+      this.#serviceReferenceManager,
+    );
+    this.#pluginManager = new PluginManager(
+      this,
       this.#serviceReferenceManager,
     );
     this.#serviceResolutionManager = new ServiceResolutionManager(
       this.#serviceReferenceManager,
-      this.#options.autobind,
-      this.#options.defaultScope,
+      autobind,
+      defaultScope,
     );
     this.#snapshotManager = new SnapshotManager(this.#serviceReferenceManager);
   }
@@ -189,18 +170,7 @@ export class Container {
   }
 
   public register(pluginConstructor: Newable): void {
-    const pluginInstance: Partial<Plugin<Container>> = new pluginConstructor(
-      this.#pluginContext,
-    ) as Partial<Plugin<Container>>;
-
-    if (pluginInstance[isPlugin] !== true) {
-      throw new InversifyContainerError(
-        InversifyContainerErrorKind.invalidOperation,
-        'Invalid plugin. The plugin must extend the Plugin class',
-      );
-    }
-
-    (pluginInstance as Plugin<Container>).load(this.#pluginApi);
+    this.#pluginManager.register(pluginConstructor);
   }
 
   public restore(): void {
@@ -243,65 +213,6 @@ export class Container {
 
   public unloadSync(...modules: ContainerModule[]): void {
     this.#containerModuleManager.unloadSync(...modules);
-  }
-
-  #buildDeactivationParams(): DeactivationParams {
-    return {
-      getBindings: <TInstance>(
-        serviceIdentifier: ServiceIdentifier<TInstance>,
-      ): Iterable<Binding<TInstance>> | undefined =>
-        this.#serviceReferenceManager.bindingService.get(serviceIdentifier),
-      getBindingsFromModule: <TInstance>(
-        moduleId: number,
-      ): Iterable<Binding<TInstance>> | undefined =>
-        this.#serviceReferenceManager.bindingService.getByModuleId(moduleId),
-      getClassMetadata,
-      getDeactivations: <TActivated>(
-        serviceIdentifier: ServiceIdentifier<TActivated>,
-      ) =>
-        this.#serviceReferenceManager.deactivationService.get(
-          serviceIdentifier,
-        ),
-    };
-  }
-
-  #buildPluginApi(): PluginApi<Container> {
-    return {
-      define: (
-        name: string | symbol,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        method: (this: Container, ...args: any[]) => unknown,
-      ): void => {
-        if (Object.prototype.hasOwnProperty.call(this, name)) {
-          throw new InversifyContainerError(
-            InversifyContainerErrorKind.invalidOperation,
-            `Container already has a method named "${String(name)}"`,
-          );
-        }
-
-        (this as Record<string | symbol, unknown>)[name] = method.bind(this);
-      },
-    };
-  }
-
-  #buildPluginContext(): PluginContext {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const self: Container = this;
-
-    return {
-      get activationService() {
-        return self.#serviceReferenceManager.activationService;
-      },
-      get bindingService() {
-        return self.#serviceReferenceManager.bindingService;
-      },
-      get deactivationService() {
-        return self.#serviceReferenceManager.deactivationService;
-      },
-      get planResultCacheService() {
-        return self.#serviceReferenceManager.planResultCacheService;
-      },
-    };
   }
 
   #buildServiceReferenceManager(
