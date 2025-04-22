@@ -14,114 +14,38 @@ class TestMiddleware implements Middleware {
 }
 
 describe(isApplyMiddlewareOptions.name, () => {
-  describe('having a value undefined', () => {
-    describe('when called', () => {
-      let valueFixture: undefined;
-      let result: boolean;
+  describe.each([
+    [undefined, false],
+    [null, false],
+    [{}, false],
+    [{ middleware: 'not a function' }, false],
+    [{ middleware: () => {} }, false],
+    [{ middleware: TestMiddleware, phase: 2 }, false],
+    [{ middleware: TestMiddleware, phase: MiddlewarePhase.PreHandler }, true],
+  ])(
+    'having a value %s',
+    (
+      valueFixture:
+        | undefined
+        | null
+        | object
+        | { middleware: string }
+        | { middleware: () => void }
+        | { middleware: Newable<Middleware>; phase: number }
+        | ApplyMiddlewareOptions,
+      expectedResult: boolean,
+    ) => {
+      describe('when called', () => {
+        let result: boolean;
 
-      beforeAll(() => {
-        valueFixture = undefined;
+        beforeAll(() => {
+          result = isApplyMiddlewareOptions(valueFixture);
+        });
 
-        result = isApplyMiddlewareOptions(valueFixture);
+        it(`should return ${String(expectedResult)}`, () => {
+          expect(result).toBe(expectedResult);
+        });
       });
-
-      it('should return false', () => {
-        expect(result).toBe(false);
-      });
-    });
-  });
-
-  describe('having a value null', () => {
-    describe('when called', () => {
-      let valueFixture: null;
-      let result: boolean;
-
-      beforeAll(() => {
-        valueFixture = null;
-
-        result = isApplyMiddlewareOptions(valueFixture);
-      });
-
-      it('should return false', () => {
-        expect(result).toBe(false);
-      });
-    });
-  });
-
-  describe('having a value with no middleware property', () => {
-    describe('when called', () => {
-      let valueFixture: object;
-      let result: boolean;
-
-      beforeAll(() => {
-        valueFixture = {};
-
-        result = isApplyMiddlewareOptions(valueFixture);
-      });
-
-      it('should return false', () => {
-        expect(result).toBe(false);
-      });
-    });
-  });
-
-  describe('having a value with non function middleware property', () => {
-    describe('when called', () => {
-      let valueFixture: { middleware: string };
-      let result: boolean;
-
-      beforeAll(() => {
-        valueFixture = { middleware: 'not a function' };
-
-        result = isApplyMiddlewareOptions(valueFixture);
-      });
-
-      it('should return false', () => {
-        expect(result).toBe(false);
-      });
-    });
-  });
-
-  describe('having a value with non string phase property', () => {
-    describe('when called', () => {
-      let valueFixture: {
-        middleware: Newable<Middleware>;
-        phase: number;
-      };
-      let result: boolean;
-
-      beforeAll(() => {
-        valueFixture = {
-          middleware: TestMiddleware,
-          phase: 2,
-        };
-
-        result = isApplyMiddlewareOptions(valueFixture);
-      });
-
-      it('should return false', () => {
-        expect(result).toBe(false);
-      });
-    });
-  });
-
-  describe('having a value that is ApplyMiddlewareOptions', () => {
-    describe('when called', () => {
-      let valueFixture: ApplyMiddlewareOptions;
-      let result: boolean;
-
-      beforeAll(() => {
-        valueFixture = {
-          middleware: TestMiddleware,
-          phase: MiddlewarePhase.PreHandler,
-        };
-
-        result = isApplyMiddlewareOptions(valueFixture);
-      });
-
-      it('should return true', () => {
-        expect(result).toBe(true);
-      });
-    });
-  });
+    },
+  );
 });

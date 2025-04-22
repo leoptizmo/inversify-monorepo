@@ -40,6 +40,7 @@ export abstract class InversifyHttpAdapter<
   readonly #awaitableRequestMethodParamTypes: Set<RequestMethodParameterType>;
   readonly #container: Container;
   readonly #logger: Logger;
+  readonly #globalPipeList: (Newable<Pipe> | Pipe)[];
 
   constructor(
     container: Container,
@@ -54,6 +55,11 @@ export abstract class InversifyHttpAdapter<
     this.#container = container;
     this.#logger = this.#buildLogger(httpAdapterOptions);
     this.httpAdapterOptions = this.#parseHttpAdapterOptions(httpAdapterOptions);
+    this.#globalPipeList = [];
+  }
+
+  public useGlobalPipe(...pipeList: (Newable<Pipe> | Pipe)[]): void {
+    this.#globalPipeList.push(...pipeList);
   }
 
   protected async _buildServer(): Promise<void> {
@@ -321,11 +327,16 @@ export abstract class InversifyHttpAdapter<
               controllerMethodParameterMetadata.parameterType,
             );
 
-            return this.#applyPipeList(
-              params,
-              index,
-              controllerMethodParameterMetadata.pipeList,
-            );
+            if (
+              this.#globalPipeList.length +
+                controllerMethodParameterMetadata.pipeList.length >
+              0
+            ) {
+              return this.#applyPipeList(params, index, [
+                ...this.#globalPipeList,
+                ...controllerMethodParameterMetadata.pipeList,
+              ]);
+            }
           }
         },
       ),
