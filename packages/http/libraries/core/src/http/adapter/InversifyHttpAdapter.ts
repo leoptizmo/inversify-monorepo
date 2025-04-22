@@ -33,14 +33,24 @@ const DEFAULT_ERROR_MESSAGE: string = 'An unexpected error occurred';
 export abstract class InversifyHttpAdapter<
   TRequest,
   TResponse,
-  TNextFunction extends (err?: unknown) => void,
+  TNextFunction extends (err?: unknown) => Promise<void> | void,
   TResult,
 > {
   protected readonly httpAdapterOptions: InternalHttpAdapterOptions;
+  readonly #awaitableRequestMethodParamTypes: Set<RequestMethodParameterType>;
   readonly #container: Container;
   readonly #logger: Logger;
 
-  constructor(container: Container, httpAdapterOptions?: HttpAdapterOptions) {
+  constructor(
+    container: Container,
+    httpAdapterOptions: HttpAdapterOptions | undefined,
+    awaitableRequestMethodParamTypes?:
+      | Iterable<RequestMethodParameterType>
+      | undefined,
+  ) {
+    this.#awaitableRequestMethodParamTypes = new Set(
+      awaitableRequestMethodParamTypes,
+    );
     this.#container = container;
     this.#logger = this.#buildLogger(httpAdapterOptions);
     this.httpAdapterOptions = this.#parseHttpAdapterOptions(httpAdapterOptions);
@@ -48,6 +58,17 @@ export abstract class InversifyHttpAdapter<
 
   protected async _buildServer(): Promise<void> {
     await this.#registerControllers();
+  }
+
+  async #appendHandlerParam(
+    params: unknown[],
+    index: number,
+    param: unknown,
+    type: RequestMethodParameterType,
+  ): Promise<void> {
+    params[index] = this.#awaitableRequestMethodParamTypes.has(type)
+      ? await param
+      : param;
   }
 
   #buildLogger(httpAdapterOptions: HttpAdapterOptions | undefined): Logger {
@@ -220,103 +241,111 @@ export abstract class InversifyHttpAdapter<
     response: TResponse,
     next: TNextFunction,
   ): Promise<unknown[]> {
-    return Promise.all(
+    const params: unknown[] = new Array(
+      controllerMethodParameterMetadataList.length,
+    );
+
+    await Promise.all(
       controllerMethodParameterMetadataList.map(
         async (
           controllerMethodParameterMetadata:
             | ControllerMethodParameterMetadata<TRequest, TResponse, unknown>
             | undefined,
-        ) => {
-          if (controllerMethodParameterMetadata === undefined) {
-            return undefined;
-          }
+          index: number,
+        ): Promise<void> => {
+          if (controllerMethodParameterMetadata !== undefined) {
+            let param: unknown;
 
-          let result: unknown = undefined;
-
-          switch (controllerMethodParameterMetadata.parameterType) {
-            case RequestMethodParameterType.BODY:
-              result = this._getBody(
-                request,
-                controllerMethodParameterMetadata.parameterName,
-              );
-              break;
-            case RequestMethodParameterType.REQUEST: {
-              result = request;
-              break;
-            }
-            case RequestMethodParameterType.RESPONSE: {
-              result = response;
-              break;
-            }
-            case RequestMethodParameterType.PARAMS: {
-              result = this._getParams(
-                request,
-                controllerMethodParameterMetadata.parameterName,
-              );
-              break;
-            }
-            case RequestMethodParameterType.QUERY: {
-              result = this._getQuery(
-                request,
-                controllerMethodParameterMetadata.parameterName,
-              );
-              break;
-            }
-            case RequestMethodParameterType.HEADERS: {
-              result = this._getHeaders(
-                request,
-                controllerMethodParameterMetadata.parameterName,
-              );
-              break;
-            }
-            case RequestMethodParameterType.COOKIES: {
-              result = this._getCookies(
-                request,
-                response,
-                controllerMethodParameterMetadata.parameterName,
-              );
-              break;
-            }
-            case RequestMethodParameterType.CUSTOM: {
-              result =
-                controllerMethodParameterMetadata.customParameterDecoratorHandler?.(
+            switch (controllerMethodParameterMetadata.parameterType) {
+              case RequestMethodParameterType.BODY:
+                param = this._getBody(
+                  request,
+                  controllerMethodParameterMetadata.parameterName,
+                );
+                break;
+              case RequestMethodParameterType.REQUEST: {
+                param = request;
+                break;
+              }
+              case RequestMethodParameterType.RESPONSE: {
+                param = response;
+                break;
+              }
+              case RequestMethodParameterType.PARAMS: {
+                param = this._getParams(
+                  request,
+                  controllerMethodParameterMetadata.parameterName,
+                );
+                break;
+              }
+              case RequestMethodParameterType.QUERY: {
+                param = this._getQuery(
+                  request,
+                  controllerMethodParameterMetadata.parameterName,
+                );
+                break;
+              }
+              case RequestMethodParameterType.HEADERS: {
+                param = this._getHeaders(
+                  request,
+                  controllerMethodParameterMetadata.parameterName,
+                );
+                break;
+              }
+              case RequestMethodParameterType.COOKIES: {
+                param = this._getCookies(
                   request,
                   response,
+                  controllerMethodParameterMetadata.parameterName,
                 );
-              break;
+                break;
+              }
+              case RequestMethodParameterType.CUSTOM: {
+                param =
+                  controllerMethodParameterMetadata.customParameterDecoratorHandler?.(
+                    request,
+                    response,
+                  );
+                break;
+              }
+              case RequestMethodParameterType.NEXT: {
+                param = next;
+                break;
+              }
             }
-            case RequestMethodParameterType.NEXT: {
-              result = next;
-              break;
-            }
-          }
 
-          if (controllerMethodParameterMetadata.pipeList.length > 0) {
-            result = await this.#applyPipeList(
-              result,
+            await this.#appendHandlerParam(
+              params,
+              index,
+              param,
+              controllerMethodParameterMetadata.parameterType,
+            );
+
+            return this.#applyPipeList(
+              params,
+              index,
               controllerMethodParameterMetadata.pipeList,
             );
           }
-
-          return result;
         },
       ),
     );
+
+    return params;
   }
 
   async #applyPipeList(
-    value: unknown,
+    params: unknown[],
+    index: number,
     pipeList: (Newable<Pipe> | Pipe)[],
-  ): Promise<unknown> {
-    let result: unknown = value;
-
+  ): Promise<void> {
     for (const pipeOrNewable of pipeList) {
       const pipe: Pipe = isPipe(pipeOrNewable)
         ? pipeOrNewable
         : await this.#container.getAsync(pipeOrNewable);
 
       try {
-        result = await pipe.execute(result);
+        params[index] = await pipe.execute(params[index]);
       } catch (error: unknown) {
         throw new InversifyHttpAdapterError(
           InversifyHttpAdapterErrorKind.pipeError,
@@ -325,8 +354,6 @@ export abstract class InversifyHttpAdapter<
         );
       }
     }
-
-    return result;
   }
 
   #setHeaders(
@@ -416,7 +443,7 @@ export abstract class InversifyHttpAdapter<
                 : new ForbiddenHttpResponse(),
             );
           } else {
-            next();
+            await next();
 
             return undefined;
           }
@@ -458,7 +485,7 @@ export abstract class InversifyHttpAdapter<
   protected abstract _getBody(
     request: TRequest,
     parameterName?: string,
-  ): Promise<unknown>;
+  ): unknown;
 
   protected abstract _getParams(
     request: TRequest,

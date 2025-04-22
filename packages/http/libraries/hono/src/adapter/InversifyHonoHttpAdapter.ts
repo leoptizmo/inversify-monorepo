@@ -6,6 +6,7 @@ import {
   InversifyHttpAdapter,
   MiddlewareHandler,
   RequestHandler,
+  RequestMethodParameterType,
   RouterParams,
 } from '@inversifyjs/http-core';
 import {
@@ -35,7 +36,7 @@ export class InversifyHonoHttpAdapter extends InversifyHttpAdapter<
     httpAdapterOptions?: HttpAdapterOptions,
     customApp?: Hono,
   ) {
-    super(container, httpAdapterOptions);
+    super(container, httpAdapterOptions, [RequestMethodParameterType.BODY]);
     this.#app = customApp ?? new Hono();
   }
 
