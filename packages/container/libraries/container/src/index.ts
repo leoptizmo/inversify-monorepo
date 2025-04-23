@@ -19,8 +19,9 @@ import {
   ContainerModule,
   ContainerModuleLoadOptions,
 } from './container/models/ContainerModule';
+import { ContainerOptions } from './container/models/ContainerOptions';
 import { IsBoundOptions } from './container/models/isBoundOptions';
-import { Container, ContainerOptions } from './container/services/Container';
+import { Container } from './container/services/Container';
 import { InversifyContainerError } from './error/models/InversifyContainerError';
 import { InversifyContainerErrorKind } from './error/models/InversifyContainerErrorKind';
 

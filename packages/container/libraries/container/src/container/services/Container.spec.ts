@@ -21,27 +21,27 @@ import {
   BindingDeactivation,
   BindingDeactivationRelation,
   BindingService,
+  DeactivationParams,
   DeactivationsService,
   GetOptions,
   GetOptionsTagConstraint,
-  GetPlanOptions,
-  PlanResult,
   PlanResultCacheService,
 } from '@inversifyjs/core';
-import { PluginContext } from '@inversifyjs/plugin';
 
+vitest.mock('../calculations/buildDeactivationParams');
 vitest.mock('./BindingManager');
 vitest.mock('./ContainerModuleManager');
+vitest.mock('./PluginManager');
 vitest.mock('./ServiceResolutionManager');
 vitest.mock('./SnapshotManager');
 
 import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
-import { InversifyContainerError } from '../../error/models/InversifyContainerError';
-import { InversifyContainerErrorKind } from '../../error/models/InversifyContainerErrorKind';
+import { buildDeactivationParams } from '../calculations/buildDeactivationParams';
 import { ContainerModule } from '../models/ContainerModule';
 import { BindingManager } from './BindingManager';
 import { Container } from './Container';
 import { ContainerModuleManager } from './ContainerModuleManager';
+import { PluginManager } from './PluginManager';
 import { ServiceResolutionManager } from './ServiceResolutionManager';
 import { SnapshotManager } from './SnapshotManager';
 
@@ -50,16 +50,12 @@ describe(Container, () => {
   let bindingManagerMock: Mocked<BindingManager>;
   let bindingServiceMock: Mocked<BindingService>;
   let containerModuleManagerMock: Mocked<ContainerModuleManager>;
+  let deactivationParamsFixture: DeactivationParams;
   let deactivationServiceMock: Mocked<DeactivationsService>;
+  let planResultCacheServiceMock: Mocked<PlanResultCacheService>;
+  let pluginManagerMock: Mocked<PluginManager>;
   let serviceResolutionManagerMock: Mocked<ServiceResolutionManager>;
   let snapshotManagerMock: Mocked<SnapshotManager>;
-
-  let getPlanResultMock: Mock<
-    (options: GetPlanOptions) => PlanResult | undefined
-  >;
-  let setPlanResultMock: Mock<
-    (options: GetPlanOptions, planResult: PlanResult) => void
-  >;
 
   beforeAll(() => {
     activationServiceMock = {
@@ -92,12 +88,23 @@ describe(Container, () => {
     } as Partial<
       Mocked<ContainerModuleManager>
     > as Mocked<ContainerModuleManager>;
+    deactivationParamsFixture = Symbol() as unknown as DeactivationParams;
     deactivationServiceMock = {
       add: vitest.fn(),
       clone: vitest.fn().mockReturnThis(),
       removeAllByModuleId: vitest.fn(),
       removeAllByServiceId: vitest.fn(),
     } as Partial<Mocked<DeactivationsService>> as Mocked<DeactivationsService>;
+    planResultCacheServiceMock = {
+      get: vitest.fn(),
+      set: vitest.fn(),
+      subscribe: vitest.fn(),
+    } as Partial<
+      Mocked<PlanResultCacheService>
+    > as Mocked<PlanResultCacheService>;
+    pluginManagerMock = {
+      register: vitest.fn(),
+    } as Partial<Mocked<PluginManager>> as Mocked<PluginManager>;
     serviceResolutionManagerMock = {
       get: vitest.fn(),
       getAll: vitest.fn(),
@@ -111,18 +118,39 @@ describe(Container, () => {
       snapshot: vitest.fn(),
     } as Partial<Mocked<SnapshotManager>> as Mocked<SnapshotManager>;
 
-    getPlanResultMock = vitest.fn();
-    setPlanResultMock = vitest.fn();
+    vitest
+      .mocked(buildDeactivationParams)
+      .mockReturnValue(deactivationParamsFixture);
 
-    vitest.mocked(BindingManager).mockImplementation((): BindingManager => {
-      return bindingManagerMock;
-    });
+    vitest
+      .mocked(ActivationsService.build)
+      .mockReturnValue(activationServiceMock);
+
+    vitest
+      .mocked(BindingManager)
+      .mockImplementation((): BindingManager => bindingManagerMock);
+
+    vitest.mocked(BindingService.build).mockReturnValue(bindingServiceMock);
 
     vitest
       .mocked(ContainerModuleManager)
       .mockImplementation((): ContainerModuleManager => {
         return containerModuleManagerMock;
       });
+
+    vitest
+      .mocked(DeactivationsService.build)
+      .mockReturnValue(deactivationServiceMock);
+
+    vitest
+      .mocked(PlanResultCacheService)
+      .mockImplementation(
+        (): PlanResultCacheService => planResultCacheServiceMock,
+      );
+
+    vitest
+      .mocked(PluginManager)
+      .mockImplementation((): PluginManager => pluginManagerMock);
 
     vitest
       .mocked(ServiceResolutionManager)
@@ -132,25 +160,6 @@ describe(Container, () => {
 
     vitest.mocked(SnapshotManager).mockImplementation((): SnapshotManager => {
       return snapshotManagerMock;
-    });
-
-    vitest
-      .mocked(ActivationsService.build)
-      .mockReturnValue(activationServiceMock);
-
-    vitest.mocked(BindingService.build).mockReturnValue(bindingServiceMock);
-
-    vitest
-      .mocked(DeactivationsService.build)
-      .mockReturnValue(deactivationServiceMock);
-
-    vitest.mocked(PlanResultCacheService).mockImplementation(function (
-      this: PlanResultCacheService,
-    ): PlanResultCacheService {
-      this.get = getPlanResultMock;
-      this.set = setPlanResultMock;
-
-      return this;
     });
   });
 
@@ -772,51 +781,32 @@ describe(Container, () => {
   });
 
   describe('.register', () => {
-    describe('having a non plugin newable type', () => {
-      let pluginType: Newable;
+    let pluginConstructorFixture: Newable;
+
+    beforeAll(() => {
+      pluginConstructorFixture = Symbol() as unknown as Newable;
+    });
+
+    describe('when called', () => {
+      let result: unknown;
 
       beforeAll(() => {
-        pluginType = vitest.fn();
+        result = new Container().register(pluginConstructorFixture);
       });
 
-      describe('when called', () => {
-        let result: unknown;
+      afterAll(() => {
+        vitest.clearAllMocks();
+      });
 
-        beforeAll(() => {
-          try {
-            new Container().register(pluginType);
-          } catch (error: unknown) {
-            result = error;
-          }
-        });
+      it('should call pluginManager.register()', () => {
+        expect(pluginManagerMock.register).toHaveBeenCalledTimes(1);
+        expect(pluginManagerMock.register).toHaveBeenCalledWith(
+          pluginConstructorFixture,
+        );
+      });
 
-        afterAll(() => {
-          vitest.clearAllMocks();
-        });
-
-        it('should call pluginType', () => {
-          const expected: Mocked<PluginContext> = {
-            activationService: expect.any(Object),
-            bindingService: expect.any(Object),
-            deactivationService: expect.any(Object),
-            planResultCacheService: expect.any(Object),
-          } as Partial<Mocked<PluginContext>> as Mocked<PluginContext>;
-
-          expect(pluginType).toHaveBeenCalledTimes(1);
-          expect(pluginType).toHaveBeenCalledWith(expected);
-        });
-
-        it('should throw an InversifyContainerError', () => {
-          const expectedErrorProperties: Partial<InversifyContainerError> = {
-            kind: InversifyContainerErrorKind.invalidOperation,
-            message: 'Invalid plugin. The plugin must extend the Plugin class',
-          };
-
-          expect(result).toBeInstanceOf(InversifyContainerError);
-          expect(result).toStrictEqual(
-            expect.objectContaining(expectedErrorProperties),
-          );
-        });
+      it('should return undefined', () => {
+        expect(result).toBeUndefined();
       });
     });
   });
