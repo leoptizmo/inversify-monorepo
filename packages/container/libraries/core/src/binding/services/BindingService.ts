@@ -63,6 +63,21 @@ export class BindingService implements Cloneable<BindingService> {
     );
   }
 
+  public getBoundServices(): Iterable<ServiceIdentifier> {
+    const serviceIdentifierSet: Set<ServiceIdentifier> =
+      new Set<ServiceIdentifier>(
+        this.#bindingMaps.getAllKeys(BindingRelationKind.serviceId),
+      );
+
+    if (this.#parent !== undefined) {
+      for (const serviceIdentifier of this.#parent.getBoundServices()) {
+        serviceIdentifierSet.add(serviceIdentifier);
+      }
+    }
+
+    return serviceIdentifierSet;
+  }
+
   public getById<TResolved>(
     id: number,
   ): Iterable<Binding<TResolved>> | undefined {
