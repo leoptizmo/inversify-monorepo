@@ -327,16 +327,10 @@ export abstract class InversifyHttpAdapter<
               controllerMethodParameterMetadata.parameterType,
             );
 
-            if (
-              this.#globalPipeList.length +
-                controllerMethodParameterMetadata.pipeList.length >
-              0
-            ) {
-              return this.#applyPipeList(params, index, [
-                ...this.#globalPipeList,
-                ...controllerMethodParameterMetadata.pipeList,
-              ]);
-            }
+            return this.#applyPipeList(params, index, [
+              ...this.#globalPipeList,
+              ...controllerMethodParameterMetadata.pipeList,
+            ]);
           }
         },
       ),
