@@ -21,6 +21,7 @@ import { RequestMethodParameterType } from '../models/RequestMethodParameterType
 import { RouteParams } from '../models/RouteParams';
 import { RouterParams } from '../models/RouterParams';
 import { Pipe } from '../pipe/model/Pipe';
+import { PipeMetadata } from '../pipe/model/PipeMetadata';
 import { BadRequestHttpResponse } from '../responses/error/BadRequestHttpResponse';
 import { ForbiddenHttpResponse } from '../responses/error/ForbiddenHttpResponse';
 import { InternalServerErrorHttpResponse } from '../responses/error/InternalServerErrorHttpResponse';
@@ -204,6 +205,8 @@ export abstract class InversifyHttpAdapter<
     ): Promise<TResult> => {
       try {
         const handlerParams: unknown[] = await this.#buildHandlerParams(
+          controller,
+          controllerMethodKey,
           controllerMethodParameterMetadataList,
           req,
           res,
@@ -239,6 +242,8 @@ export abstract class InversifyHttpAdapter<
   }
 
   async #buildHandlerParams(
+    controller: Controller,
+    controllerMethodKey: string | symbol,
     controllerMethodParameterMetadataList: (
       | ControllerMethodParameterMetadata<TRequest, TResponse, unknown>
       | undefined
@@ -327,10 +332,20 @@ export abstract class InversifyHttpAdapter<
               controllerMethodParameterMetadata.parameterType,
             );
 
-            return this.#applyPipeList(params, index, [
-              ...this.#globalPipeList,
-              ...controllerMethodParameterMetadata.pipeList,
-            ]);
+            return this.#applyPipeList(
+              params,
+              [
+                ...this.#globalPipeList,
+                ...controllerMethodParameterMetadata.pipeList,
+              ],
+              {
+                methodName: controllerMethodKey,
+                parameterIndex: index,
+                parameterMethodType:
+                  controllerMethodParameterMetadata.parameterType,
+                targetClass: controller,
+              },
+            );
           }
         },
       ),
@@ -341,8 +356,8 @@ export abstract class InversifyHttpAdapter<
 
   async #applyPipeList(
     params: unknown[],
-    index: number,
     pipeList: (Newable<Pipe> | Pipe)[],
+    pipeMetadata: PipeMetadata,
   ): Promise<void> {
     for (const pipeOrNewable of pipeList) {
       const pipe: Pipe = isPipe(pipeOrNewable)
@@ -350,7 +365,10 @@ export abstract class InversifyHttpAdapter<
         : await this.#container.getAsync(pipeOrNewable);
 
       try {
-        params[index] = await pipe.execute(params[index]);
+        params[pipeMetadata.parameterIndex] = await pipe.execute(
+          params[pipeMetadata.parameterIndex],
+          pipeMetadata,
+        );
       } catch (error: unknown) {
         throw new InversifyHttpAdapterError(
           InversifyHttpAdapterErrorKind.pipeError,
