@@ -51,7 +51,7 @@ export class PluginManager {
       define: (
         name: string | symbol,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        method: (this: Container, ...args: any[]) => unknown,
+        method: (this: Plugin<Container>, ...args: any[]) => unknown,
       ): void => {
         if (Object.prototype.hasOwnProperty.call(container, name)) {
           throw new InversifyContainerError(
@@ -61,7 +61,7 @@ export class PluginManager {
         }
 
         (container as unknown as Record<string | symbol, unknown>)[name] =
-          method.bind(container);
+          method;
       },
     };
   }
