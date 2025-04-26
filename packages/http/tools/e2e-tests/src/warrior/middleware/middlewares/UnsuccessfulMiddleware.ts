@@ -3,7 +3,7 @@ import { injectable } from 'inversify';
 
 @injectable()
 export class UnsuccessfulMiddleware
-  implements Middleware<any, any, any, unknown>
+  implements Middleware<unknown, unknown, unknown, unknown>
 {
   public async execute(
     _request: unknown,
@@ -20,7 +20,7 @@ export class UnsuccessfulMiddleware
     }
 
     if (response.text !== undefined) {
-      response.text();
+      return response.text();
     }
 
     return undefined;
