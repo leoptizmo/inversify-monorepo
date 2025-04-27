@@ -16,17 +16,21 @@ import { InversifyContainerError } from '../../error/models/InversifyContainerEr
 import { InversifyContainerErrorKind } from '../../error/models/InversifyContainerErrorKind';
 import type { Container } from './Container';
 import { ServiceReferenceManager } from './ServiceReferenceManager';
+import { ServiceResolutionManager } from './ServiceResolutionManager';
 
 export class PluginManager {
-  readonly #pluginApi: PluginApi<Container>;
+  readonly #pluginApi: PluginApi;
   readonly #pluginContext: PluginContext;
+  readonly #serviceResolutionManager: ServiceResolutionManager;
   readonly #serviceReferenceManager: ServiceReferenceManager;
 
   constructor(
     container: Container,
     serviceReferenceManager: ServiceReferenceManager,
+    serviceResolutionManager: ServiceResolutionManager,
   ) {
     this.#serviceReferenceManager = serviceReferenceManager;
+    this.#serviceResolutionManager = serviceResolutionManager;
     this.#pluginApi = this.#buildPluginApi(container);
     this.#pluginContext = this.#buildPluginContext();
   }
@@ -46,12 +50,12 @@ export class PluginManager {
     (pluginInstance as Plugin<Container>).load(this.#pluginApi);
   }
 
-  #buildPluginApi(container: Container): PluginApi<Container> {
+  #buildPluginApi(container: Container): PluginApi {
     return {
       define: (
         name: string | symbol,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        method: (this: Container, ...args: any[]) => unknown,
+        method: (...args: any[]) => unknown,
       ): void => {
         if (Object.prototype.hasOwnProperty.call(container, name)) {
           throw new InversifyContainerError(
@@ -61,8 +65,11 @@ export class PluginManager {
         }
 
         (container as unknown as Record<string | symbol, unknown>)[name] =
-          method.bind(container);
+          method;
       },
+      onPlan: this.#serviceResolutionManager.onPlan.bind(
+        this.#serviceResolutionManager,
+      ),
     };
   }
 
