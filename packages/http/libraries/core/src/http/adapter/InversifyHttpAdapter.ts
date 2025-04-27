@@ -235,7 +235,11 @@ export abstract class InversifyHttpAdapter<
             InversifyHttpAdapterErrorKind.pipeError,
           )
         ) {
-          return this.#reply(req, res, new BadRequestHttpResponse());
+          return this.#reply(
+            req,
+            res,
+            error.extraData?.response ?? new BadRequestHttpResponse(),
+          );
         } else {
           return this.#reply(req, res, new InternalServerErrorHttpResponse());
         }
@@ -376,6 +380,7 @@ export abstract class InversifyHttpAdapter<
           InversifyHttpAdapterErrorKind.pipeError,
           'Pipe error',
           { cause: error },
+          { response: pipe.getHttpResponse?.() },
         );
       }
     }
