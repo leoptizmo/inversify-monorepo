@@ -58,15 +58,17 @@ export class Container {
       defaultScope,
       this.#serviceReferenceManager,
     );
-    this.#pluginManager = new PluginManager(
-      this,
-      this.#serviceReferenceManager,
-    );
     this.#serviceResolutionManager = new ServiceResolutionManager(
       this.#serviceReferenceManager,
       autobind,
       defaultScope,
     );
+    this.#pluginManager = new PluginManager(
+      this,
+      this.#serviceReferenceManager,
+      this.#serviceResolutionManager,
+    );
+
     this.#snapshotManager = new SnapshotManager(this.#serviceReferenceManager);
   }
 
