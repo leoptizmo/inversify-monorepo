@@ -32,6 +32,10 @@ export class ServiceResolutionManager {
     serviceIdentifier: ServiceIdentifier<TInstance>,
   ) => Iterable<Binding<TInstance>> | undefined;
   #resolutionContext: ResolutionContext;
+  readonly #onPlanHandlers: ((
+    options: GetPlanOptions,
+    result: PlanResult,
+  ) => void)[];
   readonly #serviceReferenceManager: ServiceReferenceManager;
   #setBindingParamsPlan: <TInstance>(binding: Binding<TInstance>) => void;
 
@@ -56,6 +60,8 @@ export class ServiceResolutionManager {
       this.#serviceReferenceManager.bindingService.get.bind(
         this.#serviceReferenceManager.bindingService,
       );
+
+    this.#onPlanHandlers = [];
 
     this.#setBindingParamsPlan = this.#setBinding.bind(this);
 
@@ -152,6 +158,12 @@ export class ServiceResolutionManager {
     return this.#getFromPlanResult(planResult);
   }
 
+  public onPlan(
+    handler: (options: GetPlanOptions, result: PlanResult) => void,
+  ): void {
+    this.#onPlanHandlers.push(handler);
+  }
+
   #resetComputedProperties(): void {
     this.#getBindingsPlanParams =
       this.#serviceReferenceManager.bindingService.get.bind(
@@ -229,6 +241,10 @@ export class ServiceResolutionManager {
       getPlanOptions,
       planResult,
     );
+
+    for (const handler of this.#onPlanHandlers) {
+      handler(getPlanOptions, planResult);
+    }
 
     return planResult;
   }

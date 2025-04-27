@@ -12,10 +12,10 @@ declare module 'inversify' {
 }
 
 export class PluginExample extends Plugin<Container> {
-  public load(api: PluginApi<Container>): void {
+  public load(api: PluginApi): void {
     api.define(
       pluginExample,
-      function (this: Plugin<Container>): void {}.bind(this),
+      function (this: PluginExample): void {}.bind(this),
     );
   }
 }
