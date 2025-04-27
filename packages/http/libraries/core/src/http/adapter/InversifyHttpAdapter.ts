@@ -164,6 +164,7 @@ export abstract class InversifyHttpAdapter<
             routerExplorerControllerMethodMetadata.guardList,
           ),
           handler: this.#buildHandler(
+            target,
             controller,
             routerExplorerControllerMethodMetadata.methodKey,
             routerExplorerControllerMethodMetadata.parameterMetadataList,
@@ -188,6 +189,7 @@ export abstract class InversifyHttpAdapter<
   }
 
   #buildHandler(
+    targetClass: NewableFunction,
     controller: Controller,
     controllerMethodKey: string | symbol,
     controllerMethodParameterMetadataList: (
@@ -205,7 +207,7 @@ export abstract class InversifyHttpAdapter<
     ): Promise<TResult> => {
       try {
         const handlerParams: unknown[] = await this.#buildHandlerParams(
-          controller,
+          targetClass,
           controllerMethodKey,
           controllerMethodParameterMetadataList,
           req,
@@ -242,7 +244,7 @@ export abstract class InversifyHttpAdapter<
   }
 
   async #buildHandlerParams(
-    controller: Controller,
+    targetClass: NewableFunction,
     controllerMethodKey: string | symbol,
     controllerMethodParameterMetadataList: (
       | ControllerMethodParameterMetadata<TRequest, TResponse, unknown>
@@ -343,7 +345,7 @@ export abstract class InversifyHttpAdapter<
                 parameterIndex: index,
                 parameterMethodType:
                   controllerMethodParameterMetadata.parameterType,
-                targetClass: controller,
+                targetClass,
               },
             );
           }
