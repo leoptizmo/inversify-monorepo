@@ -1,9 +1,10 @@
-import { Plugin } from './Plugin';
+import { GetPlanOptions, PlanResult } from '@inversifyjs/core';
 
-export interface PluginApi<TContainer> {
+export interface PluginApi {
   define(
     name: string | symbol,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    method: (this: Plugin<TContainer>, ...args: any[]) => unknown,
+    method: (...args: any[]) => unknown,
   ): void;
+  onPlan(handler: (options: GetPlanOptions, result: PlanResult) => void): void;
 }
