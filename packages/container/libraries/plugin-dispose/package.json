@@ -5,8 +5,7 @@
   },
   "description": "InversifyJs dispose plugin package",
   "dependencies": {
-    "@inversifyjs/plugin": "workspace:*",
-    "@inversifyjs/reflect-metadata-utils": "workspace:*"
+    "@inversifyjs/plugin": "workspace:*"
   },
   "devDependencies": {
     "@inversifyjs/core": "workspace:*",
