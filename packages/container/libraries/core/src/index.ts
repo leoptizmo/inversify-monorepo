@@ -55,6 +55,7 @@ import { UnmanagedClassElementMetadata } from './metadata/models/UnmanagedClassE
 import { plan } from './planning/calculations/plan';
 import { BaseBindingNode } from './planning/models/BaseBindingNode';
 import { BasePlanParams } from './planning/models/BasePlanParams';
+import { InstanceBindingNode } from './planning/models/InstanceBindingNode';
 import { LeafBindingNode } from './planning/models/LeafBindingNode';
 import { PlanBindingNode } from './planning/models/PlanBindingNode';
 import { PlanParams } from './planning/models/PlanParams';
@@ -107,6 +108,7 @@ export type {
   GetOptionsTagConstraint,
   GetPlanOptions,
   InstanceBinding,
+  InstanceBindingNode,
   LeafBindingNode,
   ManagedClassElementMetadata,
   MetadataName,
