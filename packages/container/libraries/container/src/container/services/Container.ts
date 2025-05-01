@@ -172,7 +172,7 @@ export class Container {
   }
 
   public register(pluginConstructor: Newable): void {
-    this.#pluginManager.register(pluginConstructor);
+    this.#pluginManager.register(this, pluginConstructor);
   }
 
   public restore(): void {

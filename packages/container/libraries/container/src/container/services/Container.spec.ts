@@ -36,6 +36,8 @@ vitest.mock('./ServiceReferenceManager');
 vitest.mock('./ServiceResolutionManager');
 vitest.mock('./SnapshotManager');
 
+import { Plugin, PluginContext } from '@inversifyjs/plugin';
+
 import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
 import { buildDeactivationParams } from '../calculations/buildDeactivationParams';
 import { ContainerModule } from '../models/ContainerModule';
@@ -817,17 +819,25 @@ describe(Container, () => {
   });
 
   describe('.register', () => {
-    let pluginConstructorFixture: Newable;
+    let pluginConstructorFixture: Newable<
+      Plugin<Container>,
+      [Container, PluginContext]
+    >;
 
     beforeAll(() => {
-      pluginConstructorFixture = Symbol() as unknown as Newable;
+      pluginConstructorFixture = Symbol() as unknown as Newable<
+        Plugin<Container>,
+        [Container, PluginContext]
+      >;
     });
 
     describe('when called', () => {
+      let container: Container;
       let result: unknown;
 
       beforeAll(() => {
-        result = new Container().register(pluginConstructorFixture);
+        container = new Container();
+        result = container.register(pluginConstructorFixture);
       });
 
       afterAll(() => {
@@ -837,6 +847,7 @@ describe(Container, () => {
       it('should call pluginManager.register()', () => {
         expect(pluginManagerMock.register).toHaveBeenCalledTimes(1);
         expect(pluginManagerMock.register).toHaveBeenCalledWith(
+          container,
           pluginConstructorFixture,
         );
       });
