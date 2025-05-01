@@ -16,5 +16,5 @@ export abstract class Plugin<TContainer> {
     this._context = context;
   }
 
-  public abstract load(api: PluginApi<TContainer>): void;
+  public abstract load(api: PluginApi): void;
 }

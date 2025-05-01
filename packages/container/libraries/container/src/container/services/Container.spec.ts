@@ -32,6 +32,7 @@ vitest.mock('../calculations/buildDeactivationParams');
 vitest.mock('./BindingManager');
 vitest.mock('./ContainerModuleManager');
 vitest.mock('./PluginManager');
+vitest.mock('./ServiceReferenceManager');
 vitest.mock('./ServiceResolutionManager');
 vitest.mock('./SnapshotManager');
 
@@ -42,6 +43,7 @@ import { BindingManager } from './BindingManager';
 import { Container } from './Container';
 import { ContainerModuleManager } from './ContainerModuleManager';
 import { PluginManager } from './PluginManager';
+import { ServiceReferenceManager } from './ServiceReferenceManager';
 import { ServiceResolutionManager } from './ServiceResolutionManager';
 import { SnapshotManager } from './SnapshotManager';
 
@@ -54,6 +56,7 @@ describe(Container, () => {
   let deactivationServiceMock: Mocked<DeactivationsService>;
   let planResultCacheServiceMock: Mocked<PlanResultCacheService>;
   let pluginManagerMock: Mocked<PluginManager>;
+  let serviceReferenceManagerMock: Mocked<ServiceReferenceManager>;
   let serviceResolutionManagerMock: Mocked<ServiceResolutionManager>;
   let snapshotManagerMock: Mocked<SnapshotManager>;
 
@@ -105,6 +108,14 @@ describe(Container, () => {
     pluginManagerMock = {
       register: vitest.fn(),
     } as Partial<Mocked<PluginManager>> as Mocked<PluginManager>;
+    serviceReferenceManagerMock = {
+      activationService: activationServiceMock,
+      bindingService: bindingServiceMock,
+      deactivationService: deactivationServiceMock,
+      planResultCacheService: planResultCacheServiceMock,
+    } as Partial<
+      Mocked<ServiceReferenceManager>
+    > as Mocked<ServiceReferenceManager>;
     serviceResolutionManagerMock = {
       get: vitest.fn(),
       getAll: vitest.fn(),
@@ -126,17 +137,13 @@ describe(Container, () => {
       .mocked(ActivationsService.build)
       .mockReturnValue(activationServiceMock);
 
-    vitest
-      .mocked(BindingManager)
-      .mockImplementation((): BindingManager => bindingManagerMock);
+    vitest.mocked(BindingManager).mockReturnValue(bindingManagerMock);
 
     vitest.mocked(BindingService.build).mockReturnValue(bindingServiceMock);
 
     vitest
       .mocked(ContainerModuleManager)
-      .mockImplementation((): ContainerModuleManager => {
-        return containerModuleManagerMock;
-      });
+      .mockReturnValue(containerModuleManagerMock);
 
     vitest
       .mocked(DeactivationsService.build)
@@ -144,19 +151,17 @@ describe(Container, () => {
 
     vitest
       .mocked(PlanResultCacheService)
-      .mockImplementation(
-        (): PlanResultCacheService => planResultCacheServiceMock,
-      );
+      .mockReturnValue(planResultCacheServiceMock);
+
+    vitest.mocked(PluginManager).mockReturnValue(pluginManagerMock);
 
     vitest
-      .mocked(PluginManager)
-      .mockImplementation((): PluginManager => pluginManagerMock);
+      .mocked(ServiceReferenceManager)
+      .mockReturnValue(serviceReferenceManagerMock);
 
     vitest
       .mocked(ServiceResolutionManager)
-      .mockImplementation((): ServiceResolutionManager => {
-        return serviceResolutionManagerMock;
-      });
+      .mockReturnValue(serviceResolutionManagerMock);
 
     vitest.mocked(SnapshotManager).mockImplementation((): SnapshotManager => {
       return snapshotManagerMock;
@@ -212,6 +217,37 @@ describe(Container, () => {
           expect(DeactivationsService.build).toHaveBeenNthCalledWith(
             2,
             deactivationServiceMock,
+          );
+        });
+
+        it('should call PlanResultCacheService()', () => {
+          expect(PlanResultCacheService).toHaveBeenCalledTimes(2);
+          expect(PlanResultCacheService).toHaveBeenNthCalledWith(1);
+          expect(PlanResultCacheService).toHaveBeenNthCalledWith(2);
+        });
+
+        it('should call planResultCacheService.subscribe()', () => {
+          expect(planResultCacheServiceMock.subscribe).toHaveBeenCalledTimes(1);
+          expect(planResultCacheServiceMock.subscribe).toHaveBeenCalledWith(
+            planResultCacheServiceMock,
+          );
+        });
+
+        it('should call ServiceReferenceManager()', () => {
+          expect(ServiceReferenceManager).toHaveBeenCalledTimes(2);
+          expect(ServiceReferenceManager).toHaveBeenNthCalledWith(
+            1,
+            activationServiceMock,
+            bindingServiceMock,
+            deactivationServiceMock,
+            planResultCacheServiceMock,
+          );
+          expect(ServiceReferenceManager).toHaveBeenNthCalledWith(
+            2,
+            activationServiceMock,
+            bindingServiceMock,
+            deactivationServiceMock,
+            planResultCacheServiceMock,
           );
         });
       });

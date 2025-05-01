@@ -1,3 +1,4 @@
+import { HttpResponse } from '../../http/responses/HttpResponse';
 import { InversifyHttpAdapterErrorKind } from './InversifyHttpAdapterErrorKind';
 
 const isHttpAdapterErrorSymbol: unique symbol = Symbol.for(
@@ -11,6 +12,7 @@ export class InversifyHttpAdapterError extends Error {
     public readonly kind: InversifyHttpAdapterErrorKind,
     message?: string,
     options?: ErrorOptions,
+    public readonly extraData?: { response: HttpResponse | undefined },
   ) {
     super(message, options);
     this[isHttpAdapterErrorSymbol] = true;
