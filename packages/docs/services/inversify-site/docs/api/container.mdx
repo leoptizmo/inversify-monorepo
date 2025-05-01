@@ -180,6 +180,14 @@ Synchronous version of `rebind`. Unbinds a service identifier synchronously and 
 
 <CodeBlock language="ts">{containerApiRebindSyncSource}</CodeBlock>
 
+## register
+
+```ts
+register(pluginConstructor: Newable<Plugin<Container>, [Container, PluginContext]>): void;
+```
+
+Registers a plugin to extend the container's functionality. The plugin must extend the `Plugin` class from `@inversifyjs/plugin` and respect its constructor signature. Refer to the [plugin docs](../fundamentals/plugins.mdx) for more information.
+
 ## restore
 
 ```ts
