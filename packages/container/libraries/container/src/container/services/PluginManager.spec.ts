@@ -54,7 +54,7 @@ describe(PluginManager, () => {
 
   describe('.register', () => {
     describe('having a non plugin newable type', () => {
-      let pluginType: Newable;
+      let pluginType: Newable<Plugin<Container>, [Container, PluginContext]>;
 
       beforeAll(() => {
         pluginType = vitest.fn();
@@ -69,7 +69,7 @@ describe(PluginManager, () => {
               containerFixture,
               serviceReferenceManagerFixture,
               serviceResolutionManagerMock,
-            ).register(pluginType);
+            ).register(containerFixture, pluginType);
           } catch (error: unknown) {
             result = error;
           }
@@ -88,7 +88,7 @@ describe(PluginManager, () => {
           } as Partial<Mocked<PluginContext>> as Mocked<PluginContext>;
 
           expect(pluginType).toHaveBeenCalledTimes(1);
-          expect(pluginType).toHaveBeenCalledWith(expected);
+          expect(pluginType).toHaveBeenCalledWith(containerFixture, expected);
         });
 
         it('should throw an InversifyContainerError', () => {
@@ -108,7 +108,7 @@ describe(PluginManager, () => {
     describe('having a plugin newable type', () => {
       let pluginMock: Mocked<Plugin<Container>>;
 
-      let pluginType: Newable;
+      let pluginType: Newable<Plugin<Container>, [Container, PluginContext]>;
 
       beforeAll(() => {
         pluginMock = {
@@ -128,7 +128,7 @@ describe(PluginManager, () => {
               containerFixture,
               serviceReferenceManagerFixture,
               serviceResolutionManagerMock,
-            ).register(pluginType);
+            ).register(containerFixture, pluginType);
           } catch (error: unknown) {
             result = error;
           }
@@ -147,7 +147,7 @@ describe(PluginManager, () => {
           } as Partial<Mocked<PluginContext>> as Mocked<PluginContext>;
 
           expect(pluginType).toHaveBeenCalledTimes(1);
-          expect(pluginType).toHaveBeenCalledWith(expected);
+          expect(pluginType).toHaveBeenCalledWith(containerFixture, expected);
         });
 
         it('should call load method of the plugin instance', () => {
