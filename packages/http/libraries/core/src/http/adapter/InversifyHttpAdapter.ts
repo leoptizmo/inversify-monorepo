@@ -90,9 +90,9 @@ export abstract class InversifyHttpAdapter<
     };
   }
 
-  public async applyGlobalMiddleware(
+  public applyGlobalMiddleware(
     ...middlewareList: (Newable<Middleware> | ApplyMiddlewareOptions)[]
-  ): Promise<void> {
+  ): void {
     if (this.#isBuilt) {
       throw new InversifyHttpAdapterError(
         InversifyHttpAdapterErrorKind.invalidOperationAfterBuild,
@@ -103,17 +103,23 @@ export abstract class InversifyHttpAdapter<
     const middlewareOptions: MiddlewareOptions =
       buildMiddlewareOptionsFromApplyMiddlewareOptions(middlewareList);
 
-    const [preHandlerMiddlewareList, postHandlerMiddlewareList]: [
-      MiddlewareHandler<TRequest, TResponse, TNextFunction, TResult>[],
-      MiddlewareHandler<TRequest, TResponse, TNextFunction, TResult>[],
-    ] = await Promise.all([
-      this.#getMiddlewareHandlerFromMetadata(
-        middlewareOptions.preHandlerMiddlewareList,
-      ),
-      this.#getMiddlewareHandlerFromMetadata(
-        middlewareOptions.postHandlerMiddlewareList,
-      ),
-    ]);
+    const preHandlerMiddlewareList: MiddlewareHandler<
+      TRequest,
+      TResponse,
+      TNextFunction,
+      TResult
+    >[] = this.#getMiddlewareHandlerFromMetadata(
+      middlewareOptions.preHandlerMiddlewareList,
+    );
+
+    const postHandlerMiddlewareList: MiddlewareHandler<
+      TRequest,
+      TResponse,
+      TNextFunction,
+      TResult
+    >[] = this.#getMiddlewareHandlerFromMetadata(
+      middlewareOptions.postHandlerMiddlewareList,
+    );
 
     this.globalHandlers.preHandlerMiddlewareList.push(
       ...preHandlerMiddlewareList,
@@ -123,9 +129,7 @@ export abstract class InversifyHttpAdapter<
     );
   }
 
-  public async applyGlobalGuards(
-    ...guardList: Newable<Guard<TRequest>>[]
-  ): Promise<void> {
+  public applyGlobalGuards(...guardList: Newable<Guard<TRequest>>[]): void {
     if (this.#isBuilt) {
       throw new InversifyHttpAdapterError(
         InversifyHttpAdapterErrorKind.invalidOperationAfterBuild,
@@ -138,7 +142,7 @@ export abstract class InversifyHttpAdapter<
       TResponse,
       TNextFunction,
       TResult | undefined
-    >[] = await this.#getGuardHandlerFromMetadata(guardList);
+    >[] = this.#getGuardHandlerFromMetadata(guardList);
 
     this.globalHandlers.guardList.push(...guardHandlerList);
   }
@@ -201,17 +205,17 @@ export abstract class InversifyHttpAdapter<
 
     for (const routerExplorerControllerMetadata of routerExplorerControllerMetadataList) {
       await this._buildRouter({
-        guardList: await this.#getGuardHandlerFromMetadata(
+        guardList: this.#getGuardHandlerFromMetadata(
           routerExplorerControllerMetadata.guardList,
         ),
         path: routerExplorerControllerMetadata.path,
-        postHandlerMiddlewareList: await this.#getMiddlewareHandlerFromMetadata(
+        postHandlerMiddlewareList: this.#getMiddlewareHandlerFromMetadata(
           routerExplorerControllerMetadata.postHandlerMiddlewareList,
         ),
-        preHandlerMiddlewareList: await this.#getMiddlewareHandlerFromMetadata(
+        preHandlerMiddlewareList: this.#getMiddlewareHandlerFromMetadata(
           routerExplorerControllerMetadata.preHandlerMiddlewareList,
         ),
-        routeParamsList: await this.#buildHandlers(
+        routeParamsList: this.#buildHandlers(
           routerExplorerControllerMetadata.target,
           routerExplorerControllerMetadata.controllerMethodMetadataList,
         ),
@@ -227,56 +231,48 @@ export abstract class InversifyHttpAdapter<
     }
   }
 
-  async #buildHandlers(
+  #buildHandlers(
     target: NewableFunction,
     routerExplorerControllerMethodMetadata: RouterExplorerControllerMethodMetadata<
       TRequest,
       TResponse,
       unknown
     >[],
-  ): Promise<RouteParams<TRequest, TResponse, TNextFunction, TResult>[]> {
-    const controller: Controller = await this.#container.getAsync(target);
-
-    return Promise.all(
-      routerExplorerControllerMethodMetadata.map(
-        async (
-          routerExplorerControllerMethodMetadata: RouterExplorerControllerMethodMetadata<
-            TRequest,
-            TResponse,
-            unknown
-          >,
-        ) => ({
-          guardList: await this.#getGuardHandlerFromMetadata(
-            routerExplorerControllerMethodMetadata.guardList,
-          ),
-          handler: this.#buildHandler(
-            target,
-            controller,
-            routerExplorerControllerMethodMetadata.methodKey,
-            routerExplorerControllerMethodMetadata.parameterMetadataList,
-            routerExplorerControllerMethodMetadata.headerMetadataList,
-            routerExplorerControllerMethodMetadata.statusCode,
-            routerExplorerControllerMethodMetadata.useNativeHandler,
-          ),
-          path: routerExplorerControllerMethodMetadata.path,
-          postHandlerMiddlewareList:
-            await this.#getMiddlewareHandlerFromMetadata(
-              routerExplorerControllerMethodMetadata.postHandlerMiddlewareList,
-            ),
-          preHandlerMiddlewareList:
-            await this.#getMiddlewareHandlerFromMetadata(
-              routerExplorerControllerMethodMetadata.preHandlerMiddlewareList,
-            ),
-          requestMethodType:
-            routerExplorerControllerMethodMetadata.requestMethodType,
-        }),
-      ),
+  ): RouteParams<TRequest, TResponse, TNextFunction, TResult>[] {
+    return routerExplorerControllerMethodMetadata.map(
+      (
+        routerExplorerControllerMethodMetadata: RouterExplorerControllerMethodMetadata<
+          TRequest,
+          TResponse,
+          unknown
+        >,
+      ) => ({
+        guardList: this.#getGuardHandlerFromMetadata(
+          routerExplorerControllerMethodMetadata.guardList,
+        ),
+        handler: this.#buildHandler(
+          target,
+          routerExplorerControllerMethodMetadata.methodKey,
+          routerExplorerControllerMethodMetadata.parameterMetadataList,
+          routerExplorerControllerMethodMetadata.headerMetadataList,
+          routerExplorerControllerMethodMetadata.statusCode,
+          routerExplorerControllerMethodMetadata.useNativeHandler,
+        ),
+        path: routerExplorerControllerMethodMetadata.path,
+        postHandlerMiddlewareList: this.#getMiddlewareHandlerFromMetadata(
+          routerExplorerControllerMethodMetadata.postHandlerMiddlewareList,
+        ),
+        preHandlerMiddlewareList: this.#getMiddlewareHandlerFromMetadata(
+          routerExplorerControllerMethodMetadata.preHandlerMiddlewareList,
+        ),
+        requestMethodType:
+          routerExplorerControllerMethodMetadata.requestMethodType,
+      }),
     );
   }
 
   #buildHandler(
     targetClass: NewableFunction,
-    controller: Controller,
     controllerMethodKey: string | symbol,
     controllerMethodParameterMetadataList: (
       | ControllerMethodParameterMetadata<TRequest, TResponse, unknown>
@@ -292,6 +288,9 @@ export abstract class InversifyHttpAdapter<
       next: TNextFunction,
     ): Promise<TResult> => {
       try {
+        const controller: Controller =
+          await this.#container.getAsync(targetClass);
+
         const handlerParams: unknown[] = await this.#buildHandlerParams(
           targetClass,
           controllerMethodKey,
@@ -516,11 +515,15 @@ export abstract class InversifyHttpAdapter<
     }
   }
 
-  async #getMiddlewareHandlerFromMetadata(
+  #getMiddlewareHandlerFromMetadata(
     middlewareList: NewableFunction[],
-  ): Promise<MiddlewareHandler<TRequest, TResponse, TNextFunction, TResult>[]> {
-    return Promise.all(
-      middlewareList.map(async (newableFunction: NewableFunction) => {
+  ): MiddlewareHandler<TRequest, TResponse, TNextFunction, TResult>[] {
+    return middlewareList.map((newableFunction: NewableFunction) => {
+      return async (
+        request: TRequest,
+        response: TResponse,
+        next: TNextFunction,
+      ): Promise<TResult> => {
         const middleware: Middleware<
           TRequest,
           TResponse,
@@ -528,44 +531,43 @@ export abstract class InversifyHttpAdapter<
           TResult
         > = await this.#container.getAsync(newableFunction);
 
-        return middleware.execute.bind(middleware);
-      }),
-    );
+        return middleware.execute(request, response, next);
+      };
+    });
   }
 
-  async #getGuardHandlerFromMetadata(
+  #getGuardHandlerFromMetadata(
     guardList: NewableFunction[],
-  ): Promise<
-    MiddlewareHandler<TRequest, TResponse, TNextFunction, TResult | undefined>[]
-  > {
-    return Promise.all(
-      guardList.map(async (newableFunction: NewableFunction) => {
+  ): MiddlewareHandler<
+    TRequest,
+    TResponse,
+    TNextFunction,
+    TResult | undefined
+  >[] {
+    return guardList.map((newableFunction: NewableFunction) => {
+      return async (
+        request: TRequest,
+        response: TResponse,
+        next: TNextFunction,
+      ): Promise<TResult | undefined> => {
         const guard: Guard<TRequest> =
           await this.#container.getAsync(newableFunction);
 
-        return async (
-          request: TRequest,
-          response: TResponse,
-          next: TNextFunction,
-        ): Promise<TResult | undefined> => {
-          const activate: boolean = await guard.activate(request);
+        const activate: boolean = await guard.activate(request);
 
-          if (!activate) {
-            return this.#reply(
-              request,
-              response,
-              guard.getHttpResponse !== undefined
-                ? guard.getHttpResponse()
-                : new ForbiddenHttpResponse(),
-            );
-          } else {
-            await next();
+        if (!activate) {
+          return this.#reply(
+            request,
+            response,
+            guard.getHttpResponse?.() ?? new ForbiddenHttpResponse(),
+          );
+        } else {
+          await next();
 
-            return undefined;
-          }
-        };
-      }),
-    );
+          return undefined;
+        }
+      };
+    });
   }
 
   #printController(
