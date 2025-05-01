@@ -8,8 +8,8 @@ import {
   vitest,
 } from 'vitest';
 
+import { Container } from '@inversifyjs/container';
 import { PluginApi, PluginContext } from '@inversifyjs/plugin';
-import { Container } from 'inversify';
 
 import { PluginDispose } from './PluginDispose';
 

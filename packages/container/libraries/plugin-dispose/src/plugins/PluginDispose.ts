@@ -1,3 +1,5 @@
+import { ServiceIdentifier } from '@inversifyjs/common';
+import { Container } from '@inversifyjs/container';
 import {
   Binding,
   bindingScopeValues,
@@ -6,7 +8,6 @@ import {
   resolveBindingsDeactivations,
 } from '@inversifyjs/core';
 import { Plugin, PluginApi, PluginContext } from '@inversifyjs/plugin';
-import { Container, ServiceIdentifier } from 'inversify';
 
 import { getPluginDisposeBinding } from '../actions/getPluginDisposeBinding';
 import { registerSingletonScopedBindings } from '../actions/registerSingletonScopedBindings';
