@@ -35,8 +35,12 @@ export class PluginManager {
     this.#pluginContext = this.#buildPluginContext();
   }
 
-  public register(pluginConstructor: Newable): void {
+  public register(
+    container: Container,
+    pluginConstructor: Newable<unknown, [Container, PluginContext]>,
+  ): void {
     const pluginInstance: Partial<Plugin<Container>> = new pluginConstructor(
+      container,
       this.#pluginContext,
     ) as Partial<Plugin<Container>>;
 
