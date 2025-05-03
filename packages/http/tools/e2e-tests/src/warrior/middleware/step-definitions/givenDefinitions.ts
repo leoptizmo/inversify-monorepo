@@ -309,23 +309,42 @@ function givenWarriorUnsuccessfulMiddlewareControllerForContainer(
   const controller: NewableFunction =
     getMethodWarriorUnsuccessfulController(method);
 
-  let middleware: NewableFunction;
+  let successfulMiddleware: NewableFunction;
+
   switch (serverKind) {
     case ServerKind.express:
-      middleware = UnsuccessfulExpressMiddleware;
+      successfulMiddleware = SuccessfulExpressMiddleware;
       break;
     case ServerKind.express4:
-      middleware = UnsuccessfulExpressV4Middleware;
+      successfulMiddleware = SuccessfulExpressV4Middleware;
       break;
     case ServerKind.fastify:
-      middleware = UnsuccessfulFastifyMiddleware;
+      successfulMiddleware = SuccessfulFastifyMiddleware;
       break;
     case ServerKind.hono:
-      middleware = UnsuccessfulHonoMiddleware;
+      successfulMiddleware = SuccessfulHonoMiddleware;
       break;
   }
 
-  container.bind(middleware).toSelf().inSingletonScope();
+  let unsuccessfulMiddleware: NewableFunction;
+
+  switch (serverKind) {
+    case ServerKind.express:
+      unsuccessfulMiddleware = UnsuccessfulExpressMiddleware;
+      break;
+    case ServerKind.express4:
+      unsuccessfulMiddleware = UnsuccessfulExpressV4Middleware;
+      break;
+    case ServerKind.fastify:
+      unsuccessfulMiddleware = UnsuccessfulFastifyMiddleware;
+      break;
+    case ServerKind.hono:
+      unsuccessfulMiddleware = UnsuccessfulHonoMiddleware;
+      break;
+  }
+
+  container.bind(successfulMiddleware).toSelf().inSingletonScope();
+  container.bind(unsuccessfulMiddleware).toSelf().inSingletonScope();
   container.bind(controller).toSelf().inSingletonScope();
 }
 
