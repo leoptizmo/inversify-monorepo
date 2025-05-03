@@ -8,9 +8,11 @@ export class SuccessfulExpressV4Middleware
 {
   public async execute(
     _request: Request,
-    _response: Response,
+    response: Response,
     next: NextFunction,
   ): Promise<void> {
+    response.setHeader('x-test-header', 'test-value');
+
     next();
   }
 }

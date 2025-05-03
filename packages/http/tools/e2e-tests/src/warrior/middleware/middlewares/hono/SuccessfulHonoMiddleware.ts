@@ -8,9 +8,11 @@ export class SuccessfulHonoMiddleware
 {
   public async execute(
     _request: HonoRequest,
-    _response: Context,
+    response: Context,
     next: Next,
   ): Promise<void> {
+    response.header('x-test-header', 'test-value');
+
     await next();
   }
 }

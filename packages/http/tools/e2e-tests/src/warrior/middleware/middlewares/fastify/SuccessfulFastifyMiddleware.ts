@@ -9,9 +9,11 @@ export class SuccessfulFastifyMiddleware
 {
   public async execute(
     _request: FastifyRequest,
-    _response: FastifyReply,
+    response: FastifyReply,
     next: HookHandlerDoneFunction,
   ): Promise<void> {
+    response.header('x-test-header', 'test-value');
+
     next();
   }
 }
