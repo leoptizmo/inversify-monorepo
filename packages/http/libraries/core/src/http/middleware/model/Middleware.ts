@@ -3,7 +3,7 @@ export interface Middleware<
   TRequest = any,
   TResponse = any,
   TNextFunction = any,
-  TResult = void,
+  TResult = any,
 > {
   execute(
     request: TRequest,

@@ -20,6 +20,9 @@ coverage:
       '@inversifyjs/logger':
         flags:
           - '@inversifyjs/logger'
+      '@inversifyjs/plugin-dispose':
+        flags:
+          - '@inversifyjs/plugin-dispose'
       '@inversifyjs/prototype-utils':
         flags:
           - '@inversifyjs/prototype-utils'
@@ -42,9 +45,12 @@ flags:
   '@inversifyjs/http-core':
     paths:
       - packages/http/libraries/core
-  @inversifyjs/logger:
+  '@inversifyjs/logger':
     paths:
       - packages/logger
+  '@inversifyjs/plugin-dispose':
+    paths:
+      - packages/container/libraries/plugin-dispose
   '@inversifyjs/prototype-utils':
     paths:
       - packages/foundation/libraries/prototype-utils

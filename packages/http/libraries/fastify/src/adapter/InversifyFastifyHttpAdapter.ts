@@ -6,6 +6,7 @@ import {
   HttpStatusCode,
   InversifyHttpAdapter,
   MiddlewareHandler,
+  RequestHandler,
   RouterParams,
 } from '@inversifyjs/http-core';
 import {
@@ -14,15 +15,17 @@ import {
   FastifyPluginCallback,
   FastifyReply,
   FastifyRequest,
+  HookHandlerDoneFunction,
+  onResponseAsyncHookHandler,
   preHandlerAsyncHookHandler,
-  preHandlerHookHandler,
   RouteHandlerMethod,
 } from 'fastify';
 import { Container } from 'inversify';
+
 export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
   FastifyRequest,
   FastifyReply,
-  (err?: unknown) => void,
+  HookHandlerDoneFunction,
   void
 > {
   readonly #app: FastifyInstance;
@@ -42,10 +45,7 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
     return this.#app;
   }
 
-  protected async _getBody(
-    request: FastifyRequest,
-    parameterName?: string,
-  ): Promise<unknown> {
+  protected _getBody(request: FastifyRequest, parameterName?: string): unknown {
     return parameterName !== undefined
       ? (request.body as Record<string, unknown>)[parameterName]
       : request.body;
@@ -141,26 +141,39 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
       _opts: Record<string, unknown>,
       done: () => void,
     ) => {
-      const orderedMiddlewareList: MiddlewareHandler<
+      const orderedPreHandlerMiddlewareList: MiddlewareHandler<
         FastifyRequest,
         FastifyReply,
-        (err?: Error) => void
+        (err?: Error) => void,
+        void
       >[] = [
+        ...this.globalHandlers.preHandlerMiddlewareList,
         ...routerParams.guardList,
+        ...this.globalHandlers.preHandlerMiddlewareList,
         ...routerParams.preHandlerMiddlewareList,
       ];
 
-      for (const middleware of orderedMiddlewareList) {
+      const orderedPostHandlerMiddlewareList: MiddlewareHandler<
+        FastifyRequest,
+        FastifyReply,
+        (err?: Error) => void,
+        void
+      >[] = [
+        ...this.globalHandlers.postHandlerMiddlewareList,
+        ...routerParams.postHandlerMiddlewareList,
+      ];
+
+      for (const middleware of orderedPreHandlerMiddlewareList) {
         fastifyInstance.addHook(
           'preHandler',
-          this.#buildFastifySyncMiddleware(middleware),
+          this.#buildFastifyPreHandlerAsyncMiddleware(middleware),
         );
       }
 
-      for (const middleware of routerParams.postHandlerMiddlewareList) {
+      for (const middleware of orderedPostHandlerMiddlewareList) {
         fastifyInstance.addHook(
           'onResponse',
-          this.#buildFastifySyncMiddleware(middleware),
+          this.#buildFastifyOnResponseAsyncMiddleware(middleware),
         );
       }
 
@@ -175,12 +188,12 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
         ];
 
         fastifyInstance.route({
-          handler: routeParams.handler as RouteHandlerMethod,
+          handler: this.#buildFastifyHandler(routeParams.handler),
           method: routeParams.requestMethodType,
-          onResponse: this.#buildFastifySyncMiddlewareList(
+          onResponse: this.#buildFastifyOnResponseAsyncMiddlewareList(
             routeParams.postHandlerMiddlewareList,
           ),
-          preHandler: this.#buildFastifySyncMiddlewareList(
+          preHandler: this.#buildFastifyPreHandlerAsyncMiddlewareList(
             orderedMiddlewareList,
           ),
           url: routeParams.path,
@@ -205,33 +218,18 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
     return app;
   }
 
-  #buildFastifySyncMiddlewareList(
-    middlewareList: MiddlewareHandler<
-      FastifyRequest,
-      FastifyReply,
-      (err?: Error) => void
-    >[],
-  ): preHandlerHookHandler[] {
-    return middlewareList.map(
-      (
-        middleware: MiddlewareHandler<
-          FastifyRequest,
-          FastifyReply,
-          (err?: Error) => void
-        >,
-      ) => this.#buildFastifySyncMiddleware(middleware),
-    );
-  }
-
-  #buildFastifySyncMiddleware(
-    middleware: MiddlewareHandler<
+  #buildFastifyHandler(
+    handler: RequestHandler<
       FastifyRequest,
       FastifyReply,
       (err?: Error) => void
     >,
-  ): preHandlerAsyncHookHandler {
-    return async (request: FastifyRequest, reply: FastifyReply) => {
-      return new Promise(
+  ): RouteHandlerMethod {
+    return async (
+      request: FastifyRequest,
+      reply: FastifyReply,
+    ): Promise<void> => {
+      await new Promise(
         (
           resolve: (value?: unknown) => void,
           reject: (error?: unknown) => void,
@@ -244,7 +242,97 @@ export class InversifyFastifyHttpAdapter extends InversifyHttpAdapter<
             }
           };
 
-          void Promise.resolve(middleware(request, reply, done));
+          resolve(handler(request, reply, done));
+        },
+      );
+    };
+  }
+
+  #buildFastifyPreHandlerAsyncMiddlewareList(
+    middlewareList: MiddlewareHandler<
+      FastifyRequest,
+      FastifyReply,
+      HookHandlerDoneFunction
+    >[],
+  ): preHandlerAsyncHookHandler[] {
+    return middlewareList.map(
+      (
+        middleware: MiddlewareHandler<
+          FastifyRequest,
+          FastifyReply,
+          (err?: Error) => void
+        >,
+      ) => this.#buildFastifyPreHandlerAsyncMiddleware(middleware),
+    );
+  }
+
+  #buildFastifyOnResponseAsyncMiddlewareList(
+    middlewareList: MiddlewareHandler<
+      FastifyRequest,
+      FastifyReply,
+      HookHandlerDoneFunction
+    >[],
+  ): onResponseAsyncHookHandler[] {
+    return middlewareList.map(
+      (
+        middleware: MiddlewareHandler<
+          FastifyRequest,
+          FastifyReply,
+          (err?: Error) => void
+        >,
+      ) => this.#buildFastifyOnResponseAsyncMiddleware(middleware),
+    );
+  }
+
+  #buildFastifyPreHandlerAsyncMiddleware(
+    middleware: MiddlewareHandler<
+      FastifyRequest,
+      FastifyReply,
+      HookHandlerDoneFunction
+    >,
+  ): preHandlerAsyncHookHandler {
+    return async (request: FastifyRequest, reply: FastifyReply) => {
+      await new Promise(
+        (
+          resolve: (value?: unknown) => void,
+          reject: (error?: unknown) => void,
+        ) => {
+          const done: (err?: Error) => void = (err?: Error) => {
+            if (err !== undefined) {
+              reject(err);
+            } else {
+              resolve();
+            }
+          };
+
+          resolve(middleware(request, reply, done));
+        },
+      );
+    };
+  }
+
+  #buildFastifyOnResponseAsyncMiddleware(
+    middleware: MiddlewareHandler<
+      FastifyRequest,
+      FastifyReply,
+      HookHandlerDoneFunction
+    >,
+  ): onResponseAsyncHookHandler {
+    return async (request: FastifyRequest, reply: FastifyReply) => {
+      await new Promise(
+        (
+          resolve: (value?: unknown) => void,
+          reject: (error?: unknown) => void,
+        ) => {
+          const done: (err?: Error) => void = (err?: Error) => {
+            if (err !== undefined) {
+              reject(err);
+            } else {
+              resolve();
+            }
+          };
+
+          resolve(middleware(request, reply, done));
         },
       );
     };

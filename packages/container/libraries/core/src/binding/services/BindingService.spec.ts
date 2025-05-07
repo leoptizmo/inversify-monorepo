@@ -352,6 +352,51 @@ describe(BindingService.name, () => {
     });
   });
 
+  describe('.getBoundServices', () => {
+    describe('when called', () => {
+      let currentServiceIdsFixture: ServiceIdentifier[];
+      let parentServiceIdsFixture: ServiceIdentifier[];
+      let combinedServiceIdsFixture: Set<ServiceIdentifier>;
+
+      let result: Iterable<ServiceIdentifier>;
+
+      beforeAll(() => {
+        currentServiceIdsFixture = ['service-id-1', 'service-id-2'];
+        parentServiceIdsFixture = ['service-id-2', 'service-id-3'];
+        combinedServiceIdsFixture = new Set<ServiceIdentifier>([
+          ...currentServiceIdsFixture,
+          ...parentServiceIdsFixture,
+        ]);
+
+        bindingMapsMock.getAllKeys
+          .mockReturnValueOnce(currentServiceIdsFixture)
+          .mockReturnValueOnce(parentServiceIdsFixture);
+
+        result = bindingService.getBoundServices();
+      });
+
+      afterAll(() => {
+        vitest.clearAllMocks();
+      });
+
+      it('should call bindingMaps.getAllKeys()', () => {
+        expect(bindingMapsMock.getAllKeys).toHaveBeenCalledTimes(2);
+        expect(bindingMapsMock.getAllKeys).toHaveBeenNthCalledWith(
+          1,
+          'serviceId',
+        );
+        expect(bindingMapsMock.getAllKeys).toHaveBeenNthCalledWith(
+          2,
+          'serviceId',
+        );
+      });
+
+      it('should return a combined set of service identifiers', () => {
+        expect(result).toStrictEqual(combinedServiceIdsFixture);
+      });
+    });
+  });
+
   describe('.removeAllByModuleId', () => {
     let moduleIdFixture: number;
 

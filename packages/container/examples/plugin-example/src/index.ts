@@ -1,6 +1,5 @@
-import { Container } from '@inversifyjs/container';
 import { Plugin, PluginApi } from '@inversifyjs/plugin';
-import {} from 'inversify';
+import { Container } from 'inversify';
 
 export const pluginExample: unique symbol = Symbol.for(
   '@inversifyjs/plugin-example',
@@ -12,14 +11,11 @@ declare module 'inversify' {
   }
 }
 
-declare module '@inversifyjs/container' {
-  interface Container {
-    [pluginExample](): void;
-  }
-}
-
 export class PluginExample extends Plugin<Container> {
-  public load(api: PluginApi<Container>): void {
-    api.define(pluginExample, function (this: Container): void {});
+  public load(api: PluginApi): void {
+    api.define(
+      pluginExample,
+      function (this: PluginExample): void {}.bind(this),
+    );
   }
 }
