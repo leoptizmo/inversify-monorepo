@@ -3,6 +3,7 @@ import assert from 'node:assert';
 import { Then } from '@cucumber/cucumber';
 
 import { InversifyHttpWorld } from '../../../common/models/InversifyHttpWorld';
+import { ResponseParameter } from '../../../http/models/ResponseParameter';
 import { getServerResponseOrFail } from '../../../server/calculations/getServerResponseOrFail';
 
 async function thenResponseStatusCodeIsNoContent(
@@ -10,9 +11,9 @@ async function thenResponseStatusCodeIsNoContent(
   responseAlias?: string,
 ): Promise<void> {
   const parsedResponseAlias: string = responseAlias ?? 'default';
-  const response: Response =
+  const responseParameter: ResponseParameter =
     getServerResponseOrFail.bind(this)(parsedResponseAlias);
-  const responseStatus: number = response.status;
+  const responseStatus: number = responseParameter.statusCode;
 
   assert.strictEqual(
     responseStatus,

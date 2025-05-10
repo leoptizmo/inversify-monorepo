@@ -16,7 +16,7 @@ async function whenRequestIsSend(
 
   const response: Response = await fetch(requestParameter.request);
 
-  setServerResponse.bind(this)(parsedRequestAlias, response);
+  await setServerResponse.bind(this)(parsedRequestAlias, response);
 }
 
 When<InversifyHttpWorld>(

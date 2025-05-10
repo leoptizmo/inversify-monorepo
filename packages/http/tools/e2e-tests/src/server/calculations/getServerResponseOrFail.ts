@@ -1,14 +1,16 @@
 import { InversifyHttpWorld } from '../../common/models/InversifyHttpWorld';
+import { ResponseParameter } from '../../http/models/ResponseParameter';
 
 export function getServerResponseOrFail(
   this: InversifyHttpWorld,
   alias: string,
-): Response {
-  const response: Response | undefined = this.serverResponses.get(alias);
+): ResponseParameter {
+  const responseParameter: ResponseParameter | undefined =
+    this.serverResponses.get(alias);
 
-  if (response === undefined) {
+  if (responseParameter === undefined) {
     throw new Error('Server response not found');
   }
 
-  return response;
+  return responseParameter;
 }

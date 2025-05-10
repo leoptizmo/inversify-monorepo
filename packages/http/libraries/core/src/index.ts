@@ -9,6 +9,7 @@ import { DELETE } from './http/decorators/Delete';
 import { GET } from './http/decorators/Get';
 import { HEAD } from './http/decorators/Head';
 import { headers } from './http/decorators/Headers';
+import { next } from './http/decorators/Next';
 import { OPTIONS } from './http/decorators/Options';
 import { params } from './http/decorators/Params';
 import { PATCH } from './http/decorators/Patch';
@@ -22,6 +23,7 @@ import { statusCode } from './http/decorators/StatusCode';
 import { useGuard } from './http/decorators/UseGuard';
 import { Guard } from './http/guard/model/Guard';
 import { Middleware } from './http/middleware/model/Middleware';
+import { MiddlewarePhase } from './http/middleware/model/MiddlewarePhase';
 import { HttpAdapterOptions } from './http/models/HttpAdapterOptions';
 import { MiddlewareHandler } from './http/models/MiddlewareHandler';
 import { RequestHandler } from './http/models/RequestHandler';
@@ -99,7 +101,9 @@ export {
   InversifyHttpAdapter,
   LoopDetectedHttpResponse,
   MethodNotAllowedHttpResponse,
+  MiddlewarePhase,
   MultiStatusHttpResponse,
+  next,
   NoContentHttpResponse,
   NonAuthoritativeInformationHttpResponse,
   NotAcceptableHttpResponse,
