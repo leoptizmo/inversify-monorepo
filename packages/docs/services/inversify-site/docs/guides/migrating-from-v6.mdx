@@ -80,6 +80,12 @@ Additionally, `Container.getAll` and `Container.getAllAsync` now enforce binding
 
 In v6, `container.getAll` returned all bindings matching the service identifier. In v7, it only returns bindings that match both the service identifier and binding constraints.
 
+:::info
+
+If you need to simulate the old behavior, you can use custom constraints to accomplish this. Refer to this [issue](https://github.com/inversify/InversifyJS/issues/1796#issuecomment-2842402397) for more information.
+
+:::
+
 ### `load` and `unload` Methods
 
 These methods are now asynchronous and return a Promise. Synchronous alternatives, `loadSync` and `unloadSync`, are also available.
