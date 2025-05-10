@@ -3,6 +3,7 @@ import assert from 'node:assert';
 import { Then } from '@cucumber/cucumber';
 
 import { InversifyHttpWorld } from '../../../common/models/InversifyHttpWorld';
+import { ResponseParameter } from '../../../http/models/ResponseParameter';
 import { getServerResponseOrFail } from '../../../server/calculations/getServerResponseOrFail';
 
 async function thenResponseStatusCodeIsOkIsh(
@@ -10,14 +11,16 @@ async function thenResponseStatusCodeIsOkIsh(
   responseAlias?: string,
 ): Promise<void> {
   const parsedResponseAlias: string = responseAlias ?? 'default';
-  const response: Response =
+  const responseParameter: ResponseParameter =
     getServerResponseOrFail.bind(this)(parsedResponseAlias);
-  const responseStatus: number = response.status;
 
   assert(
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    responseStatus >= 200 && responseStatus < 300,
-    `Status code is not Ok-ish: ${String(responseStatus)}`,
+    responseParameter.statusCode >= 200 && responseParameter.statusCode < 300,
+    `Status code is not Ok-ish: ${JSON.stringify({
+      body: responseParameter.body,
+      statusCode: responseParameter.statusCode,
+    })}`,
   );
 }
 

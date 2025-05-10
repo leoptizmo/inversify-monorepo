@@ -1,21 +1,22 @@
 import {
   applyMiddleware,
   controller,
-  GET,
+  DELETE,
   MiddlewarePhase,
   next,
 } from '@inversifyjs/http-core';
+import { Next } from 'hono';
 
-import { NextHonoMiddleware } from '../middlewares/NextHonoMiddleware';
+import { NextHonoMiddleware } from '../../middlewares/NextHonoMiddleware';
 
 @controller('/warriors')
-export class WarriorsGetNextController {
+export class WarriorsDeleteNextHonoController {
   @applyMiddleware({
     middleware: NextHonoMiddleware,
     phase: MiddlewarePhase.PostHandler,
   })
-  @GET()
-  public async getWarrior(@next() nextFn: () => Promise<void>): Promise<void> {
+  @DELETE()
+  public async deleteWarrior(@next() nextFn: Next): Promise<void> {
     await nextFn();
   }
 }

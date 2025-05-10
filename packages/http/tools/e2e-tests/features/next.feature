@@ -8,7 +8,7 @@ The next decorator allows continue request
     Rule: next decorator allows continue request
       Scenario: HTTP request is correctly continued with next decorator
 
-        Given a warrior controller with next decorator for <method> method
+        Given a warrior controller with next decorator for <method> method for <server_kind> server
         And a <server_kind> server from container
         And a <method> warriors HTTP request
         When the request is send

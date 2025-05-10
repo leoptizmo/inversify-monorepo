@@ -4,6 +4,7 @@ import { Then } from '@cucumber/cucumber';
 
 import { InversifyHttpWorld } from '../../../common/models/InversifyHttpWorld';
 import { RequestParameter } from '../../../http/models/RequestParameter';
+import { ResponseParameter } from '../../../http/models/ResponseParameter';
 import { getServerRequestOrFail } from '../../../server/calculations/getServerRequestOrFail';
 import { getServerResponseOrFail } from '../../../server/calculations/getServerResponseOrFail';
 import { WarriorWithId } from '../models/WarriorWithId';
@@ -18,10 +19,10 @@ async function thenResponseContainsTheCorrectUrlParameters(
 
   const requestParameter: RequestParameter =
     getServerRequestOrFail.bind(this)(parsedRequestAlias);
-  const response: Response =
+  const responseParameter: ResponseParameter =
     getServerResponseOrFail.bind(this)(parsedResponseAlias);
 
-  const warriorWithId: WarriorWithId = (await response.json()) as WarriorWithId;
+  const warriorWithId: WarriorWithId = responseParameter.body as WarriorWithId;
 
   assert(
     warriorWithId.id ===

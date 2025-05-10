@@ -23,6 +23,7 @@ import { statusCode } from './http/decorators/StatusCode';
 import { useGuard } from './http/decorators/UseGuard';
 import { Guard } from './http/guard/model/Guard';
 import { Middleware } from './http/middleware/model/Middleware';
+import { MiddlewarePhase } from './http/middleware/model/MiddlewarePhase';
 import { HttpAdapterOptions } from './http/models/HttpAdapterOptions';
 import { MiddlewareHandler } from './http/models/MiddlewareHandler';
 import { RequestHandler } from './http/models/RequestHandler';
@@ -100,6 +101,7 @@ export {
   InversifyHttpAdapter,
   LoopDetectedHttpResponse,
   MethodNotAllowedHttpResponse,
+  MiddlewarePhase,
   MultiStatusHttpResponse,
   next,
   NoContentHttpResponse,
