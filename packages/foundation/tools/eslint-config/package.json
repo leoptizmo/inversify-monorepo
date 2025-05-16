@@ -5,7 +5,7 @@
   },
   "description": "Common ESLint config for inversify monorepo packages",
   "devDependencies": {
-    "@vitest/eslint-plugin": "1.1.44",
+    "@vitest/eslint-plugin": "1.2.0",
     "eslint-config-prettier": "10.1.5",
     "eslint-plugin-prettier": "5.4.0",
     "eslint-plugin-simple-import-sort": "12.1.1",
