@@ -27,7 +27,7 @@
     "@types/express": "^5.0.2",
     "@types/express4": "npm:@types/express@4.17.22",
     "@types/k6": "^1.0.2",
-    "@types/node": "^22.15.19",
+    "@types/node": "^22.15.21",
     "eslint": "9.27.0",
     "prettier": "3.5.3",
     "rimraf": "6.0.1",
