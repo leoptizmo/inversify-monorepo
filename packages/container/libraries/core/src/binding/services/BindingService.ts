@@ -1,7 +1,11 @@
 import { ServiceIdentifier } from '@inversifyjs/common';
 
 import { Cloneable } from '../../common/models/Cloneable';
-import { OneToManyMapStar } from '../../common/models/OneToManyMapStar';
+import {
+  OneToManyMapStar,
+  OneToManyMapStartSpec,
+} from '../../common/models/OneToManyMapStar';
+import { cloneBinding } from '../calculations/cloneBinding';
 import { Binding } from '../models/Binding';
 
 enum BindingRelationKind {
@@ -16,17 +20,32 @@ export interface BindingRelation {
   [BindingRelationKind.serviceId]: ServiceIdentifier;
 }
 
+export class OneToManyBindingMapStar extends OneToManyMapStar<
+  Binding<unknown>,
+  BindingRelation
+> {
+  protected override _buildNewInstance(
+    spec: OneToManyMapStartSpec<BindingRelation>,
+  ): this {
+    return new OneToManyBindingMapStar(spec) as this;
+  }
+
+  protected override _cloneModel(model: Binding<unknown>): Binding<unknown> {
+    return cloneBinding(model);
+  }
+}
+
 export class BindingService implements Cloneable<BindingService> {
-  readonly #bindingMaps: OneToManyMapStar<Binding<unknown>, BindingRelation>;
+  readonly #bindingMaps: OneToManyBindingMapStar;
   readonly #parent: BindingService | undefined;
 
   private constructor(
     parent: BindingService | undefined,
-    bindingMaps?: OneToManyMapStar<Binding<unknown>, BindingRelation>,
+    bindingMaps?: OneToManyBindingMapStar,
   ) {
     this.#bindingMaps =
       bindingMaps ??
-      new OneToManyMapStar<Binding<unknown>, BindingRelation>({
+      new OneToManyBindingMapStar({
         id: {
           isOptional: false,
         },

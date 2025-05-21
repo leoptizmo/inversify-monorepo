@@ -9,5 +9,5 @@ export interface BaseBinding<TType extends BindingType, TActivated> {
   readonly serviceIdentifier: ServiceIdentifier<TActivated>;
   readonly type: TType;
 
-  isSatisfiedBy(constraints: BindingConstraints): boolean;
+  readonly isSatisfiedBy: (constraints: BindingConstraints) => boolean;
 }
