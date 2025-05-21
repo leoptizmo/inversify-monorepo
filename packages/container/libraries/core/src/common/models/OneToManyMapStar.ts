@@ -2,7 +2,7 @@ import { Cloneable } from './Cloneable';
 
 const NOT_FOUND_INDEX: number = -1;
 
-type OneToManyMapStartSpec<TRelation extends object> = {
+export type OneToManyMapStartSpec<TRelation extends object> = {
   [TKey in keyof TRelation]: {
     isOptional: undefined extends TRelation[TKey] ? true : false;
   };
@@ -46,22 +46,20 @@ export class OneToManyMapStar<TModel, TRelation extends object>
     }
   }
 
-  public clone(): OneToManyMapStar<TModel, TRelation> {
+  public clone(): this {
     const properties: (keyof TRelation)[] = Reflect.ownKeys(
       this.#spec,
     ) as (keyof TRelation)[];
 
-    const clone: OneToManyMapStar<TModel, TRelation> = new OneToManyMapStar(
-      this.#spec,
-    );
+    const clone: this = this._buildNewInstance(this.#spec);
 
-    this.#pushEntriesIntoMap(
+    this.#pushRelationEntriesIntoRelationMap(
       this.#modelToRelationMap,
       clone.#modelToRelationMap,
     );
 
     for (const property of properties) {
-      this.#pushEntriesIntoMap(
+      this.#pushModelEntriesIntoModelMap(
         this.#relationToModelsMaps[property],
         clone.#relationToModelsMaps[property],
       );
@@ -113,6 +111,18 @@ export class OneToManyMapStar<TModel, TRelation extends object>
     }
   }
 
+  protected _buildNewInstance(spec: OneToManyMapStartSpec<TRelation>): this {
+    return new OneToManyMapStar(spec) as this;
+  }
+
+  protected _cloneModel(model: TModel): TModel {
+    return model;
+  }
+
+  protected _cloneRelation(relation: TRelation): TRelation {
+    return relation;
+  }
+
   #buildOrGetModelArray(model: TModel): TRelation[] {
     let relations: TRelation[] | undefined =
       this.#modelToRelationMap.get(model);
@@ -142,12 +152,33 @@ export class OneToManyMapStar<TModel, TRelation extends object>
     return models;
   }
 
-  #pushEntriesIntoMap<TKey, TValue>(
-    source: Map<TKey, TValue[]>,
-    target: Map<TKey, TValue[]>,
+  #pushModelEntriesIntoModelMap(
+    source: Map<TRelation[keyof TRelation], TModel[]>,
+    target: Map<TRelation[keyof TRelation], TModel[]>,
   ): void {
-    for (const [key, value] of source) {
-      target.set(key, [...value]);
+    for (const [relation, models] of source) {
+      const modelsClone: TModel[] = new Array<TModel>();
+
+      for (const model of models) {
+        modelsClone.push(this._cloneModel(model));
+      }
+
+      target.set(relation, modelsClone);
+    }
+  }
+
+  #pushRelationEntriesIntoRelationMap(
+    source: Map<TModel, TRelation[]>,
+    target: Map<TModel, TRelation[]>,
+  ): void {
+    for (const [model, relations] of source) {
+      const relationsClone: TRelation[] = new Array<TRelation>();
+
+      for (const relation of relations) {
+        relationsClone.push(this._cloneRelation(relation));
+      }
+
+      target.set(model, relationsClone);
     }
   }
 
