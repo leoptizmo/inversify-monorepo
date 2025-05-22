@@ -1,5 +1,5 @@
 import { IWorld } from '@cucumber/cucumber';
-import { Container } from '@inversifyjs/container';
+import { Container } from '@gritcode/inversifyjs-container';
 
 import { BindingIdentifierParameter } from '../../binding/models/BindingIdentifierParameter';
 import { BindingParameter } from '../../binding/models/BindingParameter';

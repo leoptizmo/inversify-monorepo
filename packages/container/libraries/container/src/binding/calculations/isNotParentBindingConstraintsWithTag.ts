@@ -1,4 +1,4 @@
-import { BindingConstraints, MetadataTag } from '@inversifyjs/core';
+import { BindingConstraints, MetadataTag } from '@gritcode/inversifyjs-core';
 
 import { isBindingConstraintsWithTag } from './isBindingConstraintsWithTag';
 import { isNotParentBindingConstraints } from './isNotParentBindingConstraints';

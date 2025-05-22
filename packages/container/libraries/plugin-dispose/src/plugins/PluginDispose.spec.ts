@@ -8,8 +8,8 @@ import {
   vitest,
 } from 'vitest';
 
-import { Container } from '@inversifyjs/container';
-import { PluginApi, PluginContext } from '@inversifyjs/plugin';
+import { Container } from '@gritcode/inversifyjs-container';
+import { PluginApi, PluginContext } from '@gritcode/inversifyjs-plugin';
 
 import { PluginDispose } from './PluginDispose';
 

@@ -1,4 +1,4 @@
-import { inject, injectable, named, tagged } from '@inversifyjs/core';
+import { inject, injectable, named, tagged } from '@gritcode/inversifyjs-core';
 
 import { Bow } from './Bow';
 

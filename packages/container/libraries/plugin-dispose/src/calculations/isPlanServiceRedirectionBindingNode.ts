@@ -1,7 +1,7 @@
 import {
   PlanBindingNode,
   PlanServiceRedirectionBindingNode,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
 
 export function isPlanServiceRedirectionBindingNode(
   node: PlanBindingNode,

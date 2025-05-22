@@ -14,7 +14,9 @@ describe(isBindingIdentifier.name, () => {
     ['an object with a different symbol', { [Symbol('symbol')]: true }, false],
     [
       'an object with the binding identifier symbol',
-      { [Symbol.for('@inversifyjs/container/bindingIdentifier')]: true },
+      {
+        [Symbol.for('@gritcode/inversifyjs-container/bindingIdentifier')]: true,
+      },
       true,
     ],
   ])(

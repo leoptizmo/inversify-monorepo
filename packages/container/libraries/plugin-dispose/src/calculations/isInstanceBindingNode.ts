@@ -3,7 +3,7 @@ import {
   InstanceBindingNode,
   LeafBindingNode,
   PlanServiceNodeParent,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
 
 export function isInstanceBindingNode(
   node: PlanServiceNodeParent | LeafBindingNode,

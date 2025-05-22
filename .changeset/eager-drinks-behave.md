@@ -1,5 +1,5 @@
 ---
-"@inversifyjs/core": patch
+"@gritcode/inversifyjs-core": patch
 ---
 
 Fixed child container memory leak in most cases

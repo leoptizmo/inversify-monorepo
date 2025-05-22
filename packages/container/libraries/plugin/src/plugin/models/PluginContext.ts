@@ -3,7 +3,7 @@ import {
   BindingService,
   DeactivationsService,
   PlanResultCacheService,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
 
 export interface PluginContext {
   readonly activationService: ActivationsService;

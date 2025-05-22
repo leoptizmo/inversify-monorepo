@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
 import { Then } from '@cucumber/cucumber';
-import { IsBoundOptions } from '@inversifyjs/container';
+import { IsBoundOptions } from '@gritcode/inversifyjs-container';
 
 import { defaultAlias } from '../../common/models/defaultAlias';
 import { InversifyWorld } from '../../common/models/InversifyWorld';

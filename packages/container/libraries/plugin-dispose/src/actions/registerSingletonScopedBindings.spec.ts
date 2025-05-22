@@ -11,7 +11,7 @@ import {
   PlanServiceNode,
   PlanServiceRedirectionBindingNode,
   ResolvedValueBindingNode,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
 
 vitest.mock('./getPluginDisposeBinding');
 vitest.mock('./setPluginDisposeBinding');

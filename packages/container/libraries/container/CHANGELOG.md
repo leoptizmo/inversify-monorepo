@@ -1,4 +1,4 @@
-# @inversifyjs/container
+# @gritcode/inversifyjs-container
 
 ## 1.9.1
 

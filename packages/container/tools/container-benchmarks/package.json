@@ -6,8 +6,8 @@
   "description": "InversifyJs benchmarks package",
   "dependencies": {
     "@inversifyjs/benchmark-utils": "workspace:*",
-    "@inversifyjs/container": "workspace:*",
-    "@inversifyjs/core": "workspace:*",
+    "@gritcode/inversifyjs-container": "workspace:*",
+    "@gritcode/inversifyjs-core": "workspace:*",
     "@nestjs/common": "11.1.2",
     "@nestjs/core": "11.1.2",
     "inversify6": "npm:inversify@6.2.2",

@@ -9,7 +9,7 @@ import {
   vitest,
 } from 'vitest';
 
-vitest.mock('@inversifyjs/core');
+vitest.mock('@gritcode/inversifyjs-core');
 
 vitest.mock('../actions/getBindingId');
 vitest.mock('../calculations/buildBindingIdentifier');
@@ -33,7 +33,6 @@ vitest.mock('../calculations/isParentBindingConstraintsWithServiceId');
 vitest.mock('../calculations/isParentBindingConstraintsWithTag');
 vitest.mock('../calculations/isResolvedValueMetadataInjectOptions');
 
-import { ServiceIdentifier } from '@inversifyjs/common';
 import {
   Binding,
   BindingActivation,
@@ -47,6 +46,7 @@ import {
   ConstantValueBinding,
   DynamicValueBuilder,
   Factory,
+  getBindingId,
   getClassMetadata,
   InstanceBinding,
   MetadataName,
@@ -56,8 +56,8 @@ import {
   ResolvedValueElementMetadataKind,
   ScopedBinding,
   ServiceRedirectionBinding,
-} from '@inversifyjs/core';
-import { getBindingId } from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
+import { ServiceIdentifier } from '@inversifyjs/common';
 
 import { Writable } from '../../common/models/Writable';
 import { BindingConstraintUtils } from '../../container/binding/utils/BindingConstraintUtils';

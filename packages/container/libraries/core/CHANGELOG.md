@@ -1,4 +1,4 @@
-# @inversifyjs/core
+# @gritcode/inversifyjs-core
 
 ## 5.2.0
 

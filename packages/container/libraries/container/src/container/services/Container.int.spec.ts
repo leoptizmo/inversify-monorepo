@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 
 import 'reflect-metadata';
 
-import { injectable, multiInject } from '@inversifyjs/core';
+import { injectable, multiInject } from '@gritcode/inversifyjs-core';
 
 import {
   ContainerModule,

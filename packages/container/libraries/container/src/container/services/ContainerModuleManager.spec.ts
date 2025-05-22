@@ -8,7 +8,6 @@ import {
   vitest,
 } from 'vitest';
 
-import { ServiceIdentifier } from '@inversifyjs/common';
 import {
   ActivationsService,
   BindingActivation,
@@ -19,7 +18,8 @@ import {
   DeactivationParams,
   DeactivationsService,
   PlanResultCacheService,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
+import { ServiceIdentifier } from '@inversifyjs/common';
 
 import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
 import { BindingIdentifier } from '../../binding/models/BindingIdentifier';

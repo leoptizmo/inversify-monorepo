@@ -3,7 +3,7 @@ import {
   BindingService,
   DeactivationsService,
   PlanResultCacheService,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
 
 /**
  * Manages references to core services used throughout the Container

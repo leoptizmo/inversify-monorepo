@@ -1,2 +1,2 @@
 export const classMetadataReflectKey: string =
-  '@inversifyjs/core/classMetadataReflectKey';
+  '@gritcode/inversifyjs-core/classMetadataReflectKey';

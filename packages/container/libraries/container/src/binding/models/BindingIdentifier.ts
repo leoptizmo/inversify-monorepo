@@ -1,5 +1,5 @@
 export const bindingIdentifierSymbol: symbol = Symbol.for(
-  '@inversifyjs/container/bindingIdentifier',
+  '@gritcode/inversifyjs-container/bindingIdentifier',
 );
 
 export interface BindingIdentifier {

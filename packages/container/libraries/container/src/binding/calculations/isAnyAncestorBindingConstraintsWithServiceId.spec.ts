@@ -8,7 +8,7 @@ import {
   vitest,
 } from 'vitest';
 
-import { BindingConstraints } from '@inversifyjs/core';
+import { BindingConstraints } from '@gritcode/inversifyjs-core';
 
 vitest.mock('./isBindingConstraintsWithServiceId');
 vitest.mock('./isAnyAncestorBindingConstraints');

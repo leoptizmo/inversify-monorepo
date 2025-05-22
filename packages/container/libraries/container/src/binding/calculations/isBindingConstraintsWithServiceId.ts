@@ -1,5 +1,5 @@
+import { BindingConstraints } from '@gritcode/inversifyjs-core';
 import { ServiceIdentifier } from '@inversifyjs/common';
-import { BindingConstraints } from '@inversifyjs/core';
 
 export function isBindingConstraintsWithServiceId(
   serviceId: ServiceIdentifier,

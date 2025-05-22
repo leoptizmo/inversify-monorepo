@@ -1,4 +1,3 @@
-import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 import {
   ActivationsService,
   BindingActivation,
@@ -11,7 +10,8 @@ import {
   GetOptions,
   OptionalGetOptions,
   PlanResultCacheService,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
+import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 
 import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
 import { BindingIdentifier } from '../../binding/models/BindingIdentifier';

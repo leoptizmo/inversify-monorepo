@@ -1,6 +1,10 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { BaseBinding, BindingType, bindingTypeValues } from '@inversifyjs/core';
+import {
+  BaseBinding,
+  BindingType,
+  bindingTypeValues,
+} from '@gritcode/inversifyjs-core';
 
 import { buildBindingIdentifier } from './buildBindingIdentifier';
 
@@ -27,7 +31,7 @@ describe(buildBindingIdentifier.name, () => {
     it('should return a binding identifier', () => {
       expect(result).toStrictEqual({
         id: bindingFixture.id,
-        [Symbol.for('@inversifyjs/container/bindingIdentifier')]: true,
+        [Symbol.for('@gritcode/inversifyjs-container/bindingIdentifier')]: true,
       });
     });
   });

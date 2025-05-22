@@ -5,7 +5,7 @@
   },
   "description": "InversifyJs plugin example package",
   "dependencies": {
-    "@inversifyjs/plugin": "workspace:*"
+    "@gritcode/inversifyjs-plugin": "workspace:*"
   },
   "devDependencies": {
     "eslint": "9.24.0",

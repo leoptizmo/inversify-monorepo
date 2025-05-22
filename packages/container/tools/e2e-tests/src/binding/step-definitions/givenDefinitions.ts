@@ -1,5 +1,4 @@
 import { Given } from '@cucumber/cucumber';
-import { Newable } from '@inversifyjs/common';
 import {
   BindInFluentSyntax,
   BindingIdentifier,
@@ -9,14 +8,15 @@ import {
   BindWhenOnFluentSyntax,
   Container,
   ResolvedValueInjectOptions,
-} from '@inversifyjs/container';
+} from '@gritcode/inversifyjs-container';
 import {
   BindingActivation,
   BindingScope,
   bindingScopeValues,
   MetadataName,
   MetadataTag,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
+import { Newable } from '@inversifyjs/common';
 
 import { defaultAlias } from '../../common/models/defaultAlias';
 import { InversifyWorld } from '../../common/models/InversifyWorld';

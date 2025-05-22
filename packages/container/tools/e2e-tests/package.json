@@ -7,8 +7,8 @@
   "dependencies": {
     "@cucumber/cucumber": "11.3.0",
     "@inversifyjs/common": "workspace:*",
-    "@inversifyjs/container": "workspace:*",
-    "@inversifyjs/core": "workspace:*"
+    "@gritcode/inversifyjs-container": "workspace:*",
+    "@gritcode/inversifyjs-core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "22.15.22",

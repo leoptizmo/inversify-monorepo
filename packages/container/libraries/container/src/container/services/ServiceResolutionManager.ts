@@ -1,9 +1,4 @@
 import {
-  isPromise,
-  ServiceIdentifier,
-  stringifyServiceIdentifier,
-} from '@inversifyjs/common';
-import {
   Binding,
   BindingActivation,
   BindingScope,
@@ -16,7 +11,12 @@ import {
   PlanResult,
   ResolutionContext,
   resolve,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
+import {
+  isPromise,
+  ServiceIdentifier,
+  stringifyServiceIdentifier,
+} from '@inversifyjs/common';
 
 import { InversifyContainerError } from '../../error/models/InversifyContainerError';
 import { InversifyContainerErrorKind } from '../../error/models/InversifyContainerErrorKind';

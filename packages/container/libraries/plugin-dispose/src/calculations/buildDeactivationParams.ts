@@ -1,5 +1,8 @@
-import { DeactivationParams, getClassMetadata } from '@inversifyjs/core';
-import { PluginContext } from '@inversifyjs/plugin';
+import {
+  DeactivationParams,
+  getClassMetadata,
+} from '@gritcode/inversifyjs-core';
+import { PluginContext } from '@gritcode/inversifyjs-plugin';
 
 export function buildDeactivationParams(
   pluginContext: PluginContext,

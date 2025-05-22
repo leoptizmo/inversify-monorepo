@@ -1,4 +1,4 @@
-# @inversifyjs/plugin
+# @gritcode/inversifyjs-plugin
 
 ## 0.1.0
 

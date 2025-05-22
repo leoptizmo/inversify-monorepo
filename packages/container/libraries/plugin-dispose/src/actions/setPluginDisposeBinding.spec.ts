@@ -8,7 +8,10 @@ import {
   vitest,
 } from 'vitest';
 
-import { bindingScopeValues, bindingTypeValues } from '@inversifyjs/core';
+import {
+  bindingScopeValues,
+  bindingTypeValues,
+} from '@gritcode/inversifyjs-core';
 
 vitest.mock('./getPluginDisposeBindingMap');
 

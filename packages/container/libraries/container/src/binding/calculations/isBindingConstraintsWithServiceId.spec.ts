@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
+import { BindingConstraints } from '@gritcode/inversifyjs-core';
 import { ServiceIdentifier } from '@inversifyjs/common';
-import { BindingConstraints } from '@inversifyjs/core';
 
 import { isBindingConstraintsWithServiceId } from './isBindingConstraintsWithServiceId';
 

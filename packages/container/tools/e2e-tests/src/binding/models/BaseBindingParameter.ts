@@ -1,5 +1,5 @@
+import { BindingIdentifier, Container } from '@gritcode/inversifyjs-container';
 import { ServiceIdentifier } from '@inversifyjs/common';
-import { BindingIdentifier, Container } from '@inversifyjs/container';
 
 import { BindingParameterKind } from './BindingParameterKind';
 

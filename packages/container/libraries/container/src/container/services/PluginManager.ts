@@ -1,16 +1,16 @@
-import { Newable } from '@inversifyjs/common';
 import {
   ActivationsService,
   BindingService,
   DeactivationsService,
   PlanResultCacheService,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
 import {
   isPlugin,
   Plugin,
   PluginApi,
   PluginContext,
-} from '@inversifyjs/plugin';
+} from '@gritcode/inversifyjs-plugin';
+import { Newable } from '@inversifyjs/common';
 
 import { InversifyContainerError } from '../../error/models/InversifyContainerError';
 import { InversifyContainerErrorKind } from '../../error/models/InversifyContainerErrorKind';

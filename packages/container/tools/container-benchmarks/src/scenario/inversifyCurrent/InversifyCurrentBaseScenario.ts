@@ -1,5 +1,5 @@
+import { Container } from '@gritcode/inversifyjs-container';
 import { Scenario } from '@inversifyjs/benchmark-utils';
-import { Container } from '@inversifyjs/container';
 
 import { Platform } from '../models/Platform';
 

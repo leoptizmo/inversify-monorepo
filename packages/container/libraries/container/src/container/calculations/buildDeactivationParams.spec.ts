@@ -8,14 +8,14 @@ import {
   vitest,
 } from 'vitest';
 
-vitest.mock('@inversifyjs/core');
+vitest.mock('@gritcode/inversifyjs-core');
 
 import {
   BindingService,
   DeactivationParams,
   DeactivationsService,
   getClassMetadata,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
 
 import { ServiceReferenceManager } from '../services/ServiceReferenceManager';
 import { buildDeactivationParams } from './buildDeactivationParams';

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { BindingConstraints } from '@inversifyjs/core';
+import { BindingConstraints } from '@gritcode/inversifyjs-core';
 
 import { isBindingConstraintsWithNoNameNorTags } from './isBindingConstraintsWithNoNameNorTags';
 

@@ -1,4 +1,4 @@
-import { injectable } from '@inversifyjs/core';
+import { injectable } from '@gritcode/inversifyjs-core';
 
 import { Weapon } from './Weapon';
 

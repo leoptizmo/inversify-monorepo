@@ -1,7 +1,7 @@
 import { InversifyContainerErrorKind } from './InversifyContainerErrorKind';
 
 const isAppErrorSymbol: unique symbol = Symbol.for(
-  '@inversifyjs/container/InversifyContainerError',
+  '@gritcode/inversifyjs-container/InversifyContainerError',
 );
 
 export class InversifyContainerError extends Error {

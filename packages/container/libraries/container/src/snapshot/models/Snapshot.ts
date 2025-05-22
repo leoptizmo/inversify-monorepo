@@ -2,7 +2,7 @@ import {
   ActivationsService,
   BindingService,
   DeactivationsService,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
 
 export interface Snapshot {
   activationService: ActivationsService;

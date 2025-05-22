@@ -1,13 +1,13 @@
-import { ServiceIdentifier } from '@inversifyjs/common';
-import { Container } from '@inversifyjs/container';
+import { Container } from '@gritcode/inversifyjs-container';
 import {
   Binding,
   bindingScopeValues,
   bindingTypeValues,
   DeactivationParams,
   resolveBindingsDeactivations,
-} from '@inversifyjs/core';
-import { Plugin, PluginApi, PluginContext } from '@inversifyjs/plugin';
+} from '@gritcode/inversifyjs-core';
+import { Plugin, PluginApi, PluginContext } from '@gritcode/inversifyjs-plugin';
+import { ServiceIdentifier } from '@inversifyjs/common';
 
 import { getPluginDisposeBinding } from '../actions/getPluginDisposeBinding';
 import { registerSingletonScopedBindings } from '../actions/registerSingletonScopedBindings';

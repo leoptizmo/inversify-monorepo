@@ -28,7 +28,7 @@ describe(getBindingId.name, () => {
       expect(getOwnReflectMetadata).toHaveBeenCalledTimes(1);
       expect(getOwnReflectMetadata).toHaveBeenCalledWith(
         Object,
-        '@inversifyjs/container/bindingId',
+        '@gritcode/inversifyjs-container/bindingId',
       );
     });
 
@@ -36,7 +36,7 @@ describe(getBindingId.name, () => {
       expect(updateOwnReflectMetadata).toHaveBeenCalledTimes(1);
       expect(updateOwnReflectMetadata).toHaveBeenCalledWith(
         Object,
-        '@inversifyjs/container/bindingId',
+        '@gritcode/inversifyjs-container/bindingId',
         expect.any(Function),
         expect.any(Function),
       );
@@ -66,7 +66,7 @@ describe(getBindingId.name, () => {
       expect(getOwnReflectMetadata).toHaveBeenCalledTimes(1);
       expect(getOwnReflectMetadata).toHaveBeenCalledWith(
         Object,
-        '@inversifyjs/container/bindingId',
+        '@gritcode/inversifyjs-container/bindingId',
       );
     });
 
@@ -74,7 +74,7 @@ describe(getBindingId.name, () => {
       expect(setReflectMetadata).toHaveBeenCalledTimes(1);
       expect(setReflectMetadata).toHaveBeenCalledWith(
         Object,
-        '@inversifyjs/container/bindingId',
+        '@gritcode/inversifyjs-container/bindingId',
         Number.MIN_SAFE_INTEGER,
       );
     });

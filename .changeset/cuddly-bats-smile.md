@@ -1,5 +1,5 @@
 ---
-"@inversifyjs/plugin": minor
+"@gritcode/inversifyjs-plugin": minor
 ---
 
 Updated `PluginApi` with `onPlan`
