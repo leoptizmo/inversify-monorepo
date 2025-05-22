@@ -1,5 +1,31 @@
 # @inversifyjs/container
 
+## 1.10.0
+
+### Minor Changes
+
+- eae6b44: Updated `Container` with `register`
+- 68f22d8: Added `Container#dispose` method to clean up memory from child containers
+
+  Child containers subscribe their plan cache to the parent container for cache invalidation.
+  This would leak memory as the child plan cache would never be unsubscribed, growing the memory usage of the parent container with each new child container instantiation.
+
+  The `Container#dispose` method should be called on child containers once they are no longer in use to free this memory.
+
+### Patch Changes
+
+- 3bac77b: Changed npm scope to @gritcode
+- Updated dependencies [dd4e929]
+- Updated dependencies [dd4e929]
+- Updated dependencies [f66ae9a]
+- Updated dependencies [68f22d8]
+- Updated dependencies [edbefaa]
+- Updated dependencies [3bac77b]
+- Updated dependencies [b9075ee]
+- Updated dependencies [50ef5eb]
+  - @gritcode/inversifyjs-plugin@0.2.0
+  - @gritcode/inversifyjs-core@5.3.0
+
 ## 1.9.1
 
 ### Patch Changes

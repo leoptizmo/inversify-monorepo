@@ -1,5 +1,23 @@
 # @inversifyjs/core
 
+## 5.3.0
+
+### Minor Changes
+
+- 68f22d8: Added `Container#dispose` method to clean up memory from child containers
+
+  Child containers subscribe their plan cache to the parent container for cache invalidation.
+  This would leak memory as the child plan cache would never be unsubscribed, growing the memory usage of the parent container with each new child container instantiation.
+
+  The `Container#dispose` method should be called on child containers once they are no longer in use to free this memory.
+
+- 50ef5eb: Updated `BindingService` with `getBoundServices`
+
+### Patch Changes
+
+- edbefaa: Updated `BindingService.clone` to properly clone bindings.
+- 3bac77b: Changed npm scope to @gritcode
+
 ## 5.2.0
 
 ### Minor Changes
