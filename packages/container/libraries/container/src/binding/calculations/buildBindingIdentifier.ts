@@ -1,4 +1,4 @@
-import { BaseBinding, BindingType } from '@inversifyjs/core';
+import { BaseBinding, BindingType } from '@gritcode/inversifyjs-core';
 
 import {
   BindingIdentifier,

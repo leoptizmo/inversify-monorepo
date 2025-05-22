@@ -1,4 +1,4 @@
-import { BindingConstraints, MetadataName } from '@inversifyjs/core';
+import { BindingConstraints, MetadataName } from '@gritcode/inversifyjs-core';
 
 export function isBindingConstraintsWithName(
   name: MetadataName,

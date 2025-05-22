@@ -1,4 +1,7 @@
-import { GetOptionsTagConstraint, MetadataName } from '@inversifyjs/core';
+import {
+  GetOptionsTagConstraint,
+  MetadataName,
+} from '@gritcode/inversifyjs-core';
 
 export interface IsBoundOptions {
   name?: MetadataName;

@@ -4,7 +4,7 @@ import {
   bindingTypeValues,
   InstanceBindingNode,
   PlanServiceNodeParent,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
 
 import { isInstanceBindingNode } from './isInstanceBindingNode';
 

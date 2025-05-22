@@ -9,9 +9,8 @@ import {
   vitest,
 } from 'vitest';
 
-vitest.mock('@inversifyjs/core');
+vitest.mock('@gritcode/inversifyjs-core');
 
-import { ServiceIdentifier } from '@inversifyjs/common';
 import {
   ActivationsService,
   Binding,
@@ -31,7 +30,8 @@ import {
   ResolutionContext,
   ResolutionParams,
   resolve,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
+import { ServiceIdentifier } from '@inversifyjs/common';
 
 import { InversifyContainerError } from '../../error/models/InversifyContainerError';
 import { InversifyContainerErrorKind } from '../../error/models/InversifyContainerErrorKind';

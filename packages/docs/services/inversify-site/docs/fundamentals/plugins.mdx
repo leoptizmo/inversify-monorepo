@@ -18,7 +18,7 @@ Plugins are, at the moment, an experimental feature and may change in future rel
 To create a plugin, you need to extend the `Plugin` class from `@inversifyjs/plugin` and implement the `load` method. The `load` method receives a `PluginApi` object that allows the plugin to define new methods on the container and hook into the container's resolution process.
 
 ```typescript
-import { Plugin, PluginApi, PluginContext } from '@inversifyjs/plugin';
+import { Plugin, PluginApi, PluginContext } from '@gritcode/inversifyjs-plugin';
 import { Container } from 'inversify';
 
 // Extend the container with plugin defined methods

@@ -8,7 +8,7 @@ import {
   vitest,
 } from 'vitest';
 
-import { BindingConstraints, MetadataName } from '@inversifyjs/core';
+import { BindingConstraints, MetadataName } from '@gritcode/inversifyjs-core';
 
 vitest.mock('./isBindingConstraintsWithName');
 vitest.mock('./isParentBindingConstraints');

@@ -8,9 +8,8 @@ import {
   vitest,
 } from 'vitest';
 
-vitest.mock('@inversifyjs/core');
+vitest.mock('@gritcode/inversifyjs-core');
 
-import { ServiceIdentifier } from '@inversifyjs/common';
 import {
   ActivationsService,
   Binding,
@@ -25,7 +24,8 @@ import {
   PlanResultCacheService,
   resolveBindingsDeactivations,
   resolveServiceDeactivations,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
+import { ServiceIdentifier } from '@inversifyjs/common';
 
 import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
 import { BindToFluentSyntaxImplementation } from '../../binding/models/BindingFluentSyntaxImplementation';

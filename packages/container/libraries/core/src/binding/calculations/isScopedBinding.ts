@@ -3,7 +3,7 @@ import {
   BindingScope,
   BindingType,
   ScopedBinding,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
 
 export function isScopedBinding<T>(
   binding: Binding<T>,

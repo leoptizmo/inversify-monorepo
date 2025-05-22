@@ -2,7 +2,7 @@ import { PluginApi } from './PluginApi';
 import { PluginContext } from './PluginContext';
 
 export const isPlugin: unique symbol = Symbol.for(
-  '@inversifyjs/plugin/isPlugin',
+  '@gritcode/inversifyjs-plugin/isPlugin',
 );
 
 export abstract class Plugin<TContainer> {

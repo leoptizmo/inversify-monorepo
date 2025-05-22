@@ -1,5 +1,8 @@
+import {
+  BindingActivation,
+  BindingDeactivation,
+} from '@gritcode/inversifyjs-core';
 import { ServiceIdentifier } from '@inversifyjs/common';
-import { BindingActivation, BindingDeactivation } from '@inversifyjs/core';
 
 import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
 import { BindingIdentifier } from '../../binding/models/BindingIdentifier';

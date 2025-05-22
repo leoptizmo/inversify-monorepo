@@ -1,4 +1,4 @@
-import { BindingScope } from '@inversifyjs/core';
+import { BindingScope } from '@gritcode/inversifyjs-core';
 
 import { Container } from '../services/Container';
 

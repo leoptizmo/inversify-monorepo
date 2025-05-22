@@ -1,4 +1,4 @@
-import { GetPlanOptions, PlanResult } from '@inversifyjs/core';
+import { GetPlanOptions, PlanResult } from '@gritcode/inversifyjs-core';
 
 export interface PluginApi {
   define(

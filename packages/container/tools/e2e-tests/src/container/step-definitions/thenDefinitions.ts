@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 
 import { Then } from '@cucumber/cucumber';
-import { Container } from '@inversifyjs/container';
+import { Container } from '@gritcode/inversifyjs-container';
 
 import { defaultAlias } from '../../common/models/defaultAlias';
 import { InversifyWorld } from '../../common/models/InversifyWorld';

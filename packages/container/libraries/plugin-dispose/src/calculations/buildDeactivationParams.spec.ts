@@ -8,15 +8,15 @@ import {
   vitest,
 } from 'vitest';
 
-vitest.mock('@inversifyjs/core');
+vitest.mock('@gritcode/inversifyjs-core');
 
 import {
   BindingService,
   DeactivationParams,
   DeactivationsService,
   getClassMetadata,
-} from '@inversifyjs/core';
-import { PluginContext } from '@inversifyjs/plugin';
+} from '@gritcode/inversifyjs-core';
+import { PluginContext } from '@gritcode/inversifyjs-plugin';
 
 import { buildDeactivationParams } from './buildDeactivationParams';
 

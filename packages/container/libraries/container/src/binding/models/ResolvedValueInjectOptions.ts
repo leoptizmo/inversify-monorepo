@@ -1,5 +1,5 @@
+import { MetadataName, MetadataTag } from '@gritcode/inversifyjs-core';
 import { LazyServiceIdentifier, ServiceIdentifier } from '@inversifyjs/common';
-import { MetadataName, MetadataTag } from '@inversifyjs/core';
 
 export type ResolvedValueInjectOptions<T> =
   | LazyServiceIdentifier<T>

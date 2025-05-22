@@ -1,4 +1,7 @@
-import { DeactivationParams, getClassMetadata } from '@inversifyjs/core';
+import {
+  DeactivationParams,
+  getClassMetadata,
+} from '@gritcode/inversifyjs-core';
 
 import { ServiceReferenceManager } from '../services/ServiceReferenceManager';
 

@@ -1,4 +1,4 @@
-import { Plugin, PluginApi } from '@inversifyjs/plugin';
+import { Plugin, PluginApi } from '@gritcode/inversifyjs-plugin';
 import { Container } from 'inversify';
 
 export const pluginExample: unique symbol = Symbol.for(

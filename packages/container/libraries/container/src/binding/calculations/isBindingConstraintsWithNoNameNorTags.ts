@@ -1,4 +1,4 @@
-import { BindingConstraints } from '@inversifyjs/core';
+import { BindingConstraints } from '@gritcode/inversifyjs-core';
 
 export function isBindingConstraintsWithNoNameNorTags(
   constraints: BindingConstraints,

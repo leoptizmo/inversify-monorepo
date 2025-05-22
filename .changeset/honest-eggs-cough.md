@@ -1,6 +1,6 @@
 ---
-"@inversifyjs/container": minor
-"@inversifyjs/core": minor
+"@gritcode/inversifyjs-container": minor
+"@gritcode/inversifyjs-core": minor
 ---
 
 Added `Container#dispose` method to clean up memory from child containers

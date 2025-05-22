@@ -1,2 +1,2 @@
 export const pendingClassMetadataCountReflectKey: string =
-  '@inversifyjs/core/pendingClassMetadataCountReflectKey';
+  '@gritcode/inversifyjs-core/pendingClassMetadataCountReflectKey';

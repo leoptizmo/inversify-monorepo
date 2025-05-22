@@ -1,7 +1,7 @@
 import { When } from '@cucumber/cucumber';
+import { BindingIdentifier } from '@gritcode/inversifyjs-container';
+import { BindingActivation } from '@gritcode/inversifyjs-core';
 import { Newable, ServiceIdentifier } from '@inversifyjs/common';
-import { BindingIdentifier } from '@inversifyjs/container';
-import { BindingActivation } from '@inversifyjs/core';
 
 import { defaultAlias } from '../../common/models/defaultAlias';
 import { InversifyWorld } from '../../common/models/InversifyWorld';

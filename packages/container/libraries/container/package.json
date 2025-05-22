@@ -6,8 +6,8 @@
   "description": "InversifyJs container",
   "dependencies": {
     "@inversifyjs/common": "workspace:*",
-    "@inversifyjs/core": "workspace:*",
-    "@inversifyjs/plugin": "workspace:*",
+    "@gritcode/inversifyjs-core": "workspace:*",
+    "@gritcode/inversifyjs-plugin": "workspace:*",
     "@inversifyjs/reflect-metadata-utils": "workspace:*"
   },
   "devDependencies": {
@@ -52,7 +52,7 @@
       "require": "./lib/cjs/index.js"
     }
   },
-  "name": "@inversifyjs/container",
+  "name": "@gritcode/inversifyjs-container",
   "publishConfig": {
     "access": "public"
   },

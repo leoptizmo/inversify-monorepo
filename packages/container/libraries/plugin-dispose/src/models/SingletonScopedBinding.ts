@@ -3,7 +3,7 @@ import {
   bindingScopeValues,
   BindingType,
   ScopedBinding,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
 
 export type SingletonScopedBinding = Binding &
   ScopedBinding<BindingType, typeof bindingScopeValues.Singleton, unknown>;

@@ -1,6 +1,6 @@
 import { When } from '@cucumber/cucumber';
+import { GetOptions } from '@gritcode/inversifyjs-core';
 import { Newable, ServiceIdentifier } from '@inversifyjs/common';
-import { GetOptions } from '@inversifyjs/core';
 
 import { defaultAlias } from '../../common/models/defaultAlias';
 import { InversifyWorld } from '../../common/models/InversifyWorld';

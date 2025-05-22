@@ -1,4 +1,4 @@
-import { ResolutionContext } from '@inversifyjs/core';
+import { ResolutionContext } from '@gritcode/inversifyjs-core';
 
 import { Weapon } from '../models/Weapon';
 

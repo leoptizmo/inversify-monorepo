@@ -9,11 +9,10 @@ import {
   vitest,
 } from 'vitest';
 
-vitest.mock('@inversifyjs/core');
+vitest.mock('@gritcode/inversifyjs-core');
 
 vitest.mock('../../common/calculations/getFirstIterableResult');
 
-import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 import {
   ActivationsService,
   BindingActivation,
@@ -26,7 +25,8 @@ import {
   GetOptions,
   GetOptionsTagConstraint,
   PlanResultCacheService,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
+import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 
 vitest.mock('../calculations/buildDeactivationParams');
 vitest.mock('./BindingManager');
@@ -36,7 +36,7 @@ vitest.mock('./ServiceReferenceManager');
 vitest.mock('./ServiceResolutionManager');
 vitest.mock('./SnapshotManager');
 
-import { Plugin, PluginContext } from '@inversifyjs/plugin';
+import { Plugin, PluginContext } from '@gritcode/inversifyjs-plugin';
 
 import { BindToFluentSyntax } from '../../binding/models/BindingFluentSyntax';
 import { buildDeactivationParams } from '../calculations/buildDeactivationParams';

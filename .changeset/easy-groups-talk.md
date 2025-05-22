@@ -1,5 +1,5 @@
 ---
-"@inversifyjs/container": minor
+"@gritcode/inversifyjs-container": minor
 ---
 
 Updated `Container` with `register`

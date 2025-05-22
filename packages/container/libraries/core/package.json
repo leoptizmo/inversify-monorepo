@@ -49,7 +49,7 @@
       "require": "./lib/cjs/index.js"
     }
   },
-  "name": "@inversifyjs/core",
+  "name": "@gritcode/inversifyjs-core",
   "publishConfig": {
     "access": "public"
   },

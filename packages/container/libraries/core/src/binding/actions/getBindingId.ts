@@ -4,7 +4,7 @@ import {
   updateOwnReflectMetadata,
 } from '@inversifyjs/reflect-metadata-utils';
 
-const ID_METADATA: string = '@inversifyjs/container/bindingId';
+const ID_METADATA: string = '@gritcode/inversifyjs-container/bindingId';
 
 export function getBindingId(): number {
   const bindingId: number =

@@ -4,7 +4,7 @@ import {
   PlanBindingNode,
   PlanResult,
   PlanServiceNode,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
 
 import { isInstanceBindingNode } from '../calculations/isInstanceBindingNode';
 import { isPlanServiceRedirectionBindingNode } from '../calculations/isPlanServiceRedirectionBindingNode';

@@ -1,4 +1,3 @@
-import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 import {
   Binding,
   BindingActivation,
@@ -14,6 +13,7 @@ import {
   DynamicValueBuilder,
   Factory,
   FactoryBinding,
+  getBindingId,
   getClassMetadata,
   InstanceBinding,
   MetadataName,
@@ -28,8 +28,8 @@ import {
   ResolvedValueMetadata,
   ScopedBinding,
   ServiceRedirectionBinding,
-} from '@inversifyjs/core';
-import { getBindingId } from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
+import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 
 import { Writable } from '../../common/models/Writable';
 import { BindingConstraintUtils } from '../../container/binding/utils/BindingConstraintUtils';

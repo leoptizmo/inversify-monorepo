@@ -1,4 +1,4 @@
-import { Container } from '@inversifyjs/container';
+import { Container } from '@gritcode/inversifyjs-container';
 
 import { InversifyWorld } from '../../common/models/InversifyWorld';
 

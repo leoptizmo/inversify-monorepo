@@ -13,7 +13,7 @@ import {
   BindingService,
   DeactivationsService,
   PlanResultCacheService,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
 
 import { ServiceReferenceManager } from './ServiceReferenceManager';
 

@@ -8,12 +8,12 @@ coverage:
       '@inversifyjs/common':
         flags:
           - '@inversifyjs/common'
-      '@inversifyjs/container':
+      '@gritcode/inversifyjs-container':
         flags:
-          - '@inversifyjs/container'
-      '@inversifyjs/core':
+          - '@gritcode/inversifyjs-container'
+      '@gritcode/inversifyjs-core':
         flags:
-          - '@inversifyjs/core'
+          - '@gritcode/inversifyjs-core'
       '@inversifyjs/http-core':
         flags:
           - '@inversifyjs/http-core'
@@ -36,10 +36,10 @@ flags:
   '@inversifyjs/common':
     paths:
       - packages/container/libraries/common/
-  '@inversifyjs/container':
+  '@gritcode/inversifyjs-container':
     paths:
       - packages/container/libraries/container/
-  '@inversifyjs/core':
+  '@gritcode/inversifyjs-core':
     paths:
       - packages/container/libraries/core/
   '@inversifyjs/http-core':

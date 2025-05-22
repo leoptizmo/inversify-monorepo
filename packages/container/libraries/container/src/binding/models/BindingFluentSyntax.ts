@@ -1,4 +1,3 @@
-import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 import {
   BindingActivation,
   BindingConstraints,
@@ -9,7 +8,8 @@ import {
   MetadataTag,
   Provider,
   ResolutionContext,
-} from '@inversifyjs/core';
+} from '@gritcode/inversifyjs-core';
+import { Newable, ServiceIdentifier } from '@inversifyjs/common';
 
 import { BindingIdentifier } from './BindingIdentifier';
 import { MapToResolvedValueInjectOptions } from './MapToResolvedValueInjectOptions';

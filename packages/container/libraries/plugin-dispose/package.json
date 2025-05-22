@@ -5,12 +5,12 @@
   },
   "description": "InversifyJs dispose plugin package",
   "dependencies": {
-    "@inversifyjs/container": "workspace:*",
-    "@inversifyjs/plugin": "workspace:*"
+    "@gritcode/inversifyjs-container": "workspace:*",
+    "@gritcode/inversifyjs-plugin": "workspace:*"
   },
   "devDependencies": {
     "@inversifyjs/common": "workspace:*",
-    "@inversifyjs/core": "workspace:*",
+    "@gritcode/inversifyjs-core": "workspace:*",
     "@stryker-mutator/core": "9.0.1",
     "@stryker-mutator/vitest-runner": "9.0.1",
     "@stryker-mutator/typescript-checker": "9.0.1",

@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { PlanBindingNode } from '@inversifyjs/core';
+import { PlanBindingNode } from '@gritcode/inversifyjs-core';
 
 import { isPlanServiceRedirectionBindingNode } from './isPlanServiceRedirectionBindingNode';
 
