@@ -36,6 +36,8 @@ function shouldReallocate(liveRefCount: number, refCount: number): boolean {
   );
 }
 
+const CHECK_SHOULD_REALLOCATE_FREQUENCY: number = 1024;
+
 /**
  * Service to cache plans.
  *
@@ -177,6 +179,20 @@ export class PlanResultCacheService {
 
   public subscribe(subscriber: PlanResultCacheService): void {
     this.#subscribers.push(new WeakRef(subscriber));
+
+    if (this.#subscribers.length % CHECK_SHOULD_REALLOCATE_FREQUENCY !== 0) {
+      return;
+    }
+
+    let liveRefCount: number = 0;
+    for (const ref of this.#subscribers) {
+      if (ref.deref()) {
+        ++liveRefCount;
+      }
+    }
+    if (shouldReallocate(liveRefCount, this.#subscribers.length)) {
+      this.#compactSubscribersArray(liveRefCount);
+    }
   }
 
   #buildInitializedMapArray<TKey, TValue>(): Map<TKey, TValue>[] {
