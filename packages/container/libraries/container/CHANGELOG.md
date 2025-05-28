@@ -1,5 +1,25 @@
 # @gritcode/inversifyjs-container
 
+## 1.10.0
+
+### Minor Changes
+
+- eae6b44: Updated `Container` with `register`
+
+### Patch Changes
+
+- 3417532: Changed npm scope to @gritcode
+- Updated dependencies [dd4e929]
+- Updated dependencies [dd4e929]
+- Updated dependencies [f66ae9a]
+- Updated dependencies [5d8c35d]
+- Updated dependencies [edbefaa]
+- Updated dependencies [3417532]
+- Updated dependencies [b9075ee]
+- Updated dependencies [50ef5eb]
+  - @gritcode/inversifyjs-plugin@0.2.0
+  - @gritcode/inversifyjs-core@5.3.0
+
 ## 1.9.1
 
 ### Patch Changes
